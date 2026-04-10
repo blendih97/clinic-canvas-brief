@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ScanLine, Languages, AlertTriangle, CheckCircle } from "lucide-react";
+import { ScanLine, Languages, AlertTriangle, CheckCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { useVaultStore } from "@/store/vaultStore";
 
 const statusBadge = {
@@ -38,14 +38,15 @@ const AnatomicalViewer = ({ region }: { region: string }) => {
 const ImagingSection = () => {
   const imagingResults = useVaultStore((s) => s.imagingResults);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [showAnatomy, setShowAnatomy] = useState(false);
   const selected = imagingResults.find((r) => r.id === selectedId) || imagingResults[0];
 
   if (imagingResults.length === 0) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-8">
         <div>
           <h2 className="font-heading text-3xl font-light text-foreground">Imaging</h2>
-          <p className="text-sm text-muted-foreground mt-1">Upload an imaging report to see findings here.</p>
+          <p className="text-sm text-muted-foreground mt-2">Upload an imaging report to see findings here.</p>
         </div>
         <div className="bg-card border border-border rounded-lg p-12 text-center text-muted-foreground text-sm">
           No imaging results yet.
@@ -55,19 +56,20 @@ const ImagingSection = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
         <h2 className="font-heading text-3xl font-light text-foreground">Imaging</h2>
-        <p className="text-sm text-muted-foreground mt-1">MRI, CT, and X-ray findings with anatomical mapping</p>
+        <p className="text-sm text-muted-foreground mt-2">MRI, CT, and X-ray findings with anatomical mapping</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="space-y-2">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Study list */}
+        <div className="space-y-3">
           {imagingResults.map((r) => (
             <button
               key={r.id}
               onClick={() => setSelectedId(r.id)}
-              className={`w-full text-left p-3 rounded-lg border transition-all ${
+              className={`w-full text-left p-4 rounded-xl border transition-all ${
                 selected?.id === r.id ? "bg-card border-primary/40" : "bg-card border-border hover:border-primary/20"
               }`}
             >
@@ -80,7 +82,7 @@ const ImagingSection = () => {
               </div>
               <p className="text-[10px] text-muted-foreground">{r.facility} · {r.date}</p>
               {r.originalLang !== "English" && (
-                <div className="flex items-center gap-1 mt-1.5">
+                <div className="flex items-center gap-1 mt-2">
                   <Languages className="w-3 h-3 text-primary" />
                   <span className="text-[10px] text-primary">Translated from {r.originalLang}</span>
                 </div>
@@ -89,12 +91,25 @@ const ImagingSection = () => {
           ))}
         </div>
 
-        <div className="bg-card border border-border rounded-lg p-6 flex items-center justify-center">
-          {selected && <AnatomicalViewer region={selected.region} />}
+        {/* Anatomical viewer — collapsible */}
+        <div className="bg-card border border-border rounded-xl overflow-hidden">
+          <button
+            onClick={() => setShowAnatomy(!showAnatomy)}
+            className="w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors"
+          >
+            <span className="text-xs font-medium text-foreground">Anatomical View</span>
+            {showAnatomy ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+          </button>
+          {showAnatomy && selected && (
+            <div className="p-6 pt-0 flex items-center justify-center">
+              <AnatomicalViewer region={selected.region} />
+            </div>
+          )}
         </div>
 
+        {/* AI Analysis */}
         {selected && (
-          <div className="bg-card border border-border rounded-lg p-5">
+          <div className="bg-card border border-border rounded-xl p-5">
             <div className="flex items-center gap-2 mb-4">
               <ScanLine className="w-4 h-4 text-primary" />
               <h3 className="font-heading text-lg text-foreground">AI Analysis</h3>
@@ -104,7 +119,7 @@ const ImagingSection = () => {
               <div><p className="text-[10px] tracking-wider text-muted-foreground uppercase mb-1">Facility</p><p className="text-foreground">{selected.facility}</p></div>
               <div><p className="text-[10px] tracking-wider text-muted-foreground uppercase mb-1">Date</p><p className="text-foreground">{selected.date}</p></div>
               {selected.originalLang !== "English" && (
-                <div className="p-2 rounded bg-primary/5 border border-primary/10">
+                <div className="p-3 rounded-lg bg-primary/5 border border-primary/10">
                   <div className="flex items-center gap-1">
                     <Languages className="w-3 h-3 text-primary" />
                     <span className="text-[10px] text-primary">Auto-translated from {selected.originalLang}</span>

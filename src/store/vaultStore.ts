@@ -44,6 +44,9 @@ export interface Document {
   country: string;
   pages: number;
   extracted: boolean;
+  fileUrl?: string;
+  summary?: string | string[];
+  aiNote?: string;
 }
 
 export interface Alert {
