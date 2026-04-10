@@ -7,10 +7,10 @@ const MedicationsSection = () => {
 
   if (medications.length === 0 && allergies.length === 0) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-8">
         <div>
           <h2 className="font-heading text-3xl font-light text-foreground">Medications & Allergies</h2>
-          <p className="text-sm text-muted-foreground mt-1">Upload a prescription or clinical letter to see medications here.</p>
+          <p className="text-sm text-muted-foreground mt-2">Upload a prescription or clinical letter to see medications here.</p>
         </div>
         <div className="bg-card border border-border rounded-lg p-12 text-center text-muted-foreground text-sm">
           No medications or allergies yet.
@@ -20,10 +20,10 @@ const MedicationsSection = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
         <h2 className="font-heading text-3xl font-light text-foreground">Medications & Allergies</h2>
-        <p className="text-sm text-muted-foreground mt-1">Extracted prescriptions and known sensitivities</p>
+        <p className="text-sm text-muted-foreground mt-2">Extracted prescriptions and known sensitivities</p>
       </div>
 
       {allergies.length > 0 && (
