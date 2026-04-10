@@ -2,18 +2,18 @@ import { useState } from "react";
 import { LayoutGrid, List, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { useVaultStore } from "@/store/vaultStore";
 
-const statusBadge = {
-  normal: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
-  flagged: "bg-primary/10 text-primary border-primary/20",
-  critical: "bg-destructive/10 text-destructive border-destructive/20",
+const statusColors = {
+  normal: { badge: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20", border: "border-l-emerald-500" },
+  flagged: { badge: "bg-primary/10 text-primary border-primary/20", border: "border-l-primary" },
+  critical: { badge: "bg-destructive/10 text-destructive border-destructive/20", border: "border-l-destructive" },
 };
 
 const Sparkline = ({ data, status }: { data: number[]; status: string }) => {
   const min = Math.min(...data);
   const max = Math.max(...data);
   const range = max - min || 1;
-  const h = 24;
-  const w = 60;
+  const h = 20;
+  const w = 48;
   const points = data.map((v, i) => `${(i / (data.length - 1)) * w},${h - ((v - min) / range) * h}`).join(" ");
   const color = status === "critical" ? "#ef4444" : status === "flagged" ? "#B8952A" : "#22c55e";
 
@@ -33,15 +33,15 @@ const TrendIcon = ({ data }: { data: number[] }) => {
 };
 
 const BloodResultsSection = () => {
-  const [view, setView] = useState<"card" | "table">("card");
+  const [view, setView] = useState<"card" | "table">("table");
   const bloodResults = useVaultStore((s) => s.bloodResults);
 
   if (bloodResults.length === 0) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-8">
         <div>
           <h2 className="font-heading text-3xl font-light text-foreground">Blood Results</h2>
-          <p className="text-sm text-muted-foreground mt-1">Upload a lab report to see extracted biomarkers here.</p>
+          <p className="text-sm text-muted-foreground mt-2">Upload a lab report to see extracted biomarkers here.</p>
         </div>
         <div className="bg-card border border-border rounded-lg p-12 text-center text-muted-foreground text-sm">
           No blood results yet.
@@ -51,13 +51,13 @@ const BloodResultsSection = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="font-heading text-3xl font-light text-foreground">Blood Results</h2>
-          <p className="text-sm text-muted-foreground mt-1">Extracted biomarkers from uploaded lab reports</p>
+          <p className="text-sm text-muted-foreground mt-2">Extracted biomarkers from uploaded lab reports</p>
         </div>
-        <div className="flex gap-1 bg-muted rounded-md p-0.5">
+        <div className="flex gap-1 bg-muted rounded-lg p-0.5">
           <button onClick={() => setView("card")} className={`p-1.5 rounded ${view === "card" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}>
             <LayoutGrid className="w-4 h-4" />
           </button>
@@ -68,23 +68,23 @@ const BloodResultsSection = () => {
       </div>
 
       {view === "card" ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {bloodResults.map((r) => (
-            <div key={r.id} className="bg-card border border-border rounded-lg p-4 hover:border-primary/30 transition-colors">
+            <div key={r.id} className={`bg-card border border-border rounded-xl p-5 hover:border-primary/30 transition-colors border-l-4 ${statusColors[r.status].border}`}>
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <p className="text-sm font-medium text-foreground">{r.marker}</p>
                   <p className="text-[10px] text-muted-foreground">{r.source}</p>
                 </div>
-                <span className={`text-[10px] px-2 py-0.5 rounded-full border ${statusBadge[r.status]}`}>
+                <span className={`text-[10px] px-2 py-0.5 rounded-full border ${statusColors[r.status].badge}`}>
                   {r.status}
                 </span>
               </div>
               <div className="flex items-end justify-between">
                 <div>
-                  <p className="font-heading text-3xl font-light text-foreground">
+                  <p className="text-lg font-medium text-foreground">
                     {r.value}
-                    <span className="text-sm text-muted-foreground ml-1">{r.unit}</span>
+                    <span className="text-xs text-muted-foreground ml-1">{r.unit}</span>
                   </p>
                   <p className="text-[10px] text-muted-foreground mt-1">Range: {r.range}</p>
                 </div>
@@ -104,25 +104,25 @@ const BloodResultsSection = () => {
           <table className="w-full">
             <thead>
               <tr className="border-b border-border text-left">
-                <th className="p-3 text-[10px] tracking-wider text-muted-foreground uppercase font-medium">Marker</th>
-                <th className="p-3 text-[10px] tracking-wider text-muted-foreground uppercase font-medium">Value</th>
-                <th className="p-3 text-[10px] tracking-wider text-muted-foreground uppercase font-medium">Range</th>
-                <th className="p-3 text-[10px] tracking-wider text-muted-foreground uppercase font-medium">Status</th>
-                <th className="p-3 text-[10px] tracking-wider text-muted-foreground uppercase font-medium">Trend</th>
-                <th className="p-3 text-[10px] tracking-wider text-muted-foreground uppercase font-medium">Source</th>
-                <th className="p-3 text-[10px] tracking-wider text-muted-foreground uppercase font-medium">Date</th>
+                <th className="p-4 text-[10px] tracking-wider text-muted-foreground uppercase font-medium">Marker</th>
+                <th className="p-4 text-[10px] tracking-wider text-muted-foreground uppercase font-medium">Value</th>
+                <th className="p-4 text-[10px] tracking-wider text-muted-foreground uppercase font-medium">Range</th>
+                <th className="p-4 text-[10px] tracking-wider text-muted-foreground uppercase font-medium">Status</th>
+                <th className="p-4 text-[10px] tracking-wider text-muted-foreground uppercase font-medium">Trend</th>
+                <th className="p-4 text-[10px] tracking-wider text-muted-foreground uppercase font-medium">Source</th>
+                <th className="p-4 text-[10px] tracking-wider text-muted-foreground uppercase font-medium">Date</th>
               </tr>
             </thead>
             <tbody>
               {bloodResults.map((r) => (
                 <tr key={r.id} className="border-b border-border/50 hover:bg-muted/50 transition-colors">
-                  <td className="p-3 text-sm text-foreground font-medium">{r.marker}</td>
-                  <td className="p-3 text-sm text-foreground font-heading">{r.value} <span className="text-muted-foreground text-xs">{r.unit}</span></td>
-                  <td className="p-3 text-xs text-muted-foreground">{r.range}</td>
-                  <td className="p-3"><span className={`text-[10px] px-2 py-0.5 rounded-full border ${statusBadge[r.status]}`}>{r.status}</span></td>
-                  <td className="p-3"><Sparkline data={r.trend} status={r.status} /></td>
-                  <td className="p-3 text-xs text-muted-foreground">{r.source}</td>
-                  <td className="p-3 text-xs text-muted-foreground">{r.date}</td>
+                  <td className="p-4 text-sm text-foreground font-medium">{r.marker}</td>
+                  <td className="p-4 text-sm text-foreground">{r.value} <span className="text-muted-foreground text-xs">{r.unit}</span></td>
+                  <td className="p-4 text-xs text-muted-foreground">{r.range}</td>
+                  <td className="p-4"><span className={`text-[10px] px-2 py-0.5 rounded-full border ${statusColors[r.status].badge}`}>{r.status}</span></td>
+                  <td className="p-4"><Sparkline data={r.trend} status={r.status} /></td>
+                  <td className="p-4 text-xs text-muted-foreground">{r.source}</td>
+                  <td className="p-4 text-xs text-muted-foreground">{r.date}</td>
                 </tr>
               ))}
             </tbody>

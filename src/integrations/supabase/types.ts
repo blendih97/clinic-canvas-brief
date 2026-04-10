@@ -14,7 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      shared_briefs: {
+        Row: {
+          allergies: Json | null
+          blood_results: Json | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          imaging_results: Json | null
+          medications: Json | null
+          scope: string | null
+          token: string
+        }
+        Insert: {
+          allergies?: Json | null
+          blood_results?: Json | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          imaging_results?: Json | null
+          medications?: Json | null
+          scope?: string | null
+          token: string
+        }
+        Update: {
+          allergies?: Json | null
+          blood_results?: Json | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          imaging_results?: Json | null
+          medications?: Json | null
+          scope?: string | null
+          token?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

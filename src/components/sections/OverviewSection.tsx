@@ -1,4 +1,4 @@
-import { FileText, AlertTriangle, Globe, Pill, Upload, Share2, Droplets, ScanLine, AlertCircle, Clock } from "lucide-react";
+import { FileText, Upload, Share2, AlertTriangle, Pill, CheckCircle } from "lucide-react";
 import { useVaultStore } from "@/store/vaultStore";
 
 type Section = "overview" | "blood" | "imaging" | "medications" | "documents" | "share" | "billing";
@@ -9,140 +9,117 @@ interface OverviewProps {
 }
 
 const OverviewSection = ({ onNavigate, onUpload }: OverviewProps) => {
-  const { bloodResults, imagingResults, medications, documents, alerts, allergies } = useVaultStore();
-
-  const totalRecords = bloodResults.length + imagingResults.length + medications.length + documents.length;
-  const activeFlags = alerts.length;
-  const countries = new Set(documents.map((d) => d.country)).size;
-  const activeMeds = medications.filter((m) => m.active).length;
-
-  const kpis = [
-    { label: "Records", value: totalRecords, icon: FileText },
-    { label: "Active Flags", value: activeFlags, icon: AlertTriangle, accent: activeFlags > 0 },
-    { label: "Countries", value: countries, icon: Globe },
-    { label: "Medications", value: activeMeds, icon: Pill },
-  ];
-
-  const shortcuts = [
-    { id: "blood" as Section, label: "Blood Results", icon: Droplets, count: bloodResults.length },
-    { id: "imaging" as Section, label: "Imaging", icon: ScanLine, count: imagingResults.length },
-    { id: "medications" as Section, label: "Medications", icon: Pill, count: medications.length },
-    { id: "documents" as Section, label: "Documents", icon: FileText, count: documents.length },
-  ];
+  const { documents, allergies, medications } = useVaultStore();
 
   const recentDocs = [...documents].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
+  const activeMeds = medications.filter((m) => m.active);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
       <div>
-        <h2 className="font-heading text-3xl font-light text-foreground">Your Vault</h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          {totalRecords > 0
-            ? `${totalRecords} records across ${countries || 0} ${countries === 1 ? "country" : "countries"}`
+        <h2 className="font-heading text-3xl font-light text-foreground">Your Health Vault</h2>
+        <p className="text-sm text-muted-foreground mt-2">
+          {documents.length > 0
+            ? `${documents.length} document${documents.length !== 1 ? "s" : ""} uploaded`
             : "Upload your first document to get started"}
         </p>
       </div>
 
-      {/* Action cards */}
+      {/* Primary actions */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <button
           onClick={onUpload}
-          className="flex items-center gap-4 p-5 bg-card border border-border rounded-lg hover:border-primary/40 transition-all text-left group"
+          className="flex items-center gap-4 p-6 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-all text-left group"
         >
-          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-            <Upload className="w-5 h-5 text-primary" />
+          <div className="w-11 h-11 rounded-lg bg-primary-foreground/20 flex items-center justify-center">
+            <Upload className="w-5 h-5" />
           </div>
           <div>
-            <p className="text-sm font-medium text-foreground">Upload Document</p>
-            <p className="text-xs text-muted-foreground">PDF, image, or clinical letter</p>
+            <p className="text-sm font-medium">Upload Document</p>
+            <p className="text-xs opacity-80">PDF, image, or clinical letter</p>
           </div>
         </button>
         <button
           onClick={() => onNavigate?.("share")}
-          className="flex items-center gap-4 p-5 bg-card border border-border rounded-lg hover:border-primary/40 transition-all text-left group"
+          className="flex items-center gap-4 p-6 bg-card border border-border rounded-xl hover:border-primary/40 transition-all text-left group"
         >
-          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+          <div className="w-11 h-11 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
             <Share2 className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <p className="text-sm font-medium text-foreground">Share Access</p>
-            <p className="text-xs text-muted-foreground">Generate a secure link for your clinician</p>
+            <p className="text-sm font-medium text-foreground">Share with Clinician</p>
+            <p className="text-xs text-muted-foreground">Generate a secure link</p>
           </div>
         </button>
       </div>
 
-      {/* KPI row */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {kpis.map((kpi) => (
-          <div key={kpi.label} className="bg-card border border-border rounded-lg p-4">
-            <div className="flex items-center justify-between mb-2">
-              <kpi.icon className={`w-4 h-4 ${kpi.accent ? "text-primary" : "text-muted-foreground"}`} />
-              <span className="text-[10px] tracking-wider text-muted-foreground uppercase">{kpi.label}</span>
-            </div>
-            <p className={`font-heading text-3xl font-light ${kpi.accent ? "text-primary" : "text-foreground"}`}>
-              {kpi.value}
-            </p>
-          </div>
-        ))}
-      </div>
-
-      {/* Section shortcuts */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {shortcuts.map((s) => (
-          <button
-            key={s.id}
-            onClick={() => onNavigate?.(s.id)}
-            className="bg-card border border-border rounded-lg p-4 hover:border-primary/30 transition-all text-left"
-          >
-            <s.icon className="w-5 h-5 text-primary mb-2" />
-            <p className="text-sm font-medium text-foreground">{s.label}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">{s.count} records</p>
-          </button>
-        ))}
-      </div>
-
-      {/* Alerts */}
-      {alerts.length > 0 && (
-        <div className="bg-card border border-border rounded-lg p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <AlertCircle className="w-4 h-4 text-primary" />
-            <h3 className="font-heading text-lg text-foreground">Intelligence Alerts</h3>
-          </div>
-          <div className="space-y-2">
-            {alerts.map((alert, i) => (
-              <div
-                key={i}
-                className={`p-3 rounded border text-xs leading-relaxed ${
-                  alert.type === "critical"
-                    ? "bg-destructive/5 text-destructive border-destructive/20"
-                    : "bg-primary/5 text-primary border-primary/20"
-                }`}
+      {/* Recent Documents */}
+      {recentDocs.length > 0 && (
+        <div>
+          <h3 className="font-heading text-lg text-foreground mb-4">Recent Documents</h3>
+          <div className="bg-card border border-border rounded-xl divide-y divide-border">
+            {recentDocs.map((doc) => (
+              <button
+                key={doc.id}
+                onClick={() => onNavigate?.("documents")}
+                className="w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors text-left"
               >
-                {alert.message}
-              </div>
+                <div className="flex items-center gap-3">
+                  <FileText className="w-4 h-4 text-primary" />
+                  <div>
+                    <p className="text-sm text-foreground">{doc.name}</p>
+                    <p className="text-xs text-muted-foreground">{doc.facility}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  {doc.extracted && (
+                    <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
+                      <CheckCircle className="w-3 h-3" /> Extracted
+                    </span>
+                  )}
+                  <span className="text-xs text-muted-foreground">{doc.date}</span>
+                </div>
+              </button>
             ))}
           </div>
         </div>
       )}
 
-      {/* Recent uploads */}
-      {recentDocs.length > 0 && (
-        <div className="bg-card border border-border rounded-lg p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <Clock className="w-4 h-4 text-muted-foreground" />
-            <h3 className="font-heading text-lg text-foreground">Recent Uploads</h3>
-          </div>
-          <div className="space-y-2">
-            {recentDocs.map((doc) => (
-              <div key={doc.id} className="flex items-center justify-between py-2 border-b border-border/50 last:border-0">
-                <div className="flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-primary" />
-                  <span className="text-sm text-foreground">{doc.name}</span>
+      {/* Key Medical Info */}
+      {(allergies.length > 0 || activeMeds.length > 0) && (
+        <div>
+          <h3 className="font-heading text-lg text-foreground mb-4">Key Medical Info</h3>
+          <div className="space-y-4">
+            {/* Allergies */}
+            {allergies.length > 0 && (
+              <div>
+                <p className="text-xs tracking-wider text-muted-foreground uppercase font-medium mb-2">Allergies</p>
+                <div className="flex flex-wrap gap-2">
+                  {allergies.map((a, i) => (
+                    <span key={i} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-destructive/10 text-destructive border border-destructive/20 rounded-full text-xs font-medium">
+                      <AlertTriangle className="w-3 h-3" />
+                      {a.substance} — {a.reaction}
+                    </span>
+                  ))}
                 </div>
-                <span className="text-xs text-muted-foreground">{doc.date}</span>
               </div>
-            ))}
+            )}
+
+            {/* Active Medications */}
+            {activeMeds.length > 0 && (
+              <div>
+                <p className="text-xs tracking-wider text-muted-foreground uppercase font-medium mb-2">Active Medications</p>
+                <div className="flex flex-wrap gap-2">
+                  {activeMeds.map((m) => (
+                    <span key={m.id} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary border border-primary/20 rounded-full text-xs font-medium">
+                      <Pill className="w-3 h-3" />
+                      {m.name} {m.dose}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
