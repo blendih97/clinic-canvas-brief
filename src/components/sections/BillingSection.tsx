@@ -31,11 +31,11 @@ const BillingSection = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-heading text-3xl font-light text-cream">Subscription</h2>
+        <h2 className="font-heading text-3xl font-light text-foreground">Subscription</h2>
         <p className="text-sm text-muted-foreground mt-1">Manage your Vault membership</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {plans.map((plan) => (
           <div
             key={plan.id}
@@ -48,14 +48,14 @@ const BillingSection = () => {
                 <Crown className="w-3 h-3" /> Current Plan
               </div>
             )}
-            <h3 className="font-heading text-xl text-cream mb-1">{plan.name}</h3>
+            <h3 className="font-heading text-xl text-foreground mb-1">{plan.name}</h3>
             <div className="mb-4">
-              <span className="font-heading text-4xl text-cream">{plan.price}</span>
+              <span className="font-heading text-4xl text-foreground">{plan.price}</span>
               <span className="text-sm text-muted-foreground">{plan.period}</span>
             </div>
             <div className="space-y-2 mb-6">
               {plan.features.map((f) => (
-                <div key={f} className="flex items-center gap-2 text-xs text-cream/70">
+                <div key={f} className="flex items-center gap-2 text-xs text-foreground/70">
                   <CheckCircle className="w-3.5 h-3.5 text-primary" />
                   {f}
                 </div>
@@ -64,7 +64,7 @@ const BillingSection = () => {
             <button
               className={`w-full py-2 rounded-md text-sm font-medium transition-colors ${
                 plan.current
-                  ? "bg-secondary text-secondary-foreground cursor-default"
+                  ? "bg-muted text-muted-foreground cursor-default"
                   : "bg-primary text-primary-foreground hover:bg-primary/90"
               }`}
               disabled={plan.current}
