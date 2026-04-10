@@ -8,35 +8,57 @@ import MedicationsSection from "@/components/sections/MedicationsSection";
 import DocumentsSection from "@/components/sections/DocumentsSection";
 import ShareBriefSection from "@/components/sections/ShareBriefSection";
 import BillingSection from "@/components/sections/BillingSection";
+import DocumentUpload from "@/components/DocumentUpload";
+import { Upload } from "lucide-react";
 
 type Section = "overview" | "blood" | "imaging" | "medications" | "documents" | "share" | "billing";
-
-const sectionComponents: Record<Section, React.FC> = {
-  overview: OverviewSection,
-  blood: BloodResultsSection,
-  imaging: ImagingSection,
-  medications: MedicationsSection,
-  documents: DocumentsSection,
-  share: ShareBriefSection,
-  billing: BillingSection,
-};
 
 const Index = () => {
   const [showSplash, setShowSplash] = useState(true);
   const [section, setSection] = useState<Section>("overview");
+  const [uploadOpen, setUploadOpen] = useState(false);
   const handleSplashComplete = useCallback(() => setShowSplash(false), []);
 
-  const ActiveSection = sectionComponents[section];
+  const renderSection = () => {
+    switch (section) {
+      case "overview":
+        return <OverviewSection onNavigate={setSection} onUpload={() => setUploadOpen(true)} />;
+      case "blood":
+        return <BloodResultsSection />;
+      case "imaging":
+        return <ImagingSection />;
+      case "medications":
+        return <MedicationsSection />;
+      case "documents":
+        return <DocumentsSection />;
+      case "share":
+        return <ShareBriefSection />;
+      case "billing":
+        return <BillingSection />;
+      default:
+        return <OverviewSection onNavigate={setSection} onUpload={() => setUploadOpen(true)} />;
+    }
+  };
 
   return (
     <>
       {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
       <div className="flex min-h-screen bg-background">
         <Sidebar active={section} onNavigate={setSection} />
-        <main className="flex-1 p-8 overflow-auto">
-          <ActiveSection />
+        <main className="flex-1 p-6 md:p-8 overflow-auto pb-20 md:pb-8">
+          <div className="flex items-center justify-end mb-4">
+            <button
+              onClick={() => setUploadOpen(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+            >
+              <Upload className="w-4 h-4" />
+              Add Document
+            </button>
+          </div>
+          {renderSection()}
         </main>
       </div>
+      <DocumentUpload open={uploadOpen} onClose={() => setUploadOpen(false)} />
     </>
   );
 };

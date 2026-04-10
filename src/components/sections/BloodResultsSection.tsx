@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Droplets, LayoutGrid, List, TrendingUp, TrendingDown, Minus } from "lucide-react";
-import { bloodResults } from "@/data/mockData";
+import { LayoutGrid, List, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { useVaultStore } from "@/store/vaultStore";
 
 const statusBadge = {
-  normal: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+  normal: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
   flagged: "bg-primary/10 text-primary border-primary/20",
   critical: "bg-destructive/10 text-destructive border-destructive/20",
 };
@@ -28,37 +28,52 @@ const TrendIcon = ({ data }: { data: number[] }) => {
   const last = data[data.length - 1];
   const prev = data[data.length - 2];
   if (last > prev) return <TrendingUp className="w-3 h-3 text-primary" />;
-  if (last < prev) return <TrendingDown className="w-3 h-3 text-emerald-400" />;
+  if (last < prev) return <TrendingDown className="w-3 h-3 text-emerald-500" />;
   return <Minus className="w-3 h-3 text-muted-foreground" />;
 };
 
 const BloodResultsSection = () => {
   const [view, setView] = useState<"card" | "table">("card");
+  const bloodResults = useVaultStore((s) => s.bloodResults);
+
+  if (bloodResults.length === 0) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="font-heading text-3xl font-light text-foreground">Blood Results</h2>
+          <p className="text-sm text-muted-foreground mt-1">Upload a lab report to see extracted biomarkers here.</p>
+        </div>
+        <div className="bg-card border border-border rounded-lg p-12 text-center text-muted-foreground text-sm">
+          No blood results yet.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-heading text-3xl font-light text-cream">Blood Results</h2>
+          <h2 className="font-heading text-3xl font-light text-foreground">Blood Results</h2>
           <p className="text-sm text-muted-foreground mt-1">Extracted biomarkers from uploaded lab reports</p>
         </div>
-        <div className="flex gap-1 bg-secondary rounded-md p-0.5">
-          <button onClick={() => setView("card")} className={`p-1.5 rounded ${view === "card" ? "bg-card text-primary" : "text-muted-foreground"}`}>
+        <div className="flex gap-1 bg-muted rounded-md p-0.5">
+          <button onClick={() => setView("card")} className={`p-1.5 rounded ${view === "card" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}>
             <LayoutGrid className="w-4 h-4" />
           </button>
-          <button onClick={() => setView("table")} className={`p-1.5 rounded ${view === "table" ? "bg-card text-primary" : "text-muted-foreground"}`}>
+          <button onClick={() => setView("table")} className={`p-1.5 rounded ${view === "table" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}>
             <List className="w-4 h-4" />
           </button>
         </div>
       </div>
 
       {view === "card" ? (
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {bloodResults.map((r) => (
             <div key={r.id} className="bg-card border border-border rounded-lg p-4 hover:border-primary/30 transition-colors">
               <div className="flex items-start justify-between mb-3">
                 <div>
-                  <p className="text-sm font-medium text-cream">{r.marker}</p>
+                  <p className="text-sm font-medium text-foreground">{r.marker}</p>
                   <p className="text-[10px] text-muted-foreground">{r.source}</p>
                 </div>
                 <span className={`text-[10px] px-2 py-0.5 rounded-full border ${statusBadge[r.status]}`}>
@@ -67,7 +82,7 @@ const BloodResultsSection = () => {
               </div>
               <div className="flex items-end justify-between">
                 <div>
-                  <p className="font-heading text-3xl font-light text-cream">
+                  <p className="font-heading text-3xl font-light text-foreground">
                     {r.value}
                     <span className="text-sm text-muted-foreground ml-1">{r.unit}</span>
                   </p>
@@ -100,9 +115,9 @@ const BloodResultsSection = () => {
             </thead>
             <tbody>
               {bloodResults.map((r) => (
-                <tr key={r.id} className="border-b border-border/50 hover:bg-secondary/20 transition-colors">
-                  <td className="p-3 text-sm text-cream font-medium">{r.marker}</td>
-                  <td className="p-3 text-sm text-cream font-heading">{r.value} <span className="text-muted-foreground text-xs">{r.unit}</span></td>
+                <tr key={r.id} className="border-b border-border/50 hover:bg-muted/50 transition-colors">
+                  <td className="p-3 text-sm text-foreground font-medium">{r.marker}</td>
+                  <td className="p-3 text-sm text-foreground font-heading">{r.value} <span className="text-muted-foreground text-xs">{r.unit}</span></td>
                   <td className="p-3 text-xs text-muted-foreground">{r.range}</td>
                   <td className="p-3"><span className={`text-[10px] px-2 py-0.5 rounded-full border ${statusBadge[r.status]}`}>{r.status}</span></td>
                   <td className="p-3"><Sparkline data={r.trend} status={r.status} /></td>

@@ -1,20 +1,30 @@
-import { FileText, Upload, CheckCircle, Globe } from "lucide-react";
-import { documents } from "@/data/mockData";
+import { FileText, CheckCircle } from "lucide-react";
+import { useVaultStore } from "@/store/vaultStore";
 
-const countryFlags: Record<string, string> = { UAE: "🇦🇪", UK: "🇬🇧", Qatar: "🇶🇦", Switzerland: "🇨🇭" };
+const countryFlags: Record<string, string> = { UAE: "🇦🇪", UK: "🇬🇧", Qatar: "🇶🇦", Switzerland: "🇨🇭", USA: "🇺🇸" };
 
 const DocumentsSection = () => {
+  const documents = useVaultStore((s) => s.documents);
+
+  if (documents.length === 0) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="font-heading text-3xl font-light text-foreground">Documents</h2>
+          <p className="text-sm text-muted-foreground mt-1">Upload documents to build your health archive.</p>
+        </div>
+        <div className="bg-card border border-border rounded-lg p-12 text-center text-muted-foreground text-sm">
+          No documents yet.
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="font-heading text-3xl font-light text-cream">Documents</h2>
-          <p className="text-sm text-muted-foreground mt-1">Full archive of uploaded medical records</p>
-        </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:bg-primary/90 transition-colors">
-          <Upload className="w-4 h-4" />
-          Upload Document
-        </button>
+      <div>
+        <h2 className="font-heading text-3xl font-light text-foreground">Documents</h2>
+        <p className="text-sm text-muted-foreground mt-1">Full archive of uploaded medical records</p>
       </div>
 
       <div className="bg-card border border-border rounded-lg overflow-hidden">
@@ -31,11 +41,11 @@ const DocumentsSection = () => {
           </thead>
           <tbody>
             {documents.map((d) => (
-              <tr key={d.id} className="border-b border-border/50 hover:bg-secondary/10 transition-colors cursor-pointer">
+              <tr key={d.id} className="border-b border-border/50 hover:bg-muted/50 transition-colors cursor-pointer">
                 <td className="p-3">
                   <div className="flex items-center gap-2">
                     <FileText className="w-4 h-4 text-primary" />
-                    <span className="text-sm text-cream">{d.name}</span>
+                    <span className="text-sm text-foreground">{d.name}</span>
                   </div>
                 </td>
                 <td className="p-3 text-xs text-muted-foreground">{d.type}</td>
@@ -49,7 +59,7 @@ const DocumentsSection = () => {
                 <td className="p-3 text-xs text-muted-foreground">{d.date}</td>
                 <td className="p-3">
                   {d.extracted && (
-                    <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
                       <CheckCircle className="w-3 h-3" /> Extracted
                     </span>
                   )}
