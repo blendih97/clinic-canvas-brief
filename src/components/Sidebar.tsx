@@ -142,7 +142,11 @@ const Sidebar = ({ active, onNavigate }: { active: Section; onNavigate: (s: Sect
 
         {dropdownOpen && (
           <div className="absolute bottom-full left-3 right-3 mb-1 bg-card border border-border rounded-lg shadow-lg py-1 z-50">
-            <button onClick={() => { onNavigate("billing"); setDropdownOpen(false); }}
+            <button onClick={() => { nav("/profile"); setDropdownOpen(false); }}
+              className="w-full text-left px-3 py-2 text-xs text-foreground hover:bg-muted flex items-center gap-2">
+              <User className="w-3.5 h-3.5" /> View Profile
+            </button>
+            <button onClick={() => { nav("/settings"); setDropdownOpen(false); }}
               className="w-full text-left px-3 py-2 text-xs text-foreground hover:bg-muted flex items-center gap-2">
               <Settings className="w-3.5 h-3.5" /> Settings
             </button>
