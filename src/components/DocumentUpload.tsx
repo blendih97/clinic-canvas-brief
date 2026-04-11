@@ -142,7 +142,6 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
         },
       ], uid);
     }
-    }
 
     setPhase("done");
   };
