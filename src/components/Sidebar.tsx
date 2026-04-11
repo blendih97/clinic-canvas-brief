@@ -1,9 +1,10 @@
 import {
-  LayoutDashboard, Droplets, ScanLine, Pill, FileText, Share2, CreditCard, Settings, LogOut, ChevronDown
+  LayoutDashboard, Droplets, ScanLine, Pill, FileText, Share2, CreditCard, Settings, LogOut, ChevronDown, User
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/hooks/useAuth";
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 type Section = "overview" | "blood" | "imaging" | "medications" | "documents" | "share" | "billing";
 
