@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import SplashScreen from "@/components/SplashScreen";
 import Sidebar from "@/components/Sidebar";
 import OverviewSection from "@/components/sections/OverviewSection";
@@ -10,6 +10,8 @@ import ShareBriefSection from "@/components/sections/ShareBriefSection";
 import BillingSection from "@/components/sections/BillingSection";
 import DocumentUpload from "@/components/DocumentUpload";
 import { Upload } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useVaultStore } from "@/store/vaultStore";
 
 type Section = "overview" | "blood" | "imaging" | "medications" | "documents" | "share" | "billing";
 
@@ -18,6 +20,14 @@ const Index = () => {
   const [section, setSection] = useState<Section>("overview");
   const [uploadOpen, setUploadOpen] = useState(false);
   const handleSplashComplete = useCallback(() => setShowSplash(false), []);
+  const { user } = useAuth();
+  const loadUserData = useVaultStore((s) => s.loadUserData);
+
+  useEffect(() => {
+    if (user) {
+      loadUserData(user.id);
+    }
+  }, [user, loadUserData]);
 
   const renderSection = () => {
     switch (section) {
@@ -45,7 +55,7 @@ const Index = () => {
       {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
       <div className="flex min-h-screen bg-background">
         <Sidebar active={section} onNavigate={setSection} />
-        <main className="flex-1 p-6 md:p-8 overflow-auto pb-20 md:pb-8">
+        <main className="flex-1 p-6 md:p-8 overflow-auto pb-20 md:pb-8 pt-16 md:pt-8">
           <div className="flex items-center justify-end mb-4">
             <button
               onClick={() => setUploadOpen(true)}

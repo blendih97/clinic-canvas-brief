@@ -1,7 +1,9 @@
 import {
-  LayoutDashboard, Droplets, ScanLine, Pill, FileText, Share2, CreditCard, Settings, LogOut
+  LayoutDashboard, Droplets, ScanLine, Pill, FileText, Share2, CreditCard, Settings, LogOut, ChevronDown
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useAuth } from "@/hooks/useAuth";
+import { useState, useRef, useEffect } from "react";
 
 type Section = "overview" | "blood" | "imaging" | "medications" | "documents" | "share" | "billing";
 
@@ -17,30 +19,83 @@ const navItems: { id: Section; label: string; icon: React.ElementType }[] = [
 
 const mobileNavItems = navItems.slice(0, 5);
 
+const planLabels: Record<string, string> = {
+  free: "Free Plan",
+  standard: "Standard Plan",
+  family: "Family Plan",
+};
+
 const Sidebar = ({ active, onNavigate }: { active: Section; onNavigate: (s: Section) => void }) => {
   const isMobile = useIsMobile();
+  const { profile, signOut, user } = useAuth();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const displayName = profile?.full_name || user?.email?.split("@")[0] || "User";
+  const initials = displayName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+  const plan = profile?.plan || "free";
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) setDropdownOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   if (isMobile) {
     return (
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border flex items-center justify-around px-1 py-2">
-        {mobileNavItems.map((item) => {
-          const isActive = active === item.id;
-          return (
-            <button
-              key={item.id}
-              onClick={() => onNavigate(item.id)}
-              className={`flex flex-col items-center gap-0.5 px-2 py-1 rounded-md text-[10px] transition-colors ${
-                isActive
-                  ? "text-primary font-medium"
-                  : "text-muted-foreground"
-              }`}
-            >
-              <item.icon className={`w-5 h-5 ${isActive ? "text-primary" : ""}`} />
-              {item.label.split(" ")[0]}
+      <>
+        {/* Mobile top header */}
+        <header className="fixed top-0 left-0 right-0 z-50 bg-card border-b border-border flex items-center justify-between px-4 py-2.5">
+          <div>
+            <h1 className="font-heading text-lg font-light tracking-[0.2em] gold-gradient-text">VAULT</h1>
+          </div>
+          <div className="relative" ref={dropdownRef}>
+            <button onClick={() => setDropdownOpen(!dropdownOpen)}
+              className="w-8 h-8 rounded-full bg-primary/15 flex items-center justify-center text-primary text-xs font-heading font-semibold">
+              {profile?.avatar_url ? (
+                <img src={profile.avatar_url} className="w-8 h-8 rounded-full object-cover" alt="" />
+              ) : initials}
             </button>
-          );
-        })}
-      </nav>
+            {dropdownOpen && (
+              <div className="absolute right-0 top-10 w-48 bg-card border border-border rounded-lg shadow-lg py-1 z-50">
+                <div className="px-3 py-2 border-b border-border">
+                  <p className="text-xs font-medium text-foreground">{displayName}</p>
+                  <p className="text-[10px] text-muted-foreground">{planLabels[plan]}</p>
+                </div>
+                <button onClick={() => { onNavigate("billing"); setDropdownOpen(false); }}
+                  className="w-full text-left px-3 py-2 text-xs text-foreground hover:bg-muted flex items-center gap-2">
+                  <Settings className="w-3.5 h-3.5" /> Settings
+                </button>
+                <button onClick={() => { signOut(); setDropdownOpen(false); }}
+                  className="w-full text-left px-3 py-2 text-xs text-destructive hover:bg-muted flex items-center gap-2">
+                  <LogOut className="w-3.5 h-3.5" /> Sign Out
+                </button>
+              </div>
+            )}
+          </div>
+        </header>
+
+        {/* Bottom tab bar */}
+        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border flex items-center justify-around px-1 py-2">
+          {mobileNavItems.map((item) => {
+            const isActive = active === item.id;
+            return (
+              <button key={item.id} onClick={() => onNavigate(item.id)}
+                className={`flex flex-col items-center gap-0.5 px-2 py-1 rounded-md text-[10px] transition-colors ${isActive ? "text-primary font-medium" : "text-muted-foreground"}`}>
+                <item.icon className={`w-5 h-5 ${isActive ? "text-primary" : ""}`} />
+                {item.label.split(" ")[0]}
+              </button>
+            );
+          })}
+        </nav>
+      </>
     );
   }
 
@@ -55,15 +110,8 @@ const Sidebar = ({ active, onNavigate }: { active: Section; onNavigate: (s: Sect
         {navItems.map((item) => {
           const isActive = active === item.id;
           return (
-            <button
-              key={item.id}
-              onClick={() => onNavigate(item.id)}
-              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-all ${
-                isActive
-                  ? "bg-sidebar-accent text-primary font-medium"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
-              }`}
-            >
+            <button key={item.id} onClick={() => onNavigate(item.id)}
+              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-all ${isActive ? "bg-sidebar-accent text-primary font-medium" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}>
               <item.icon className="w-4 h-4" />
               {item.label}
             </button>
@@ -71,24 +119,33 @@ const Sidebar = ({ active, onNavigate }: { active: Section; onNavigate: (s: Sect
         })}
       </nav>
 
-      <div className="p-3 border-t border-border">
-        <div className="flex items-center gap-2.5 mb-2.5">
-          <div className="w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center text-primary text-[10px] font-heading font-semibold">
-            AH
+      <div className="p-3 border-t border-border relative" ref={dropdownRef}>
+        <button onClick={() => setDropdownOpen(!dropdownOpen)}
+          className="w-full flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center text-primary text-[10px] font-heading font-semibold overflow-hidden">
+            {profile?.avatar_url ? (
+              <img src={profile.avatar_url} className="w-7 h-7 rounded-full object-cover" alt="" />
+            ) : initials}
           </div>
-          <div>
-            <p className="text-xs font-medium text-foreground">Alexander Hayes</p>
-            <p className="text-[10px] text-muted-foreground">Professional Plan</p>
+          <div className="flex-1 text-left">
+            <p className="text-xs font-medium text-foreground truncate">{displayName}</p>
+            <p className="text-[10px] text-muted-foreground">{planLabels[plan]}</p>
           </div>
-        </div>
-        <div className="flex gap-1.5">
-          <button className="flex-1 flex items-center justify-center gap-1 text-[10px] text-muted-foreground hover:text-foreground py-1.5 rounded bg-muted transition-colors">
-            <Settings className="w-3 h-3" /> Settings
-          </button>
-          <button className="flex-1 flex items-center justify-center gap-1 text-[10px] text-muted-foreground hover:text-foreground py-1.5 rounded bg-muted transition-colors">
-            <LogOut className="w-3 h-3" /> Sign Out
-          </button>
-        </div>
+          <ChevronDown className="w-3 h-3 text-muted-foreground" />
+        </button>
+
+        {dropdownOpen && (
+          <div className="absolute bottom-full left-3 right-3 mb-1 bg-card border border-border rounded-lg shadow-lg py-1 z-50">
+            <button onClick={() => { onNavigate("billing"); setDropdownOpen(false); }}
+              className="w-full text-left px-3 py-2 text-xs text-foreground hover:bg-muted flex items-center gap-2">
+              <Settings className="w-3.5 h-3.5" /> Settings
+            </button>
+            <button onClick={() => { signOut(); setDropdownOpen(false); }}
+              className="w-full text-left px-3 py-2 text-xs text-destructive hover:bg-muted flex items-center gap-2">
+              <LogOut className="w-3.5 h-3.5" /> Sign Out
+            </button>
+          </div>
+        )}
       </div>
     </aside>
   );

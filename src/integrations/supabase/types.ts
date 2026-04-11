@@ -14,6 +14,276 @@ export type Database = {
   }
   public: {
     Tables: {
+      alerts: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      allergies: {
+        Row: {
+          created_at: string
+          id: string
+          reaction: string | null
+          severity: string | null
+          substance: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          reaction?: string | null
+          severity?: string | null
+          substance: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          reaction?: string | null
+          severity?: string | null
+          substance?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      blood_results: {
+        Row: {
+          created_at: string
+          date: string | null
+          id: string
+          marker: string
+          range: string | null
+          source: string | null
+          status: string
+          trend: Json | null
+          unit: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          date?: string | null
+          id?: string
+          marker: string
+          range?: string | null
+          source?: string | null
+          status?: string
+          trend?: Json | null
+          unit: string
+          user_id: string
+          value: number
+        }
+        Update: {
+          created_at?: string
+          date?: string | null
+          id?: string
+          marker?: string
+          range?: string | null
+          source?: string | null
+          status?: string
+          trend?: Json | null
+          unit?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: []
+      }
+      documents: {
+        Row: {
+          ai_note: string | null
+          country: string | null
+          created_at: string
+          date: string | null
+          extracted: boolean | null
+          facility: string | null
+          file_url: string | null
+          id: string
+          name: string
+          pages: number | null
+          summary: Json | null
+          type: string | null
+          user_id: string
+        }
+        Insert: {
+          ai_note?: string | null
+          country?: string | null
+          created_at?: string
+          date?: string | null
+          extracted?: boolean | null
+          facility?: string | null
+          file_url?: string | null
+          id?: string
+          name: string
+          pages?: number | null
+          summary?: Json | null
+          type?: string | null
+          user_id: string
+        }
+        Update: {
+          ai_note?: string | null
+          country?: string | null
+          created_at?: string
+          date?: string | null
+          extracted?: boolean | null
+          facility?: string | null
+          file_url?: string | null
+          id?: string
+          name?: string
+          pages?: number | null
+          summary?: Json | null
+          type?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      imaging_results: {
+        Row: {
+          created_at: string
+          date: string | null
+          facility: string | null
+          finding: string | null
+          id: string
+          original_lang: string | null
+          region: string | null
+          status: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date?: string | null
+          facility?: string | null
+          finding?: string | null
+          id?: string
+          original_lang?: string | null
+          region?: string | null
+          status?: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string | null
+          facility?: string | null
+          finding?: string | null
+          id?: string
+          original_lang?: string | null
+          region?: string | null
+          status?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      medications: {
+        Row: {
+          active: boolean
+          created_at: string
+          date: string | null
+          dose: string | null
+          facility: string | null
+          frequency: string | null
+          id: string
+          name: string
+          prescriber: string | null
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          date?: string | null
+          dose?: string | null
+          facility?: string | null
+          frequency?: string | null
+          id?: string
+          name: string
+          prescriber?: string | null
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          date?: string | null
+          dose?: string | null
+          facility?: string | null
+          frequency?: string | null
+          id?: string
+          name?: string
+          prescriber?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          blood_type: string | null
+          created_at: string
+          date_of_birth: string | null
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          full_name: string | null
+          id: string
+          nationality: string | null
+          phone: string | null
+          plan: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          blood_type?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          full_name?: string | null
+          id: string
+          nationality?: string | null
+          phone?: string | null
+          plan?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          blood_type?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          full_name?: string | null
+          id?: string
+          nationality?: string | null
+          phone?: string | null
+          plan?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       shared_briefs: {
         Row: {
           allergies: Json | null
