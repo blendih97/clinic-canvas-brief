@@ -117,14 +117,17 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
     }
   }, [file, pastedText]);
 
+  const { user } = useAuth();
+  
   const handleConfirm = () => {
-    if (!result) return;
+    if (!result || !user) return;
+    const uid = user.id;
 
-    if (result.bloodResults?.length) store.addBloodResults(result.bloodResults);
-    if (result.imagingResults?.length) store.addImagingResults(result.imagingResults);
-    if (result.medications?.length) store.addMedications(result.medications);
-    if (result.allergies?.length) store.addAllergies(result.allergies);
-    if (result.alerts?.length) store.addAlerts(result.alerts);
+    if (result.bloodResults?.length) store.addBloodResults(result.bloodResults, uid);
+    if (result.imagingResults?.length) store.addImagingResults(result.imagingResults, uid);
+    if (result.medications?.length) store.addMedications(result.medications, uid);
+    if (result.allergies?.length) store.addAllergies(result.allergies, uid);
+    if (result.alerts?.length) store.addAlerts(result.alerts, uid);
     if (result.documentMeta) {
       store.addDocuments([
         {
@@ -137,7 +140,8 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
           pages: result.documentMeta.pages || 1,
           extracted: true,
         },
-      ]);
+      ], uid);
+    }
     }
 
     setPhase("done");
