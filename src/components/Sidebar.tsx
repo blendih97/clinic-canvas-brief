@@ -1,9 +1,10 @@
 import {
-  LayoutDashboard, Droplets, ScanLine, Pill, FileText, Share2, CreditCard, Settings, LogOut, ChevronDown
+  LayoutDashboard, Droplets, ScanLine, Pill, FileText, Share2, CreditCard, Settings, LogOut, ChevronDown, User
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/hooks/useAuth";
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 type Section = "overview" | "blood" | "imaging" | "medications" | "documents" | "share" | "billing";
 
@@ -30,6 +31,7 @@ const Sidebar = ({ active, onNavigate }: { active: Section; onNavigate: (s: Sect
   const { profile, signOut, user } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const nav = useNavigate();
 
   const displayName = profile?.full_name || user?.email?.split("@")[0] || "User";
   const initials = displayName
@@ -69,7 +71,11 @@ const Sidebar = ({ active, onNavigate }: { active: Section; onNavigate: (s: Sect
                   <p className="text-xs font-medium text-foreground">{displayName}</p>
                   <p className="text-[10px] text-muted-foreground">{planLabels[plan]}</p>
                 </div>
-                <button onClick={() => { onNavigate("billing"); setDropdownOpen(false); }}
+                <button onClick={() => { nav("/profile"); setDropdownOpen(false); }}
+                  className="w-full text-left px-3 py-2 text-xs text-foreground hover:bg-muted flex items-center gap-2">
+                  <User className="w-3.5 h-3.5" /> View Profile
+                </button>
+                <button onClick={() => { nav("/settings"); setDropdownOpen(false); }}
                   className="w-full text-left px-3 py-2 text-xs text-foreground hover:bg-muted flex items-center gap-2">
                   <Settings className="w-3.5 h-3.5" /> Settings
                 </button>
@@ -136,7 +142,11 @@ const Sidebar = ({ active, onNavigate }: { active: Section; onNavigate: (s: Sect
 
         {dropdownOpen && (
           <div className="absolute bottom-full left-3 right-3 mb-1 bg-card border border-border rounded-lg shadow-lg py-1 z-50">
-            <button onClick={() => { onNavigate("billing"); setDropdownOpen(false); }}
+            <button onClick={() => { nav("/profile"); setDropdownOpen(false); }}
+              className="w-full text-left px-3 py-2 text-xs text-foreground hover:bg-muted flex items-center gap-2">
+              <User className="w-3.5 h-3.5" /> View Profile
+            </button>
+            <button onClick={() => { nav("/settings"); setDropdownOpen(false); }}
               className="w-full text-left px-3 py-2 text-xs text-foreground hover:bg-muted flex items-center gap-2">
               <Settings className="w-3.5 h-3.5" /> Settings
             </button>
