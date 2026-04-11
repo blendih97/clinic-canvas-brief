@@ -31,6 +31,7 @@ const Sidebar = ({ active, onNavigate }: { active: Section; onNavigate: (s: Sect
   const { profile, signOut, user } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const nav = useNavigate();
 
   const displayName = profile?.full_name || user?.email?.split("@")[0] || "User";
   const initials = displayName
