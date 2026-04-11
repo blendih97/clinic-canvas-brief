@@ -2,6 +2,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { Upload, FileText, Loader2, CheckCircle, X, AlertTriangle, Clipboard } from "lucide-react";
 import { useVaultStore } from "@/store/vaultStore";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 type Phase = "input" | "processing" | "confirm" | "done";
 
