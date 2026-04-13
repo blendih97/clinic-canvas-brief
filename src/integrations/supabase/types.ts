@@ -224,6 +224,33 @@ export type Database = {
         }
         Relationships: []
       }
+      media_shares: {
+        Row: {
+          created_at: string
+          expires_at: string
+          file_path: string
+          id: string
+          token: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          file_path: string
+          id?: string
+          token: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          file_path?: string
+          id?: string
+          token?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       medications: {
         Row: {
           active: boolean
@@ -311,6 +338,45 @@ export type Database = {
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      record_requests: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          patient_name: string
+          provider_email: string
+          provider_name: string
+          request_description: string
+          status: string
+          token: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          patient_name?: string
+          provider_email: string
+          provider_name: string
+          request_description: string
+          status?: string
+          token: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          patient_name?: string
+          provider_email?: string
+          provider_name?: string
+          request_description?: string
+          status?: string
+          token?: string
+          user_id?: string
         }
         Relationships: []
       }

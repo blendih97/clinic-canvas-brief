@@ -9,6 +9,8 @@ import ShareView from "./pages/ShareView.tsx";
 import AuthPage from "./pages/AuthPage.tsx";
 import ProfilePage from "./pages/ProfilePage.tsx";
 import SettingsPage from "./pages/SettingsPage.tsx";
+import UploadRequestPage from "./pages/UploadRequestPage.tsx";
+import MediaSharePage from "./pages/MediaSharePage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -49,6 +51,8 @@ const App = () => (
             <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
             <Route path="/share/:token" element={<ShareView />} />
+            <Route path="/upload-request/:token" element={<UploadRequestPage />} />
+            <Route path="/media-share/:token" element={<MediaSharePage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

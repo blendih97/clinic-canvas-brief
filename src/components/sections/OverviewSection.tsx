@@ -1,14 +1,15 @@
-import { FileText, Upload, Share2, AlertTriangle, Pill, CheckCircle } from "lucide-react";
+import { FileText, Upload, Share2, AlertTriangle, Pill, CheckCircle, Send } from "lucide-react";
 import { useVaultStore } from "@/store/vaultStore";
 
-type Section = "overview" | "blood" | "imaging" | "medications" | "documents" | "share" | "billing";
+type Section = "overview" | "blood" | "imaging" | "media" | "medications" | "documents" | "share" | "billing" | "export" | "family";
 
 interface OverviewProps {
   onNavigate?: (s: Section) => void;
   onUpload?: () => void;
+  onRequestRecords?: () => void;
 }
 
-const OverviewSection = ({ onNavigate, onUpload }: OverviewProps) => {
+const OverviewSection = ({ onNavigate, onUpload, onRequestRecords }: OverviewProps) => {
   const { documents, allergies, medications } = useVaultStore();
 
   const recentDocs = [...documents].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
@@ -52,7 +53,20 @@ const OverviewSection = ({ onNavigate, onUpload }: OverviewProps) => {
             <p className="text-xs text-muted-foreground">Generate a secure link</p>
           </div>
         </button>
+        <button
+          onClick={onRequestRecords}
+          className="flex items-center gap-4 p-6 bg-card border border-border rounded-xl hover:border-primary/40 transition-all text-left group"
+        >
+          <div className="w-11 h-11 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+            <Send className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-foreground">Request Records</p>
+            <p className="text-xs text-muted-foreground">Ask your provider to send files</p>
+          </div>
+        </button>
       </div>
+
 
       {/* Recent Documents */}
       {recentDocs.length > 0 && (
