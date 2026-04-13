@@ -67,7 +67,8 @@ const OverviewSection = ({ onNavigate, onUpload, onRequestRecords }: OverviewPro
         </button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+      {/* Recent Documents */}
       {recentDocs.length > 0 && (
         <div>
           <h3 className="font-heading text-lg text-foreground mb-4">Recent Documents</h3>
