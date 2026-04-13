@@ -33,7 +33,7 @@ const fileTypeBadgeColors: Record<string, string> = {
 };
 
 const MediaSection = ({ onRequestRecords, onUpload }: { onRequestRecords?: () => void; onUpload?: () => void }) => {
-  const { documents, imagingResults } = useVaultStore();
+  const { documents } = useVaultStore();
   const { user } = useAuth();
   const [filter, setFilter] = useState<FilterType>("all");
   const [search, setSearch] = useState("");
