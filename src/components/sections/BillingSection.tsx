@@ -1,4 +1,5 @@
-import { CheckCircle, Crown } from "lucide-react";
+import { CheckCircle, Crown, Users } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 const plans = [
   {
@@ -28,11 +29,14 @@ const plans = [
 ];
 
 const BillingSection = () => {
+  const { profile } = useAuth();
+  const userPlan = profile?.plan || "free";
+
   return (
     <div className="space-y-6">
       <div>
         <h2 className="font-heading text-3xl font-light text-foreground">Subscription</h2>
-        <p className="text-sm text-muted-foreground mt-1">Manage your Vault membership</p>
+        <p className="text-sm text-muted-foreground mt-2">Manage your Vault membership</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -70,6 +74,29 @@ const BillingSection = () => {
           </div>
         ))}
       </div>
+
+      {/* Family plan upsell for non-family users */}
+      {userPlan !== "family" && (
+        <div className="bg-card border border-border rounded-xl p-6">
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+              <Users className="w-5 h-5 text-primary" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-heading text-lg text-foreground mb-1">Family Plan</h3>
+              <p className="text-sm text-muted-foreground mb-3">
+                Add up to 6 family members to your vault. Each member gets their own private health records with all Standard features included. £49.99/month.
+              </p>
+              <button
+                className="px-5 py-2 bg-muted text-muted-foreground rounded-lg text-sm font-medium cursor-default"
+                disabled
+              >
+                Upgrade — Coming Soon
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

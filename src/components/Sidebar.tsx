@@ -1,24 +1,26 @@
 import {
-  LayoutDashboard, Droplets, ScanLine, Pill, FileText, Share2, CreditCard, Settings, LogOut, ChevronDown, User
+  LayoutDashboard, Droplets, ScanLine, Pill, FileText, Share2, CreditCard, Settings, LogOut, ChevronDown, User, FileDown, Users
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/hooks/useAuth";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-type Section = "overview" | "blood" | "imaging" | "medications" | "documents" | "share" | "billing";
+type Section = "overview" | "blood" | "imaging" | "medications" | "documents" | "share" | "billing" | "export" | "family";
 
-const navItems: { id: Section; label: string; icon: React.ElementType }[] = [
+const baseNavItems: { id: Section; label: string; icon: React.ElementType; familyOnly?: boolean }[] = [
   { id: "overview", label: "Overview", icon: LayoutDashboard },
   { id: "blood", label: "Blood Results", icon: Droplets },
   { id: "imaging", label: "Imaging", icon: ScanLine },
   { id: "medications", label: "Medications", icon: Pill },
   { id: "documents", label: "Documents", icon: FileText },
+  { id: "export", label: "Export", icon: FileDown },
   { id: "share", label: "Share Brief", icon: Share2 },
+  { id: "family", label: "Family", icon: Users, familyOnly: true },
   { id: "billing", label: "Subscription", icon: CreditCard },
 ];
 
-const mobileNavItems = navItems.slice(0, 5);
+const mobileNavItems: Section[] = ["overview", "blood", "documents", "export", "share"];
 
 const planLabels: Record<string, string> = {
   free: "Free Plan",
@@ -34,13 +36,10 @@ const Sidebar = ({ active, onNavigate }: { active: Section; onNavigate: (s: Sect
   const nav = useNavigate();
 
   const displayName = profile?.full_name || user?.email?.split("@")[0] || "User";
-  const initials = displayName
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
+  const initials = displayName.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
   const plan = profile?.plan || "free";
+
+  const navItems = baseNavItems.filter((item) => !item.familyOnly || plan === "family");
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -51,9 +50,9 @@ const Sidebar = ({ active, onNavigate }: { active: Section; onNavigate: (s: Sect
   }, []);
 
   if (isMobile) {
+    const mobileItems = navItems.filter((item) => mobileNavItems.includes(item.id));
     return (
       <>
-        {/* Mobile top header */}
         <header className="fixed top-0 left-0 right-0 z-50 bg-card border-b border-border flex items-center justify-between px-4 py-2.5">
           <div>
             <h1 className="font-heading text-lg font-light tracking-[0.2em] gold-gradient-text">VAULT</h1>
@@ -88,9 +87,8 @@ const Sidebar = ({ active, onNavigate }: { active: Section; onNavigate: (s: Sect
           </div>
         </header>
 
-        {/* Bottom tab bar */}
         <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border flex items-center justify-around px-1 py-2">
-          {mobileNavItems.map((item) => {
+          {mobileItems.map((item) => {
             const isActive = active === item.id;
             return (
               <button key={item.id} onClick={() => onNavigate(item.id)}

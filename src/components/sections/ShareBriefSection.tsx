@@ -80,9 +80,20 @@ const ShareBriefSection = () => {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h2 className="font-heading text-3xl font-light text-foreground">Share Brief</h2>
-        <p className="text-sm text-muted-foreground mt-2">Generate a secure, time-limited link for your clinician</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h2 className="font-heading text-3xl font-light text-foreground">Share Brief</h2>
+          <p className="text-sm text-muted-foreground mt-2">Generate a secure, time-limited link for your clinician</p>
+        </div>
+        <button
+          onClick={() => {
+            const event = new CustomEvent("navigate-section", { detail: "export" });
+            window.dispatchEvent(event);
+          }}
+          className="flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-lg text-sm text-foreground hover:border-primary/30 transition-colors"
+        >
+          <span className="text-primary">↓</span> Export PDF
+        </button>
       </div>
 
       <div className="flex items-center gap-2 mb-6">
