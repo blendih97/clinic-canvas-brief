@@ -1,17 +1,18 @@
 import {
-  LayoutDashboard, Droplets, ScanLine, Pill, FileText, Share2, CreditCard, Settings, LogOut, ChevronDown, User, FileDown, Users
+  LayoutDashboard, Droplets, ScanLine, Pill, FileText, Share2, CreditCard, Settings, LogOut, ChevronDown, User, FileDown, Users, Play
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/hooks/useAuth";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-type Section = "overview" | "blood" | "imaging" | "medications" | "documents" | "share" | "billing" | "export" | "family";
+type Section = "overview" | "blood" | "imaging" | "media" | "medications" | "documents" | "share" | "billing" | "export" | "family";
 
 const baseNavItems: { id: Section; label: string; icon: React.ElementType; familyOnly?: boolean }[] = [
   { id: "overview", label: "Overview", icon: LayoutDashboard },
   { id: "blood", label: "Blood Results", icon: Droplets },
   { id: "imaging", label: "Imaging", icon: ScanLine },
+  { id: "media", label: "Media", icon: Play },
   { id: "medications", label: "Medications", icon: Pill },
   { id: "documents", label: "Documents", icon: FileText },
   { id: "export", label: "Export", icon: FileDown },
@@ -20,7 +21,7 @@ const baseNavItems: { id: Section; label: string; icon: React.ElementType; famil
   { id: "billing", label: "Subscription", icon: CreditCard },
 ];
 
-const mobileNavItems: Section[] = ["overview", "blood", "documents", "export", "share"];
+const mobileNavItems: Section[] = ["overview", "blood", "media", "documents", "export"];
 
 const planLabels: Record<string, string> = {
   free: "Free Plan",

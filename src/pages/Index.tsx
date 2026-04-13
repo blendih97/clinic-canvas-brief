@@ -4,6 +4,7 @@ import Sidebar from "@/components/Sidebar";
 import OverviewSection from "@/components/sections/OverviewSection";
 import BloodResultsSection from "@/components/sections/BloodResultsSection";
 import ImagingSection from "@/components/sections/ImagingSection";
+import MediaSection from "@/components/sections/MediaSection";
 import MedicationsSection from "@/components/sections/MedicationsSection";
 import DocumentsSection from "@/components/sections/DocumentsSection";
 import ShareBriefSection from "@/components/sections/ShareBriefSection";
@@ -12,18 +13,22 @@ import ExportSection from "@/components/sections/ExportSection";
 import FamilySection from "@/components/sections/FamilySection";
 import DocumentUpload from "@/components/DocumentUpload";
 import OnboardingModal from "@/components/OnboardingModal";
-import { Upload, ArrowLeft } from "lucide-react";
+import RequestRecordsModal from "@/components/RequestRecordsModal";
+import { Upload, ArrowLeft, Inbox } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useVaultStore } from "@/store/vaultStore";
+import { supabase } from "@/integrations/supabase/client";
 
-type Section = "overview" | "blood" | "imaging" | "medications" | "documents" | "share" | "billing" | "export" | "family";
+type Section = "overview" | "blood" | "imaging" | "media" | "medications" | "documents" | "share" | "billing" | "export" | "family";
 
 const Index = () => {
   const [showSplash, setShowSplash] = useState(true);
   const [section, setSection] = useState<Section>("overview");
   const [uploadOpen, setUploadOpen] = useState(false);
+  const [requestOpen, setRequestOpen] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [viewingMember, setViewingMember] = useState<{ id: string; name: string } | null>(null);
+  const [receivedNotifications, setReceivedNotifications] = useState<{ provider_name: string; id: string }[]>([]);
   const handleSplashComplete = useCallback(() => setShowSplash(false), []);
   const { user } = useAuth();
   const { loadUserData, documents } = useVaultStore();
@@ -43,7 +48,36 @@ const Index = () => {
     }
   }, [user, showSplash, documents.length]);
 
-  // Listen for cross-section navigation events (e.g. Export button on Share page)
+  // Check for received record requests
+  useEffect(() => {
+    if (!user) return;
+    const checkReceived = async () => {
+      const dismissedKey = `vault-received-dismissed-${user.id}`;
+      const dismissed = JSON.parse(localStorage.getItem(dismissedKey) || "[]");
+      
+      const { data } = await supabase
+        .from("record_requests")
+        .select("id, provider_name")
+        .eq("user_id", user.id)
+        .eq("status", "received");
+
+      if (data) {
+        const newNotifications = data.filter((r: any) => !dismissed.includes(r.id));
+        setReceivedNotifications(newNotifications);
+      }
+    };
+    checkReceived();
+  }, [user, section]);
+
+  const dismissNotification = (id: string) => {
+    if (!user) return;
+    const dismissedKey = `vault-received-dismissed-${user.id}`;
+    const dismissed = JSON.parse(localStorage.getItem(dismissedKey) || "[]");
+    localStorage.setItem(dismissedKey, JSON.stringify([...dismissed, id]));
+    setReceivedNotifications((prev) => prev.filter((n) => n.id !== id));
+  };
+
+  // Listen for cross-section navigation events
   useEffect(() => {
     const handler = (e: Event) => {
       const detail = (e as CustomEvent).detail;
@@ -73,15 +107,17 @@ const Index = () => {
   const renderSection = () => {
     switch (section) {
       case "overview":
-        return <OverviewSection onNavigate={setSection} onUpload={() => setUploadOpen(true)} />;
+        return <OverviewSection onNavigate={setSection} onUpload={() => setUploadOpen(true)} onRequestRecords={() => setRequestOpen(true)} />;
       case "blood":
         return <BloodResultsSection />;
       case "imaging":
         return <ImagingSection />;
+      case "media":
+        return <MediaSection onRequestRecords={() => setRequestOpen(true)} onUpload={() => setUploadOpen(true)} />;
       case "medications":
         return <MedicationsSection />;
       case "documents":
-        return <DocumentsSection />;
+        return <DocumentsSection onRequestRecords={() => setRequestOpen(true)} />;
       case "share":
         return <ShareBriefSection />;
       case "billing":
@@ -91,7 +127,7 @@ const Index = () => {
       case "family":
         return <FamilySection onViewMember={handleViewMember} />;
       default:
-        return <OverviewSection onNavigate={setSection} onUpload={() => setUploadOpen(true)} />;
+        return <OverviewSection onNavigate={setSection} onUpload={() => setUploadOpen(true)} onRequestRecords={() => setRequestOpen(true)} />;
     }
   };
 
@@ -120,6 +156,24 @@ const Index = () => {
             </div>
           )}
 
+          {/* Received records notifications */}
+          {receivedNotifications.map((n) => (
+            <div key={n.id} className="mb-4 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-lg flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Inbox className="w-4 h-4 text-emerald-600" />
+                <p className="text-sm text-foreground">
+                  New records received from <span className="font-semibold">{n.provider_name}</span> — 
+                  <button onClick={() => { setSection("documents"); dismissNotification(n.id); }} className="text-primary font-medium ml-1 hover:underline">
+                    tap to view
+                  </button>
+                </p>
+              </div>
+              <button onClick={() => dismissNotification(n.id)} className="text-xs text-muted-foreground hover:text-foreground">
+                Dismiss
+              </button>
+            </div>
+          ))}
+
           {showUploadBanner && (
             <div className="mb-4 p-4 bg-primary/5 border border-primary/20 rounded-lg flex items-center justify-between">
               <p className="text-sm text-foreground">
@@ -144,6 +198,7 @@ const Index = () => {
         </main>
       </div>
       <DocumentUpload open={uploadOpen} onClose={() => setUploadOpen(false)} />
+      <RequestRecordsModal open={requestOpen} onClose={() => setRequestOpen(false)} />
       <OnboardingModal open={showOnboarding} onClose={handleOnboardingClose} onUpload={() => setUploadOpen(true)} />
     </>
   );
