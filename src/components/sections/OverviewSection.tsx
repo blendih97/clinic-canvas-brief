@@ -9,7 +9,7 @@ interface OverviewProps {
   onRequestRecords?: () => void;
 }
 
-const OverviewSection = ({ onNavigate, onUpload }: OverviewProps) => {
+const OverviewSection = ({ onNavigate, onUpload, onRequestRecords }: OverviewProps) => {
   const { documents, allergies, medications } = useVaultStore();
 
   const recentDocs = [...documents].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
@@ -53,9 +53,21 @@ const OverviewSection = ({ onNavigate, onUpload }: OverviewProps) => {
             <p className="text-xs text-muted-foreground">Generate a secure link</p>
           </div>
         </button>
+        <button
+          onClick={onRequestRecords}
+          className="flex items-center gap-4 p-6 bg-card border border-border rounded-xl hover:border-primary/40 transition-all text-left group"
+        >
+          <div className="w-11 h-11 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+            <Send className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-foreground">Request Records</p>
+            <p className="text-xs text-muted-foreground">Ask your provider to send files</p>
+          </div>
+        </button>
       </div>
 
-      {/* Recent Documents */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       {recentDocs.length > 0 && (
         <div>
           <h3 className="font-heading text-lg text-foreground mb-4">Recent Documents</h3>
