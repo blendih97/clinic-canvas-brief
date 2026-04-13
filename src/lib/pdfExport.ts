@@ -1,4 +1,5 @@
 import jsPDF from "jspdf";
+import "jspdf-autotable";
 import autoTable from "jspdf-autotable";
 import type { BloodResult, ImagingResult, Medication, Allergy, Document as VaultDoc, Alert } from "@/store/vaultStore";
 
