@@ -43,6 +43,16 @@ const Index = () => {
     }
   }, [user, showSplash, documents.length]);
 
+  // Listen for cross-section navigation events (e.g. Export button on Share page)
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail) setSection(detail as Section);
+    };
+    window.addEventListener("navigate-section", handler);
+    return () => window.removeEventListener("navigate-section", handler);
+  }, []);
+
   const handleOnboardingClose = () => {
     setShowOnboarding(false);
     if (user) localStorage.setItem(`vault-onboarding-${user.id}`, "true");
