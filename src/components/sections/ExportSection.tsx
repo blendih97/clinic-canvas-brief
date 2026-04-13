@@ -45,11 +45,11 @@ const ExportSection = () => {
     setGenerating(true);
     try {
       if (mode === "full") {
-        generateFullBriefPDF(store, patientName, dob);
+        await generateFullBriefPDF(store, patientName, dob);
       } else if (mode === "category") {
-        generateCategoryPDF(store, patientName, dob, categories);
+        await generateCategoryPDF(store, patientName, dob, categories);
       } else if (mode === "selection") {
-        generateSelectionPDF(store, patientName, dob, selectedDocs);
+        await generateSelectionPDF(store, patientName, dob, selectedDocs);
       }
     } catch (err) {
       console.error("PDF generation error:", err);
