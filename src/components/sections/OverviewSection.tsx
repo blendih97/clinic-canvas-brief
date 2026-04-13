@@ -1,11 +1,12 @@
-import { FileText, Upload, Share2, AlertTriangle, Pill, CheckCircle } from "lucide-react";
+import { FileText, Upload, Share2, AlertTriangle, Pill, CheckCircle, Send } from "lucide-react";
 import { useVaultStore } from "@/store/vaultStore";
 
-type Section = "overview" | "blood" | "imaging" | "medications" | "documents" | "share" | "billing";
+type Section = "overview" | "blood" | "imaging" | "media" | "medications" | "documents" | "share" | "billing" | "export" | "family";
 
 interface OverviewProps {
   onNavigate?: (s: Section) => void;
   onUpload?: () => void;
+  onRequestRecords?: () => void;
 }
 
 const OverviewSection = ({ onNavigate, onUpload }: OverviewProps) => {
