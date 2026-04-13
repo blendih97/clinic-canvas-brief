@@ -248,7 +248,7 @@ export function generateFullBriefPDF(data: VaultData, patientName: string, dob: 
   addDocumentsList(doc, data.documents, y);
 
   applyHeadersAndFooters(doc, patientName);
-  doc.save(`Vault_Health_Brief_${new Date().toISOString().split("T")[0]}.pdf`);
+  downloadPdf(doc, `Vault_Health_Brief_${new Date().toISOString().split("T")[0]}.pdf`);
 }
 
 export function generateCategoryPDF(
@@ -270,7 +270,7 @@ export function generateCategoryPDF(
   if (categories.documents) addDocumentsList(doc, data.documents, y);
 
   applyHeadersAndFooters(doc, patientName);
-  doc.save(`Vault_Export_${new Date().toISOString().split("T")[0]}.pdf`);
+  downloadPdf(doc, `Vault_Export_${new Date().toISOString().split("T")[0]}.pdf`);
 }
 
 export function generateSelectionPDF(data: VaultData, patientName: string, dob: string, selectedIds: Set<string>) {
@@ -312,5 +312,5 @@ export function generateSelectionPDF(data: VaultData, patientName: string, dob: 
   });
 
   applyHeadersAndFooters(doc, patientName);
-  doc.save(`Vault_Selection_${new Date().toISOString().split("T")[0]}.pdf`);
+  downloadPdf(doc, `Vault_Selection_${new Date().toISOString().split("T")[0]}.pdf`);
 }
