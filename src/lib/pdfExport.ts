@@ -3,39 +3,8 @@ import "jspdf-autotable";
 import autoTable from "jspdf-autotable";
 import type { BloodResult, ImagingResult, Medication, Allergy, Document as VaultDoc, Alert } from "@/store/vaultStore";
 
-function isEmbeddedPreview() {
-  try {
-    return window.self !== window.top;
-  } catch {
-    return true;
-  }
-}
-
-function downloadPdf(doc: jsPDF, filename: string) {
-  const blob = doc.output("blob");
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-
-  link.href = url;
-  link.download = filename;
-  link.target = "_blank";
-  link.rel = "noopener noreferrer";
-  link.style.display = "none";
-
-  document.body.appendChild(link);
-
-  let openedPreviewTab = false;
-
-  if (isEmbeddedPreview()) {
-    openedPreviewTab = Boolean(window.open(url, "_blank", "noopener,noreferrer"));
-  }
-
-  if (!openedPreviewTab) {
-    link.click();
-  }
-
-  document.body.removeChild(link);
-  setTimeout(() => URL.revokeObjectURL(url), 60_000);
+async function downloadPdf(doc: jsPDF, filename: string) {
+  await doc.save(filename, { returnPromise: true });
 }
 
 interface VaultData {
@@ -257,7 +226,7 @@ function addDocumentsList(doc: jsPDF, docs: VaultDoc[], y: number): number {
   return (doc as any).lastAutoTable?.finalY + 8 || y + 20;
 }
 
-export function generateFullBriefPDF(data: VaultData, patientName: string, dob: string) {
+export async function generateFullBriefPDF(data: VaultData, patientName: string, dob: string) {
   const doc = new jsPDF();
   addCoverPage(doc, patientName, dob);
 
@@ -271,10 +240,10 @@ export function generateFullBriefPDF(data: VaultData, patientName: string, dob: 
   addDocumentsList(doc, data.documents, y);
 
   applyHeadersAndFooters(doc, patientName);
-  downloadPdf(doc, `Vault_Health_Brief_${new Date().toISOString().split("T")[0]}.pdf`);
+  await downloadPdf(doc, `Vault_Health_Brief_${new Date().toISOString().split("T")[0]}.pdf`);
 }
 
-export function generateCategoryPDF(
+export async function generateCategoryPDF(
   data: VaultData,
   patientName: string,
   dob: string,
@@ -293,10 +262,10 @@ export function generateCategoryPDF(
   if (categories.documents) addDocumentsList(doc, data.documents, y);
 
   applyHeadersAndFooters(doc, patientName);
-  downloadPdf(doc, `Vault_Export_${new Date().toISOString().split("T")[0]}.pdf`);
+  await downloadPdf(doc, `Vault_Export_${new Date().toISOString().split("T")[0]}.pdf`);
 }
 
-export function generateSelectionPDF(data: VaultData, patientName: string, dob: string, selectedIds: Set<string>) {
+export async function generateSelectionPDF(data: VaultData, patientName: string, dob: string, selectedIds: Set<string>) {
   const selectedDocs = data.documents.filter((d) => selectedIds.has(d.id));
   const doc = new jsPDF();
   addCoverPage(doc, patientName, dob);
@@ -335,5 +304,5 @@ export function generateSelectionPDF(data: VaultData, patientName: string, dob: 
   });
 
   applyHeadersAndFooters(doc, patientName);
-  downloadPdf(doc, `Vault_Selection_${new Date().toISOString().split("T")[0]}.pdf`);
+  await downloadPdf(doc, `Vault_Selection_${new Date().toISOString().split("T")[0]}.pdf`);
 }
