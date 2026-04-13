@@ -51,6 +51,8 @@ const ExportSection = () => {
       } else if (mode === "selection") {
         generateSelectionPDF(store, patientName, dob, selectedDocs);
       }
+    } catch (err) {
+      console.error("PDF generation error:", err);
     } finally {
       setGenerating(false);
     }
