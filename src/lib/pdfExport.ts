@@ -3,6 +3,18 @@ import "jspdf-autotable";
 import autoTable from "jspdf-autotable";
 import type { BloodResult, ImagingResult, Medication, Allergy, Document as VaultDoc, Alert } from "@/store/vaultStore";
 
+function downloadPdf(doc: jsPDF, filename: string) {
+  const blob = doc.output("blob");
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  setTimeout(() => URL.revokeObjectURL(url), 100);
+}
+
 interface VaultData {
   bloodResults: BloodResult[];
   imagingResults: ImagingResult[];
