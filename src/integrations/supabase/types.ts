@@ -155,6 +155,36 @@ export type Database = {
         }
         Relationships: []
       }
+      family_members: {
+        Row: {
+          accepted_at: string | null
+          email: string
+          id: string
+          invited_at: string
+          member_id: string | null
+          owner_id: string
+          status: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          email: string
+          id?: string
+          invited_at?: string
+          member_id?: string | null
+          owner_id: string
+          status?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          email?: string
+          id?: string
+          invited_at?: string
+          member_id?: string | null
+          owner_id?: string
+          status?: string
+        }
+        Relationships: []
+      }
       imaging_results: {
         Row: {
           created_at: string
