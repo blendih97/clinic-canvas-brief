@@ -33,7 +33,7 @@ const fileTypeBadgeColors: Record<string, string> = {
 };
 
 const MediaSection = ({ onRequestRecords, onUpload }: { onRequestRecords?: () => void; onUpload?: () => void }) => {
-  const { documents, imagingResults } = useVaultStore();
+  const { documents } = useVaultStore();
   const { user } = useAuth();
   const [filter, setFilter] = useState<FilterType>("all");
   const [search, setSearch] = useState("");
@@ -44,74 +44,46 @@ const MediaSection = ({ onRequestRecords, onUpload }: { onRequestRecords?: () =>
   const mediaItems: MediaItem[] = useMemo(() => {
     const items: MediaItem[] = [];
 
-    // From documents - images and videos
+    // Only include files with actual visual/playable file extensions
     documents.forEach((doc) => {
       const name = doc.name.toLowerCase();
+      const url = (doc.fileUrl || "").toLowerCase();
+
+      const isImage = /\.(jpg|jpeg|png|gif|bmp|webp|tiff|tif)$/i.test(name) || /\.(jpg|jpeg|png|gif|bmp|webp|tiff|tif)$/i.test(url);
+      const isVideo = /\.(mp4|mov|avi|mkv)$/i.test(name) || /\.(mp4|mov|avi|mkv)$/i.test(url);
+      const isDicom = /\.(dcm|dicom)$/i.test(name) || /\.(dcm|dicom)$/i.test(url);
+
+      // Only actual visual/playable files — no PDFs, DOCs, or text reports
+      if (!isImage && !isVideo && !isDicom) return;
+
+      let fileType: MediaItem["fileType"] = "image";
+      let badge = "Photo";
       const type = (doc.type || "").toLowerCase();
-      const url = doc.fileUrl || "";
 
-      const isImage = /\.(jpg|jpeg|png|tiff|tif|webp)$/i.test(name) || /\.(jpg|jpeg|png|tiff|tif|webp)$/i.test(url);
-      const isVideo = /\.(mp4|avi|mov|mkv)$/i.test(name) || /\.(mp4|avi|mov|mkv)$/i.test(url);
-      const isDicom = /\.(dcm|dicom)$/i.test(name);
-      const isImagingReport = type.includes("imaging") || type.includes("radiology") || type.includes("mri") || type.includes("ct") || type.includes("x-ray") || type.includes("xray");
-      const isEcg = type.includes("ecg") || type.includes("ekg") || type.includes("spirometry");
+      if (isVideo) { fileType = "video"; badge = "Video"; }
+      else if (isDicom) { fileType = "dicom"; badge = "DICOM"; }
+      else if (type.includes("mri")) badge = "MRI";
+      else if (type.includes("ct")) badge = "CT";
+      else if (type.includes("x-ray") || type.includes("xray")) badge = "X-Ray";
+      else if (type.includes("echo") || type.includes("cardiac")) badge = "Echo";
+      else if (type.includes("ecg")) badge = "ECG";
 
-      if (isImage || isVideo || isDicom || isImagingReport || isEcg) {
-        let fileType: MediaItem["fileType"] = "image";
-        let badge = "Photo";
-
-        if (isVideo) { fileType = "video"; badge = "Video"; }
-        else if (isDicom) { fileType = "dicom"; badge = "DICOM"; }
-        else if (isEcg) { fileType = "ecg"; badge = "ECG"; }
-        else if (type.includes("mri")) badge = "MRI";
-        else if (type.includes("ct")) badge = "CT";
-        else if (type.includes("x-ray") || type.includes("xray")) badge = "X-Ray";
-        else if (type.includes("echo") || type.includes("cardiac")) badge = "Echo";
-
-        items.push({
-          id: doc.id,
-          name: doc.name,
-          type: doc.type,
-          fileType,
-          badge,
-          region: type,
-          facility: doc.facility,
-          date: doc.date,
-          country: doc.country,
-          fileUrl: doc.fileUrl,
-        });
-      }
-    });
-
-    // From imaging results (these are always media-worthy)
-    imagingResults.forEach((img) => {
-      let badge = img.type;
-      if (badge.toLowerCase().includes("mri")) badge = "MRI";
-      else if (badge.toLowerCase().includes("ct")) badge = "CT";
-      else if (badge.toLowerCase().includes("x-ray") || badge.toLowerCase().includes("xray")) badge = "X-Ray";
-      else if (badge.toLowerCase().includes("echo")) badge = "Echo";
-      else if (badge.toLowerCase().includes("ecg")) badge = "ECG";
-
-      // Avoid duplicates if already added from documents
-      const alreadyAdded = items.some((i) => i.facility === img.facility && i.date === img.date && i.name === img.type);
-      if (!alreadyAdded) {
-        items.push({
-          id: img.id,
-          name: `${img.type} — ${img.region}`,
-          type: img.type,
-          fileType: "image",
-          badge,
-          region: img.region,
-          facility: img.facility,
-          date: img.date,
-          country: "",
-          fileUrl: undefined,
-        });
-      }
+      items.push({
+        id: doc.id,
+        name: doc.name,
+        type: doc.type,
+        fileType,
+        badge,
+        region: type,
+        facility: doc.facility,
+        date: doc.date,
+        country: doc.country,
+        fileUrl: doc.fileUrl,
+      });
     });
 
     return items;
-  }, [documents, imagingResults]);
+  }, [documents]);
 
   const filteredItems = useMemo(() => {
     let items = mediaItems;
@@ -180,8 +152,8 @@ const MediaSection = ({ onRequestRecords, onUpload }: { onRequestRecords?: () =>
         <div className="bg-card border border-border rounded-xl p-12 text-center">
           <Image className="w-10 h-10 text-muted-foreground mx-auto mb-3 opacity-40" />
           <h3 className="font-heading text-lg text-foreground mb-2">No media files yet</h3>
-          <p className="text-sm text-muted-foreground mb-6 max-w-sm mx-auto">
-            Your imaging and media files will appear here. Upload an imaging report or request records from your provider to get started.
+          <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
+            Your imaging scans, echo videos, and medical photos will appear here once uploaded or received via a records request.
           </p>
           <div className="flex items-center justify-center gap-3">
             <button
