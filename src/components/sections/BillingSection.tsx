@@ -62,14 +62,10 @@ const BillingSection = () => {
               ))}
             </div>
             <button
-              className={`w-full py-2 rounded-md text-sm font-medium transition-colors ${
-                plan.current
-                  ? "bg-muted text-muted-foreground cursor-default"
-                  : "bg-primary text-primary-foreground hover:bg-primary/90"
-              }`}
-              disabled={plan.current}
+              className="w-full py-2 rounded-md text-sm font-medium bg-muted text-muted-foreground cursor-default"
+              disabled
             >
-              {plan.current ? "Active" : "Upgrade"}
+              Coming Soon
             </button>
           </div>
         ))}
