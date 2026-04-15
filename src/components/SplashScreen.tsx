@@ -11,10 +11,7 @@ const SplashScreen = ({ onComplete }: { onComplete: () => void }) => {
   }, [onComplete]);
 
   return (
-    <div
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-background ${phase === "exit" ? "animate-fade-out" : ""}`}
-    >
-      {/* Concentric rings */}
+    <div className={`fixed inset-0 z-50 flex items-center justify-center bg-background ${phase === "exit" ? "animate-fade-out" : ""}`}>
       <div className="absolute">
         <div className="w-40 h-40 rounded-full border border-gold-muted animate-ring-pulse" />
       </div>
@@ -24,14 +21,12 @@ const SplashScreen = ({ onComplete }: { onComplete: () => void }) => {
       <div className="absolute">
         <div className="w-72 h-72 rounded-full border border-gold-muted/30 animate-ring-pulse-delayed-2" />
       </div>
-
-      {/* Logo */}
       <div className={`relative z-10 text-center ${phase !== "rings" ? "animate-fade-in-up" : "opacity-0"}`}>
         <h1 className="font-heading text-5xl font-light tracking-[0.3em] gold-gradient-text">
-          VAULT
+          RinVita
         </h1>
-        <p className="mt-2 text-xs tracking-[0.25em] text-muted-foreground font-body uppercase">
-          Health Intelligence
+        <p className="mt-2 text-xs tracking-[0.15em] text-muted-foreground font-body">
+          Your health history. Everywhere you go.
         </p>
       </div>
     </div>

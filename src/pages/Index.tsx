@@ -14,6 +14,7 @@ import FamilySection from "@/components/sections/FamilySection";
 import DocumentUpload from "@/components/DocumentUpload";
 import OnboardingModal from "@/components/OnboardingModal";
 import RequestRecordsModal from "@/components/RequestRecordsModal";
+import { AppFooterDisclaimer } from "@/components/MedicalDisclaimer";
 import { Upload, ArrowLeft, Inbox } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useVaultStore } from "@/store/vaultStore";
@@ -33,6 +34,18 @@ const Index = () => {
   const { user } = useAuth();
   const { loadUserData, documents } = useVaultStore();
 
+  // Write pending consent timestamps after login
+  useEffect(() => {
+    if (!user) return;
+    const pending = localStorage.getItem("rinvita-consent-pending");
+    if (pending) {
+      const consent = JSON.parse(pending);
+      supabase.from("profiles").update(consent).eq("id", user.id).then(() => {
+        localStorage.removeItem("rinvita-consent-pending");
+      });
+    }
+  }, [user]);
+
   useEffect(() => {
     if (user && !viewingMember) {
       loadUserData(user.id);
@@ -41,18 +54,17 @@ const Index = () => {
 
   useEffect(() => {
     if (user && !showSplash) {
-      const dismissed = localStorage.getItem(`vault-onboarding-${user.id}`);
+      const dismissed = localStorage.getItem(`rinvita-onboarding-${user.id}`);
       if (!dismissed && documents.length === 0) {
         setShowOnboarding(true);
       }
     }
   }, [user, showSplash, documents.length]);
 
-  // Check for received record requests
   useEffect(() => {
     if (!user) return;
     const checkReceived = async () => {
-      const dismissedKey = `vault-received-dismissed-${user.id}`;
+      const dismissedKey = `rinvita-received-dismissed-${user.id}`;
       const dismissed = JSON.parse(localStorage.getItem(dismissedKey) || "[]");
       
       const { data } = await supabase
@@ -71,13 +83,12 @@ const Index = () => {
 
   const dismissNotification = (id: string) => {
     if (!user) return;
-    const dismissedKey = `vault-received-dismissed-${user.id}`;
+    const dismissedKey = `rinvita-received-dismissed-${user.id}`;
     const dismissed = JSON.parse(localStorage.getItem(dismissedKey) || "[]");
     localStorage.setItem(dismissedKey, JSON.stringify([...dismissed, id]));
     setReceivedNotifications((prev) => prev.filter((n) => n.id !== id));
   };
 
-  // Listen for cross-section navigation events
   useEffect(() => {
     const handler = (e: Event) => {
       const detail = (e as CustomEvent).detail;
@@ -89,7 +100,7 @@ const Index = () => {
 
   const handleOnboardingClose = () => {
     setShowOnboarding(false);
-    if (user) localStorage.setItem(`vault-onboarding-${user.id}`, "true");
+    if (user) localStorage.setItem(`rinvita-onboarding-${user.id}`, "true");
   };
 
   const handleViewMember = (memberId: string, memberName: string) => {
@@ -132,7 +143,7 @@ const Index = () => {
   };
 
   const showUploadBanner = documents.length === 0 && !showOnboarding && user &&
-    localStorage.getItem(`vault-onboarding-${user.id}`) === "true";
+    localStorage.getItem(`rinvita-onboarding-${user.id}`) === "true";
 
   return (
     <>
@@ -140,23 +151,21 @@ const Index = () => {
       <div className="flex min-h-screen bg-background">
         <Sidebar active={section} onNavigate={setSection} />
         <main className="flex-1 p-6 md:p-8 overflow-auto pb-20 md:pb-8 pt-16 md:pt-8">
-          {/* Family member viewing banner */}
           {viewingMember && (
             <div className="mb-4 p-4 bg-primary/10 border border-primary/30 rounded-lg flex items-center justify-between">
               <p className="text-sm text-foreground">
-                You are viewing <span className="font-semibold">{viewingMember.name}</span>'s vault
+                You are viewing <span className="font-semibold">{viewingMember.name}</span>'s records
               </p>
               <button
                 onClick={handleReturnToMyVault}
                 className="shrink-0 ml-3 flex items-center gap-2 px-4 py-1.5 bg-primary text-primary-foreground rounded-lg text-xs font-medium hover:bg-primary/90"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
-                Return to My Vault
+                Return to My Records
               </button>
             </div>
           )}
 
-          {/* Received records notifications */}
           {receivedNotifications.map((n) => (
             <div key={n.id} className="mb-4 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-lg flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -177,7 +186,7 @@ const Index = () => {
           {showUploadBanner && (
             <div className="mb-4 p-4 bg-primary/5 border border-primary/20 rounded-lg flex items-center justify-between">
               <p className="text-sm text-foreground">
-                <span className="font-medium">Get started:</span> Upload your first medical document to begin building your health vault.
+                <span className="font-medium">Get started:</span> Upload your first medical document to begin building your health record.
               </p>
               <button onClick={() => setUploadOpen(true)}
                 className="shrink-0 ml-3 px-4 py-1.5 bg-primary text-primary-foreground rounded-lg text-xs font-medium hover:bg-primary/90">
@@ -195,6 +204,7 @@ const Index = () => {
             </div>
           )}
           {renderSection()}
+          <AppFooterDisclaimer />
         </main>
       </div>
       <DocumentUpload open={uploadOpen} onClose={() => setUploadOpen(false)} />

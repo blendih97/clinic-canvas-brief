@@ -56,7 +56,7 @@ const Sidebar = ({ active, onNavigate }: { active: Section; onNavigate: (s: Sect
       <>
         <header className="fixed top-0 left-0 right-0 z-50 bg-card border-b border-border flex items-center justify-between px-4 py-2.5">
           <div>
-            <h1 className="font-heading text-lg font-light tracking-[0.2em] gold-gradient-text">VAULT</h1>
+            <h1 className="font-heading text-lg font-light tracking-[0.15em] gold-gradient-text">RinVita</h1>
           </div>
           <div className="relative" ref={dropdownRef}>
             <button onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -107,8 +107,8 @@ const Sidebar = ({ active, onNavigate }: { active: Section; onNavigate: (s: Sect
   return (
     <aside className="w-52 min-h-screen bg-card border-r border-border flex flex-col">
       <div className="p-5 border-b border-border">
-        <h1 className="font-heading text-2xl font-light tracking-[0.2em] gold-gradient-text">VAULT</h1>
-        <p className="text-[10px] tracking-[0.2em] text-muted-foreground mt-0.5 uppercase">Health Intelligence</p>
+        <h1 className="font-heading text-2xl font-light tracking-[0.15em] gold-gradient-text">RinVita</h1>
+        <p className="text-[10px] tracking-[0.15em] text-muted-foreground mt-0.5">Your health history. Everywhere you go.</p>
       </div>
 
       <nav className="flex-1 p-2 space-y-0.5">

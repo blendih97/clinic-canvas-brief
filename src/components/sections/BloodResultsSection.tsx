@@ -1,6 +1,9 @@
 import { useState } from "react";
-import { LayoutGrid, List, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { LayoutGrid, List, TrendingUp, TrendingDown, Minus, Pin } from "lucide-react";
 import { useVaultStore } from "@/store/vaultStore";
+import { useAuth } from "@/hooks/useAuth";
+import { getBloodInsight } from "@/lib/insights";
+import MedicalDisclaimer from "@/components/MedicalDisclaimer";
 
 const statusColors = {
   normal: { badge: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20", border: "border-l-emerald-500" },
@@ -32,9 +35,16 @@ const TrendIcon = ({ data }: { data: number[] }) => {
   return <Minus className="w-3 h-3 text-muted-foreground" />;
 };
 
-const BloodResultsSection = () => {
+interface BloodResultsSectionProps {
+  pinnedIds?: Set<string>;
+  onTogglePin?: (id: string) => void;
+}
+
+const BloodResultsSection = ({ pinnedIds, onTogglePin }: BloodResultsSectionProps) => {
   const [view, setView] = useState<"card" | "table">("table");
   const bloodResults = useVaultStore((s) => s.bloodResults);
+  const { profile } = useAuth();
+  const sex = (profile as any)?.biological_sex as string | null;
 
   if (bloodResults.length === 0) {
     return (
@@ -49,6 +59,18 @@ const BloodResultsSection = () => {
       </div>
     );
   }
+
+  const renderRange = (range: string) => {
+    if (!sex) {
+      return (
+        <span>
+          {range}
+          <span className="block text-[9px] text-muted-foreground mt-0.5">Complete your profile to see your personalised range.</span>
+        </span>
+      );
+    }
+    return range;
+  };
 
   return (
     <div className="space-y-8">
@@ -76,9 +98,16 @@ const BloodResultsSection = () => {
                   <p className="text-sm font-medium text-foreground">{r.marker}</p>
                   <p className="text-[10px] text-muted-foreground">{r.source}</p>
                 </div>
-                <span className={`text-[10px] px-2 py-0.5 rounded-full border ${statusColors[r.status].badge}`}>
-                  {r.status}
-                </span>
+                <div className="flex items-center gap-1.5">
+                  {onTogglePin && (
+                    <button onClick={() => onTogglePin(r.id)} className={`p-1 rounded hover:bg-muted ${pinnedIds?.has(r.id) ? "text-primary" : "text-muted-foreground"}`}>
+                      <Pin className="w-3 h-3" />
+                    </button>
+                  )}
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full border ${statusColors[r.status].badge}`}>
+                    {r.status}
+                  </span>
+                </div>
               </div>
               <div className="flex items-end justify-between">
                 <div>
@@ -86,7 +115,7 @@ const BloodResultsSection = () => {
                     {r.value}
                     <span className="text-xs text-muted-foreground ml-1">{r.unit}</span>
                   </p>
-                  <p className="text-[10px] text-muted-foreground mt-1">Range: {r.range}</p>
+                  <p className="text-[10px] text-muted-foreground mt-1">Range: {renderRange(r.range)}</p>
                 </div>
                 <div className="flex flex-col items-end gap-1">
                   <Sparkline data={r.trend} status={r.status} />
@@ -96,6 +125,9 @@ const BloodResultsSection = () => {
                   </div>
                 </div>
               </div>
+              <p className="text-[11px] text-muted-foreground mt-3 leading-relaxed italic">
+                {getBloodInsight(r.status, r.trend)}
+              </p>
             </div>
           ))}
         </div>
@@ -109,7 +141,7 @@ const BloodResultsSection = () => {
                 <th className="p-4 text-[10px] tracking-wider text-muted-foreground uppercase font-medium">Range</th>
                 <th className="p-4 text-[10px] tracking-wider text-muted-foreground uppercase font-medium">Status</th>
                 <th className="p-4 text-[10px] tracking-wider text-muted-foreground uppercase font-medium">Trend</th>
-                <th className="p-4 text-[10px] tracking-wider text-muted-foreground uppercase font-medium">Source</th>
+                <th className="p-4 text-[10px] tracking-wider text-muted-foreground uppercase font-medium">Insight</th>
                 <th className="p-4 text-[10px] tracking-wider text-muted-foreground uppercase font-medium">Date</th>
               </tr>
             </thead>
@@ -121,7 +153,7 @@ const BloodResultsSection = () => {
                   <td className="p-4 text-xs text-muted-foreground">{r.range}</td>
                   <td className="p-4"><span className={`text-[10px] px-2 py-0.5 rounded-full border ${statusColors[r.status].badge}`}>{r.status}</span></td>
                   <td className="p-4"><Sparkline data={r.trend} status={r.status} /></td>
-                  <td className="p-4 text-xs text-muted-foreground">{r.source}</td>
+                  <td className="p-4 text-[11px] text-muted-foreground italic max-w-[200px]">{getBloodInsight(r.status, r.trend)}</td>
                   <td className="p-4 text-xs text-muted-foreground">{r.date}</td>
                 </tr>
               ))}
@@ -129,6 +161,8 @@ const BloodResultsSection = () => {
           </table>
         </div>
       )}
+
+      <MedicalDisclaimer />
     </div>
   );
 };

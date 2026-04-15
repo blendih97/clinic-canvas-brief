@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, FileText, Download, Share2, Globe, Languages } from "lucide-react";
 import type { Document, BloodResult, ImagingResult, Medication } from "@/store/vaultStore";
 import { useVaultStore } from "@/store/vaultStore";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Props {
   document: Document;
@@ -12,20 +13,41 @@ interface Props {
 const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
   const [lang, setLang] = useState<"english" | "original">("english");
   const { bloodResults, imagingResults, medications } = useVaultStore();
+  const [signedUrl, setSignedUrl] = useState<string | null>(null);
 
-  // Filter related data by matching document source/date
+  // Get signed URL for the file
+  useEffect(() => {
+    if (!doc.fileUrl) return;
+    // If it's already a full URL (legacy), use directly
+    if (doc.fileUrl.startsWith("http")) {
+      setSignedUrl(doc.fileUrl);
+      return;
+    }
+    // Otherwise it's a storage path — get signed URL
+    supabase.storage
+      .from("medical-documents")
+      .createSignedUrl(doc.fileUrl, 3600)
+      .then(({ data }) => {
+        if (data?.signedUrl) setSignedUrl(data.signedUrl);
+      });
+  }, [doc.fileUrl]);
+
   const relatedBlood = bloodResults.filter((b) => b.source === doc.name || b.date === doc.date);
   const relatedImaging = imagingResults.filter((i) => i.facility === doc.facility && i.date === doc.date);
   const relatedMeds = medications.filter((m) => m.facility === doc.facility && m.date === doc.date);
 
   const handleDownload = () => {
-    if (doc.fileUrl) {
+    if (signedUrl) {
       const a = window.document.createElement("a");
-      a.href = doc.fileUrl;
+      a.href = signedUrl;
       a.download = doc.name;
+      a.target = "_blank";
       a.click();
     }
   };
+
+  // For the "original" language toggle, show original lang data from related imaging
+  const originalLang = relatedImaging.find(i => i.originalLang && i.originalLang !== "English")?.originalLang;
 
   return (
     <div
@@ -49,17 +71,17 @@ const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
         <div className="flex-1 overflow-auto flex flex-col md:flex-row">
           {/* Left — file viewer */}
           <div className="md:w-1/2 border-b md:border-b-0 md:border-r border-border p-5 flex items-center justify-center min-h-[300px] bg-muted/30">
-            {doc.fileUrl ? (
-              doc.type?.toLowerCase().includes("image") || doc.fileUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
-                <img src={doc.fileUrl} alt={doc.name} className="max-w-full max-h-full object-contain rounded" />
+            {signedUrl ? (
+              doc.type?.toLowerCase().includes("image") || doc.name.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                <img src={signedUrl} alt={doc.name} className="max-w-full max-h-full object-contain rounded" />
               ) : (
-                <iframe src={doc.fileUrl} className="w-full h-full min-h-[400px] rounded" title={doc.name} />
+                <iframe src={signedUrl} className="w-full h-full min-h-[400px] rounded" title={doc.name} />
               )
             ) : (
               <div className="text-center text-muted-foreground text-sm p-8">
                 <FileText className="w-10 h-10 mx-auto mb-3 opacity-40" />
-                <p>Original file preview coming soon</p>
-                <p className="text-xs mt-1">File storage will be enabled with authentication.</p>
+                <p>Original file preview</p>
+                <p className="text-xs mt-1">Upload a file to see it displayed here.</p>
               </div>
             )}
           </div>
@@ -78,13 +100,15 @@ const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
                 onClick={() => setLang("original")}
                 className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${lang === "original" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"}`}
               >
-                <Languages className="w-3 h-3" /> Original
+                <Languages className="w-3 h-3" /> Original{originalLang ? ` (${originalLang})` : ""}
               </button>
             </div>
 
             {lang === "original" && (
               <p className="text-xs text-primary bg-primary/5 border border-primary/10 rounded-lg p-3">
-                Showing extracted text in original language where available.
+                {originalLang
+                  ? `Showing extracted text in ${originalLang} where available.`
+                  : "No original language data available for this document. Content is shown in English."}
               </p>
             )}
 
@@ -196,7 +220,7 @@ const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
               )}
               <button
                 onClick={handleDownload}
-                disabled={!doc.fileUrl}
+                disabled={!signedUrl}
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <Download className="w-4 h-4" /> Download original
