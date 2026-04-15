@@ -44,6 +44,7 @@ export type Database = {
           id: string
           reaction: string | null
           severity: string | null
+          source: string
           substance: string
           user_id: string
         }
@@ -52,6 +53,7 @@ export type Database = {
           id?: string
           reaction?: string | null
           severity?: string | null
+          source?: string
           substance: string
           user_id: string
         }
@@ -60,6 +62,7 @@ export type Database = {
           id?: string
           reaction?: string | null
           severity?: string | null
+          source?: string
           substance?: string
           user_id?: string
         }
@@ -115,6 +118,7 @@ export type Database = {
           date: string | null
           extracted: boolean | null
           facility: string | null
+          file_path: string | null
           file_url: string | null
           id: string
           name: string
@@ -130,6 +134,7 @@ export type Database = {
           date?: string | null
           extracted?: boolean | null
           facility?: string | null
+          file_path?: string | null
           file_url?: string | null
           id?: string
           name: string
@@ -145,6 +150,7 @@ export type Database = {
           date?: string | null
           extracted?: boolean | null
           facility?: string | null
+          file_path?: string | null
           file_url?: string | null
           id?: string
           name?: string
@@ -262,6 +268,7 @@ export type Database = {
           id: string
           name: string
           prescriber: string | null
+          source: string
           user_id: string
         }
         Insert: {
@@ -274,6 +281,7 @@ export type Database = {
           id?: string
           name: string
           prescriber?: string | null
+          source?: string
           user_id: string
         }
         Update: {
@@ -286,6 +294,7 @@ export type Database = {
           id?: string
           name?: string
           prescriber?: string | null
+          source?: string
           user_id?: string
         }
         Relationships: []
@@ -296,11 +305,13 @@ export type Database = {
           biological_sex: string | null
           blood_type: string | null
           created_at: string
+          current_diagnoses: string | null
           date_of_birth: string | null
           emergency_contact_name: string | null
           emergency_contact_phone: string | null
           full_name: string | null
           health_data_consent_at: string | null
+          height_cm: number | null
           id: string
           nationality: string | null
           phone: string | null
@@ -309,17 +320,20 @@ export type Database = {
           stripe_subscription_id: string | null
           terms_consent_at: string | null
           updated_at: string
+          weight_kg: number | null
         }
         Insert: {
           avatar_url?: string | null
           biological_sex?: string | null
           blood_type?: string | null
           created_at?: string
+          current_diagnoses?: string | null
           date_of_birth?: string | null
           emergency_contact_name?: string | null
           emergency_contact_phone?: string | null
           full_name?: string | null
           health_data_consent_at?: string | null
+          height_cm?: number | null
           id: string
           nationality?: string | null
           phone?: string | null
@@ -328,17 +342,20 @@ export type Database = {
           stripe_subscription_id?: string | null
           terms_consent_at?: string | null
           updated_at?: string
+          weight_kg?: number | null
         }
         Update: {
           avatar_url?: string | null
           biological_sex?: string | null
           blood_type?: string | null
           created_at?: string
+          current_diagnoses?: string | null
           date_of_birth?: string | null
           emergency_contact_name?: string | null
           emergency_contact_phone?: string | null
           full_name?: string | null
           health_data_consent_at?: string | null
+          height_cm?: number | null
           id?: string
           nationality?: string | null
           phone?: string | null
@@ -347,6 +364,7 @@ export type Database = {
           stripe_subscription_id?: string | null
           terms_consent_at?: string | null
           updated_at?: string
+          weight_kg?: number | null
         }
         Relationships: []
       }
