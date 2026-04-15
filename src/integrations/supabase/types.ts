@@ -293,50 +293,59 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          biological_sex: string | null
           blood_type: string | null
           created_at: string
           date_of_birth: string | null
           emergency_contact_name: string | null
           emergency_contact_phone: string | null
           full_name: string | null
+          health_data_consent_at: string | null
           id: string
           nationality: string | null
           phone: string | null
           plan: string
           stripe_customer_id: string | null
           stripe_subscription_id: string | null
+          terms_consent_at: string | null
           updated_at: string
         }
         Insert: {
           avatar_url?: string | null
+          biological_sex?: string | null
           blood_type?: string | null
           created_at?: string
           date_of_birth?: string | null
           emergency_contact_name?: string | null
           emergency_contact_phone?: string | null
           full_name?: string | null
+          health_data_consent_at?: string | null
           id: string
           nationality?: string | null
           phone?: string | null
           plan?: string
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
+          terms_consent_at?: string | null
           updated_at?: string
         }
         Update: {
           avatar_url?: string | null
+          biological_sex?: string | null
           blood_type?: string | null
           created_at?: string
           date_of_birth?: string | null
           emergency_contact_name?: string | null
           emergency_contact_phone?: string | null
           full_name?: string | null
+          health_data_consent_at?: string | null
           id?: string
           nationality?: string | null
           phone?: string | null
           plan?: string
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
+          terms_consent_at?: string | null
           updated_at?: string
         }
         Relationships: []

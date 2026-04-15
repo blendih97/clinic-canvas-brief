@@ -23,12 +23,9 @@ const SettingsPage = () => {
   const navigate = useNavigate();
   const store = useVaultStore();
 
-  // Notification toggles
   const [emailAlerts, setEmailAlerts] = useState(true);
   const [weeklySummary, setWeeklySummary] = useState(false);
   const [shareNotifs, setShareNotifs] = useState(true);
-
-  // Appearance
   const [darkMode, setDarkMode] = useState(false);
   const [language, setLanguage] = useState("en");
 
@@ -43,18 +40,15 @@ const SettingsPage = () => {
 
   const handleExportData = () => {
     const data = {
-      bloodResults: store.bloodResults,
-      imagingResults: store.imagingResults,
-      medications: store.medications,
-      documents: store.documents,
-      allergies: store.allergies,
-      alerts: store.alerts,
+      bloodResults: store.bloodResults, imagingResults: store.imagingResults,
+      medications: store.medications, documents: store.documents,
+      allergies: store.allergies, alerts: store.alerts,
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "vault-health-data.json";
+    a.download = "rinvita-health-data.json";
     a.click();
     URL.revokeObjectURL(url);
     toast.success("Data exported");
@@ -79,68 +73,47 @@ const SettingsPage = () => {
 
         <h1 className="font-heading text-3xl font-light text-foreground mb-6">Settings</h1>
 
-        {/* Notifications */}
         <section className="bg-card border border-border rounded-xl p-6 mb-6">
           <h2 className="font-heading text-lg text-foreground mb-4">Notifications</h2>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-foreground">Email alerts for flagged results</p>
-                <p className="text-xs text-muted-foreground">Get notified when results need attention</p>
-              </div>
+              <div><p className="text-sm text-foreground">Email alerts for flagged results</p><p className="text-xs text-muted-foreground">Get notified when results need attention</p></div>
               <Toggle on={emailAlerts} onChange={setEmailAlerts} />
             </div>
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-foreground">Weekly health summary</p>
-                <p className="text-xs text-muted-foreground">Receive a weekly digest email</p>
-              </div>
+              <div><p className="text-sm text-foreground">Weekly health summary</p><p className="text-xs text-muted-foreground">Receive a weekly digest email</p></div>
               <Toggle on={weeklySummary} onChange={setWeeklySummary} />
             </div>
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-foreground">Share link notifications</p>
-                <p className="text-xs text-muted-foreground">Know when someone accesses your shared brief</p>
-              </div>
+              <div><p className="text-sm text-foreground">Share link notifications</p><p className="text-xs text-muted-foreground">Know when someone accesses your shared brief</p></div>
               <Toggle on={shareNotifs} onChange={setShareNotifs} />
             </div>
           </div>
         </section>
 
-        {/* Privacy & Security */}
         <section className="bg-card border border-border rounded-xl p-6 mb-6">
           <h2 className="font-heading text-lg text-foreground mb-4">Privacy & Security</h2>
           <div className="space-y-4">
             <button onClick={handlePasswordReset}
               className="w-full flex items-center gap-2 px-4 py-3 border border-border rounded-lg text-sm text-foreground hover:bg-muted transition-colors text-left">
               <Lock className="w-4 h-4 text-muted-foreground" />
-              <div className="flex-1">
-                <p>Change Password</p>
-                <p className="text-xs text-muted-foreground">Send a password reset email</p>
-              </div>
+              <div className="flex-1"><p>Change Password</p><p className="text-xs text-muted-foreground">Send a password reset email</p></div>
             </button>
             <div className="flex items-center justify-between px-4 py-3 border border-border rounded-lg">
               <div className="flex items-center gap-2">
                 <Shield className="w-4 h-4 text-muted-foreground" />
-                <div>
-                  <p className="text-sm text-foreground">Two-factor authentication</p>
-                  <p className="text-xs text-muted-foreground">Add extra security to your account</p>
-                </div>
+                <div><p className="text-sm text-foreground">Two-factor authentication</p><p className="text-xs text-muted-foreground">Add extra security to your account</p></div>
               </div>
               <span className="text-[10px] px-2 py-0.5 bg-muted text-muted-foreground rounded-full">Coming soon</span>
             </div>
             <button onClick={handleExportData}
               className="w-full flex items-center gap-2 px-4 py-3 border border-border rounded-lg text-sm text-foreground hover:bg-muted transition-colors text-left">
               <Download className="w-4 h-4 text-muted-foreground" />
-              <div className="flex-1">
-                <p>Export all data</p>
-                <p className="text-xs text-muted-foreground">Download your vault data as JSON</p>
-              </div>
+              <div className="flex-1"><p>Export all data</p><p className="text-xs text-muted-foreground">Download your data as JSON</p></div>
             </button>
           </div>
         </section>
 
-        {/* Appearance */}
         <section className="bg-card border border-border rounded-xl p-6 mb-6">
           <h2 className="font-heading text-lg text-foreground mb-4">Appearance</h2>
           <div className="space-y-4">
@@ -162,14 +135,11 @@ const SettingsPage = () => {
                 <option value="ar">Arabic</option>
                 <option value="fr">French</option>
                 <option value="es">Spanish</option>
-                <option value="de">German</option>
-                <option value="tr">Turkish</option>
               </select>
             </div>
           </div>
         </section>
 
-        {/* Subscription */}
         <section className="bg-card border border-border rounded-xl p-6 mb-6">
           <h2 className="font-heading text-lg text-foreground mb-4">Subscription</h2>
           <div className="flex items-center gap-3 mb-4">
@@ -182,9 +152,7 @@ const SettingsPage = () => {
                 <p className="text-sm font-medium text-foreground capitalize mb-2">{key}</p>
                 <p className="text-lg font-heading text-foreground mb-3">{planPrices[key]}</p>
                 <ul className="space-y-1.5">
-                  {features.map((f) => (
-                    <li key={f} className="text-xs text-muted-foreground">✓ {f}</li>
-                  ))}
+                  {features.map((f) => <li key={f} className="text-xs text-muted-foreground">✓ {f}</li>)}
                 </ul>
                 {key !== plan && (
                   <button className="w-full mt-3 py-1.5 text-xs bg-primary text-primary-foreground rounded-md hover:bg-primary/90">
@@ -196,7 +164,6 @@ const SettingsPage = () => {
           </div>
         </section>
 
-        {/* About */}
         <section className="bg-card border border-border rounded-xl p-6">
           <h2 className="font-heading text-lg text-foreground mb-4">About</h2>
           <div className="space-y-3 text-sm">
@@ -204,13 +171,13 @@ const SettingsPage = () => {
               <span className="text-muted-foreground">Version</span>
               <span className="text-foreground">1.0.0</span>
             </div>
-            <a href="#" className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
+            <a href="/privacy" className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
               <Info className="w-4 h-4" /> Privacy Policy
             </a>
-            <a href="#" className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
+            <a href="/terms" className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
               <Info className="w-4 h-4" /> Terms of Service
             </a>
-            <a href="mailto:support@vault.health" className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
+            <a href="mailto:support@rinvita.health" className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
               <Info className="w-4 h-4" /> Contact Support
             </a>
           </div>

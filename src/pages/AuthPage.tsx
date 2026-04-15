@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { lovable } from "@/integrations/lovable/index";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const AuthPage = () => {
@@ -10,15 +11,14 @@ const AuthPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  // Sign in state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  // Sign up state
   const [fullName, setFullName] = useState("");
   const [dob, setDob] = useState("");
   const [nationality, setNationality] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [healthConsent, setHealthConsent] = useState(false);
+  const [termsConsent, setTermsConsent] = useState(false);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,6 +52,13 @@ const AuthPage = () => {
     if (error) {
       toast.error(error.message);
     } else {
+      // Store consent timestamps
+      // Will be written to profile after account creation via trigger
+      const consentTime = new Date().toISOString();
+      localStorage.setItem("rinvita-consent-pending", JSON.stringify({
+        health_data_consent_at: consentTime,
+        terms_consent_at: consentTime,
+      }));
       toast.success("Check your email for a confirmation link");
       setMode("signin");
     }
@@ -60,7 +67,6 @@ const AuthPage = () => {
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { supabase } = await import("@/integrations/supabase/client");
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
     });
@@ -85,12 +91,14 @@ const AuthPage = () => {
     navigate("/");
   };
 
+  const canSignUp = healthConsent && termsConsent;
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="font-heading text-3xl font-light tracking-[0.2em] gold-gradient-text">VAULT</h1>
-          <p className="text-xs tracking-[0.2em] text-muted-foreground mt-1 uppercase">Health Intelligence</p>
+          <h1 className="font-heading text-3xl font-light tracking-[0.15em] gold-gradient-text">RinVita</h1>
+          <p className="text-xs tracking-[0.15em] text-muted-foreground mt-1">Your health history. Everywhere you go.</p>
         </div>
 
         <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
@@ -180,7 +188,28 @@ const AuthPage = () => {
                     <input type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
                       className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
                   </div>
-                  <button type="submit" disabled={loading}
+
+                  {/* GDPR Consent Checkboxes */}
+                  <div className="space-y-3 pt-2">
+                    <label className="flex items-start gap-2.5 cursor-pointer">
+                      <input type="checkbox" checked={healthConsent} onChange={(e) => setHealthConsent(e.target.checked)}
+                        className="w-4 h-4 mt-0.5 rounded border-border text-primary focus:ring-primary shrink-0" />
+                      <span className="text-xs text-muted-foreground leading-relaxed">
+                        I consent to RinVita processing my health data including medical documents, blood results, and imaging findings as described in the{" "}
+                        <Link to="/privacy" className="text-primary underline hover:text-primary/80">Privacy Policy</Link>.
+                      </span>
+                    </label>
+                    <label className="flex items-start gap-2.5 cursor-pointer">
+                      <input type="checkbox" checked={termsConsent} onChange={(e) => setTermsConsent(e.target.checked)}
+                        className="w-4 h-4 mt-0.5 rounded border-border text-primary focus:ring-primary shrink-0" />
+                      <span className="text-xs text-muted-foreground leading-relaxed">
+                        I agree to the{" "}
+                        <Link to="/terms" className="text-primary underline hover:text-primary/80">Terms of Service</Link>.
+                      </span>
+                    </label>
+                  </div>
+
+                  <button type="submit" disabled={loading || !canSignUp}
                     className="w-full py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50">
                     {loading ? "Creating account..." : "Create Account"}
                   </button>

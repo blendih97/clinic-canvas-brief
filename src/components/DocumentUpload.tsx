@@ -119,9 +119,21 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
 
   const { user } = useAuth();
   
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!result || !user) return;
     const uid = user.id;
+
+    // Upload original file to storage
+    let fileUrl: string | undefined;
+    if (file) {
+      const filePath = `${uid}/uploads/${Date.now()}-${file.name}`;
+      const { error: uploadErr } = await supabase.storage
+        .from("medical-documents")
+        .upload(filePath, file, { upsert: true });
+      if (!uploadErr) {
+        fileUrl = filePath; // Store the path, we'll use signed URLs to access
+      }
+    }
 
     if (result.bloodResults?.length) store.addBloodResults(result.bloodResults, uid);
     if (result.imagingResults?.length) store.addImagingResults(result.imagingResults, uid);
@@ -139,6 +151,7 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
           country: result.documentMeta.country || "Unknown",
           pages: result.documentMeta.pages || 1,
           extracted: true,
+          fileUrl,
         },
       ], uid);
     }
@@ -175,7 +188,6 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
         </div>
 
         <div className="p-5">
-          {/* INPUT */}
           {phase === "input" && (
             <div className="space-y-4">
               {error && (
@@ -245,7 +257,6 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
             </div>
           )}
 
-          {/* PROCESSING */}
           {phase === "processing" && (
             <div className="py-8 space-y-4">
               {processingSteps.map((step, i) => (
@@ -265,7 +276,6 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
             </div>
           )}
 
-          {/* CONFIRM */}
           {phase === "confirm" && result && (
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
@@ -320,14 +330,13 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
             </div>
           )}
 
-          {/* DONE */}
           {phase === "done" && (
             <div className="py-8 text-center space-y-3">
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
                 <CheckCircle className="w-6 h-6 text-primary" />
               </div>
               <h4 className="font-heading text-xl text-foreground">Document Added</h4>
-              <p className="text-sm text-muted-foreground">Your health vault has been updated.</p>
+              <p className="text-sm text-muted-foreground">Your health record has been updated.</p>
               <button onClick={handleClose} className="mt-2 px-6 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors">
                 Done
               </button>

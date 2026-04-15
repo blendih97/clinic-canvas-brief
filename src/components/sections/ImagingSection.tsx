@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { ScanLine, Languages, AlertTriangle, CheckCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { useVaultStore } from "@/store/vaultStore";
+import { getImagingInsight } from "@/lib/insights";
+import MedicalDisclaimer from "@/components/MedicalDisclaimer";
 
 const statusBadge = {
   normal: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
@@ -81,6 +83,7 @@ const ImagingSection = () => {
                 </span>
               </div>
               <p className="text-[10px] text-muted-foreground">{r.facility} · {r.date}</p>
+              <p className="text-[11px] text-muted-foreground mt-1.5 italic">{getImagingInsight(r.status)}</p>
               {r.originalLang !== "English" && (
                 <div className="flex items-center gap-1 mt-2">
                   <Languages className="w-3 h-3 text-primary" />
@@ -91,7 +94,7 @@ const ImagingSection = () => {
           ))}
         </div>
 
-        {/* Anatomical viewer — collapsible */}
+        {/* Anatomical viewer */}
         <div className="bg-card border border-border rounded-xl overflow-hidden">
           <button
             onClick={() => setShowAnatomy(!showAnatomy)}
@@ -127,10 +130,14 @@ const ImagingSection = () => {
                 </div>
               )}
               <div><p className="text-[10px] tracking-wider text-muted-foreground uppercase mb-1">Findings</p><p className="text-foreground/80 leading-relaxed">{selected.finding}</p></div>
+              <p className="text-[11px] text-muted-foreground italic">{getImagingInsight(selected.status)}</p>
             </div>
+            <MedicalDisclaimer />
           </div>
         )}
       </div>
+
+      <MedicalDisclaimer />
     </div>
   );
 };

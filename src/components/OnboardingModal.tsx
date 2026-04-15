@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import { X, Upload, ArrowRight, ArrowLeft, CheckCircle } from "lucide-react";
 
 interface OnboardingModalProps {
@@ -34,7 +33,6 @@ const OnboardingModal = ({ open, onClose, onUpload }: OnboardingModalProps) => {
   return (
     <div className="fixed inset-0 z-[60] bg-black/50 flex items-center justify-center p-4">
       <div className="bg-card border border-border rounded-xl w-full max-w-md shadow-xl">
-        {/* Progress */}
         <div className="flex items-center gap-1 px-6 pt-5">
           {[1, 2, 3].map((s) => (
             <div key={s} className={`flex-1 h-1 rounded-full transition-colors ${s <= step ? "bg-primary" : "bg-border"}`} />
@@ -44,10 +42,10 @@ const OnboardingModal = ({ open, onClose, onUpload }: OnboardingModalProps) => {
         <div className="p-6">
           {step === 1 && (
             <div className="text-center space-y-4">
-              <h1 className="font-heading text-2xl font-light tracking-[0.15em] gold-gradient-text">VAULT</h1>
-              <h2 className="font-heading text-xl text-foreground">Welcome to your Health Vault</h2>
+              <h1 className="font-heading text-2xl font-light tracking-[0.15em] gold-gradient-text">RinVita</h1>
+              <h2 className="font-heading text-xl text-foreground">Welcome to RinVita</h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Upload any medical document in any language. Vault reads it, translates it, and organises it automatically.
+                Upload any medical document in any language. RinVita reads it, translates it, and organises it automatically.
               </p>
               <button onClick={() => setStep(2)}
                 className="w-full py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 flex items-center justify-center gap-2">
@@ -59,7 +57,7 @@ const OnboardingModal = ({ open, onClose, onUpload }: OnboardingModalProps) => {
           {step === 2 && (
             <div className="space-y-4">
               <h2 className="font-heading text-xl text-foreground">Complete Your Profile</h2>
-              <p className="text-sm text-muted-foreground">Help us personalise your health vault.</p>
+              <p className="text-sm text-muted-foreground">Help us personalise your health record.</p>
               <div>
                 <label className="text-xs font-medium text-foreground">Name</label>
                 <input value={profile?.full_name || ""} readOnly

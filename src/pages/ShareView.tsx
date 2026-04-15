@@ -83,12 +83,11 @@ const ShareView = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="border-b border-border bg-card">
         <div className="max-w-3xl mx-auto px-6 py-5 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Shield className="w-5 h-5 text-primary" />
-            <h1 className="font-heading text-xl text-foreground">Health Brief</h1>
+            <h1 className="font-heading text-xl text-foreground">RinVita Health Brief</h1>
           </div>
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <Clock className="w-3.5 h-3.5" />
@@ -98,12 +97,10 @@ const ShareView = () => {
       </header>
 
       <main className="max-w-3xl mx-auto px-6 py-8 space-y-8">
-        {/* Scope */}
         <div className="bg-primary/5 border border-primary/10 rounded-lg p-4 text-sm text-primary">
           Scope: {brief.scope || "Full Health History"} · Created {new Date(brief.created_at).toLocaleDateString()}
         </div>
 
-        {/* Allergies */}
         {allergies.length > 0 && (
           <section>
             <div className="flex items-center gap-2 mb-3">
@@ -120,7 +117,6 @@ const ShareView = () => {
           </section>
         )}
 
-        {/* Medications */}
         {medications.length > 0 && (
           <section>
             <div className="flex items-center gap-2 mb-3">
@@ -141,7 +137,6 @@ const ShareView = () => {
           </section>
         )}
 
-        {/* Blood Results */}
         {bloodResults.length > 0 && (
           <section>
             <div className="flex items-center gap-2 mb-3">
@@ -179,7 +174,6 @@ const ShareView = () => {
           </section>
         )}
 
-        {/* Imaging */}
         {imagingResults.length > 0 && (
           <section>
             <div className="flex items-center gap-2 mb-3">
@@ -198,9 +192,8 @@ const ShareView = () => {
           </section>
         )}
 
-        {/* Footer */}
         <div className="text-center text-xs text-muted-foreground pt-6 border-t border-border">
-          Generated securely by Vault · This link will expire automatically
+          Generated securely by RinVita · This link will expire automatically
         </div>
       </main>
     </div>

@@ -12,6 +12,8 @@ import SettingsPage from "./pages/SettingsPage.tsx";
 import UploadRequestPage from "./pages/UploadRequestPage.tsx";
 import MediaSharePage from "./pages/MediaSharePage.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import PrivacyPage from "./pages/PrivacyPage.tsx";
+import TermsPage from "./pages/TermsPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -21,7 +23,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-3">
-        <h1 className="font-heading text-2xl font-light tracking-[0.2em] gold-gradient-text">VAULT</h1>
+        <h1 className="font-heading text-2xl font-light tracking-[0.15em] gold-gradient-text">RinVita</h1>
         <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -53,6 +55,8 @@ const App = () => (
             <Route path="/share/:token" element={<ShareView />} />
             <Route path="/upload-request/:token" element={<UploadRequestPage />} />
             <Route path="/media-share/:token" element={<MediaSharePage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

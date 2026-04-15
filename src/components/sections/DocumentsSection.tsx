@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FileText, CheckCircle, Send, Clock, Eye, Inbox, X, Loader2 } from "lucide-react";
+import { FileText, CheckCircle, Send, Clock, Eye, Inbox, X, Loader2, Search, Pin } from "lucide-react";
 import { useVaultStore } from "@/store/vaultStore";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,40 +35,32 @@ const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void 
   const [tab, setTab] = useState<"documents" | "requests">("documents");
   const [requests, setRequests] = useState<RecordRequest[]>([]);
   const [loadingRequests, setLoadingRequests] = useState(false);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
-    if (tab === "requests" && user) {
-      loadRequests();
-    }
+    if (tab === "requests" && user) loadRequests();
   }, [tab, user]);
 
   const loadRequests = async () => {
     if (!user) return;
     setLoadingRequests(true);
-    const { data } = await supabase
-      .from("record_requests")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false });
+    const { data } = await supabase.from("record_requests").select("*").eq("user_id", user.id).order("created_at", { ascending: false });
     setRequests((data as RecordRequest[]) || []);
     setLoadingRequests(false);
   };
 
   const handleCancelRequest = async (id: string) => {
-    const { error } = await supabase
-      .from("record_requests")
-      .update({ status: "cancelled" })
-      .eq("id", id);
-    if (!error) {
-      toast.success("Request cancelled");
-      loadRequests();
-    }
+    const { error } = await supabase.from("record_requests").update({ status: "cancelled" }).eq("id", id);
+    if (!error) { toast.success("Request cancelled"); loadRequests(); }
   };
 
-  const handleRowClick = (doc: Document) => {
-    setSelectedDoc(doc);
-    setShowViewer(true);
-  };
+  const handleRowClick = (doc: Document) => { setSelectedDoc(doc); setShowViewer(true); };
+
+  const q = search.toLowerCase();
+  const filteredDocs = documents.filter(d =>
+    !q || d.name.toLowerCase().includes(q) || d.facility.toLowerCase().includes(q) ||
+    d.country.toLowerCase().includes(q) || d.date.includes(q) || d.type.toLowerCase().includes(q)
+  );
 
   return (
     <div className="space-y-6">
@@ -78,39 +70,37 @@ const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void 
           <p className="text-sm text-muted-foreground mt-2">Full archive of uploaded medical records</p>
         </div>
         {onRequestRecords && (
-          <button
-            onClick={onRequestRecords}
-            className="flex items-center gap-2 px-4 py-2 border border-border text-foreground rounded-lg text-sm font-medium hover:border-primary/30 transition-colors"
-          >
+          <button onClick={onRequestRecords}
+            className="flex items-center gap-2 px-4 py-2 border border-border text-foreground rounded-lg text-sm font-medium hover:border-primary/30 transition-colors">
             <Send className="w-4 h-4" /> Request Records
           </button>
         )}
       </div>
 
+      {/* Search */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search documents, facilities, dates…"
+          className="w-full pl-10 pr-4 py-2.5 bg-card border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary" />
+      </div>
+
       {/* Tabs */}
       <div className="flex gap-1 bg-muted rounded-lg p-1 w-fit">
-        <button
-          onClick={() => setTab("documents")}
-          className={`flex items-center gap-1.5 px-4 py-1.5 rounded-md text-xs font-medium transition-colors ${
-            tab === "documents" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
+        <button onClick={() => setTab("documents")}
+          className={`flex items-center gap-1.5 px-4 py-1.5 rounded-md text-xs font-medium transition-colors ${tab === "documents" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
           <FileText className="w-3 h-3" /> Documents
         </button>
-        <button
-          onClick={() => setTab("requests")}
-          className={`flex items-center gap-1.5 px-4 py-1.5 rounded-md text-xs font-medium transition-colors ${
-            tab === "requests" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
+        <button onClick={() => setTab("requests")}
+          className={`flex items-center gap-1.5 px-4 py-1.5 rounded-md text-xs font-medium transition-colors ${tab === "requests" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
           <Send className="w-3 h-3" /> Requests
         </button>
       </div>
 
       {tab === "documents" ? (
-        documents.length === 0 ? (
+        filteredDocs.length === 0 ? (
           <div className="bg-card border border-border rounded-lg p-12 text-center text-muted-foreground text-sm">
-            No documents yet. Upload documents to build your health archive.
+            {search ? "No documents match your search." : "No documents yet. Upload documents to build your health archive."}
           </div>
         ) : (
           <div className="bg-card border border-border rounded-lg overflow-hidden">
@@ -126,12 +116,9 @@ const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void 
                 </tr>
               </thead>
               <tbody>
-                {documents.map((d) => (
-                  <tr
-                    key={d.id}
-                    onClick={() => handleRowClick(d)}
-                    className="border-b border-border/50 hover:bg-muted/50 transition-colors cursor-pointer"
-                  >
+                {filteredDocs.map((d) => (
+                  <tr key={d.id} onClick={() => handleRowClick(d)}
+                    className="border-b border-border/50 hover:bg-muted/50 transition-colors cursor-pointer">
                     <td className="p-4">
                       <div className="flex items-center gap-2">
                         <FileText className="w-4 h-4 text-primary" />
@@ -166,7 +153,6 @@ const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void 
           </div>
         )
       ) : (
-        /* Requests tab */
         <div className="space-y-3">
           {loadingRequests ? (
             <div className="bg-card border border-border rounded-lg p-12 text-center">
@@ -187,8 +173,7 @@ const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void 
                       <div className="flex items-center gap-2 mb-1">
                         <h4 className="text-sm font-medium text-foreground">{req.provider_name}</h4>
                         <span className={`inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border font-medium ${cfg.color}`}>
-                          <StatusIcon className="w-3 h-3" />
-                          {cfg.label}
+                          <StatusIcon className="w-3 h-3" />{cfg.label}
                         </span>
                       </div>
                       <p className="text-xs text-muted-foreground">{req.request_description}</p>
@@ -197,12 +182,8 @@ const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void 
                       </p>
                     </div>
                     {req.status === "pending" && (
-                      <button
-                        onClick={() => handleCancelRequest(req.id)}
-                        className="shrink-0 ml-3 text-xs text-muted-foreground hover:text-destructive transition-colors"
-                      >
-                        Cancel
-                      </button>
+                      <button onClick={() => handleCancelRequest(req.id)}
+                        className="shrink-0 ml-3 text-xs text-muted-foreground hover:text-destructive transition-colors">Cancel</button>
                     )}
                   </div>
                 </div>

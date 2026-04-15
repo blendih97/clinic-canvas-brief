@@ -27,6 +27,7 @@ const ProfilePage = () => {
   const [bloodType, setBloodType] = useState("");
   const [emergencyName, setEmergencyName] = useState("");
   const [emergencyPhone, setEmergencyPhone] = useState("");
+  const [biologicalSex, setBiologicalSex] = useState("");
 
   useEffect(() => {
     if (profile) {
@@ -37,6 +38,7 @@ const ProfilePage = () => {
       setBloodType(profile.blood_type || "");
       setEmergencyName(profile.emergency_contact_name || "");
       setEmergencyPhone(profile.emergency_contact_phone || "");
+      setBiologicalSex((profile as any).biological_sex || "");
     }
   }, [profile]);
 
@@ -51,6 +53,7 @@ const ProfilePage = () => {
       blood_type: bloodType,
       emergency_contact_name: emergencyName,
       emergency_contact_phone: emergencyPhone,
+      biological_sex: biologicalSex || null,
     }).eq("id", user.id);
     setSaving(false);
     if (error) {
@@ -75,7 +78,6 @@ const ProfilePage = () => {
 
   const handleDeleteAccount = async () => {
     if (deleteConfirm !== "DELETE" || !user) return;
-    // Delete all user data
     await Promise.all([
       supabase.from("blood_results").delete().eq("user_id", user.id),
       supabase.from("imaging_results").delete().eq("user_id", user.id),
@@ -101,7 +103,6 @@ const ProfilePage = () => {
 
         <h1 className="font-heading text-3xl font-light text-foreground mb-6">Profile</h1>
 
-        {/* Avatar */}
         <div className="flex items-center gap-4 mb-8">
           <div className="relative">
             <div className="w-16 h-16 rounded-full bg-primary/15 flex items-center justify-center text-primary text-xl font-heading font-semibold overflow-hidden">
@@ -120,7 +121,6 @@ const ProfilePage = () => {
           </div>
         </div>
 
-        {/* Personal Information */}
         <section className="bg-card border border-border rounded-xl p-6 mb-6">
           <h2 className="font-heading text-lg text-foreground mb-4">Personal Information</h2>
           <div className="space-y-4">
@@ -154,10 +154,19 @@ const ProfilePage = () => {
           </div>
         </section>
 
-        {/* Medical Information */}
         <section className="bg-card border border-border rounded-xl p-6 mb-6">
           <h2 className="font-heading text-lg text-foreground mb-4">Medical Information</h2>
           <div className="space-y-4">
+            <div>
+              <label className="text-xs font-medium text-foreground">Biological Sex</label>
+              <select value={biologicalSex} onChange={(e) => setBiologicalSex(e.target.value)}
+                className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30">
+                <option value="">Select...</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+              <p className="text-[10px] text-muted-foreground mt-1">Used to show personalised blood result reference ranges.</p>
+            </div>
             <div>
               <label className="text-xs font-medium text-foreground">Blood Type</label>
               <select value={bloodType} onChange={(e) => setBloodType(e.target.value)}
@@ -179,7 +188,6 @@ const ProfilePage = () => {
           </div>
         </section>
 
-        {/* Account Information */}
         <section className="bg-card border border-border rounded-xl p-6 mb-6">
           <h2 className="font-heading text-lg text-foreground mb-4">Account</h2>
           <div className="grid grid-cols-2 gap-4 text-sm">
@@ -201,12 +209,9 @@ const ProfilePage = () => {
           {saving ? "Saving..." : "Save Changes"}
         </button>
 
-        {/* Danger Zone */}
         <section className="border border-destructive/30 rounded-xl p-6">
           <h2 className="font-heading text-lg text-destructive mb-2">Danger Zone</h2>
-          <p className="text-sm text-muted-foreground mb-4">
-            Permanently delete your account and all associated health data. This cannot be undone.
-          </p>
+          <p className="text-sm text-muted-foreground mb-4">Permanently delete your account and all associated health data. This cannot be undone.</p>
           {!showDelete ? (
             <button onClick={() => setShowDelete(true)}
               className="flex items-center gap-2 px-4 py-2 border border-destructive text-destructive rounded-lg text-sm hover:bg-destructive/5 transition-colors">
