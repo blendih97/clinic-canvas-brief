@@ -45,7 +45,12 @@ export interface Document {
   pages: number;
   extracted: boolean;
   fileUrl?: string;
-  summary?: string | string[];
+  summary?: string | string[] | {
+    bullets?: string[];
+    englishText?: string[];
+    originalText?: string[];
+    originalLang?: string;
+  };
   aiNote?: string;
 }
 
@@ -181,7 +186,7 @@ export const useVaultStore = create<VaultState>()((set) => ({
     const rows = docs.map((d) => ({
       user_id: userId, name: d.name, type: d.type, date: d.date, facility: d.facility,
       country: d.country, pages: d.pages, extracted: d.extracted, file_url: d.fileUrl,
-      summary: d.summary ? (Array.isArray(d.summary) ? d.summary : [d.summary]) : null,
+      summary: d.summary ?? null,
       ai_note: d.aiNote,
     }));
     const { data } = await supabase.from("documents").insert(rows).select();
