@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, FileText, Download, Share2, Globe, Languages } from "lucide-react";
+import { X, FileText, Download, Share2, Globe, Languages, Loader2 } from "lucide-react";
 import type { Document, BloodResult, ImagingResult, Medication } from "@/store/vaultStore";
 import { useVaultStore } from "@/store/vaultStore";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,10 +10,41 @@ interface Props {
   onShare?: () => void;
 }
 
+const getTextItems = (value: unknown): string[] => {
+  if (Array.isArray(value)) {
+    return value.filter((item): item is string => typeof item === "string" && item.trim().length > 0);
+  }
+
+  if (typeof value === "string" && value.trim().length > 0) {
+    return [value];
+  }
+
+  return [];
+};
+
+const getSummaryContent = (summary?: Document["summary"]) => {
+  if (!summary) {
+    return { bullets: [] as string[], englishText: [] as string[], originalText: [] as string[], originalLang: undefined as string | undefined };
+  }
+
+  if (Array.isArray(summary) || typeof summary === "string") {
+    const bullets = getTextItems(summary);
+    return { bullets, englishText: bullets, originalText: [], originalLang: undefined as string | undefined };
+  }
+
+  return {
+    bullets: getTextItems(summary.bullets),
+    englishText: getTextItems(summary.englishText),
+    originalText: getTextItems(summary.originalText),
+    originalLang: typeof summary.originalLang === "string" && summary.originalLang.trim().length > 0 ? summary.originalLang : undefined,
+  };
+};
+
 const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
   const [lang, setLang] = useState<"english" | "original">("english");
   const { bloodResults, imagingResults, medications } = useVaultStore();
   const [signedUrl, setSignedUrl] = useState<string | null>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   // Get signed URL for the file
   useEffect(() => {
@@ -35,19 +66,35 @@ const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
   const relatedBlood = bloodResults.filter((b) => b.source === doc.name || b.date === doc.date);
   const relatedImaging = imagingResults.filter((i) => i.facility === doc.facility && i.date === doc.date);
   const relatedMeds = medications.filter((m) => m.facility === doc.facility && m.date === doc.date);
+  const summaryContent = getSummaryContent(doc.summary);
+  const summaryItems = summaryContent.bullets.length > 0 ? summaryContent.bullets : summaryContent.englishText;
 
-  const handleDownload = () => {
-    if (signedUrl) {
+  const handleDownload = async () => {
+    if (!signedUrl || isDownloading) return;
+
+    try {
+      setIsDownloading(true);
+      const response = await fetch(signedUrl);
+      if (!response.ok) throw new Error("Download failed");
+
+      const blob = await response.blob();
+      const objectUrl = window.URL.createObjectURL(blob);
       const a = window.document.createElement("a");
-      a.href = signedUrl;
+      a.href = objectUrl;
       a.download = doc.name;
-      a.target = "_blank";
+      window.document.body.appendChild(a);
       a.click();
+      a.remove();
+      window.URL.revokeObjectURL(objectUrl);
+    } catch (error) {
+      console.error("Download failed:", error);
+    } finally {
+      setIsDownloading(false);
     }
   };
 
   // For the "original" language toggle, show original lang data from related imaging
-  const originalLang = relatedImaging.find(i => i.originalLang && i.originalLang !== "English")?.originalLang;
+  const originalLang = summaryContent.originalLang || relatedImaging.find(i => i.originalLang && i.originalLang !== "English")?.originalLang;
 
   return (
     <div
@@ -108,7 +155,7 @@ const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
               <p className="text-xs text-primary bg-primary/5 border border-primary/10 rounded-lg p-3">
                 {originalLang
                   ? `Showing extracted text in ${originalLang} where available.`
-                  : "No original language data available for this document. Content is shown in English."}
+                  : "No original language data is available for this document."}
               </p>
             )}
 
@@ -132,12 +179,34 @@ const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
               </div>
             </div>
 
+            {/* Original text */}
+            {lang === "original" && (
+              <div>
+                <h4 className="text-xs tracking-wider text-muted-foreground uppercase font-medium mb-2">
+                  Original Text{originalLang ? ` (${originalLang})` : ""}
+                </h4>
+                {summaryContent.originalText.length > 0 ? (
+                  <div className="space-y-2">
+                    {summaryContent.originalText.map((item, i) => (
+                      <p key={i} className="text-sm text-foreground/80 leading-relaxed">
+                        {item}
+                      </p>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Original-language text was not saved for this record, so only the English extraction is available right now.
+                  </p>
+                )}
+              </div>
+            )}
+
             {/* Summary */}
-            {doc.summary && (
+            {lang === "english" && summaryItems.length > 0 && (
               <div>
                 <h4 className="text-xs tracking-wider text-muted-foreground uppercase font-medium mb-2">Summary</h4>
                 <ul className="space-y-1.5">
-                  {(Array.isArray(doc.summary) ? doc.summary : [doc.summary]).slice(0, 5).map((item, i) => (
+                  {summaryItems.slice(0, 5).map((item, i) => (
                     <li key={i} className="text-sm text-foreground/80 flex gap-2">
                       <span className="text-primary mt-1">•</span>
                       <span>{item}</span>
@@ -220,12 +289,17 @@ const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
               )}
               <button
                 onClick={handleDownload}
-                disabled={!signedUrl}
+                disabled={!signedUrl || isDownloading}
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                <Download className="w-4 h-4" /> Download original
+                {isDownloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />} Download original
               </button>
             </div>
+            {!signedUrl && (
+              <p className="text-[11px] text-muted-foreground">
+                This record does not have an original file stored yet, so preview and download are unavailable.
+              </p>
+            )}
           </div>
         </div>
       </div>
