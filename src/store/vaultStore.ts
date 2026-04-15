@@ -20,6 +20,7 @@ export interface ImagingResult {
   date: string;
   facility: string;
   finding: string;
+  findingOriginal?: string;
   status: "normal" | "flagged";
   originalLang: string;
 }
@@ -33,6 +34,7 @@ export interface Medication {
   facility: string;
   date: string;
   active: boolean;
+  source: string;
 }
 
 export interface Document {
@@ -45,6 +47,7 @@ export interface Document {
   pages: number;
   extracted: boolean;
   fileUrl?: string;
+  filePath?: string;
   summary?: string | string[] | {
     bullets?: string[];
     englishText?: string[];
@@ -60,9 +63,11 @@ export interface Alert {
 }
 
 export interface Allergy {
+  id?: string;
   substance: string;
   reaction: string;
   severity: string;
+  source: string;
 }
 
 interface VaultState {
@@ -82,6 +87,9 @@ interface VaultState {
   addDocuments: (docs: Document[], userId: string) => Promise<void>;
   addAlerts: (alerts: Alert[], userId: string) => Promise<void>;
   addAllergies: (allergies: Allergy[], userId: string) => Promise<void>;
+  removeMedication: (id: string) => Promise<void>;
+  removeAllergy: (id: string) => Promise<void>;
+  updateMedication: (id: string, updates: Partial<Medication>) => Promise<void>;
 }
 
 export const useVaultStore = create<VaultState>()((set) => ({
@@ -112,22 +120,26 @@ export const useVaultStore = create<VaultState>()((set) => ({
       })),
       imagingResults: (imaging.data || []).map((r: any) => ({
         id: r.id, type: r.type, region: r.region || "", date: r.date || "", facility: r.facility || "",
-        finding: r.finding || "", status: r.status as "normal" | "flagged", originalLang: r.original_lang || "",
+        finding: r.finding || "", findingOriginal: r.finding_original || "",
+        status: r.status as "normal" | "flagged", originalLang: r.original_lang || "",
       })),
       medications: (meds.data || []).map((r: any) => ({
         id: r.id, name: r.name, dose: r.dose || "", frequency: r.frequency || "",
         prescriber: r.prescriber || "", facility: r.facility || "", date: r.date || "", active: r.active,
+        source: r.source || "ai",
       })),
       documents: (docs.data || []).map((r: any) => ({
         id: r.id, name: r.name, type: r.type || "", date: r.date || "", facility: r.facility || "",
         country: r.country || "", pages: r.pages || 1, extracted: r.extracted || false,
-        fileUrl: r.file_url || undefined, summary: r.summary || undefined, aiNote: r.ai_note || undefined,
+        fileUrl: r.file_url || undefined, filePath: r.file_path || undefined,
+        summary: r.summary || undefined, aiNote: r.ai_note || undefined,
       })),
       alerts: (alerts.data || []).map((r: any) => ({
         type: r.type as "critical" | "flagged", message: r.message,
       })),
       allergies: (allergies.data || []).map((r: any) => ({
-        substance: r.substance, reaction: r.reaction || "", severity: r.severity || "",
+        id: r.id, substance: r.substance, reaction: r.reaction || "", severity: r.severity || "",
+        source: r.source || "ai",
       })),
       loading: false,
     });
@@ -171,12 +183,14 @@ export const useVaultStore = create<VaultState>()((set) => ({
     const rows = meds.map((m) => ({
       user_id: userId, name: m.name, dose: m.dose, frequency: m.frequency,
       prescriber: m.prescriber, facility: m.facility, date: m.date, active: m.active,
+      source: m.source || "ai",
     }));
     const { data } = await supabase.from("medications").insert(rows).select();
     if (data) {
       const mapped = data.map((r: any) => ({
         id: r.id, name: r.name, dose: r.dose || "", frequency: r.frequency || "",
         prescriber: r.prescriber || "", facility: r.facility || "", date: r.date || "", active: r.active,
+        source: r.source || "ai",
       }));
       set((s) => ({ medications: [...s.medications, ...mapped] }));
     }
@@ -186,6 +200,7 @@ export const useVaultStore = create<VaultState>()((set) => ({
     const rows = docs.map((d) => ({
       user_id: userId, name: d.name, type: d.type, date: d.date, facility: d.facility,
       country: d.country, pages: d.pages, extracted: d.extracted, file_url: d.fileUrl,
+      file_path: d.filePath,
       summary: d.summary ?? null,
       ai_note: d.aiNote,
     }));
@@ -194,7 +209,8 @@ export const useVaultStore = create<VaultState>()((set) => ({
       const mapped = data.map((r: any) => ({
         id: r.id, name: r.name, type: r.type || "", date: r.date || "", facility: r.facility || "",
         country: r.country || "", pages: r.pages || 1, extracted: r.extracted || false,
-        fileUrl: r.file_url || undefined, summary: r.summary || undefined, aiNote: r.ai_note || undefined,
+        fileUrl: r.file_url || undefined, filePath: r.file_path || undefined,
+        summary: r.summary || undefined, aiNote: r.ai_note || undefined,
       }));
       set((s) => ({ documents: [...s.documents, ...mapped] }));
     }
@@ -211,8 +227,32 @@ export const useVaultStore = create<VaultState>()((set) => ({
   addAllergies: async (newAllergies, userId) => {
     const rows = newAllergies.map((a) => ({
       user_id: userId, substance: a.substance, reaction: a.reaction, severity: a.severity,
+      source: a.source || "ai",
     }));
-    await supabase.from("allergies").insert(rows);
-    set((s) => ({ allergies: [...s.allergies, ...newAllergies] }));
+    const { data } = await supabase.from("allergies").insert(rows).select();
+    if (data) {
+      const mapped = data.map((r: any) => ({
+        id: r.id, substance: r.substance, reaction: r.reaction || "", severity: r.severity || "",
+        source: r.source || "ai",
+      }));
+      set((s) => ({ allergies: [...s.allergies, ...mapped] }));
+    }
+  },
+
+  removeMedication: async (id: string) => {
+    await supabase.from("medications").delete().eq("id", id);
+    set((s) => ({ medications: s.medications.filter((m) => m.id !== id) }));
+  },
+
+  removeAllergy: async (id: string) => {
+    await supabase.from("allergies").delete().eq("id", id);
+    set((s) => ({ allergies: s.allergies.filter((a) => a.id !== id) }));
+  },
+
+  updateMedication: async (id: string, updates: Partial<Medication>) => {
+    await supabase.from("medications").update(updates).eq("id", id);
+    set((s) => ({
+      medications: s.medications.map((m) => m.id === id ? { ...m, ...updates } : m),
+    }));
   },
 }));

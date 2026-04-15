@@ -15,7 +15,7 @@ const AuthPage = () => {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [dob, setDob] = useState("");
-  const [nationality, setNationality] = useState("");
+  const [biologicalSex, setBiologicalSex] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [healthConsent, setHealthConsent] = useState(false);
   const [termsConsent, setTermsConsent] = useState(false);
@@ -46,18 +46,17 @@ const AuthPage = () => {
     const { error } = await signUp(email, password, {
       full_name: fullName,
       date_of_birth: dob,
-      nationality,
+      biological_sex: biologicalSex,
     });
     setLoading(false);
     if (error) {
       toast.error(error.message);
     } else {
-      // Store consent timestamps
-      // Will be written to profile after account creation via trigger
       const consentTime = new Date().toISOString();
       localStorage.setItem("rinvita-consent-pending", JSON.stringify({
         health_data_consent_at: consentTime,
         terms_consent_at: consentTime,
+        biological_sex: biologicalSex || null,
       }));
       toast.success("Check your email for a confirmation link");
       setMode("signin");
@@ -173,9 +172,14 @@ const AuthPage = () => {
                         className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
                     </div>
                     <div>
-                      <label className="text-xs font-medium text-foreground">Nationality</label>
-                      <input type="text" required value={nationality} onChange={(e) => setNationality(e.target.value)}
-                        className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                      <label className="text-xs font-medium text-foreground">Biological Sex</label>
+                      <select value={biologicalSex} onChange={(e) => setBiologicalSex(e.target.value)}
+                        className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30">
+                        <option value="">Select...</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="prefer_not_to_say">Prefer not to say</option>
+                      </select>
                     </div>
                   </div>
                   <div>
@@ -189,7 +193,7 @@ const AuthPage = () => {
                       className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
                   </div>
 
-                  {/* GDPR Consent Checkboxes */}
+                  {/* GDPR Consent */}
                   <div className="space-y-3 pt-2">
                     <label className="flex items-start gap-2.5 cursor-pointer">
                       <input type="checkbox" checked={healthConsent} onChange={(e) => setHealthConsent(e.target.checked)}

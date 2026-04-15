@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useVaultStore } from "@/store/vaultStore";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ArrowLeft, Camera, Trash2, AlertTriangle } from "lucide-react";
@@ -15,6 +16,7 @@ const planLabels: Record<string, string> = {
 
 const ProfilePage = () => {
   const { user, profile, refreshProfile, signOut } = useAuth();
+  const { medications, allergies } = useVaultStore();
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState("");
@@ -28,6 +30,16 @@ const ProfilePage = () => {
   const [emergencyName, setEmergencyName] = useState("");
   const [emergencyPhone, setEmergencyPhone] = useState("");
   const [biologicalSex, setBiologicalSex] = useState("");
+  const [heightCm, setHeightCm] = useState("");
+  const [weightKg, setWeightKg] = useState("");
+  const [currentDiagnoses, setCurrentDiagnoses] = useState("");
+
+  const bmi = useMemo(() => {
+    const h = parseFloat(heightCm);
+    const w = parseFloat(weightKg);
+    if (h > 0 && w > 0) return (w / ((h / 100) ** 2)).toFixed(1);
+    return null;
+  }, [heightCm, weightKg]);
 
   useEffect(() => {
     if (profile) {
@@ -39,6 +51,9 @@ const ProfilePage = () => {
       setEmergencyName(profile.emergency_contact_name || "");
       setEmergencyPhone(profile.emergency_contact_phone || "");
       setBiologicalSex((profile as any).biological_sex || "");
+      setHeightCm((profile as any).height_cm?.toString() || "");
+      setWeightKg((profile as any).weight_kg?.toString() || "");
+      setCurrentDiagnoses((profile as any).current_diagnoses || "");
     }
   }, [profile]);
 
@@ -54,7 +69,10 @@ const ProfilePage = () => {
       emergency_contact_name: emergencyName,
       emergency_contact_phone: emergencyPhone,
       biological_sex: biologicalSex || null,
-    }).eq("id", user.id);
+      height_cm: heightCm ? parseFloat(heightCm) : null,
+      weight_kg: weightKg ? parseFloat(weightKg) : null,
+      current_diagnoses: currentDiagnoses || null,
+    } as any).eq("id", user.id);
     setSaving(false);
     if (error) {
       toast.error("Failed to save — please try again");
@@ -93,6 +111,8 @@ const ProfilePage = () => {
 
   const initials = (fullName || user?.email?.split("@")[0] || "U")
     .split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
+
+  const activeMeds = medications.filter((m) => m.active);
 
   return (
     <div className="min-h-screen bg-background">
@@ -154,36 +174,98 @@ const ProfilePage = () => {
           </div>
         </section>
 
+        {/* About Me / Medical */}
         <section className="bg-card border border-border rounded-xl p-6 mb-6">
-          <h2 className="font-heading text-lg text-foreground mb-4">Medical Information</h2>
+          <h2 className="font-heading text-lg text-foreground mb-4">About Me</h2>
           <div className="space-y-4">
-            <div>
-              <label className="text-xs font-medium text-foreground">Biological Sex</label>
-              <select value={biologicalSex} onChange={(e) => setBiologicalSex(e.target.value)}
-                className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30">
-                <option value="">Select...</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-              </select>
-              <p className="text-[10px] text-muted-foreground mt-1">Used to show personalised blood result reference ranges.</p>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-medium text-foreground">Biological Sex</label>
+                <select value={biologicalSex} onChange={(e) => setBiologicalSex(e.target.value)}
+                  className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30">
+                  <option value="">Select...</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="prefer_not_to_say">Prefer not to say</option>
+                </select>
+                <p className="text-[10px] text-muted-foreground mt-1">Used to show personalised blood result reference ranges.</p>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-foreground">Blood Type</label>
+                <select value={bloodType} onChange={(e) => setBloodType(e.target.value)}
+                  className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30">
+                  <option value="">Select...</option>
+                  {bloodTypes.map((t) => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <label className="text-xs font-medium text-foreground">Height (cm)</label>
+                <input type="number" value={heightCm} onChange={(e) => setHeightCm(e.target.value)} placeholder="175"
+                  className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-foreground">Weight (kg)</label>
+                <input type="number" value={weightKg} onChange={(e) => setWeightKg(e.target.value)} placeholder="75"
+                  className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-foreground">BMI</label>
+                <input value={bmi || "—"} readOnly
+                  className="w-full mt-1 px-3 py-2 bg-muted border border-border rounded-lg text-sm text-muted-foreground cursor-not-allowed" />
+              </div>
             </div>
             <div>
-              <label className="text-xs font-medium text-foreground">Blood Type</label>
-              <select value={bloodType} onChange={(e) => setBloodType(e.target.value)}
-                className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30">
-                <option value="">Select...</option>
-                {bloodTypes.map((t) => <option key={t} value={t}>{t}</option>)}
-              </select>
+              <label className="text-xs font-medium text-foreground">Current Diagnoses</label>
+              <textarea value={currentDiagnoses} onChange={(e) => setCurrentDiagnoses(e.target.value)}
+                placeholder="e.g. Type 2 Diabetes, Hypertension"
+                className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none h-20" />
             </div>
+
+            {/* Current Medications (read-only from store) */}
             <div>
-              <label className="text-xs font-medium text-foreground">Emergency Contact Name</label>
-              <input value={emergencyName} onChange={(e) => setEmergencyName(e.target.value)}
-                className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
+              <label className="text-xs font-medium text-foreground">Current Medications</label>
+              {activeMeds.length > 0 ? (
+                <div className="mt-1 space-y-1">
+                  {activeMeds.map((m) => (
+                    <div key={m.id} className="text-sm text-foreground/80 px-3 py-1.5 bg-muted rounded">
+                      {m.name} {m.dose} — {m.frequency}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground mt-1">No active medications</p>
+              )}
             </div>
+
+            {/* Known Allergies (read-only from store) */}
             <div>
-              <label className="text-xs font-medium text-foreground">Emergency Contact Phone</label>
-              <input value={emergencyPhone} onChange={(e) => setEmergencyPhone(e.target.value)}
-                className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
+              <label className="text-xs font-medium text-foreground">Known Allergies</label>
+              {allergies.length > 0 ? (
+                <div className="mt-1 flex flex-wrap gap-2">
+                  {allergies.map((a, i) => (
+                    <span key={a.id || i} className="text-xs px-2 py-1 bg-destructive/10 text-destructive rounded border border-destructive/20">
+                      {a.substance} ({a.severity})
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground mt-1">No known allergies</p>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-medium text-foreground">Emergency Contact Name</label>
+                <input value={emergencyName} onChange={(e) => setEmergencyName(e.target.value)}
+                  className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-foreground">Emergency Contact Phone</label>
+                <input value={emergencyPhone} onChange={(e) => setEmergencyPhone(e.target.value)}
+                  className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
+              </div>
             </div>
           </div>
         </section>
