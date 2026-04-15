@@ -19,6 +19,12 @@ interface ExtractionResult {
     facility: string;
     country: string;
     pages: number;
+    originalLang?: string;
+  };
+  summary?: {
+    englishText?: string[];
+    originalText?: string[];
+    originalLang?: string;
   };
 }
 
@@ -123,15 +129,15 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
     if (!result || !user) return;
     const uid = user.id;
 
-    // Upload original file to storage
-    let fileUrl: string | undefined;
+    // Upload original file to storage and get file_path
+    let filePath: string | undefined;
     if (file) {
-      const filePath = `${uid}/uploads/${Date.now()}-${file.name}`;
+      const storagePath = `${uid}/${Date.now()}-${file.name}`;
       const { error: uploadErr } = await supabase.storage
         .from("medical-documents")
-        .upload(filePath, file, { upsert: true });
+        .upload(storagePath, file, { upsert: true });
       if (!uploadErr) {
-        fileUrl = filePath; // Store the path, we'll use signed URLs to access
+        filePath = storagePath;
       }
     }
 
@@ -151,7 +157,9 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
           country: result.documentMeta.country || "Unknown",
           pages: result.documentMeta.pages || 1,
           extracted: true,
-          fileUrl,
+          fileUrl: filePath, // legacy field kept for compatibility
+          filePath, // new dedicated field
+          summary: result.summary || undefined,
         },
       ], uid);
     }
@@ -288,6 +296,9 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
                   <p><span className="text-muted-foreground">Facility:</span> <span className="text-foreground">{result.documentMeta.facility}</span></p>
                   <p><span className="text-muted-foreground">Date:</span> <span className="text-foreground">{result.documentMeta.date}</span></p>
                   <p><span className="text-muted-foreground">Country:</span> <span className="text-foreground">{result.documentMeta.country}</span></p>
+                  {result.documentMeta.originalLang && result.documentMeta.originalLang !== "English" && (
+                    <p><span className="text-muted-foreground">Language:</span> <span className="text-foreground">{result.documentMeta.originalLang} → English</span></p>
+                  )}
                 </div>
               )}
 

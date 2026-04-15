@@ -11,15 +11,21 @@ CRITICAL RULES:
 - Only extract information EXPLICITLY present in the document
 - NEVER fabricate, guess, or infer values not stated
 - If a document is an imaging report with no blood tests, bloodResults MUST be empty
-- Translate ALL non-English content accurately to English
 - Return ONLY valid JSON, no markdown fences, no explanation
+
+TRANSLATION RULES:
+- If the document is NOT in English, you MUST:
+  1. Translate ALL extracted findings, summaries, and text to English
+  2. ALSO preserve the original language text separately
+  3. Set originalLang to the detected language name (e.g. "Albanian", "Arabic", "Turkish", "French")
+- If the document IS in English, set originalLang to "English"
 
 Return this exact JSON structure:
 {
   "bloodResults": [
     {
       "id": "<uuid>",
-      "marker": "string",
+      "marker": "string (in English)",
       "value": number,
       "unit": "string",
       "range": "string",
@@ -33,10 +39,11 @@ Return this exact JSON structure:
     {
       "id": "<uuid>",
       "type": "MRI" | "CT" | "X-Ray" | "Ultrasound",
-      "region": "string",
+      "region": "string (in English)",
       "date": "YYYY-MM-DD",
       "facility": "string",
-      "finding": "string (in English)",
+      "finding": "string (translated to English)",
+      "findingOriginal": "string (in original language, same as finding if English)",
       "status": "normal" | "flagged",
       "originalLang": "string"
     }
@@ -72,7 +79,13 @@ Return this exact JSON structure:
     "date": "YYYY-MM-DD",
     "facility": "string",
     "country": "string",
-    "pages": number
+    "pages": number,
+    "originalLang": "string (detected language name e.g. Albanian, Arabic, English)"
+  },
+  "summary": {
+    "englishText": ["string array of key findings translated to English"],
+    "originalText": ["string array of key findings in original language (same as englishText if document is in English)"],
+    "originalLang": "string (detected language name)"
   }
 }
 
