@@ -24,7 +24,7 @@ const baseNavItems: { id: Section; label: string; icon: React.ElementType; famil
 const mobileNavItems: Section[] = ["overview", "blood", "media", "documents", "export"];
 
 const planLabels: Record<string, string> = {
-  free: "Free Plan",
+  free: "Free Trial",
   standard: "Standard Plan",
   family: "Family Plan",
 };
