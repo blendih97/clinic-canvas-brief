@@ -1,8 +1,11 @@
 import { useState } from "react";
-import { ScanLine, Languages, AlertTriangle, CheckCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { ScanLine, Languages, AlertTriangle, CheckCircle, ChevronDown, ChevronUp, Send } from "lucide-react";
 import { useVaultStore } from "@/store/vaultStore";
+import { useAuth } from "@/hooks/useAuth";
+import { hasAccess } from "@/lib/planAccess";
 import { getImagingInsight } from "@/lib/insights";
 import MedicalDisclaimer from "@/components/MedicalDisclaimer";
+import RequestImagingModal from "@/components/RequestImagingModal";
 
 const statusBadge = {
   normal: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
@@ -39,30 +42,49 @@ const AnatomicalViewer = ({ region }: { region: string }) => {
 
 const ImagingSection = () => {
   const imagingResults = useVaultStore((s) => s.imagingResults);
+  const { profile } = useAuth();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showAnatomy, setShowAnatomy] = useState(false);
+  const [requestImagingOpen, setRequestImagingOpen] = useState(false);
   const selected = imagingResults.find((r) => r.id === selectedId) || imagingResults[0];
+
+  const handleRequestImaging = () => {
+    if (!hasAccess(profile, "request_imaging")) {
+      window.dispatchEvent(new CustomEvent("show-upgrade", { detail: { feature: "request_imaging" } }));
+      return;
+    }
+    setRequestImagingOpen(true);
+  };
+
+  const headerBlock = (
+    <div className="flex items-start justify-between gap-3">
+      <div>
+        <h2 className="font-heading text-3xl font-light text-foreground">Imaging</h2>
+        <p className="text-sm text-muted-foreground mt-2">MRI, CT, and X-ray findings with anatomical mapping</p>
+      </div>
+      <button onClick={handleRequestImaging}
+        className="shrink-0 flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors">
+        <Send className="w-4 h-4" />
+        Request Imaging
+      </button>
+    </div>
+  );
 
   if (imagingResults.length === 0) {
     return (
       <div className="space-y-8">
-        <div>
-          <h2 className="font-heading text-3xl font-light text-foreground">Imaging</h2>
-          <p className="text-sm text-muted-foreground mt-2">Upload an imaging report to see findings here.</p>
-        </div>
+        {headerBlock}
         <div className="bg-card border border-border rounded-lg p-12 text-center text-muted-foreground text-sm">
-          No imaging results yet.
+          No imaging results yet. Request a scan from your radiology provider to get started.
         </div>
+        <RequestImagingModal open={requestImagingOpen} onClose={() => setRequestImagingOpen(false)} />
       </div>
     );
   }
 
   return (
     <div className="space-y-8">
-      <div>
-        <h2 className="font-heading text-3xl font-light text-foreground">Imaging</h2>
-        <p className="text-sm text-muted-foreground mt-2">MRI, CT, and X-ray findings with anatomical mapping</p>
-      </div>
+      {headerBlock}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Study list */}
@@ -138,6 +160,7 @@ const ImagingSection = () => {
       </div>
 
       <MedicalDisclaimer />
+      <RequestImagingModal open={requestImagingOpen} onClose={() => setRequestImagingOpen(false)} />
     </div>
   );
 };

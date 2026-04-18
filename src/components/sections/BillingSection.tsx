@@ -1,102 +1,107 @@
-import { CheckCircle, Crown, Users } from "lucide-react";
+import { CheckCircle, Crown } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { getTrialState } from "@/lib/planAccess";
 
 const plans = [
   {
-    id: "foundation",
-    name: "Foundation",
-    price: "£29",
-    period: "/month",
-    features: ["5 document uploads/month", "AI extraction & translation", "Blood results dashboard", "Basic share links"],
-    current: false,
+    id: "free",
+    name: "Free Trial",
+    price: "Free",
+    period: "14-day trial",
+    features: [
+      "1 document upload",
+      "AI extraction & translation",
+      "Blood results dashboard",
+      "Imaging viewer",
+      "No sharing, export, or record requests",
+    ],
   },
   {
-    id: "professional",
-    name: "Professional",
-    price: "£79",
+    id: "standard",
+    name: "Standard",
+    price: "£39",
     period: "/month",
-    features: ["Unlimited document uploads", "Full AI intelligence suite", "Imaging analysis & viewer", "Priority share links with audit log", "Multi-country health timeline"],
-    current: true,
+    features: [
+      "Unlimited document uploads",
+      "Full AI intelligence suite",
+      "Unlimited share links",
+      "PDF export",
+      "Request records from providers",
+    ],
   },
   {
     id: "family",
     name: "Family",
-    price: "£149",
+    price: "£89.99",
     period: "/month",
-    features: ["Everything in Professional", "Up to 5 family members", "Shared vault with permissions", "Family health overview", "Dedicated support"],
-    current: false,
+    features: [
+      "Everything in Standard",
+      "Up to 6 family members",
+      "Owner-managed sub-vaults",
+      "Family overview tab",
+      "Switch between member records",
+    ],
   },
 ];
 
 const BillingSection = () => {
   const { profile } = useAuth();
   const userPlan = profile?.plan || "free";
+  const trial = getTrialState(profile);
 
   return (
     <div className="space-y-6">
       <div>
         <h2 className="font-heading text-3xl font-light text-foreground">Subscription</h2>
-        <p className="text-sm text-muted-foreground mt-2">Manage your Vault membership</p>
+        <p className="text-sm text-muted-foreground mt-2">Manage your RinVita membership</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {plans.map((plan) => (
-          <div
-            key={plan.id}
-            className={`bg-card border rounded-lg p-6 relative ${
-              plan.current ? "border-primary/40" : "border-border"
-            }`}
-          >
-            {plan.current && (
-              <div className="absolute -top-2.5 left-4 px-2 py-0.5 bg-primary text-primary-foreground text-[10px] rounded-full font-medium flex items-center gap-1">
-                <Crown className="w-3 h-3" /> Current Plan
-              </div>
-            )}
-            <h3 className="font-heading text-xl text-foreground mb-1">{plan.name}</h3>
-            <div className="mb-4">
-              <span className="font-heading text-4xl text-foreground">{plan.price}</span>
-              <span className="text-sm text-muted-foreground">{plan.period}</span>
-            </div>
-            <div className="space-y-2 mb-6">
-              {plan.features.map((f) => (
-                <div key={f} className="flex items-center gap-2 text-xs text-foreground/70">
-                  <CheckCircle className="w-3.5 h-3.5 text-primary" />
-                  {f}
-                </div>
-              ))}
-            </div>
-            <button
-              className="w-full py-2 rounded-md text-sm font-medium bg-muted text-muted-foreground cursor-default"
-              disabled
-            >
-              Coming Soon
-            </button>
-          </div>
-        ))}
-      </div>
-
-      {/* Family plan upsell for non-family users */}
-      {userPlan !== "family" && (
-        <div className="bg-card border border-border rounded-xl p-6">
-          <div className="flex items-start gap-4">
-            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-              <Users className="w-5 h-5 text-primary" />
-            </div>
-            <div className="flex-1">
-              <h3 className="font-heading text-lg text-foreground mb-1">Family Plan</h3>
-              <p className="text-sm text-muted-foreground mb-3">
-                Add up to 6 family members to your vault. Each member gets their own private health records with all Standard features included. £49.99/month.
-              </p>
-              <button
-                className="px-5 py-2 bg-muted text-muted-foreground rounded-lg text-sm font-medium cursor-default"
-                disabled
-              >
-                Upgrade — Coming Soon
-              </button>
-            </div>
-          </div>
+      {trial.isTrial && (
+        <div className="bg-primary/10 border border-primary/30 rounded-lg p-4">
+          <p className="text-sm text-foreground">
+            <span className="font-medium">Free Trial</span> — {trial.daysRemaining} day{trial.daysRemaining === 1 ? "" : "s"} remaining. Upgrade to Standard at £39/month to unlock all features.
+          </p>
         </div>
       )}
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {plans.map((plan) => {
+          const isCurrent = userPlan === plan.id;
+          return (
+            <div key={plan.id}
+              className={`bg-card border rounded-lg p-6 relative ${isCurrent ? "border-primary/40" : "border-border"}`}>
+              {isCurrent && (
+                <div className="absolute -top-2.5 left-4 px-2 py-0.5 bg-primary text-primary-foreground text-[10px] rounded-full font-medium flex items-center gap-1">
+                  <Crown className="w-3 h-3" /> Current Plan
+                </div>
+              )}
+              <h3 className="font-heading text-xl text-foreground mb-1">{plan.name}</h3>
+              <div className="mb-4">
+                <span className="font-heading text-4xl text-foreground">{plan.price}</span>
+                <span className="text-sm text-muted-foreground ml-1">{plan.period}</span>
+              </div>
+              <div className="space-y-2 mb-6">
+                {plan.features.map((f) => (
+                  <div key={f} className="flex items-start gap-2 text-xs text-foreground/70">
+                    <CheckCircle className="w-3.5 h-3.5 text-primary mt-0.5 shrink-0" />
+                    <span>{f}</span>
+                  </div>
+                ))}
+              </div>
+              {isCurrent ? (
+                <button className="w-full py-2 rounded-md text-sm font-medium bg-muted text-muted-foreground cursor-default" disabled>
+                  Current Plan
+                </button>
+              ) : (
+                <button className="w-full py-2 rounded-md text-sm font-medium bg-primary/10 text-primary cursor-default relative" disabled>
+                  Upgrade
+                  <span className="ml-2 text-[10px] px-1.5 py-0.5 bg-muted text-muted-foreground rounded">Coming Soon</span>
+                </button>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };

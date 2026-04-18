@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { Users, Plus, Trash2, Eye, Loader2, Mail, ArrowLeft } from "lucide-react";
+import { Users, Plus, Trash2, Eye, Loader2, Mail, Lock } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { hasAccess } from "@/lib/planAccess";
 
 interface FamilyMember {
   id: string;
@@ -11,7 +12,6 @@ interface FamilyMember {
   member_id: string | null;
   member_name?: string;
   doc_count?: number;
-  flag_count?: number;
 }
 
 const FamilySection = ({ onViewMember }: { onViewMember: (memberId: string, memberName: string) => void }) => {
@@ -21,9 +21,12 @@ const FamilySection = ({ onViewMember }: { onViewMember: (memberId: string, memb
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviting, setInviting] = useState(false);
 
+  const isFamilyPlan = hasAccess(profile, "family_invite");
+
   useEffect(() => {
-    if (user) loadMembers();
-  }, [user]);
+    if (user && isFamilyPlan) loadMembers();
+    else setLoading(false);
+  }, [user, isFamilyPlan]);
 
   const loadMembers = async () => {
     if (!user) return;
@@ -35,10 +38,9 @@ const FamilySection = ({ onViewMember }: { onViewMember: (memberId: string, memb
 
     if (data) {
       const enriched: FamilyMember[] = await Promise.all(
-        data.map(async (m: any) => {
+        data.map(async (m: { id: string; email: string; status: string; member_id: string | null }) => {
           let memberName = m.email;
           let docCount = 0;
-          let flagCount = 0;
 
           if (m.member_id) {
             const { data: prof } = await supabase
@@ -53,12 +55,6 @@ const FamilySection = ({ onViewMember }: { onViewMember: (memberId: string, memb
               .select("*", { count: "exact", head: true })
               .eq("user_id", m.member_id);
             docCount = dc || 0;
-
-            const { count: fc } = await supabase
-              .from("alerts")
-              .select("*", { count: "exact", head: true })
-              .eq("user_id", m.member_id);
-            flagCount = fc || 0;
           }
 
           return {
@@ -68,7 +64,6 @@ const FamilySection = ({ onViewMember }: { onViewMember: (memberId: string, memb
             member_id: m.member_id,
             member_name: memberName,
             doc_count: docCount,
-            flag_count: flagCount,
           };
         })
       );
@@ -115,6 +110,27 @@ const FamilySection = ({ onViewMember }: { onViewMember: (memberId: string, memb
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 className="w-6 h-6 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!isFamilyPlan) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="font-heading text-3xl font-light text-foreground">Family Vault</h2>
+          <p className="text-sm text-muted-foreground mt-2">Manage and view health records for your family members</p>
+        </div>
+        <div className="bg-card border border-border rounded-xl p-12 text-center">
+          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+            <Lock className="w-5 h-5 text-primary" />
+          </div>
+          <h3 className="font-heading text-xl text-foreground mb-2">Family Plan Required</h3>
+          <p className="text-sm text-muted-foreground mb-4 max-w-md mx-auto">
+            The Family Vault is available on the Family plan at £89.99/month. Manage health records for up to 6 members from one account.
+          </p>
+          <p className="text-xs text-muted-foreground">Upgrade coming soon.</p>
+        </div>
       </div>
     );
   }
@@ -177,19 +193,14 @@ const FamilySection = ({ onViewMember }: { onViewMember: (memberId: string, memb
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                  <div className="p-3 bg-muted rounded-lg">
-                    <p className="text-xs text-muted-foreground">Documents</p>
-                    <p className="font-heading text-lg text-foreground">{m.doc_count}</p>
-                  </div>
-                  <div className="p-3 bg-muted rounded-lg">
-                    <p className="text-xs text-muted-foreground">Active Flags</p>
-                    <p className="font-heading text-lg text-foreground">{m.flag_count}</p>
-                  </div>
+                <div className="p-3 bg-muted rounded-lg mb-4">
+                  <p className="text-xs text-muted-foreground">Documents</p>
+                  <p className="font-heading text-lg text-foreground">{m.doc_count}</p>
                 </div>
                 <button
                   onClick={() => m.member_id && onViewMember(m.member_id, m.member_name || m.email)}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 bg-primary/10 text-primary rounded-lg text-sm font-medium hover:bg-primary/20 transition-colors"
+                  disabled={!m.member_id}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 bg-primary/10 text-primary rounded-lg text-sm font-medium hover:bg-primary/20 transition-colors disabled:opacity-40"
                 >
                   <Eye className="w-4 h-4" />
                   View Vault
@@ -211,3 +222,4 @@ const FamilySection = ({ onViewMember }: { onViewMember: (memberId: string, memb
 };
 
 export default FamilySection;
+

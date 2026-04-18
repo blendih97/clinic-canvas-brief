@@ -14,11 +14,13 @@ import FamilySection from "@/components/sections/FamilySection";
 import DocumentUpload from "@/components/DocumentUpload";
 import OnboardingModal from "@/components/OnboardingModal";
 import RequestRecordsModal from "@/components/RequestRecordsModal";
+import UpgradeModal from "@/components/UpgradeModal";
 import { AppFooterDisclaimer } from "@/components/MedicalDisclaimer";
-import { Upload, ArrowLeft, Inbox } from "lucide-react";
+import { Upload, ArrowLeft, Inbox, Lock } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useVaultStore } from "@/store/vaultStore";
 import { supabase } from "@/integrations/supabase/client";
+import { getTrialState, canUploadDocument, hasAccess, type Feature } from "@/lib/planAccess";
 
 type Section = "overview" | "blood" | "imaging" | "media" | "medications" | "documents" | "share" | "billing" | "export" | "family";
 
@@ -30,9 +32,32 @@ const Index = () => {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [viewingMember, setViewingMember] = useState<{ id: string; name: string } | null>(null);
   const [receivedNotifications, setReceivedNotifications] = useState<{ provider_name: string; id: string }[]>([]);
+  const [upgradeFeature, setUpgradeFeature] = useState<Feature | null>(null);
+  const [upgradeMessage, setUpgradeMessage] = useState<string | undefined>(undefined);
   const handleSplashComplete = useCallback(() => setShowSplash(false), []);
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { loadUserData, documents } = useVaultStore();
+
+  const trial = getTrialState(profile);
+  const canUpload = canUploadDocument(profile, documents.length);
+
+  const requestUpload = () => {
+    if (!canUpload) {
+      setUpgradeFeature("unlimited_uploads");
+      setUpgradeMessage("Document limit reached. Upgrade to Standard at £39/month for unlimited uploads.");
+      return;
+    }
+    setUploadOpen(true);
+  };
+
+  const requestRecordsAccess = () => {
+    if (!hasAccess(profile, "request_records")) {
+      setUpgradeFeature("request_records");
+      setUpgradeMessage(undefined);
+      return;
+    }
+    setRequestOpen(true);
+  };
 
   // Write pending consent timestamps after login
   useEffect(() => {
@@ -66,15 +91,13 @@ const Index = () => {
     const checkReceived = async () => {
       const dismissedKey = `rinvita-received-dismissed-${user.id}`;
       const dismissed = JSON.parse(localStorage.getItem(dismissedKey) || "[]");
-      
       const { data } = await supabase
         .from("record_requests")
         .select("id, provider_name")
         .eq("user_id", user.id)
         .eq("status", "received");
-
       if (data) {
-        const newNotifications = data.filter((r: any) => !dismissed.includes(r.id));
+        const newNotifications = data.filter((r: { id: string }) => !dismissed.includes(r.id));
         setReceivedNotifications(newNotifications);
       }
     };
@@ -98,6 +121,19 @@ const Index = () => {
     return () => window.removeEventListener("navigate-section", handler);
   }, []);
 
+  // Listen for global upgrade requests from child sections
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail as { feature: Feature; message?: string };
+      if (detail) {
+        setUpgradeFeature(detail.feature);
+        setUpgradeMessage(detail.message);
+      }
+    };
+    window.addEventListener("show-upgrade", handler);
+    return () => window.removeEventListener("show-upgrade", handler);
+  }, []);
+
   const handleOnboardingClose = () => {
     setShowOnboarding(false);
     if (user) localStorage.setItem(`rinvita-onboarding-${user.id}`, "true");
@@ -118,17 +154,17 @@ const Index = () => {
   const renderSection = () => {
     switch (section) {
       case "overview":
-        return <OverviewSection onNavigate={setSection} onUpload={() => setUploadOpen(true)} onRequestRecords={() => setRequestOpen(true)} />;
+        return <OverviewSection onNavigate={setSection} onUpload={requestUpload} onRequestRecords={requestRecordsAccess} />;
       case "blood":
         return <BloodResultsSection />;
       case "imaging":
         return <ImagingSection />;
       case "media":
-        return <MediaSection onRequestRecords={() => setRequestOpen(true)} onUpload={() => setUploadOpen(true)} />;
+        return <MediaSection onRequestRecords={requestRecordsAccess} onUpload={requestUpload} />;
       case "medications":
         return <MedicationsSection />;
       case "documents":
-        return <DocumentsSection onRequestRecords={() => setRequestOpen(true)} />;
+        return <DocumentsSection onRequestRecords={requestRecordsAccess} />;
       case "share":
         return <ShareBriefSection />;
       case "billing":
@@ -138,7 +174,7 @@ const Index = () => {
       case "family":
         return <FamilySection onViewMember={handleViewMember} />;
       default:
-        return <OverviewSection onNavigate={setSection} onUpload={() => setUploadOpen(true)} onRequestRecords={() => setRequestOpen(true)} />;
+        return <OverviewSection onNavigate={setSection} onUpload={requestUpload} onRequestRecords={requestRecordsAccess} />;
     }
   };
 
@@ -154,14 +190,26 @@ const Index = () => {
           {viewingMember && (
             <div className="mb-4 p-4 bg-primary/10 border border-primary/30 rounded-lg flex items-center justify-between">
               <p className="text-sm text-foreground">
-                You are viewing <span className="font-semibold">{viewingMember.name}</span>'s records
+                Viewing <span className="font-semibold">{viewingMember.name}</span>'s vault
               </p>
               <button
                 onClick={handleReturnToMyVault}
                 className="shrink-0 ml-3 flex items-center gap-2 px-4 py-1.5 bg-primary text-primary-foreground rounded-lg text-xs font-medium hover:bg-primary/90"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
-                Return to My Records
+                Return to My Vault
+              </button>
+            </div>
+          )}
+
+          {trial.isTrial && !viewingMember && (
+            <div className="mb-4 p-3 bg-primary/10 border border-primary/30 rounded-lg flex items-center justify-between">
+              <p className="text-sm text-foreground">
+                <span className="font-medium">Free Trial</span> — {trial.daysRemaining} day{trial.daysRemaining === 1 ? "" : "s"} remaining. Upgrade to Standard to unlock all features.
+              </p>
+              <button onClick={() => setSection("billing")}
+                className="shrink-0 ml-3 px-4 py-1.5 bg-primary text-primary-foreground rounded-lg text-xs font-medium hover:bg-primary/90">
+                Upgrade
               </button>
             </div>
           )}
@@ -171,7 +219,7 @@ const Index = () => {
               <div className="flex items-center gap-2">
                 <Inbox className="w-4 h-4 text-emerald-600" />
                 <p className="text-sm text-foreground">
-                  New records received from <span className="font-semibold">{n.provider_name}</span> — 
+                  New records received from <span className="font-semibold">{n.provider_name}</span> —
                   <button onClick={() => { setSection("documents"); dismissNotification(n.id); }} className="text-primary font-medium ml-1 hover:underline">
                     tap to view
                   </button>
@@ -188,7 +236,7 @@ const Index = () => {
               <p className="text-sm text-foreground">
                 <span className="font-medium">Get started:</span> Upload your first medical document to begin building your health record.
               </p>
-              <button onClick={() => setUploadOpen(true)}
+              <button onClick={requestUpload}
                 className="shrink-0 ml-3 px-4 py-1.5 bg-primary text-primary-foreground rounded-lg text-xs font-medium hover:bg-primary/90">
                 Upload
               </button>
@@ -196,10 +244,16 @@ const Index = () => {
           )}
           {!viewingMember && (
             <div className="flex items-center justify-end mb-4">
-              <button onClick={() => setUploadOpen(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors">
-                <Upload className="w-4 h-4" />
-                Add Document
+              <button onClick={requestUpload}
+                disabled={!canUpload}
+                title={!canUpload ? "Document limit reached. Upgrade to Standard for unlimited uploads." : undefined}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  canUpload
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                    : "bg-muted text-muted-foreground cursor-not-allowed"
+                }`}>
+                {canUpload ? <Upload className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
+                {canUpload ? "Add Document" : "Upload limit reached"}
               </button>
             </div>
           )}
@@ -209,7 +263,8 @@ const Index = () => {
       </div>
       <DocumentUpload open={uploadOpen} onClose={() => setUploadOpen(false)} />
       <RequestRecordsModal open={requestOpen} onClose={() => setRequestOpen(false)} />
-      <OnboardingModal open={showOnboarding} onClose={handleOnboardingClose} onUpload={() => setUploadOpen(true)} />
+      <OnboardingModal open={showOnboarding} onClose={handleOnboardingClose} onUpload={requestUpload} />
+      <UpgradeModal open={!!upgradeFeature} onClose={() => { setUpgradeFeature(null); setUpgradeMessage(undefined); }} feature={upgradeFeature} customMessage={upgradeMessage} />
     </>
   );
 };
