@@ -114,6 +114,27 @@ const FamilySection = ({ onViewMember }: { onViewMember: (memberId: string, memb
     );
   }
 
+  if (!isFamilyPlan) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="font-heading text-3xl font-light text-foreground">Family Vault</h2>
+          <p className="text-sm text-muted-foreground mt-2">Manage and view health records for your family members</p>
+        </div>
+        <div className="bg-card border border-border rounded-xl p-12 text-center">
+          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+            <Lock className="w-5 h-5 text-primary" />
+          </div>
+          <h3 className="font-heading text-xl text-foreground mb-2">Family Plan Required</h3>
+          <p className="text-sm text-muted-foreground mb-4 max-w-md mx-auto">
+            The Family Vault is available on the Family plan at £89.99/month. Manage health records for up to 6 members from one account.
+          </p>
+          <p className="text-xs text-muted-foreground">Upgrade coming soon.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -172,19 +193,14 @@ const FamilySection = ({ onViewMember }: { onViewMember: (memberId: string, memb
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                  <div className="p-3 bg-muted rounded-lg">
-                    <p className="text-xs text-muted-foreground">Documents</p>
-                    <p className="font-heading text-lg text-foreground">{m.doc_count}</p>
-                  </div>
-                  <div className="p-3 bg-muted rounded-lg">
-                    <p className="text-xs text-muted-foreground">Active Flags</p>
-                    <p className="font-heading text-lg text-foreground">{m.flag_count}</p>
-                  </div>
+                <div className="p-3 bg-muted rounded-lg mb-4">
+                  <p className="text-xs text-muted-foreground">Documents</p>
+                  <p className="font-heading text-lg text-foreground">{m.doc_count}</p>
                 </div>
                 <button
                   onClick={() => m.member_id && onViewMember(m.member_id, m.member_name || m.email)}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 bg-primary/10 text-primary rounded-lg text-sm font-medium hover:bg-primary/20 transition-colors"
+                  disabled={!m.member_id}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 bg-primary/10 text-primary rounded-lg text-sm font-medium hover:bg-primary/20 transition-colors disabled:opacity-40"
                 >
                   <Eye className="w-4 h-4" />
                   View Vault
@@ -206,3 +222,4 @@ const FamilySection = ({ onViewMember }: { onViewMember: (memberId: string, memb
 };
 
 export default FamilySection;
+
