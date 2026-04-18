@@ -82,6 +82,27 @@ const ShareBriefSection = () => {
     setStep(4);
   };
 
+  if (locked) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="font-heading text-3xl font-light text-foreground">Share Brief</h2>
+          <p className="text-sm text-muted-foreground mt-2">Generate a secure, time-limited link for your clinician</p>
+        </div>
+        <div className="bg-card border border-border rounded-xl p-12 text-center">
+          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+            <Lock className="w-5 h-5 text-primary" />
+          </div>
+          <h3 className="font-heading text-xl text-foreground mb-2">Standard Plan Required</h3>
+          <p className="text-sm text-muted-foreground mb-2 max-w-md mx-auto">
+            Share Brief is available on the Standard plan at £39/month.
+          </p>
+          <p className="text-xs text-muted-foreground">Upgrade coming soon.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       <div className="flex items-start justify-between">
