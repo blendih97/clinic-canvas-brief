@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { Users, Plus, Trash2, Eye, Loader2, Mail, ArrowLeft } from "lucide-react";
+import { Users, Plus, Trash2, Eye, Loader2, Mail, Lock } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { hasAccess } from "@/lib/planAccess";
 
 interface FamilyMember {
   id: string;
@@ -11,7 +12,6 @@ interface FamilyMember {
   member_id: string | null;
   member_name?: string;
   doc_count?: number;
-  flag_count?: number;
 }
 
 const FamilySection = ({ onViewMember }: { onViewMember: (memberId: string, memberName: string) => void }) => {
@@ -21,9 +21,12 @@ const FamilySection = ({ onViewMember }: { onViewMember: (memberId: string, memb
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviting, setInviting] = useState(false);
 
+  const isFamilyPlan = hasAccess(profile, "family_invite");
+
   useEffect(() => {
-    if (user) loadMembers();
-  }, [user]);
+    if (user && isFamilyPlan) loadMembers();
+    else setLoading(false);
+  }, [user, isFamilyPlan]);
 
   const loadMembers = async () => {
     if (!user) return;
@@ -35,10 +38,9 @@ const FamilySection = ({ onViewMember }: { onViewMember: (memberId: string, memb
 
     if (data) {
       const enriched: FamilyMember[] = await Promise.all(
-        data.map(async (m: any) => {
+        data.map(async (m: { id: string; email: string; status: string; member_id: string | null }) => {
           let memberName = m.email;
           let docCount = 0;
-          let flagCount = 0;
 
           if (m.member_id) {
             const { data: prof } = await supabase
@@ -53,12 +55,6 @@ const FamilySection = ({ onViewMember }: { onViewMember: (memberId: string, memb
               .select("*", { count: "exact", head: true })
               .eq("user_id", m.member_id);
             docCount = dc || 0;
-
-            const { count: fc } = await supabase
-              .from("alerts")
-              .select("*", { count: "exact", head: true })
-              .eq("user_id", m.member_id);
-            flagCount = fc || 0;
           }
 
           return {
@@ -68,7 +64,6 @@ const FamilySection = ({ onViewMember }: { onViewMember: (memberId: string, memb
             member_id: m.member_id,
             member_name: memberName,
             doc_count: docCount,
-            flag_count: flagCount,
           };
         })
       );
