@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { FileDown, FileText, Filter, CheckSquare, Loader2 } from "lucide-react";
+import { FileDown, FileText, Filter, CheckSquare, Loader2, Lock } from "lucide-react";
 import { useVaultStore } from "@/store/vaultStore";
 import { useAuth } from "@/hooks/useAuth";
+import { hasAccess } from "@/lib/planAccess";
 import { generateFullBriefPDF, generateCategoryPDF, generateSelectionPDF } from "@/lib/pdfExport";
 
 type ExportMode = "full" | "category" | "selection";

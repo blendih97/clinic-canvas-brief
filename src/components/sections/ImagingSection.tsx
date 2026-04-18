@@ -160,6 +160,7 @@ const ImagingSection = () => {
       </div>
 
       <MedicalDisclaimer />
+      <RequestImagingModal open={requestImagingOpen} onClose={() => setRequestImagingOpen(false)} />
     </div>
   );
 };

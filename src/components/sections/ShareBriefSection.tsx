@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Clock, Eye, Lock, Copy, CheckCircle, Shield, ArrowRight, ArrowLeft } from "lucide-react";
 import { useVaultStore } from "@/store/vaultStore";
+import { useAuth } from "@/hooks/useAuth";
+import { hasAccess } from "@/lib/planAccess";
 import { supabase } from "@/integrations/supabase/client";
 
 const scopes = [
@@ -27,6 +29,8 @@ const ShareBriefSection = () => {
   const [shareLink, setShareLink] = useState("");
   const [generating, setGenerating] = useState(false);
   const { bloodResults, medications, allergies, imagingResults } = useVaultStore();
+  const { profile } = useAuth();
+  const locked = !hasAccess(profile, "share_brief");
 
   const totalRecords = bloodResults.length + medications.length;
   const selectedExpiry = expiries.find((e) => e.id === expiry) || expiries[1];
