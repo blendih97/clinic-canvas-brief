@@ -94,7 +94,7 @@ const FamilySection = ({ onViewMember }: { onViewMember: (memberId: string, memb
         idempotencyKey: `family-invite-${inserted?.id}`,
         templateData: {
           inviterName,
-          inviteLink: `${window.location.origin}/auth`,
+          inviteLink: `https://rinvita.co.uk/auth`,
         },
       },
     });
