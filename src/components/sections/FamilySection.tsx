@@ -75,18 +75,37 @@ const FamilySection = ({ onViewMember }: { onViewMember: (memberId: string, memb
   const handleInvite = async () => {
     if (!inviteEmail || !user) return;
     setInviting(true);
-    const { error } = await supabase.from("family_members").insert({
+    const { data: inserted, error } = await supabase.from("family_members").insert({
       owner_id: user.id,
       email: inviteEmail,
       status: "pending",
-    });
+    }).select("id").single();
     if (error) {
       toast.error("Failed to send invitation");
+      setInviting(false);
+      return;
+    }
+
+    const inviterName = profile?.full_name || user.email?.split("@")[0] || "A RinVita user";
+    const { error: emailError } = await supabase.functions.invoke("send-transactional-email", {
+      body: {
+        templateName: "family-invite",
+        recipientEmail: inviteEmail,
+        idempotencyKey: `family-invite-${inserted?.id}`,
+        templateData: {
+          inviterName,
+          inviteLink: `${window.location.origin}/auth`,
+        },
+      },
+    });
+
+    if (emailError) {
+      toast.error("Invitation saved but email failed to send");
     } else {
       toast.success(`Invitation sent to ${inviteEmail}`);
-      setInviteEmail("");
-      loadMembers();
     }
+    setInviteEmail("");
+    loadMembers();
     setInviting(false);
   };
 
