@@ -39,7 +39,7 @@ const RequestRecordsModal = ({ open, onClose }: Props) => {
       const patientName = profile?.full_name || user.email?.split("@")[0] || "Patient";
       const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
-      const { error } = await supabase.from("record_requests").insert({
+      const { data: inserted, error } = await supabase.from("record_requests").insert({
         user_id: user.id,
         provider_name: providerName.trim(),
         provider_email: providerEmail.trim(),
@@ -48,21 +48,26 @@ const RequestRecordsModal = ({ open, onClose }: Props) => {
         token,
         status: "pending",
         expires_at: expiresAt,
-      });
+      }).select("id").single();
 
       if (error) throw error;
 
-      // Send email via edge function
       const appUrl = window.location.origin;
-      await supabase.functions.invoke("send-record-request", {
+      const { error: emailError } = await supabase.functions.invoke("send-transactional-email", {
         body: {
-          providerName: providerName.trim(),
-          providerEmail: providerEmail.trim(),
-          patientName,
-          requestDescription: description.trim(),
-          uploadLink: `${appUrl}/upload-request/${token}`,
+          templateName: "record-request",
+          recipientEmail: providerEmail.trim(),
+          idempotencyKey: `record-request-${inserted?.id || token}`,
+          templateData: {
+            providerName: providerName.trim(),
+            patientName,
+            requestDescription: description.trim(),
+            uploadLink: `${appUrl}/upload-request/${token}`,
+            isImaging: false,
+          },
         },
       });
+      if (emailError) throw emailError;
 
       setSent(true);
       toast.success("Request sent to " + providerName.trim());

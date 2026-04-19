@@ -40,7 +40,7 @@ const RequestImagingModal = ({ open, onClose }: Props) => {
       const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
       const description = `${imagingType} — ${bodyRegion}${studyDate ? ` (study date: ${studyDate})` : ""}${refNumber ? ` · Ref: ${refNumber}` : ""}. Please share the full DICOM study and any associated radiology report.`;
 
-      const { error } = await supabase.from("record_requests").insert({
+      const { data: inserted, error } = await supabase.from("record_requests").insert({
         user_id: user.id,
         provider_name: providerName.trim(),
         provider_email: providerEmail.trim(),
@@ -49,22 +49,25 @@ const RequestImagingModal = ({ open, onClose }: Props) => {
         token,
         status: "pending",
         expires_at: expiresAt,
-      });
+      }).select("id").single();
       if (error) throw error;
 
       const appUrl = window.location.origin;
-      await supabase.functions.invoke("send-record-request", {
+      const { error: emailError } = await supabase.functions.invoke("send-transactional-email", {
         body: {
-          providerName: providerName.trim(),
-          providerEmail: providerEmail.trim(),
-          patientName: patientName.split(" ")[0],
-          requestDescription: description,
-          uploadLink: `${appUrl}/upload-request/${token}`,
-          isImaging: true,
-          imagingType,
-          bodyRegion,
+          templateName: "record-request",
+          recipientEmail: providerEmail.trim(),
+          idempotencyKey: `imaging-request-${inserted?.id || token}`,
+          templateData: {
+            providerName: providerName.trim(),
+            patientName,
+            requestDescription: description,
+            uploadLink: `${appUrl}/upload-request/${token}`,
+            isImaging: true,
+          },
         },
       });
+      if (emailError) throw emailError;
 
       setSent(true);
       toast.success("Imaging request sent to " + providerName.trim());
