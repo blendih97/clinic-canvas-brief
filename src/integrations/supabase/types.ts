@@ -14,6 +14,38 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_2fa_recovery: {
+        Row: {
+          created_at: string
+          encrypted_code: string
+          id: string
+          used: boolean
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          encrypted_code: string
+          id?: string
+          used?: boolean
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          encrypted_code?: string
+          id?: string
+          used?: boolean
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_2fa_recovery_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       admin_actions: {
         Row: {
           action_type: string
@@ -176,6 +208,30 @@ export type Database = {
           unit?: string
           user_id?: string
           value?: number
+        }
+        Relationships: []
+      }
+      countries: {
+        Row: {
+          code: string
+          created_at: string
+          flag_emoji: string
+          name_ar: string
+          name_en: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          flag_emoji: string
+          name_ar: string
+          name_en: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          flag_emoji?: string
+          name_ar?: string
+          name_en?: string
         }
         Relationships: []
       }
@@ -528,13 +584,20 @@ export type Database = {
           emergency_contact_name: string | null
           emergency_contact_phone: string | null
           full_name: string | null
+          health_data_consent: boolean
           health_data_consent_at: string | null
+          health_data_consent_timestamp: string | null
           height_cm: number | null
           id: string
           last_active_at: string | null
+          marketing_consent: boolean
           nationality: string | null
+          nationality_code: string | null
           phone: string | null
           plan: string
+          preferred_translation_language: string
+          preferred_ui_language: string
+          residence_country_code: string | null
           stripe_customer_id: string | null
           stripe_subscription_id: string | null
           suspended_at: string | null
@@ -556,13 +619,20 @@ export type Database = {
           emergency_contact_name?: string | null
           emergency_contact_phone?: string | null
           full_name?: string | null
+          health_data_consent?: boolean
           health_data_consent_at?: string | null
+          health_data_consent_timestamp?: string | null
           height_cm?: number | null
           id: string
           last_active_at?: string | null
+          marketing_consent?: boolean
           nationality?: string | null
+          nationality_code?: string | null
           phone?: string | null
           plan?: string
+          preferred_translation_language?: string
+          preferred_ui_language?: string
+          residence_country_code?: string | null
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
           suspended_at?: string | null
@@ -584,13 +654,20 @@ export type Database = {
           emergency_contact_name?: string | null
           emergency_contact_phone?: string | null
           full_name?: string | null
+          health_data_consent?: boolean
           health_data_consent_at?: string | null
+          health_data_consent_timestamp?: string | null
           height_cm?: number | null
           id?: string
           last_active_at?: string | null
+          marketing_consent?: boolean
           nationality?: string | null
+          nationality_code?: string | null
           phone?: string | null
           plan?: string
+          preferred_translation_language?: string
+          preferred_ui_language?: string
+          residence_country_code?: string | null
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
           suspended_at?: string | null
