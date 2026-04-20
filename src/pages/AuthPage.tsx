@@ -1,9 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { lovable } from "@/integrations/lovable/index";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import CountryCombobox, { type CountryOption } from "@/components/CountryCombobox";
+import { Checkbox } from "@/components/ui/checkbox";
+
+const totalSignupSteps = 5;
+
+const stepLabels = ["Account", "Personal", "Countries", "Health", "Consent"] as const;
 
 const AuthPage = () => {
   const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
@@ -11,15 +18,26 @@ const AuthPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
+  const [signupStep, setSignupStep] = useState(1);
+  const [countries, setCountries] = useState<CountryOption[]>([]);
+  const [countriesLoading, setCountriesLoading] = useState(false);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [dob, setDob] = useState("");
   const [biologicalSex, setBiologicalSex] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [nationalityCode, setNationalityCode] = useState("");
+  const [residenceCountryCode, setResidenceCountryCode] = useState("");
+  const [knownAllergies, setKnownAllergies] = useState("");
+  const [currentMedications, setCurrentMedications] = useState("");
+  const [emergencyContactName, setEmergencyContactName] = useState("");
+  const [emergencyContactPhone, setEmergencyContactPhone] = useState("");
   const [healthConsent, setHealthConsent] = useState(false);
   const [termsConsent, setTermsConsent] = useState(false);
+  const [marketingConsent, setMarketingConsent] = useState(false);
 
   useEffect(() => {
     const requestedMode = searchParams.get("mode");
@@ -27,6 +45,79 @@ const AuthPage = () => {
       setMode(requestedMode);
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    if (mode !== "signup") return;
+
+    setCountriesLoading(true);
+    supabase
+      .from("countries")
+      .select("code, name_en, name_ar, flag_emoji")
+      .order("name_en", { ascending: true })
+      .then(({ data, error }) => {
+        if (error) {
+          toast.error("Unable to load countries right now");
+          return;
+        }
+        setCountries((data ?? []) as CountryOption[]);
+      })
+      .finally(() => setCountriesLoading(false));
+  }, [mode]);
+
+  const fullName = useMemo(() => `${firstName} ${lastName}`.trim(), [firstName, lastName]);
+
+  const resetSignupFlow = () => {
+    setSignupStep(1);
+    setEmail("");
+    setPassword("");
+    setConfirmPassword("");
+    setFirstName("");
+    setLastName("");
+    setDob("");
+    setBiologicalSex("");
+    setNationalityCode("");
+    setResidenceCountryCode("");
+    setKnownAllergies("");
+    setCurrentMedications("");
+    setEmergencyContactName("");
+    setEmergencyContactPhone("");
+    setHealthConsent(false);
+    setTermsConsent(false);
+    setMarketingConsent(false);
+  };
+
+  const validateStep = (step: number) => {
+    if (step === 1) {
+      if (!email || !password || !confirmPassword) return "Complete all account fields";
+      if (password !== confirmPassword) return "Passwords do not match";
+      if (password.length < 6) return "Password must be at least 6 characters";
+    }
+
+    if (step === 2) {
+      if (!firstName.trim() || !lastName.trim() || !dob || !biologicalSex) return "Complete all personal details";
+    }
+
+    if (step === 3) {
+      if (!nationalityCode || !residenceCountryCode) return "Choose your nationality and country of residence";
+    }
+
+    if (step === 5) {
+      if (!termsConsent || !healthConsent) return "You must accept the required consents";
+    }
+
+    return null;
+  };
+
+  const goToNextStep = () => {
+    const error = validateStep(signupStep);
+    if (error) {
+      toast.error(error);
+      return;
+    }
+    setSignupStep((current) => Math.min(current + 1, totalSignupSteps));
+  };
+
+  const goToPreviousStep = () => setSignupStep((current) => Math.max(current - 1, 1));
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,30 +133,45 @@ const AuthPage = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
+    const validationError = validateStep(5);
+    if (validationError) {
+      toast.error(validationError);
       return;
     }
-    if (password.length < 6) {
-      toast.error("Password must be at least 6 characters");
-      return;
-    }
+
     setLoading(true);
-    const { error } = await signUp(email, password, {
+    const consentTime = new Date().toISOString();
+    const { error, session } = await signUp(email, password, {
+      first_name: firstName.trim(),
+      last_name: lastName.trim(),
       full_name: fullName,
       date_of_birth: dob,
       biological_sex: biologicalSex,
+      nationality_code: nationalityCode,
+      residence_country_code: residenceCountryCode,
+      known_allergies: knownAllergies,
+      current_medications: currentMedications,
+      emergency_contact_name: emergencyContactName.trim(),
+      emergency_contact_phone: emergencyContactPhone.trim(),
+      health_data_consent: String(healthConsent),
+      health_data_consent_timestamp: consentTime,
+      terms_consent_at: consentTime,
+      marketing_consent: String(marketingConsent),
+      preferred_ui_language: "en",
+      preferred_translation_language: "en",
     });
     setLoading(false);
+
     if (error) {
       toast.error(error.message);
+      return;
+    }
+
+    resetSignupFlow();
+
+    if (session) {
+      navigate("/app");
     } else {
-      const consentTime = new Date().toISOString();
-      localStorage.setItem("rinvita-consent-pending", JSON.stringify({
-        health_data_consent_at: consentTime,
-        terms_consent_at: consentTime,
-        biological_sex: biologicalSex || null,
-      }));
       toast.success("Check your email for a confirmation link");
       setMode("signin");
     }
@@ -98,8 +204,6 @@ const AuthPage = () => {
     navigate("/app");
   };
 
-  const canSignUp = healthConsent && termsConsent;
-
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -131,11 +235,11 @@ const AuthPage = () => {
           ) : (
             <>
               <div className="flex gap-1 mb-6 bg-muted rounded-lg p-1">
-                <button onClick={() => setMode("signin")}
+                <button onClick={() => { setMode("signin"); resetSignupFlow(); }}
                   className={`flex-1 py-2 text-sm rounded-md transition-colors ${mode === "signin" ? "bg-card text-foreground font-medium shadow-sm" : "text-muted-foreground"}`}>
                   Sign In
                 </button>
-                <button onClick={() => setMode("signup")}
+                <button onClick={() => { setMode("signup"); setSignupStep(1); }}
                   className={`flex-1 py-2 text-sm rounded-md transition-colors ${mode === "signup" ? "bg-card text-foreground font-medium shadow-sm" : "text-muted-foreground"}`}>
                   Sign Up
                 </button>
@@ -163,68 +267,166 @@ const AuthPage = () => {
                 </form>
               ) : (
                 <form onSubmit={handleSignUp} className="space-y-4">
-                  <div>
-                    <label className="text-xs font-medium text-foreground">Full Name</label>
-                    <input type="text" required value={fullName} onChange={(e) => setFullName(e.target.value)}
-                      className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium text-foreground">Email</label>
-                    <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-                      className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-xs font-medium text-foreground">Date of Birth</label>
-                      <input type="date" required value={dob} onChange={(e) => setDob(e.target.value)}
-                        className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>Step {signupStep} of {totalSignupSteps}</span>
+                      <span>{stepLabels[signupStep - 1]}</span>
                     </div>
-                    <div>
-                      <label className="text-xs font-medium text-foreground">Biological Sex</label>
-                      <select value={biologicalSex} onChange={(e) => setBiologicalSex(e.target.value)}
-                        className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30">
-                        <option value="">Select...</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="prefer_not_to_say">Prefer not to say</option>
-                      </select>
+                    <div className="flex gap-1">
+                      {stepLabels.map((label, index) => (
+                        <div key={label} className={`h-1 flex-1 rounded-full ${index + 1 <= signupStep ? "bg-primary" : "bg-border"}`} />
+                      ))}
                     </div>
                   </div>
-                  <div>
-                    <label className="text-xs font-medium text-foreground">Password</label>
-                    <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
-                      className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium text-foreground">Confirm Password</label>
-                    <input type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
-                  </div>
 
-                  {/* GDPR Consent */}
-                  <div className="space-y-3 pt-2">
-                    <label className="flex items-start gap-2.5 cursor-pointer">
-                      <input type="checkbox" checked={healthConsent} onChange={(e) => setHealthConsent(e.target.checked)}
-                        className="w-4 h-4 mt-0.5 rounded border-border text-primary focus:ring-primary shrink-0" />
-                      <span className="text-xs text-muted-foreground leading-relaxed">
-                        I consent to RinVita processing my health data including medical documents, blood results, and imaging findings as described in the{" "}
-                        <Link to="/privacy" className="text-primary underline hover:text-primary/80">Privacy Policy</Link>.
-                      </span>
-                    </label>
-                    <label className="flex items-start gap-2.5 cursor-pointer">
-                      <input type="checkbox" checked={termsConsent} onChange={(e) => setTermsConsent(e.target.checked)}
-                        className="w-4 h-4 mt-0.5 rounded border-border text-primary focus:ring-primary shrink-0" />
-                      <span className="text-xs text-muted-foreground leading-relaxed">
-                        I agree to the{" "}
-                        <Link to="/terms" className="text-primary underline hover:text-primary/80">Terms of Service</Link>.
-                      </span>
-                    </label>
-                  </div>
+                  {signupStep === 1 && (
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-xs font-medium text-foreground">Email</label>
+                        <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
+                          className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                      </div>
+                      <div>
+                        <label className="text-xs font-medium text-foreground">Password</label>
+                        <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
+                          className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                      </div>
+                      <div>
+                        <label className="text-xs font-medium text-foreground">Confirm Password</label>
+                        <input type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
+                          className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                      </div>
+                    </div>
+                  )}
 
-                  <button type="submit" disabled={loading || !canSignUp}
-                    className="w-full py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50">
-                    {loading ? "Creating account..." : "Create Account"}
-                  </button>
+                  {signupStep === 2 && (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="text-xs font-medium text-foreground">First Name</label>
+                          <input value={firstName} onChange={(e) => setFirstName(e.target.value)}
+                            className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium text-foreground">Last Name</label>
+                          <input value={lastName} onChange={(e) => setLastName(e.target.value)}
+                            className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-xs font-medium text-foreground">Date of Birth</label>
+                        <input type="date" value={dob} onChange={(e) => setDob(e.target.value)}
+                          className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                      </div>
+                      <div>
+                        <label className="text-xs font-medium text-foreground">Biological Sex</label>
+                        <select value={biologicalSex} onChange={(e) => setBiologicalSex(e.target.value)}
+                          className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30">
+                          <option value="">Select...</option>
+                          <option value="male">Male</option>
+                          <option value="female">Female</option>
+                          <option value="prefer_not_to_say">Prefer not to say</option>
+                        </select>
+                      </div>
+                    </div>
+                  )}
+
+                  {signupStep === 3 && (
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-xs font-medium text-foreground">Nationality</label>
+                        <div className="mt-1">
+                          <CountryCombobox countries={countries} disabled={countriesLoading} value={nationalityCode} onChange={setNationalityCode} placeholder={countriesLoading ? "Loading countries..." : "Select nationality"} />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-xs font-medium text-foreground">Country of Residence</label>
+                        <div className="mt-1">
+                          <CountryCombobox countries={countries} disabled={countriesLoading} value={residenceCountryCode} onChange={setResidenceCountryCode} placeholder={countriesLoading ? "Loading countries..." : "Select country of residence"} />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {signupStep === 4 && (
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-xs font-medium text-foreground">Known Allergies</label>
+                        <textarea value={knownAllergies} onChange={(e) => setKnownAllergies(e.target.value)} placeholder="Optional"
+                          className="w-full mt-1 min-h-24 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none" />
+                      </div>
+                      <div>
+                        <label className="text-xs font-medium text-foreground">Current Medications</label>
+                        <textarea value={currentMedications} onChange={(e) => setCurrentMedications(e.target.value)} placeholder="Optional"
+                          className="w-full mt-1 min-h-24 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none" />
+                      </div>
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div>
+                          <label className="text-xs font-medium text-foreground">Emergency Contact Name</label>
+                          <input value={emergencyContactName} onChange={(e) => setEmergencyContactName(e.target.value)}
+                            className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium text-foreground">Emergency Contact Phone</label>
+                          <input value={emergencyContactPhone} onChange={(e) => setEmergencyContactPhone(e.target.value)}
+                            className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {signupStep === 5 && (
+                    <div className="space-y-4">
+                      <label className="flex items-start gap-3 cursor-pointer">
+                        <Checkbox checked={termsConsent} onCheckedChange={(checked) => setTermsConsent(checked === true)} className="mt-0.5" />
+                        <span className="text-xs text-muted-foreground leading-relaxed">
+                          I agree to the <Link to="/terms" className="text-primary underline hover:text-primary/80">Terms of Service</Link> and <Link to="/privacy" className="text-primary underline hover:text-primary/80">Privacy Policy</Link>
+                        </span>
+                      </label>
+                      <label className="flex items-start gap-3 cursor-pointer">
+                        <Checkbox checked={healthConsent} onCheckedChange={(checked) => setHealthConsent(checked === true)} className="mt-0.5" />
+                        <span className="text-xs text-muted-foreground leading-relaxed">
+                          I explicitly consent to RinVita processing my health data (special category data under UK GDPR Article 9) for the purpose of providing this service
+                        </span>
+                      </label>
+                      <label className="flex items-start gap-3 cursor-pointer">
+                        <Checkbox checked={marketingConsent} onCheckedChange={(checked) => setMarketingConsent(checked === true)} className="mt-0.5" />
+                        <span className="text-xs text-muted-foreground leading-relaxed">
+                          I'd like occasional product updates by email
+                        </span>
+                      </label>
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between gap-3 pt-2">
+                    <div>
+                      {signupStep > 1 ? (
+                        <button type="button" onClick={goToPreviousStep} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+                          <ArrowLeft className="w-4 h-4" /> Back
+                        </button>
+                      ) : null}
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      {signupStep === 4 ? (
+                        <button type="button" onClick={() => setSignupStep(5)} className="text-xs text-muted-foreground hover:text-foreground">
+                          Skip for now — I'll add later
+                        </button>
+                      ) : null}
+
+                      {signupStep < totalSignupSteps ? (
+                        <button type="button" onClick={goToNextStep}
+                          className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
+                          Continue <ArrowRight className="w-4 h-4" />
+                        </button>
+                      ) : (
+                        <button type="submit" disabled={loading}
+                          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
+                          {loading ? "Creating account..." : "Create Account"}
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </form>
               )}
 
