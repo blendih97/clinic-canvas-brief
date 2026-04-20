@@ -743,6 +743,41 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
+      get_admin_dashboard_metrics: {
+        Args: never
+        Returns: {
+          active_users: number
+          churned_this_month: number
+          mrr_gbp: number
+          paying_users: number
+          total_users: number
+          trial_users: number
+        }[]
+      }
+      get_admin_recent_documents: {
+        Args: { _limit?: number }
+        Returns: {
+          document_id: string
+          document_name: string
+          document_type: string
+          original_language: string
+          processing_status: string
+          upload_date: string
+          user_id: string
+          user_name: string
+        }[]
+      }
+      get_admin_recent_signups: {
+        Args: { _limit?: number }
+        Returns: {
+          country: string
+          email: string
+          full_name: string
+          plan: string
+          signup_date: string
+          user_id: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
