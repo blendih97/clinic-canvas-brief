@@ -5,33 +5,29 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/hooks/useAuth";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLocale } from "@/hooks/useLocale";
 
 type Section = "overview" | "blood" | "imaging" | "media" | "medications" | "documents" | "share" | "billing" | "export" | "family";
 
-const baseNavItems: { id: Section; label: string; icon: React.ElementType; familyOnly?: boolean }[] = [
-  { id: "overview", label: "Overview", icon: LayoutDashboard },
-  { id: "blood", label: "Blood Results", icon: Droplets },
-  { id: "imaging", label: "Imaging", icon: ScanLine },
-  { id: "media", label: "Media", icon: Play },
-  { id: "medications", label: "Medications", icon: Pill },
-  { id: "documents", label: "Documents", icon: FileText },
-  { id: "export", label: "Export", icon: FileDown },
-  { id: "share", label: "Share Brief", icon: Share2 },
-  { id: "family", label: "Family", icon: Users, familyOnly: true },
-  { id: "billing", label: "Subscription", icon: CreditCard },
+const baseNavItems: { id: Section; labelKey: string; icon: React.ElementType; familyOnly?: boolean }[] = [
+  { id: "overview", labelKey: "sidebar.overview", icon: LayoutDashboard },
+  { id: "blood", labelKey: "sidebar.blood", icon: Droplets },
+  { id: "imaging", labelKey: "sidebar.imaging", icon: ScanLine },
+  { id: "media", labelKey: "sidebar.media", icon: Play },
+  { id: "medications", labelKey: "sidebar.medications", icon: Pill },
+  { id: "documents", labelKey: "sidebar.documents", icon: FileText },
+  { id: "export", labelKey: "sidebar.export", icon: FileDown },
+  { id: "share", labelKey: "sidebar.share", icon: Share2 },
+  { id: "family", labelKey: "sidebar.family", icon: Users, familyOnly: true },
+  { id: "billing", labelKey: "sidebar.billing", icon: CreditCard },
 ];
 
 const mobileNavItems: Section[] = ["overview", "blood", "media", "documents", "export"];
 
-const planLabels: Record<string, string> = {
-  free: "Free Trial",
-  standard: "Standard Plan",
-  family: "Family Plan",
-};
-
 const Sidebar = ({ active, onNavigate }: { active: Section; onNavigate: (s: Section) => void }) => {
   const isMobile = useIsMobile();
   const { profile, signOut, user } = useAuth();
+  const { t } = useLocale();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const nav = useNavigate();
@@ -39,6 +35,11 @@ const Sidebar = ({ active, onNavigate }: { active: Section; onNavigate: (s: Sect
   const displayName = profile?.full_name || user?.email?.split("@")[0] || "User";
   const initials = displayName.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
   const plan = profile?.plan || "free";
+  const planLabels: Record<string, string> = {
+    free: t("sidebar.free"),
+    standard: t("sidebar.standard"),
+    family: t("sidebar.familyPlan"),
+  };
 
   const navItems = baseNavItems.filter((item) => !item.familyOnly || plan === "family");
 
@@ -95,7 +96,7 @@ const Sidebar = ({ active, onNavigate }: { active: Section; onNavigate: (s: Sect
               <button key={item.id} onClick={() => onNavigate(item.id)}
                 className={`flex flex-col items-center gap-0.5 px-2 py-1 rounded-md text-[10px] transition-colors ${isActive ? "text-primary font-medium" : "text-muted-foreground"}`}>
                 <item.icon className={`w-5 h-5 ${isActive ? "text-primary" : ""}`} />
-                {item.label.split(" ")[0]}
+                {t(item.labelKey).split(" ")[0]}
               </button>
             );
           })}
@@ -118,7 +119,7 @@ const Sidebar = ({ active, onNavigate }: { active: Section; onNavigate: (s: Sect
             <button key={item.id} onClick={() => onNavigate(item.id)}
               className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-all ${isActive ? "bg-sidebar-accent text-primary font-medium" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}>
               <item.icon className="w-4 h-4" />
-              {item.label}
+              {t(item.labelKey)}
             </button>
           );
         })}

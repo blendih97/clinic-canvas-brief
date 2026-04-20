@@ -115,6 +115,11 @@ const SettingsPage = () => {
               <p className="text-xs text-muted-foreground">{t("settings.languageDescription")}</p>
             </div>
             <LanguageSwitcher />
+            <div className="pt-2">
+              <p className="text-xs font-medium text-foreground">{t("settings.translationLanguage")}</p>
+              <p className="text-xs text-muted-foreground">{t("settings.translationLanguageDescription")}</p>
+            </div>
+            <LanguageSwitcher mode="translation" />
           </div>
         </div>
 

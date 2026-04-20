@@ -7,7 +7,9 @@ import { defaultLocale, isLocale, translate, type Locale } from "@/lib/i18n";
 type LocaleContextType = {
   isRTL: boolean;
   locale: Locale;
+  translationLocale: Locale;
   setLocale: (nextLocale: Locale) => Promise<void>;
+  setTranslationLocale: (nextLocale: Locale) => Promise<void>;
   t: (key: string, params?: Record<string, string | number>) => string;
 };
 
@@ -27,12 +29,16 @@ const getInitialLocale = (): Locale => {
 export const LocaleProvider = ({ children }: { children: ReactNode }) => {
   const { profile, refreshProfile, user } = useAuth();
   const [locale, setLocaleState] = useState<Locale>(getInitialLocale);
+  const [translationLocale, setTranslationLocaleState] = useState<Locale>(getInitialLocale);
 
   useEffect(() => {
     if (isLocale(profile?.preferred_ui_language) && profile.preferred_ui_language !== locale) {
       setLocaleState(profile.preferred_ui_language);
     }
-  }, [locale, profile?.preferred_ui_language]);
+    if (isLocale(profile?.preferred_translation_language) && profile.preferred_translation_language !== translationLocale) {
+      setTranslationLocaleState(profile.preferred_translation_language);
+    }
+  }, [locale, profile?.preferred_translation_language, profile?.preferred_ui_language, translationLocale]);
 
   useEffect(() => {
     if (typeof document === "undefined") return;
@@ -59,7 +65,7 @@ export const LocaleProvider = ({ children }: { children: ReactNode }) => {
 
       const { error } = await supabase
         .from("profiles")
-        .update({ preferred_ui_language: nextLocale } as never)
+        .update({ preferred_ui_language: nextLocale, preferred_translation_language: nextLocale } as never)
         .eq("id", user.id);
 
       if (error) {
@@ -72,9 +78,32 @@ export const LocaleProvider = ({ children }: { children: ReactNode }) => {
     [locale, refreshProfile, user],
   );
 
+  const setTranslationLocale = useCallback(
+    async (nextLocale: Locale) => {
+      if (nextLocale === translationLocale) return;
+
+      setTranslationLocaleState(nextLocale);
+
+      if (!user) return;
+
+      const { error } = await supabase
+        .from("profiles")
+        .update({ preferred_translation_language: nextLocale } as never)
+        .eq("id", user.id);
+
+      if (error) {
+        toast.error(translate(locale, "settings.languageSaveError"));
+        return;
+      }
+
+      await refreshProfile();
+    },
+    [locale, refreshProfile, translationLocale, user],
+  );
+
   const value = useMemo(
-    () => ({ isRTL: locale === "ar", locale, setLocale, t }),
-    [locale, setLocale, t],
+    () => ({ isRTL: locale === "ar", locale, setLocale, setTranslationLocale, t, translationLocale }),
+    [locale, setLocale, setTranslationLocale, t, translationLocale],
   );
 
   return <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>;
