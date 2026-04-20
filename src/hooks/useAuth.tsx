@@ -30,7 +30,7 @@ interface AuthContextType {
   session: Session | null;
   profile: Profile | null;
   loading: boolean;
-  signUp: (email: string, password: string, metadata?: Record<string, string>) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string, metadata?: Record<string, string>) => Promise<{ error: Error | null; session: Session | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
@@ -84,12 +84,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [fetchProfile, touchLastActive]);
 
   const signUp = async (email: string, password: string, metadata?: Record<string, string>) => {
-    const { error } = await supabase.auth.signUp({
+    const { error, data } = await supabase.auth.signUp({
       email,
       password,
       options: { data: metadata },
     });
-    return { error: error ? new Error(error.message) : null };
+    return { error: error ? new Error(error.message) : null, session: data.session };
   };
 
   const signIn = async (email: string, password: string) => {
