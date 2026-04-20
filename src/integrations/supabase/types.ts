@@ -14,6 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_actions: {
+        Row: {
+          action_type: string
+          admin_user_id: string
+          created_at: string
+          details_json: Json
+          id: string
+          target_user_id: string | null
+        }
+        Insert: {
+          action_type: string
+          admin_user_id: string
+          created_at?: string
+          details_json?: Json
+          id?: string
+          target_user_id?: string | null
+        }
+        Update: {
+          action_type?: string
+          admin_user_id?: string
+          created_at?: string
+          details_json?: Json
+          id?: string
+          target_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_actions_admin_user_id_fkey"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_actions_target_user_id_fkey"
+            columns: ["target_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      admin_settings: {
+        Row: {
+          ai_model: string
+          announcement_reply_to: string | null
+          announcement_sender_name: string | null
+          default_trial_days: number
+          id: number
+          updated_at: string
+        }
+        Insert: {
+          ai_model?: string
+          announcement_reply_to?: string | null
+          announcement_sender_name?: string | null
+          default_trial_days?: number
+          id?: number
+          updated_at?: string
+        }
+        Update: {
+          ai_model?: string
+          announcement_reply_to?: string | null
+          announcement_sender_name?: string | null
+          default_trial_days?: number
+          id?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       alerts: {
         Row: {
           created_at: string
@@ -119,10 +188,16 @@ export type Database = {
           extracted: boolean | null
           facility: string | null
           file_path: string | null
+          file_size_bytes: number | null
           file_url: string | null
           id: string
           name: string
+          original_language: string | null
           pages: number | null
+          processed_at: string | null
+          processing_error: string | null
+          processing_started_at: string | null
+          processing_status: string
           summary: Json | null
           type: string | null
           user_id: string
@@ -135,10 +210,16 @@ export type Database = {
           extracted?: boolean | null
           facility?: string | null
           file_path?: string | null
+          file_size_bytes?: number | null
           file_url?: string | null
           id?: string
           name: string
+          original_language?: string | null
           pages?: number | null
+          processed_at?: string | null
+          processing_error?: string | null
+          processing_started_at?: string | null
+          processing_status?: string
           summary?: Json | null
           type?: string | null
           user_id: string
@@ -151,10 +232,16 @@ export type Database = {
           extracted?: boolean | null
           facility?: string | null
           file_path?: string | null
+          file_size_bytes?: number | null
           file_url?: string | null
           id?: string
           name?: string
+          original_language?: string | null
           pages?: number | null
+          processed_at?: string | null
+          processing_error?: string | null
+          processing_started_at?: string | null
+          processing_status?: string
           summary?: Json | null
           type?: string | null
           user_id?: string
@@ -386,11 +473,55 @@ export type Database = {
         }
         Relationships: []
       }
+      platform_events: {
+        Row: {
+          actor_user_id: string | null
+          created_at: string
+          details_json: Json
+          event_type: string
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          actor_user_id?: string | null
+          created_at?: string
+          details_json?: Json
+          event_type: string
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          actor_user_id?: string | null
+          created_at?: string
+          details_json?: Json
+          event_type?: string
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "platform_events_actor_user_id_fkey"
+            columns: ["actor_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "platform_events_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
           biological_sex: string | null
           blood_type: string | null
+          comped_plan: string | null
+          comped_until: string | null
           created_at: string
           current_diagnoses: string | null
           date_of_birth: string | null
@@ -400,12 +531,16 @@ export type Database = {
           health_data_consent_at: string | null
           height_cm: number | null
           id: string
+          last_active_at: string | null
           nationality: string | null
           phone: string | null
           plan: string
           stripe_customer_id: string | null
           stripe_subscription_id: string | null
+          suspended_at: string | null
+          suspended_reason: string | null
           terms_consent_at: string | null
+          trial_ends_at: string | null
           updated_at: string
           weight_kg: number | null
         }
@@ -413,6 +548,8 @@ export type Database = {
           avatar_url?: string | null
           biological_sex?: string | null
           blood_type?: string | null
+          comped_plan?: string | null
+          comped_until?: string | null
           created_at?: string
           current_diagnoses?: string | null
           date_of_birth?: string | null
@@ -422,12 +559,16 @@ export type Database = {
           health_data_consent_at?: string | null
           height_cm?: number | null
           id: string
+          last_active_at?: string | null
           nationality?: string | null
           phone?: string | null
           plan?: string
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
+          suspended_at?: string | null
+          suspended_reason?: string | null
           terms_consent_at?: string | null
+          trial_ends_at?: string | null
           updated_at?: string
           weight_kg?: number | null
         }
@@ -435,6 +576,8 @@ export type Database = {
           avatar_url?: string | null
           biological_sex?: string | null
           blood_type?: string | null
+          comped_plan?: string | null
+          comped_until?: string | null
           created_at?: string
           current_diagnoses?: string | null
           date_of_birth?: string | null
@@ -444,12 +587,16 @@ export type Database = {
           health_data_consent_at?: string | null
           height_cm?: number | null
           id?: string
+          last_active_at?: string | null
           nationality?: string | null
           phone?: string | null
           plan?: string
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
+          suspended_at?: string | null
+          suspended_reason?: string | null
           terms_consent_at?: string | null
+          trial_ends_at?: string | null
           updated_at?: string
           weight_kg?: number | null
         }
@@ -554,6 +701,35 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -566,6 +742,13 @@ export type Database = {
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
         Returns: number
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
       }
       move_to_dlq: {
         Args: {
@@ -586,7 +769,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -713,6 +896,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
