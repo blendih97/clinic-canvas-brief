@@ -309,7 +309,7 @@ const AdminPlaceholderPage = ({
           ) : activity.map((item) => (
             <div key={item.id} className="grid gap-2 px-5 py-4 lg:grid-cols-[180px,1fr,220px]">
               <div>
-                <p className="text-sm font-medium text-foreground">{item.event_type.replaceAll("_", " ")}</p>
+                <p className="text-sm font-medium text-foreground">{item.event_type.split("_").join(" ")}</p>
                 <p className="mt-1 text-xs text-muted-foreground">{fmtDateTime(item.created_at)}</p>
               </div>
               <div className="text-sm text-muted-foreground">
