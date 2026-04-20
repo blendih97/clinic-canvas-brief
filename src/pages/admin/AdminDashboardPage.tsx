@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ElementType } from "react";
 import { ArrowRight, FileText, PoundSterling, UserPlus, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -16,7 +16,7 @@ const metricConfig: Array<{
   key: keyof AdminDashboardMetrics;
   label: string;
   href: string;
-  icon: React.ElementType;
+  icon: ElementType;
   format?: (value: number) => string;
 }> = [
   { key: "total_users", label: "Total users", href: "/admin/users", icon: Users },
