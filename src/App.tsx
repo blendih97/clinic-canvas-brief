@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
+import { LocaleProvider } from "@/hooks/useLocale";
 import { useAdminAccess } from "@/hooks/useAdminAccess";
 import Index from "./pages/Index.tsx";
 import ShareView from "./pages/ShareView.tsx";
@@ -75,37 +76,39 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/auth" element={<AuthRoute><AuthPage /></AuthRoute>} />
-            <Route path="/" element={<HomeRoute />} />
-            <Route path="/demo" element={<ProductDemoPage />} />
-            <Route path="/app" element={<ProtectedRoute><Index /></ProtectedRoute>} />
-            <Route path="/app/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-            <Route path="/app/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
-            <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
-              <Route index element={<AdminDashboardPage />} />
-              <Route path="users" element={<AdminPlaceholderPage title="Users" description="Member operations, filters, and actions are next in the build order." />} />
-              <Route path="subscriptions" element={<AdminPlaceholderPage title="Subscriptions" description="Revenue, trial conversion, and Stripe-linked subscription visibility are queued for the next milestone." />} />
-              <Route path="documents" element={<AdminPlaceholderPage title="Documents" description="Processing monitoring, storage insights, and failure diagnostics are scaffolded next." />} />
-              <Route path="activity" element={<AdminPlaceholderPage title="Activity log" description="Audit trails, admin actions, and security events will land in the following milestone." />} />
-              <Route path="settings" element={<AdminPlaceholderPage title="Settings" description="Admin invites, trial defaults, exports, and platform controls are planned for the final launch admin milestone." />} />
-            </Route>
-            <Route path="/profile" element={<Navigate to="/app/profile" replace />} />
-            <Route path="/settings" element={<Navigate to="/app/settings" replace />} />
-            <Route path="/share/:token" element={<ShareView />} />
-            <Route path="/upload-request/:token" element={<UploadRequestPage />} />
-            <Route path="/media-share/:token" element={<MediaSharePage />} />
-            <Route path="/privacy" element={<PrivacyPage />} />
-            <Route path="/terms" element={<TermsPage />} />
-            <Route path="/unsubscribe" element={<UnsubscribePage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+      <LocaleProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/auth" element={<AuthRoute><AuthPage /></AuthRoute>} />
+              <Route path="/" element={<HomeRoute />} />
+              <Route path="/demo" element={<ProductDemoPage />} />
+              <Route path="/app" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+              <Route path="/app/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+              <Route path="/app/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+              <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
+                <Route index element={<AdminDashboardPage />} />
+                <Route path="users" element={<AdminPlaceholderPage title="Users" description="Member operations, filters, and actions are next in the build order." />} />
+                <Route path="subscriptions" element={<AdminPlaceholderPage title="Subscriptions" description="Revenue, trial conversion, and Stripe-linked subscription visibility are queued for the next milestone." />} />
+                <Route path="documents" element={<AdminPlaceholderPage title="Documents" description="Processing monitoring, storage insights, and failure diagnostics are scaffolded next." />} />
+                <Route path="activity" element={<AdminPlaceholderPage title="Activity log" description="Audit trails, admin actions, and security events will land in the following milestone." />} />
+                <Route path="settings" element={<AdminPlaceholderPage title="Settings" description="Admin invites, trial defaults, exports, and platform controls are planned for the final launch admin milestone." />} />
+              </Route>
+              <Route path="/profile" element={<Navigate to="/app/profile" replace />} />
+              <Route path="/settings" element={<Navigate to="/app/settings" replace />} />
+              <Route path="/share/:token" element={<ShareView />} />
+              <Route path="/upload-request/:token" element={<UploadRequestPage />} />
+              <Route path="/media-share/:token" element={<MediaSharePage />} />
+              <Route path="/privacy" element={<PrivacyPage />} />
+              <Route path="/terms" element={<TermsPage />} />
+              <Route path="/unsubscribe" element={<UnsubscribePage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </LocaleProvider>
     </AuthProvider>
   </QueryClientProvider>
 );
