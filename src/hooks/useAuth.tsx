@@ -7,6 +7,8 @@ export interface Profile {
   full_name: string | null;
   date_of_birth: string | null;
   nationality: string | null;
+  preferred_ui_language?: string | null;
+  preferred_translation_language?: string | null;
   phone: string | null;
   emergency_contact_name: string | null;
   emergency_contact_phone: string | null;

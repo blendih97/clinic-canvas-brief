@@ -1,8 +1,10 @@
 export type Locale = "en" | "ar";
 
-type TranslationValue = string | Record<string, TranslationValue>;
+type TranslationMap = {
+  [key: string]: string | TranslationMap;
+};
 
-const dictionary: Record<Locale, Record<string, TranslationValue>> = {
+const dictionary: Record<Locale, TranslationMap> = {
   en: {
     common: {
       back: "Back",
@@ -359,8 +361,8 @@ const dictionary: Record<Locale, Record<string, TranslationValue>> = {
   },
 };
 
-const getNestedValue = (source: Record<string, TranslationValue>, path: string): string | undefined => {
-  const value = path.split(".").reduce<TranslationValue | undefined>((current, part) => {
+const getNestedValue = (source: TranslationMap, path: string): string | undefined => {
+  const value = path.split(".").reduce<string | TranslationMap | undefined>((current, part) => {
     if (!current || typeof current === "string") return current;
     return current[part];
   }, source);
@@ -379,8 +381,7 @@ export const translate = (locale: Locale, key: string, params?: Record<string, s
 
   if (!params) return template;
 
-  return Object.entries(params).reduce(
-    (result, [paramKey, paramValue]) => result.replaceAll(`{{${paramKey}}}`, String(paramValue)),
-    template,
-  );
+  return Object.entries(params).reduce((result, [paramKey, paramValue]) => {
+    return result.split(`{{${paramKey}}}`).join(String(paramValue));
+  }, template);
 };
