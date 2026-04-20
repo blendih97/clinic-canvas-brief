@@ -60,8 +60,12 @@ const AuthPage = () => {
           return;
         }
         setCountries((data ?? []) as CountryOption[]);
+        setCountriesLoading(false);
       })
-      .finally(() => setCountriesLoading(false));
+      .catch(() => {
+        setCountriesLoading(false);
+        toast.error("Unable to load countries right now");
+      })
   }, [mode]);
 
   const fullName = useMemo(() => `${firstName} ${lastName}`.trim(), [firstName, lastName]);
