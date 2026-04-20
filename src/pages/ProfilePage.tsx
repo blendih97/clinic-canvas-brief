@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useVaultStore } from "@/store/vaultStore";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ArrowLeft, Camera, Trash2, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Camera } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const bloodTypes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
@@ -15,12 +15,10 @@ const planLabels: Record<string, string> = {
 };
 
 const ProfilePage = () => {
-  const { user, profile, refreshProfile, signOut } = useAuth();
+  const { user, profile, refreshProfile } = useAuth();
   const { medications, allergies } = useVaultStore();
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
-  const [deleteConfirm, setDeleteConfirm] = useState("");
-  const [showDelete, setShowDelete] = useState(false);
 
   const [fullName, setFullName] = useState("");
   const [dob, setDob] = useState("");
@@ -92,21 +90,6 @@ const ProfilePage = () => {
     await supabase.from("profiles").update({ avatar_url: publicUrl }).eq("id", user.id);
     await refreshProfile();
     toast.success("Avatar updated");
-  };
-
-  const handleDeleteAccount = async () => {
-    if (deleteConfirm !== "DELETE" || !user) return;
-    await Promise.all([
-      supabase.from("blood_results").delete().eq("user_id", user.id),
-      supabase.from("imaging_results").delete().eq("user_id", user.id),
-      supabase.from("medications").delete().eq("user_id", user.id),
-      supabase.from("documents").delete().eq("user_id", user.id),
-      supabase.from("allergies").delete().eq("user_id", user.id),
-      supabase.from("alerts").delete().eq("user_id", user.id),
-      supabase.from("profiles").delete().eq("id", user.id),
-    ]);
-    await signOut();
-    navigate("/auth");
   };
 
   const initials = (fullName || user?.email?.split("@")[0] || "U")
@@ -291,33 +274,6 @@ const ProfilePage = () => {
           {saving ? "Saving..." : "Save Changes"}
         </button>
 
-        <section className="border border-destructive/30 rounded-xl p-6">
-          <h2 className="font-heading text-lg text-destructive mb-2">Danger Zone</h2>
-          <p className="text-sm text-muted-foreground mb-4">Permanently delete your account and all associated health data. This cannot be undone.</p>
-          {!showDelete ? (
-            <button onClick={() => setShowDelete(true)}
-              className="flex items-center gap-2 px-4 py-2 border border-destructive text-destructive rounded-lg text-sm hover:bg-destructive/5 transition-colors">
-              <Trash2 className="w-4 h-4" /> Delete Account
-            </button>
-          ) : (
-            <div className="space-y-3">
-              <div className="flex items-start gap-2 p-3 bg-destructive/5 rounded-lg">
-                <AlertTriangle className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
-                <p className="text-xs text-destructive">Type <strong>DELETE</strong> to confirm permanent account deletion.</p>
-              </div>
-              <input value={deleteConfirm} onChange={(e) => setDeleteConfirm(e.target.value)} placeholder="Type DELETE"
-                className="w-full px-3 py-2 bg-background border border-destructive/30 rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-destructive/30" />
-              <div className="flex gap-2">
-                <button onClick={() => { setShowDelete(false); setDeleteConfirm(""); }}
-                  className="flex-1 py-2 border border-border rounded-lg text-sm text-foreground hover:bg-muted">Cancel</button>
-                <button onClick={handleDeleteAccount} disabled={deleteConfirm !== "DELETE"}
-                  className="flex-1 py-2 bg-destructive text-destructive-foreground rounded-lg text-sm font-medium disabled:opacity-50">
-                  Confirm Delete
-                </button>
-              </div>
-            </div>
-          )}
-        </section>
       </div>
     </div>
   );
