@@ -125,6 +125,27 @@ function Hero() {
               Watch demo →
             </Link>
           </div>
+          {isMobile && (
+            <div style={{ marginTop: 28, display: "flex", justifyContent: "center" }}>
+              <div
+                style={{
+                  width: "100%",
+                  maxWidth: 340,
+                  height: 290,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "flex-start",
+                  overflow: "hidden",
+                  position: "relative",
+                }}
+              >
+                <div style={{ position: "absolute", bottom: 20, left: "50%", transform: "translateX(-50%)", width: "72%", height: 34, borderRadius: "50%", background: "hsl(var(--primary) / 0.14)", filter: "blur(20px)" }} />
+                <div style={{ transform: "translateY(0) scale(0.72)", transformOrigin: "top center" }}>
+                  <AppMockup />
+                </div>
+              </div>
+            </div>
+          )}
           <div style={{ marginTop: isMobile ? 40 : 64, paddingTop: isMobile ? 28 : 40, borderTop: `1px solid hsl(var(--foreground) / 0.1)`, display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4,1fr)", gap: isMobile ? "20px 16px" : 24 }}>
             {[
               ["50+", "languages", "From Arabic to Mandarin"],
@@ -149,7 +170,6 @@ function Hero() {
           </div>
         )}
       </div>
-      {isMobile && <div style={{ position: "absolute", right: -30, bottom: 0, opacity: 0.18, pointerEvents: "none", transform: "scale(0.55)", transformOrigin: "bottom right" }}><AppMockup /></div>}
     </section>
   );
 }
