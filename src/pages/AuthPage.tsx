@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { lovable } from "@/integrations/lovable/index";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -9,6 +9,7 @@ const AuthPage = () => {
   const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
   const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
 
   const [email, setEmail] = useState("");
@@ -20,6 +21,13 @@ const AuthPage = () => {
   const [healthConsent, setHealthConsent] = useState(false);
   const [termsConsent, setTermsConsent] = useState(false);
 
+  useEffect(() => {
+    const requestedMode = searchParams.get("mode");
+    if (requestedMode === "signup" || requestedMode === "signin" || requestedMode === "forgot") {
+      setMode(requestedMode);
+    }
+  }, [searchParams]);
+
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -28,7 +36,7 @@ const AuthPage = () => {
     if (error) {
       toast.error("Invalid email or password");
     } else {
-      navigate("/");
+      navigate("/app");
     }
   };
 
@@ -80,14 +88,14 @@ const AuthPage = () => {
 
   const handleGoogleSignIn = async () => {
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+      redirect_uri: `${window.location.origin}/app`,
     });
     if (result.error) {
       toast.error("Google sign in failed");
       return;
     }
     if (result.redirected) return;
-    navigate("/");
+    navigate("/app");
   };
 
   const canSignUp = healthConsent && termsConsent;

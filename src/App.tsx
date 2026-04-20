@@ -7,6 +7,8 @@ import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import Index from "./pages/Index.tsx";
 import ShareView from "./pages/ShareView.tsx";
 import AuthPage from "./pages/AuthPage.tsx";
+import MarketingLandingPage from "./pages/MarketingLandingPage.tsx";
+import ProductDemoPage from "./pages/ProductDemoPage.tsx";
 import ProfilePage from "./pages/ProfilePage.tsx";
 import SettingsPage from "./pages/SettingsPage.tsx";
 import UploadRequestPage from "./pages/UploadRequestPage.tsx";
@@ -37,8 +39,16 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 const AuthRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
   if (loading) return null;
-  if (user) return <Navigate to="/" replace />;
+  if (user) return <Navigate to="/app" replace />;
   return <>{children}</>;
+};
+
+const HomeRoute = () => {
+  const { user, loading } = useAuth();
+
+  if (loading) return null;
+  if (user) return <Navigate to="/app" replace />;
+  return <MarketingLandingPage />;
 };
 
 const App = () => (
@@ -50,9 +60,13 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/auth" element={<AuthRoute><AuthPage /></AuthRoute>} />
-            <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
-            <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-            <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+            <Route path="/" element={<HomeRoute />} />
+            <Route path="/demo" element={<ProductDemoPage />} />
+            <Route path="/app" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+            <Route path="/app/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+            <Route path="/app/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+            <Route path="/profile" element={<Navigate to="/app/profile" replace />} />
+            <Route path="/settings" element={<Navigate to="/app/settings" replace />} />
             <Route path="/share/:token" element={<ShareView />} />
             <Route path="/upload-request/:token" element={<UploadRequestPage />} />
             <Route path="/media-share/:token" element={<MediaSharePage />} />
