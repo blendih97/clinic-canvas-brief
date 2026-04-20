@@ -8,21 +8,24 @@ const languageOptions: { label: string; value: Locale }[] = [
 
 type LanguageSwitcherProps = {
   className?: string;
+  mode?: "ui" | "translation";
 };
 
-const LanguageSwitcher = ({ className = "" }: LanguageSwitcherProps) => {
-  const { locale, setLocale } = useLocale();
+const LanguageSwitcher = ({ className = "", mode = "ui" }: LanguageSwitcherProps) => {
+  const { locale, setLocale, setTranslationLocale, translationLocale } = useLocale();
+  const activeLocale = mode === "translation" ? translationLocale : locale;
+  const handleChange = mode === "translation" ? setTranslationLocale : setLocale;
 
   return (
     <div className={`inline-flex items-center gap-1 rounded-lg border border-border bg-card p-1 ${className}`.trim()}>
       {languageOptions.map((option) => {
-        const isActive = option.value === locale;
+        const isActive = option.value === activeLocale;
 
         return (
           <button
             key={option.value}
             type="button"
-            onClick={() => void setLocale(option.value)}
+            onClick={() => void handleChange(option.value)}
             className={`rounded-md px-3 py-1.5 text-xs transition-colors ${
               isActive ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
             }`}
