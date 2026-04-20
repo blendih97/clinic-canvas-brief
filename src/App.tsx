@@ -14,6 +14,7 @@ import ProductDemoPage from "./pages/ProductDemoPage.tsx";
 import AdminLayout from "./components/admin/AdminLayout.tsx";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage.tsx";
 import AdminPlaceholderPage from "./pages/admin/AdminPlaceholderPage.tsx";
+import AdminMfaPanel from "./components/admin/AdminMfaPanel";
 import ProfilePage from "./pages/ProfilePage.tsx";
 import SettingsPage from "./pages/SettingsPage.tsx";
 import UploadRequestPage from "./pages/UploadRequestPage.tsx";
@@ -90,11 +91,11 @@ const App = () => (
               <Route path="/app/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
               <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
                 <Route index element={<AdminDashboardPage />} />
-                <Route path="users" element={<AdminPlaceholderPage title="Users" description="Member operations, filters, and actions are next in the build order." />} />
-                <Route path="subscriptions" element={<AdminPlaceholderPage title="Subscriptions" description="Revenue, trial conversion, and Stripe-linked subscription visibility are queued for the next milestone." />} />
-                <Route path="documents" element={<AdminPlaceholderPage title="Documents" description="Processing monitoring, storage insights, and failure diagnostics are scaffolded next." />} />
-                <Route path="activity" element={<AdminPlaceholderPage title="Activity log" description="Audit trails, admin actions, and security events will land in the following milestone." />} />
-                <Route path="settings" element={<AdminPlaceholderPage title="Settings" description="Admin invites, trial defaults, exports, and platform controls are planned for the final launch admin milestone." />} />
+                <Route path="users" element={<AdminPlaceholderPage title="Users" description="Review member access, plan state, and high-touch support actions." mode="users" />} />
+                <Route path="subscriptions" element={<AdminPlaceholderPage title="Subscriptions" description="Inspect estimated recurring revenue, trial expiry windows, and comped access." mode="subscriptions" />} />
+                <Route path="documents" element={<AdminPlaceholderPage title="Documents" description="Monitor upload processing, language coverage, and recent platform throughput." mode="documents" />} />
+                <Route path="activity" element={<AdminPlaceholderPage title="Activity log" description="Track platform signups, admin interventions, and security-sensitive events." mode="activity" />} />
+                <Route path="settings" element={<AdminPlaceholderPage title="Settings" description="Control launch defaults, sender identity, and admin session protection." mode="settings" extra={<AdminMfaPanel />} />} />
               </Route>
               <Route path="/profile" element={<Navigate to="/app/profile" replace />} />
               <Route path="/settings" element={<Navigate to="/app/settings" replace />} />
