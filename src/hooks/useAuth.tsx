@@ -32,6 +32,7 @@ interface AuthContextType {
   session: Session | null;
   profile: Profile | null;
   loading: boolean;
+  refreshSession: () => Promise<void>;
   signUp: (email: string, password: string, metadata?: Record<string, string>) => Promise<{ error: Error | null; session: Session | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
@@ -58,6 +59,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const refreshProfile = useCallback(async () => {
     if (user) await fetchProfile(user.id);
   }, [user, fetchProfile]);
+
+  const refreshSession = useCallback(async () => {
+    const { data, error } = await supabase.auth.refreshSession();
+    if (error) throw error;
+    setSession(data.session ?? null);
+    setUser(data.session?.user ?? null);
+  }, []);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
@@ -107,7 +115,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, profile, loading, signUp, signIn, signOut, refreshProfile }}>
+    <AuthContext.Provider value={{ user, session, profile, loading, refreshSession, signUp, signIn, signOut, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   );
