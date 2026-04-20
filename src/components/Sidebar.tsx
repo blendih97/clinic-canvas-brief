@@ -5,33 +5,29 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/hooks/useAuth";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLocale } from "@/hooks/useLocale";
 
 type Section = "overview" | "blood" | "imaging" | "media" | "medications" | "documents" | "share" | "billing" | "export" | "family";
 
-const baseNavItems: { id: Section; label: string; icon: React.ElementType; familyOnly?: boolean }[] = [
-  { id: "overview", label: "Overview", icon: LayoutDashboard },
-  { id: "blood", label: "Blood Results", icon: Droplets },
-  { id: "imaging", label: "Imaging", icon: ScanLine },
-  { id: "media", label: "Media", icon: Play },
-  { id: "medications", label: "Medications", icon: Pill },
-  { id: "documents", label: "Documents", icon: FileText },
-  { id: "export", label: "Export", icon: FileDown },
-  { id: "share", label: "Share Brief", icon: Share2 },
-  { id: "family", label: "Family", icon: Users, familyOnly: true },
-  { id: "billing", label: "Subscription", icon: CreditCard },
+const baseNavItems: { id: Section; labelKey: string; icon: React.ElementType; familyOnly?: boolean }[] = [
+  { id: "overview", labelKey: "sidebar.overview", icon: LayoutDashboard },
+  { id: "blood", labelKey: "sidebar.blood", icon: Droplets },
+  { id: "imaging", labelKey: "sidebar.imaging", icon: ScanLine },
+  { id: "media", labelKey: "sidebar.media", icon: Play },
+  { id: "medications", labelKey: "sidebar.medications", icon: Pill },
+  { id: "documents", labelKey: "sidebar.documents", icon: FileText },
+  { id: "export", labelKey: "sidebar.export", icon: FileDown },
+  { id: "share", labelKey: "sidebar.share", icon: Share2 },
+  { id: "family", labelKey: "sidebar.family", icon: Users, familyOnly: true },
+  { id: "billing", labelKey: "sidebar.billing", icon: CreditCard },
 ];
 
 const mobileNavItems: Section[] = ["overview", "blood", "media", "documents", "export"];
 
-const planLabels: Record<string, string> = {
-  free: "Free Trial",
-  standard: "Standard Plan",
-  family: "Family Plan",
-};
-
 const Sidebar = ({ active, onNavigate }: { active: Section; onNavigate: (s: Section) => void }) => {
   const isMobile = useIsMobile();
   const { profile, signOut, user } = useAuth();
+  const { t } = useLocale();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const nav = useNavigate();
@@ -39,6 +35,11 @@ const Sidebar = ({ active, onNavigate }: { active: Section; onNavigate: (s: Sect
   const displayName = profile?.full_name || user?.email?.split("@")[0] || "User";
   const initials = displayName.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
   const plan = profile?.plan || "free";
+  const planLabels: Record<string, string> = {
+    free: t("sidebar.free"),
+    standard: t("sidebar.standard"),
+    family: t("sidebar.familyPlan"),
+  };
 
   const navItems = baseNavItems.filter((item) => !item.familyOnly || plan === "family");
 
