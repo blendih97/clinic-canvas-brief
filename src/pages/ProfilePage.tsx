@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ArrowLeft, Camera } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useLocale } from "@/hooks/useLocale";
 
 const bloodTypes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
@@ -16,6 +17,7 @@ const planLabels: Record<string, string> = {
 
 const ProfilePage = () => {
   const { user, profile, refreshProfile } = useAuth();
+  const { t, isRTL } = useLocale();
   const { medications, allergies } = useVaultStore();
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
@@ -73,9 +75,9 @@ const ProfilePage = () => {
     } as any).eq("id", user.id);
     setSaving(false);
     if (error) {
-      toast.error("Failed to save — please try again");
+      toast.error(t("profile.saveFailed"));
     } else {
-      toast.success("Profile updated");
+      toast.success(t("profile.profileUpdated"));
       await refreshProfile();
     }
   };
@@ -85,11 +87,11 @@ const ProfilePage = () => {
     if (!file || !user) return;
     const path = `${user.id}/${Date.now()}-${file.name}`;
     const { error: uploadErr } = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
-    if (uploadErr) { toast.error("Upload failed"); return; }
+    if (uploadErr) { toast.error(t("profile.uploadFailed")); return; }
     const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(path);
     await supabase.from("profiles").update({ avatar_url: publicUrl }).eq("id", user.id);
     await refreshProfile();
-    toast.success("Avatar updated");
+    toast.success(t("profile.avatarUpdated"));
   };
 
   const initials = (fullName || user?.email?.split("@")[0] || "U")
@@ -101,10 +103,10 @@ const ProfilePage = () => {
     <div className="min-h-screen bg-background">
       <div className="max-w-2xl mx-auto p-6 md:p-8">
         <button onClick={() => navigate("/app")} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6">
-          <ArrowLeft className="w-4 h-4" /> Back to Dashboard
+          <ArrowLeft className={`w-4 h-4 ${isRTL ? "rotate-180" : ""}`} /> {t("profile.backToDashboard")}
         </button>
 
-        <h1 className="font-heading text-3xl font-light text-foreground mb-6">Profile</h1>
+        <h1 className="font-heading text-3xl font-light text-foreground mb-6">{t("profile.title")}</h1>
 
         <div className="flex items-center gap-4 mb-8">
           <div className="relative">
@@ -119,38 +121,38 @@ const ProfilePage = () => {
             </label>
           </div>
           <div>
-            <p className="text-foreground font-medium">{fullName || "Your Name"}</p>
+              <p className="text-foreground font-medium">{fullName || t("profile.yourName")}</p>
             <p className="text-sm text-muted-foreground">{user?.email}</p>
           </div>
         </div>
 
         <section className="bg-card border border-border rounded-xl p-6 mb-6">
-          <h2 className="font-heading text-lg text-foreground mb-4">Personal Information</h2>
+          <h2 className="font-heading text-lg text-foreground mb-4">{t("profile.personalInformation")}</h2>
           <div className="space-y-4">
             <div>
-              <label className="text-xs font-medium text-foreground">Full Name</label>
+              <label className="text-xs font-medium text-foreground">{t("profile.fullName")}</label>
               <input value={fullName} onChange={(e) => setFullName(e.target.value)}
                 className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
             </div>
             <div>
-              <label className="text-xs font-medium text-foreground">Email</label>
+              <label className="text-xs font-medium text-foreground">{t("profile.email")}</label>
               <input value={user?.email || ""} readOnly
                 className="w-full mt-1 px-3 py-2 bg-muted border border-border rounded-lg text-sm text-muted-foreground cursor-not-allowed" />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-xs font-medium text-foreground">Date of Birth</label>
+                <label className="text-xs font-medium text-foreground">{t("profile.dateOfBirth")}</label>
                 <input type="date" value={dob} onChange={(e) => setDob(e.target.value)}
                   className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
               </div>
               <div>
-                <label className="text-xs font-medium text-foreground">Nationality</label>
+                <label className="text-xs font-medium text-foreground">{t("profile.nationality")}</label>
                 <input value={nationality} onChange={(e) => setNationality(e.target.value)}
                   className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
               </div>
             </div>
             <div>
-              <label className="text-xs font-medium text-foreground">Phone</label>
+              <label className="text-xs font-medium text-foreground">{t("profile.phone")}</label>
               <input value={phone} onChange={(e) => setPhone(e.target.value)}
                 className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
             </div>
@@ -159,56 +161,56 @@ const ProfilePage = () => {
 
         {/* About Me / Medical */}
         <section className="bg-card border border-border rounded-xl p-6 mb-6">
-          <h2 className="font-heading text-lg text-foreground mb-4">About Me</h2>
+          <h2 className="font-heading text-lg text-foreground mb-4">{t("profile.aboutMe")}</h2>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-xs font-medium text-foreground">Biological Sex</label>
+                <label className="text-xs font-medium text-foreground">{t("profile.biologicalSex")}</label>
                 <select value={biologicalSex} onChange={(e) => setBiologicalSex(e.target.value)}
                   className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30">
-                  <option value="">Select...</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="prefer_not_to_say">Prefer not to say</option>
+                  <option value="">{t("profile.selectPlaceholder")}</option>
+                  <option value="male">{t("profile.male")}</option>
+                  <option value="female">{t("profile.female")}</option>
+                  <option value="prefer_not_to_say">{t("profile.preferNotToSay")}</option>
                 </select>
-                <p className="text-[10px] text-muted-foreground mt-1">Used to show personalised blood result reference ranges.</p>
+                <p className="text-[10px] text-muted-foreground mt-1">{t("profile.usedForRanges")}</p>
               </div>
               <div>
-                <label className="text-xs font-medium text-foreground">Blood Type</label>
+                <label className="text-xs font-medium text-foreground">{t("profile.bloodType")}</label>
                 <select value={bloodType} onChange={(e) => setBloodType(e.target.value)}
                   className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30">
-                  <option value="">Select...</option>
+                  <option value="">{t("profile.selectPlaceholder")}</option>
                   {bloodTypes.map((t) => <option key={t} value={t}>{t}</option>)}
                 </select>
               </div>
             </div>
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <label className="text-xs font-medium text-foreground">Height (cm)</label>
+                <label className="text-xs font-medium text-foreground">{t("profile.height")}</label>
                 <input type="number" value={heightCm} onChange={(e) => setHeightCm(e.target.value)} placeholder="175"
                   className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
               </div>
               <div>
-                <label className="text-xs font-medium text-foreground">Weight (kg)</label>
+                <label className="text-xs font-medium text-foreground">{t("profile.weight")}</label>
                 <input type="number" value={weightKg} onChange={(e) => setWeightKg(e.target.value)} placeholder="75"
                   className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
               </div>
               <div>
-                <label className="text-xs font-medium text-foreground">BMI</label>
+                <label className="text-xs font-medium text-foreground">{t("profile.bmi")}</label>
                 <input value={bmi || "—"} readOnly
                   className="w-full mt-1 px-3 py-2 bg-muted border border-border rounded-lg text-sm text-muted-foreground cursor-not-allowed" />
               </div>
             </div>
             <div>
-              <label className="text-xs font-medium text-foreground">Current Diagnoses</label>
+              <label className="text-xs font-medium text-foreground">{t("profile.currentDiagnoses")}</label>
               <textarea value={currentDiagnoses} onChange={(e) => setCurrentDiagnoses(e.target.value)}
-                placeholder="e.g. Type 2 Diabetes, Hypertension"
+                placeholder={t("profile.diagnosesPlaceholder")}
                 className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none h-20" />
             </div>
 
             {/* Current Medications (read-only from store) */}
             <div>
-              <label className="text-xs font-medium text-foreground">Current Medications</label>
+               <label className="text-xs font-medium text-foreground">{t("profile.currentMedications")}</label>
               {activeMeds.length > 0 ? (
                 <div className="mt-1 space-y-1">
                   {activeMeds.map((m) => (
@@ -218,13 +220,13 @@ const ProfilePage = () => {
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground mt-1">No active medications</p>
+                 <p className="text-sm text-muted-foreground mt-1">{t("profile.noActiveMedications")}</p>
               )}
             </div>
 
             {/* Known Allergies (read-only from store) */}
             <div>
-              <label className="text-xs font-medium text-foreground">Known Allergies</label>
+               <label className="text-xs font-medium text-foreground">{t("profile.knownAllergies")}</label>
               {allergies.length > 0 ? (
                 <div className="mt-1 flex flex-wrap gap-2">
                   {allergies.map((a, i) => (
@@ -234,18 +236,18 @@ const ProfilePage = () => {
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground mt-1">No known allergies</p>
+                 <p className="text-sm text-muted-foreground mt-1">{t("profile.noKnownAllergies")}</p>
               )}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-xs font-medium text-foreground">Emergency Contact Name</label>
+                 <label className="text-xs font-medium text-foreground">{t("profile.emergencyContactName")}</label>
                 <input value={emergencyName} onChange={(e) => setEmergencyName(e.target.value)}
                   className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
               </div>
               <div>
-                <label className="text-xs font-medium text-foreground">Emergency Contact Phone</label>
+                 <label className="text-xs font-medium text-foreground">{t("profile.emergencyContactPhone")}</label>
                 <input value={emergencyPhone} onChange={(e) => setEmergencyPhone(e.target.value)}
                   className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
               </div>
@@ -254,16 +256,16 @@ const ProfilePage = () => {
         </section>
 
         <section className="bg-card border border-border rounded-xl p-6 mb-6">
-          <h2 className="font-heading text-lg text-foreground mb-4">Account</h2>
+           <h2 className="font-heading text-lg text-foreground mb-4">{t("profile.account")}</h2>
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <p className="text-muted-foreground text-xs">Plan</p>
+               <p className="text-muted-foreground text-xs">{t("profile.plan")}</p>
               <span className="inline-block mt-1 px-2.5 py-0.5 bg-primary/10 text-primary text-xs rounded-full font-medium">
-                {planLabels[profile?.plan || "free"]}
+                 {t(`profile.${(profile?.plan || "free") as "free" | "standard" | "family"}`)}
               </span>
             </div>
             <div>
-              <p className="text-muted-foreground text-xs">Member since</p>
+               <p className="text-muted-foreground text-xs">{t("profile.memberSince")}</p>
               <p className="text-foreground mt-1">{profile?.created_at ? new Date(profile.created_at).toLocaleDateString() : "—"}</p>
             </div>
           </div>
@@ -271,7 +273,7 @@ const ProfilePage = () => {
 
         <button onClick={handleSave} disabled={saving}
           className="w-full py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 mb-6">
-          {saving ? "Saving..." : "Save Changes"}
+          {saving ? t("common.saving") : t("common.saveChanges")}
         </button>
 
       </div>
