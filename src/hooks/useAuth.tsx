@@ -15,6 +15,12 @@ export interface Profile {
   plan: string;
   stripe_customer_id: string | null;
   stripe_subscription_id: string | null;
+  last_active_at?: string | null;
+  suspended_at?: string | null;
+  suspended_reason?: string | null;
+  trial_ends_at?: string | null;
+  comped_plan?: string | null;
+  comped_until?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -43,6 +49,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (data) setProfile(data as Profile);
   }, []);
 
+  const touchLastActive = useCallback(async (userId: string) => {
+    await supabase.from("profiles").update({ last_active_at: new Date().toISOString() } as any).eq("id", userId);
+  }, []);
+
   const refreshProfile = useCallback(async () => {
     if (user) await fetchProfile(user.id);
   }, [user, fetchProfile]);
@@ -52,6 +62,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
+        void touchLastActive(session.user.id);
         setTimeout(() => fetchProfile(session.user.id), 0);
       } else {
         setProfile(null);
@@ -63,13 +74,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
+        void touchLastActive(session.user.id);
         fetchProfile(session.user.id);
       }
       setLoading(false);
     });
 
     return () => subscription.unsubscribe();
-  }, [fetchProfile]);
+  }, [fetchProfile, touchLastActive]);
 
   const signUp = async (email: string, password: string, metadata?: Record<string, string>) => {
     const { error } = await supabase.auth.signUp({
