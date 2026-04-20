@@ -10,11 +10,8 @@ const TermsPage = () => {
           <ArrowLeft className="w-4 h-4" /> Back
         </button>
         <h1 className="font-heading text-3xl font-light text-foreground mb-6">Terms of Service</h1>
-        <div className="prose prose-sm text-foreground/80 space-y-4">
-          <p>By using RinVita you agree to these terms. RinVita is a health record organisation tool — it is not a medical device and does not provide medical advice.</p>
-          <p>You are responsible for the accuracy of the documents you upload. RinVita uses AI to extract information but this extraction may contain errors.</p>
-          <p>Always consult a qualified healthcare professional before making any health decisions based on information displayed in RinVita.</p>
-          <p>For questions, contact support@rinvita.health</p>
+        <div className="rounded-lg border border-border bg-card p-6 text-foreground/80">
+          Coming soon — under solicitor review.
         </div>
       </div>
     </div>

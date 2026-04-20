@@ -10,11 +10,8 @@ const PrivacyPage = () => {
           <ArrowLeft className="w-4 h-4" /> Back
         </button>
         <h1 className="font-heading text-3xl font-light text-foreground mb-6">Privacy Policy</h1>
-        <div className="prose prose-sm text-foreground/80 space-y-4">
-          <p>RinVita processes your health data including medical documents, blood results, imaging findings, and medication records to provide you with a unified health record platform.</p>
-          <p>Your data is encrypted at rest and in transit. We do not sell your health data to third parties. Shared links are time-limited and encrypted.</p>
-          <p>You can export or delete all your data at any time from your Settings page.</p>
-          <p>For questions, contact support@rinvita.health</p>
+        <div className="rounded-lg border border-border bg-card p-6 text-foreground/80">
+          Coming soon — under solicitor review.
         </div>
       </div>
     </div>

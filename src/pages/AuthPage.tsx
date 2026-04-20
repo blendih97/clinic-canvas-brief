@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { lovable } from "@/integrations/lovable/index";
@@ -21,12 +21,12 @@ const AuthPage = () => {
   const [healthConsent, setHealthConsent] = useState(false);
   const [termsConsent, setTermsConsent] = useState(false);
 
-  useState(() => {
+  useEffect(() => {
     const requestedMode = searchParams.get("mode");
     if (requestedMode === "signup" || requestedMode === "signin" || requestedMode === "forgot") {
       setMode(requestedMode);
     }
-  });
+  }, [searchParams]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
