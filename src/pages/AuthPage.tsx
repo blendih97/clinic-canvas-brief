@@ -49,23 +49,39 @@ const AuthPage = () => {
   useEffect(() => {
     if (mode !== "signup") return;
 
-    setCountriesLoading(true);
-    supabase
-      .from("countries")
-      .select("code, name_en, name_ar, flag_emoji")
-      .order("name_en", { ascending: true })
-      .then(({ data, error }) => {
+    let isMounted = true;
+
+    const loadCountries = async () => {
+      setCountriesLoading(true);
+
+      try {
+        const { data, error } = await supabase
+          .from("countries")
+          .select("code, name_en, name_ar, flag_emoji")
+          .order("name_en", { ascending: true });
+
         if (error) {
           toast.error("Unable to load countries right now");
           return;
         }
-        setCountries((data ?? []) as CountryOption[]);
-        setCountriesLoading(false);
-      })
-      .catch(() => {
-        setCountriesLoading(false);
+
+        if (isMounted) {
+          setCountries((data ?? []) as CountryOption[]);
+        }
+      } catch {
         toast.error("Unable to load countries right now");
-      })
+      } finally {
+        if (isMounted) {
+          setCountriesLoading(false);
+        }
+      }
+    };
+
+    void loadCountries();
+
+    return () => {
+      isMounted = false;
+    };
   }, [mode]);
 
   const fullName = useMemo(() => `${firstName} ${lastName}`.trim(), [firstName, lastName]);
