@@ -117,7 +117,7 @@ const ProfilePage = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-2xl mx-auto p-6 md:p-8">
-        <button onClick={() => navigate("/")} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6">
+        <button onClick={() => navigate("/app")} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6">
           <ArrowLeft className="w-4 h-4" /> Back to Dashboard
         </button>
 
