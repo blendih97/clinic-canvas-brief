@@ -15,7 +15,7 @@ const planLabels: Record<string, string> = {
 };
 
 const ProfilePage = () => {
-  const { user, profile, refreshProfile, signOut } = useAuth();
+  const { user, profile, refreshProfile } = useAuth();
   const { medications, allergies } = useVaultStore();
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
