@@ -812,6 +812,80 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_update_settings: {
+        Args: {
+          _ai_model: string
+          _announcement_reply_to: string
+          _announcement_sender_name: string
+          _default_trial_days: number
+        }
+        Returns: {
+          ai_model: string
+          announcement_reply_to: string | null
+          announcement_sender_name: string | null
+          default_trial_days: number
+          id: number
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "admin_settings"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      admin_update_user_state: {
+        Args: {
+          _comped_plan?: string
+          _comped_until?: string
+          _suspended?: boolean
+          _suspended_reason?: string
+          _target_user_id: string
+          _trial_extension_days?: number
+        }
+        Returns: {
+          avatar_url: string | null
+          biological_sex: string | null
+          blood_type: string | null
+          comped_plan: string | null
+          comped_until: string | null
+          created_at: string
+          current_diagnoses: string | null
+          date_of_birth: string | null
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          full_name: string | null
+          health_data_consent: boolean
+          health_data_consent_at: string | null
+          health_data_consent_timestamp: string | null
+          height_cm: number | null
+          id: string
+          last_active_at: string | null
+          marketing_consent: boolean
+          nationality: string | null
+          nationality_code: string | null
+          phone: string | null
+          plan: string
+          preferred_translation_language: string
+          preferred_ui_language: string
+          residence_country_code: string | null
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          suspended_at: string | null
+          suspended_reason: string | null
+          terms_consent_at: string | null
+          trial_ends_at: string | null
+          updated_at: string
+          weight_kg: number | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "profiles"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      consume_admin_recovery_code: { Args: { _code: string }; Returns: boolean }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
@@ -819,6 +893,19 @@ export type Database = {
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
         Returns: number
+      }
+      get_admin_activity: {
+        Args: { _limit?: number }
+        Returns: {
+          actor_name: string
+          actor_user_id: string
+          created_at: string
+          details_json: Json
+          event_type: string
+          id: string
+          user_id: string
+          user_name: string
+        }[]
       }
       get_admin_dashboard_metrics: {
         Args: never
@@ -855,6 +942,41 @@ export type Database = {
           user_id: string
         }[]
       }
+      get_admin_settings: {
+        Args: never
+        Returns: {
+          ai_model: string
+          announcement_reply_to: string
+          announcement_sender_name: string
+          default_trial_days: number
+          id: number
+          updated_at: string
+        }[]
+      }
+      get_admin_users: {
+        Args: {
+          _limit?: number
+          _plan?: string
+          _search?: string
+          _status?: string
+        }
+        Returns: {
+          comped_plan: string
+          comped_until: string
+          created_at: string
+          document_count: number
+          email: string
+          full_name: string
+          id: string
+          last_active_at: string
+          nationality: string
+          plan: string
+          role: Database["public"]["Enums"]["app_role"]
+          suspended_at: string
+          suspended_reason: string
+          trial_ends_at: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -878,6 +1000,10 @@ export type Database = {
           msg_id: number
           read_ct: number
         }[]
+      }
+      store_admin_recovery_codes: {
+        Args: { _codes: string[] }
+        Returns: number
       }
     }
     Enums: {
