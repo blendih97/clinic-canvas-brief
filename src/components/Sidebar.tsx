@@ -96,7 +96,7 @@ const Sidebar = ({ active, onNavigate }: { active: Section; onNavigate: (s: Sect
               <button key={item.id} onClick={() => onNavigate(item.id)}
                 className={`flex flex-col items-center gap-0.5 px-2 py-1 rounded-md text-[10px] transition-colors ${isActive ? "text-primary font-medium" : "text-muted-foreground"}`}>
                 <item.icon className={`w-5 h-5 ${isActive ? "text-primary" : ""}`} />
-                {item.label.split(" ")[0]}
+                {t(item.labelKey).split(" ")[0]}
               </button>
             );
           })}
@@ -119,7 +119,7 @@ const Sidebar = ({ active, onNavigate }: { active: Section; onNavigate: (s: Sect
             <button key={item.id} onClick={() => onNavigate(item.id)}
               className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-all ${isActive ? "bg-sidebar-accent text-primary font-medium" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}>
               <item.icon className="w-4 h-4" />
-              {item.label}
+              {t(item.labelKey)}
             </button>
           );
         })}
