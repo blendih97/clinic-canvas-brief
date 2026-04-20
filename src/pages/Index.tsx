@@ -12,7 +12,6 @@ import BillingSection from "@/components/sections/BillingSection";
 import ExportSection from "@/components/sections/ExportSection";
 import FamilySection from "@/components/sections/FamilySection";
 import DocumentUpload from "@/components/DocumentUpload";
-import OnboardingModal from "@/components/OnboardingModal";
 import RequestRecordsModal from "@/components/RequestRecordsModal";
 import UpgradeModal from "@/components/UpgradeModal";
 import { AppFooterDisclaimer } from "@/components/MedicalDisclaimer";
@@ -29,7 +28,6 @@ const Index = () => {
   const [section, setSection] = useState<Section>("overview");
   const [uploadOpen, setUploadOpen] = useState(false);
   const [requestOpen, setRequestOpen] = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState(false);
   const [viewingMember, setViewingMember] = useState<{ id: string; name: string } | null>(null);
   const [receivedNotifications, setReceivedNotifications] = useState<{ provider_name: string; id: string }[]>([]);
   const [upgradeFeature, setUpgradeFeature] = useState<Feature | null>(null);
@@ -76,15 +74,6 @@ const Index = () => {
       loadUserData(user.id);
     }
   }, [user, loadUserData, viewingMember]);
-
-  useEffect(() => {
-    if (user && !showSplash) {
-      const dismissed = localStorage.getItem(`rinvita-onboarding-${user.id}`);
-      if (!dismissed && documents.length === 0) {
-        setShowOnboarding(true);
-      }
-    }
-  }, [user, showSplash, documents.length]);
 
   useEffect(() => {
     if (!user) return;
@@ -134,11 +123,6 @@ const Index = () => {
     return () => window.removeEventListener("show-upgrade", handler);
   }, []);
 
-  const handleOnboardingClose = () => {
-    setShowOnboarding(false);
-    if (user) localStorage.setItem(`rinvita-onboarding-${user.id}`, "true");
-  };
-
   const handleViewMember = (memberId: string, memberName: string) => {
     setViewingMember({ id: memberId, name: memberName });
     loadUserData(memberId);
@@ -178,8 +162,7 @@ const Index = () => {
     }
   };
 
-  const showUploadBanner = documents.length === 0 && !showOnboarding && user &&
-    localStorage.getItem(`rinvita-onboarding-${user.id}`) === "true";
+  const showUploadBanner = documents.length === 0 && user;
 
   return (
     <>
@@ -263,7 +246,6 @@ const Index = () => {
       </div>
       <DocumentUpload open={uploadOpen} onClose={() => setUploadOpen(false)} />
       <RequestRecordsModal open={requestOpen} onClose={() => setRequestOpen(false)} />
-      <OnboardingModal open={showOnboarding} onClose={handleOnboardingClose} onUpload={requestUpload} />
       <UpgradeModal open={!!upgradeFeature} onClose={() => { setUpgradeFeature(null); setUpgradeMessage(undefined); }} feature={upgradeFeature} customMessage={upgradeMessage} />
     </>
   );
