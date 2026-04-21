@@ -176,7 +176,7 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
           contentOriginal: result.fullText?.original_content || undefined,
           contentTranslated: result.fullText?.translated_content || undefined,
           originalLanguageCode: result.fullText?.original_language_code || undefined,
-          translatedLanguageCode: result.fullText?.translated_language_code || "en",
+          translatedLanguageCode: result.fullText?.translated_language_code || targetLanguage,
         },
       ], uid);
     }
@@ -272,12 +272,33 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
                 />
               </div>
 
+              <div className="space-y-2">
+                <label className="flex items-center gap-1.5 text-xs font-medium text-foreground">
+                  <Languages className="w-3.5 h-3.5 text-primary" />
+                  Translate this document into
+                </label>
+                <select
+                  value={targetLanguage}
+                  onChange={(e) => setTargetLanguage(e.target.value)}
+                  className="w-full px-3 py-2 bg-muted border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                >
+                  {SUPPORTED_LANGUAGES.map((l) => (
+                    <option key={l.code} value={l.code}>
+                      {l.name}{l.nativeName && l.nativeName !== l.name ? ` — ${l.nativeName}` : ""}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-[11px] text-muted-foreground leading-relaxed">
+                  We'll detect the original language automatically. You'll always be able to view the original alongside the translation.
+                </p>
+              </div>
+
               <button
                 onClick={handleSubmit}
                 disabled={!file && !pastedText.trim()}
                 className="w-full py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium disabled:opacity-40 hover:bg-primary/90 transition-colors"
               >
-                Analyse Document
+                Upload and translate to {getLanguageName(targetLanguage)}
               </button>
             </div>
           )}
