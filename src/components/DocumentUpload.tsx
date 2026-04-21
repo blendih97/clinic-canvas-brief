@@ -26,6 +26,12 @@ interface ExtractionResult {
     originalText?: string[];
     originalLang?: string;
   };
+  fullText?: {
+    original_content?: string;
+    translated_content?: string;
+    original_language_code?: string;
+    translated_language_code?: string;
+  };
 }
 
 const processingSteps = [
@@ -160,6 +166,10 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
           fileUrl: filePath, // legacy field kept for compatibility
           filePath, // new dedicated field
           summary: result.summary || undefined,
+          contentOriginal: result.fullText?.original_content || undefined,
+          contentTranslated: result.fullText?.translated_content || undefined,
+          originalLanguageCode: result.fullText?.original_language_code || undefined,
+          translatedLanguageCode: result.fullText?.translated_language_code || "en",
         },
       ], uid);
     }

@@ -238,6 +238,8 @@ export type Database = {
       documents: {
         Row: {
           ai_note: string | null
+          content_original: string | null
+          content_translated: string | null
           country: string | null
           created_at: string
           date: string | null
@@ -249,17 +251,21 @@ export type Database = {
           id: string
           name: string
           original_language: string | null
+          original_language_code: string | null
           pages: number | null
           processed_at: string | null
           processing_error: string | null
           processing_started_at: string | null
           processing_status: string
           summary: Json | null
+          translated_language_code: string | null
           type: string | null
           user_id: string
         }
         Insert: {
           ai_note?: string | null
+          content_original?: string | null
+          content_translated?: string | null
           country?: string | null
           created_at?: string
           date?: string | null
@@ -271,17 +277,21 @@ export type Database = {
           id?: string
           name: string
           original_language?: string | null
+          original_language_code?: string | null
           pages?: number | null
           processed_at?: string | null
           processing_error?: string | null
           processing_started_at?: string | null
           processing_status?: string
           summary?: Json | null
+          translated_language_code?: string | null
           type?: string | null
           user_id: string
         }
         Update: {
           ai_note?: string | null
+          content_original?: string | null
+          content_translated?: string | null
           country?: string | null
           created_at?: string
           date?: string | null
@@ -293,12 +303,14 @@ export type Database = {
           id?: string
           name?: string
           original_language?: string | null
+          original_language_code?: string | null
           pages?: number | null
           processed_at?: string | null
           processing_error?: string | null
           processing_started_at?: string | null
           processing_status?: string
           summary?: Json | null
+          translated_language_code?: string | null
           type?: string | null
           user_id?: string
         }
