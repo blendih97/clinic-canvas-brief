@@ -1,37 +1,44 @@
 import { useState } from "react";
-import { FileDown, FileText, Filter, CheckSquare, Loader2, Lock } from "lucide-react";
+import { FileDown, FileText, Filter, CheckSquare, Loader2, Lock, Languages, Calendar } from "lucide-react";
 import { useVaultStore } from "@/store/vaultStore";
 import { useAuth } from "@/hooks/useAuth";
 import { hasAccess } from "@/lib/planAccess";
-import { generateFullBriefPDF, generateCategoryPDF, generateSelectionPDF } from "@/lib/pdfExport";
+import { generateExportPDF, generateSelectionPDF, type ExportOptions } from "@/lib/pdfExport";
+import { SUPPORTED_LANGUAGES, getLanguageName } from "@/lib/supportedLanguages";
 
 type ExportMode = "full" | "category" | "selection";
+type DateRangeKey = "all" | "12m" | "6m" | "custom";
 
 const ExportSection = () => {
   const [mode, setMode] = useState<ExportMode | null>(null);
   const [generating, setGenerating] = useState(false);
 
-  // Category toggles
-  const [categories, setCategories] = useState({
+  const store = useVaultStore();
+  const { profile } = useAuth();
+  const locked = !hasAccess(profile, "export");
+
+  // Modal state — shared across all three modes
+  const [language, setLanguage] = useState<string>(profile?.preferred_ui_language || "en");
+  const [sections, setSections] = useState({
     blood: true,
     imaging: true,
     medications: true,
     allergies: true,
     documents: true,
   });
+  const [includeAppendix, setIncludeAppendix] = useState(true);
+  const [dateRange, setDateRange] = useState<DateRangeKey>("all");
+  const [customFrom, setCustomFrom] = useState("");
+  const [customTo, setCustomTo] = useState("");
 
-  // Selection checkboxes
+  // Selection-only state
   const [selectedDocs, setSelectedDocs] = useState<Set<string>>(new Set());
-
-  const store = useVaultStore();
-  const { profile } = useAuth();
-  const locked = !hasAccess(profile, "export");
 
   const patientName = profile?.full_name || "Patient";
   const dob = profile?.date_of_birth || "";
 
-  const toggleCategory = (key: keyof typeof categories) => {
-    setCategories((prev) => ({ ...prev, [key]: !prev[key] }));
+  const toggleSection = (key: keyof typeof sections) => {
+    setSections((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   const toggleDoc = (id: string) => {
@@ -43,15 +50,24 @@ const ExportSection = () => {
     });
   };
 
+  const buildOptions = (): ExportOptions => ({
+    language,
+    sections: mode === "full" ? { blood: true, imaging: true, medications: true, allergies: true, documents: true } : sections,
+    includeOriginalsAppendix: includeAppendix,
+    dateRange:
+      dateRange === "custom"
+        ? { from: customFrom, to: customTo }
+        : dateRange,
+  });
+
   const handleGenerate = async () => {
     setGenerating(true);
     try {
-      if (mode === "full") {
-        await generateFullBriefPDF(store, patientName, dob);
-      } else if (mode === "category") {
-        await generateCategoryPDF(store, patientName, dob, categories);
-      } else if (mode === "selection") {
-        await generateSelectionPDF(store, patientName, dob, selectedDocs);
+      const options = buildOptions();
+      if (mode === "selection") {
+        await generateSelectionPDF(store, patientName, dob, selectedDocs, options);
+      } else {
+        await generateExportPDF(store, patientName, dob, options);
       }
     } catch (err) {
       console.error("PDF generation error:", err);
@@ -87,11 +103,17 @@ const ExportSection = () => {
     );
   }
 
+  const generateDisabled =
+    generating ||
+    (mode === "selection" && selectedDocs.size === 0) ||
+    (mode === "category" && !Object.values(sections).some(Boolean)) ||
+    (dateRange === "custom" && (!customFrom || !customTo));
+
   return (
     <div className="space-y-6">
       <div>
         <h2 className="font-heading text-3xl font-light text-foreground">Export</h2>
-        <p className="text-sm text-muted-foreground mt-2">Generate professional PDF reports from your vault data</p>
+        <p className="text-sm text-muted-foreground mt-2">Generate professional PDF reports from your vault data, in any language</p>
       </div>
 
       {!mode ? (
@@ -120,9 +142,9 @@ const ExportSection = () => {
             <div className="bg-card border border-border rounded-xl p-6">
               <h3 className="font-heading text-xl text-foreground mb-2">Full Health Brief</h3>
               <p className="text-sm text-muted-foreground mb-4">
-                This will generate a comprehensive PDF including all your health data with source clinic and date for every entry.
+                Complete PDF including every section with source clinic and date for every entry.
               </p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 <Stat label="Blood Results" value={store.bloodResults.length} />
                 <Stat label="Imaging" value={store.imagingResults.length} />
                 <Stat label="Medications" value={store.medications.length} />
@@ -135,7 +157,7 @@ const ExportSection = () => {
 
           {mode === "category" && (
             <div className="bg-card border border-border rounded-xl p-6">
-              <h3 className="font-heading text-xl text-foreground mb-4">Select Categories</h3>
+              <h3 className="font-heading text-xl text-foreground mb-4">Which records to include</h3>
               <div className="space-y-3">
                 {([
                   ["blood", "Blood Results", store.bloodResults.length],
@@ -148,8 +170,8 @@ const ExportSection = () => {
                     <div className="flex items-center gap-3">
                       <input
                         type="checkbox"
-                        checked={categories[key]}
-                        onChange={() => toggleCategory(key)}
+                        checked={sections[key]}
+                        onChange={() => toggleSection(key)}
                         className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
                       />
                       <span className="text-sm text-foreground">{label}</span>
@@ -188,13 +210,91 @@ const ExportSection = () => {
             </div>
           )}
 
+          {/* Shared options: language, date range, appendix */}
+          <div className="bg-card border border-border rounded-xl p-6 space-y-5">
+            <div>
+              <label className="flex items-center gap-1.5 text-xs font-medium text-foreground mb-2">
+                <Languages className="w-3.5 h-3.5 text-primary" /> Export language
+              </label>
+              <select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                className="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+              >
+                {SUPPORTED_LANGUAGES.map((l) => (
+                  <option key={l.code} value={l.code}>
+                    {l.name}{l.nativeName && l.nativeName !== l.name ? ` — ${l.nativeName}` : ""}
+                  </option>
+                ))}
+              </select>
+              <p className="text-[11px] text-muted-foreground mt-1.5">
+                Section headings, labels, and clinical content will be translated to {getLanguageName(language)}.
+              </p>
+            </div>
+
+            <div>
+              <label className="flex items-center gap-1.5 text-xs font-medium text-foreground mb-2">
+                <Calendar className="w-3.5 h-3.5 text-primary" /> Date range
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {([
+                  ["all", "All time"],
+                  ["12m", "Last 12 months"],
+                  ["6m", "Last 6 months"],
+                  ["custom", "Custom range"],
+                ] as const).map(([k, label]) => (
+                  <button
+                    key={k}
+                    onClick={() => setDateRange(k)}
+                    className={`px-3 py-2 rounded-lg text-xs font-medium border transition-colors ${
+                      dateRange === k
+                        ? "bg-primary/10 border-primary/40 text-foreground"
+                        : "bg-background border-border text-muted-foreground hover:border-primary/20"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              {dateRange === "custom" && (
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  <input
+                    type="date"
+                    value={customFrom}
+                    onChange={(e) => setCustomFrom(e.target.value)}
+                    className="px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground"
+                  />
+                  <input
+                    type="date"
+                    value={customTo}
+                    onChange={(e) => setCustomTo(e.target.value)}
+                    className="px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground"
+                  />
+                </div>
+              )}
+            </div>
+
+            <label className="flex items-center justify-between p-3 bg-background border border-border rounded-lg cursor-pointer">
+              <div>
+                <p className="text-sm text-foreground">Include original documents as appendix</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">Appends the source-language text of each document at the end of the PDF.</p>
+              </div>
+              <input
+                type="checkbox"
+                checked={includeAppendix}
+                onChange={(e) => setIncludeAppendix(e.target.checked)}
+                className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
+              />
+            </label>
+          </div>
+
           <button
             onClick={handleGenerate}
-            disabled={generating || (mode === "selection" && selectedDocs.size === 0) || (mode === "category" && !Object.values(categories).some(Boolean))}
+            disabled={generateDisabled}
             className="flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
           >
             {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
-            {generating ? "Generating…" : "Generate PDF"}
+            {generating ? `Translating & generating…` : `Generate PDF in ${getLanguageName(language)}`}
           </button>
         </div>
       )}
