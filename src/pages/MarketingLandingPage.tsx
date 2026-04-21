@@ -115,14 +115,14 @@ function Hero() {
             <em style={{ fontStyle: "italic", color: marketingColors.gold }}>In every language.</em>
           </h1>
           <p style={{ fontSize: isMobile ? 16 : 17, lineHeight: 1.8, color: marketingColors.mutedText, maxWidth: 480, marginBottom: isMobile ? 32 : 48, fontWeight: 300 }}>
-            For families who've lived in more than one country. Upload records from any hospital, any language, any year — and hand your next doctor a complete, translated health picture in 30 seconds.
+            For families who've lived in more than one country. Upload medical records from any hospital, any language, any year — and hand your next doctor a complete, translated health picture in 30 seconds. Because the next time you see a new doctor shouldn't be the moment you realise you can't explain your mother's medication list.
           </p>
           <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 12, alignItems: isMobile ? "stretch" : "center" }}>
             <Link to="/auth?mode=signup" style={{ padding: isMobile ? "16px 24px" : "15px 32px", background: marketingColors.gold, borderRadius: 2, color: "hsl(var(--primary-foreground))", fontSize: 14, fontWeight: 600, letterSpacing: "0.06em", textDecoration: "none", textAlign: "center", boxShadow: "0 4px 24px hsl(var(--primary) / 0.35)" }}>
               Claim your founding spot
             </Link>
             <Link to="/demo" style={{ padding: isMobile ? "15px 24px" : "15px 28px", background: "transparent", border: `1px solid hsl(var(--foreground) / 0.18)`, borderRadius: 2, color: marketingColors.mutedText, fontSize: 14, textDecoration: "none", textAlign: "center" }}>
-              Watch demo →
+              See how it works →
             </Link>
           </div>
           {isMobile && (

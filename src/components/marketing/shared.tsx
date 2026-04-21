@@ -339,7 +339,7 @@ export function MarketingFooter() {
     { label: "How it works", href: "/#how-it-works" },
     { label: "Features", href: "/#features" },
     { label: "Pricing", href: "/#pricing" },
-    { label: "Watch demo", href: "/demo" },
+    { label: "See how it works", href: "/demo" },
   ];
 
   const legalLinks = [
