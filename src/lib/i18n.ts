@@ -203,7 +203,11 @@ const dictionary: Record<Locale, TranslationMap> = {
       familyPlan: "Family Plan",
       viewProfile: "View Profile",
       settings: "Settings",
-      signOut: "Sign Out"
+      signOut: "Sign Out",
+      more: "More",
+      moreOptions: "More options",
+      allergies: "Allergies",
+      requestRecords: "Request Records"
     },
     billing: {
       title: "Subscription",
@@ -550,7 +554,11 @@ const dictionary: Record<Locale, TranslationMap> = {
       familyPlan: "الخطة العائلية",
       viewProfile: "عرض الملف الشخصي",
       settings: "الإعدادات",
-      signOut: "تسجيل الخروج"
+      signOut: "تسجيل الخروج",
+      more: "المزيد",
+      moreOptions: "المزيد من الخيارات",
+      allergies: "الحساسيات",
+      requestRecords: "طلب السجلات"
     },
     billing: {
       title: "الاشتراك",
