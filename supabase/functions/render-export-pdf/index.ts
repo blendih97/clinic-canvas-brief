@@ -254,9 +254,7 @@ const PatientSummaryPage = (data: PatientPayload) => {
       <Text style={styles.patientName}>{patient.fullName}</Text>
       {meta ? <Text style={styles.patientMeta}>{meta}</Text> : null}
 
-      <Text style={styles.ataGlance}>
-        {strings.atAGlance(counts.documents, counts.countries, counts.yearsSpan)}
-      </Text>
+      <Text style={styles.ataGlance}>{strings.atAGlance}</Text>
 
       <View style={styles.twoCol}>
         <View style={styles.col}>
