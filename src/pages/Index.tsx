@@ -168,7 +168,7 @@ const Index = () => {
     <>
       {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
       <div className="flex min-h-screen bg-background">
-        <Sidebar active={section} onNavigate={setSection} />
+        <Sidebar active={section} onNavigate={setSection} onRequestRecords={requestRecordsAccess} />
         <main className="flex-1 p-6 md:p-8 overflow-auto pb-20 md:pb-8 pt-16 md:pt-8">
           {viewingMember && (
             <div className="mb-4 p-4 bg-primary/10 border border-primary/30 rounded-lg flex items-center justify-between">
