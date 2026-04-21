@@ -1,8 +1,9 @@
 import { useState, useCallback, useRef, useEffect } from "react";
-import { Upload, FileText, Loader2, CheckCircle, X, AlertTriangle, Clipboard } from "lucide-react";
+import { Upload, FileText, Loader2, CheckCircle, X, AlertTriangle, Clipboard, Languages } from "lucide-react";
 import { useVaultStore } from "@/store/vaultStore";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { SUPPORTED_LANGUAGES, getLanguageName } from "@/lib/supportedLanguages";
 
 type Phase = "input" | "processing" | "confirm" | "done";
 
@@ -52,6 +53,14 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const store = useVaultStore();
+  const { user, profile } = useAuth();
+  const [targetLanguage, setTargetLanguage] = useState<string>(profile?.preferred_translation_language || "en");
+
+  useEffect(() => {
+    if (profile?.preferred_translation_language) {
+      setTargetLanguage(profile.preferred_translation_language);
+    }
+  }, [profile?.preferred_translation_language]);
 
   useEffect(() => {
     if (phase !== "processing") return;
@@ -116,7 +125,7 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
       }
 
       const { data, error: fnError } = await supabase.functions.invoke("analyse-document", {
-        body: payload,
+        body: { ...payload, targetLanguage },
       });
 
       if (fnError) throw new Error(fnError.message || "Analysis failed");
@@ -127,10 +136,8 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
       setError(e.message || "Something went wrong");
       setPhase("input");
     }
-  }, [file, pastedText]);
+  }, [file, pastedText, targetLanguage]);
 
-  const { user } = useAuth();
-  
   const handleConfirm = async () => {
     if (!result || !user) return;
     const uid = user.id;
