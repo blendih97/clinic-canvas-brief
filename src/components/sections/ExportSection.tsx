@@ -84,10 +84,10 @@ const ExportSection = () => {
           patient: {
             fullName: patientName,
             dob,
-            biologicalSex: profile?.biological_sex || undefined,
+            biologicalSex: (profile as any)?.biological_sex || undefined,
             nationality: profile?.nationality || undefined,
             bloodType: profile?.blood_type || undefined,
-            chronicConditions: profile?.current_diagnoses || undefined,
+            chronicConditions: (profile as any)?.current_diagnoses || undefined,
           },
           language,
           onProgress: (phase) => setProgressPhase(phase),
