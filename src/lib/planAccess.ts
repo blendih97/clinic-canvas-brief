@@ -17,19 +17,9 @@ export interface TrialState {
   expired: boolean;
 }
 
-export function getTrialState(profile: Profile | null): TrialState {
-  if (!profile || profile.plan !== "free") {
-    return { isTrial: false, daysRemaining: 0, expired: false };
-  }
-  const created = new Date(profile.created_at);
-  const elapsedMs = Date.now() - created.getTime();
-  const elapsedDays = Math.floor(elapsedMs / (1000 * 60 * 60 * 24));
-  const daysRemaining = Math.max(0, TRIAL_DAYS - elapsedDays);
-  return {
-    isTrial: true,
-    daysRemaining,
-    expired: daysRemaining <= 0,
-  };
+export function getTrialState(_profile: Profile | null): TrialState {
+  // TESTING PHASE: trial banner disabled, everyone gets full access.
+  return { isTrial: false, daysRemaining: 0, expired: false };
 }
 
 export type Feature =
@@ -49,9 +39,9 @@ const FEATURE_REQUIREMENTS: Record<Feature, Plan[]> = {
   unlimited_uploads: ["standard", "family"],
 };
 
-export function hasAccess(profile: Profile | null, feature: Feature): boolean {
-  const plan = (profile?.plan || "free") as Plan;
-  return FEATURE_REQUIREMENTS[feature].includes(plan);
+export function hasAccess(_profile: Profile | null, _feature: Feature): boolean {
+  // TESTING PHASE: grant all features to all users (Family tier access).
+  return true;
 }
 
 export function getRequiredPlanLabel(feature: Feature): string {
@@ -65,9 +55,7 @@ export function getRequiredPlanPrice(feature: Feature): string {
   return `${p.price}${p.period}`;
 }
 
-// Free trial allows exactly 1 document upload.
-export function canUploadDocument(profile: Profile | null, currentDocCount: number): boolean {
-  const plan = (profile?.plan || "free") as Plan;
-  if (plan === "standard" || plan === "family") return true;
-  return currentDocCount < 1;
+// TESTING PHASE: unlimited uploads for everyone.
+export function canUploadDocument(_profile: Profile | null, _currentDocCount: number): boolean {
+  return true;
 }
