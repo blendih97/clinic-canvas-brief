@@ -12,21 +12,20 @@ const corsHeaders = {
 };
 
 // ---------- Font registration (Google Fonts TTFs, Unicode-safe) ----------
-// Cormorant Garamond — headings. DM Sans — body. Noto fallbacks for Arabic/CJK/Hebrew.
 Font.register({
   family: "Cormorant Garamond",
   fonts: [
-    { src: "https://fonts.gstatic.com/s/cormorantgaramond/v16/co3bmX5slCNuHLi8bLeY9MK7whWMhyjornFLsS6V7w.ttf", fontWeight: 400 },
-    { src: "https://fonts.gstatic.com/s/cormorantgaramond/v16/co3YmX5slCNuHLi8bLeY9MK7whWMhyjYrEPjsS6V7w.ttf", fontWeight: 600 },
+    { src: "https://fonts.gstatic.com/s/cormorantgaramond/v21/co3umX5slCNuHLi8bLeY9MK7whWMhyjypVO7abI26QOD_v86GnM.ttf", fontWeight: 400 },
+    { src: "https://fonts.gstatic.com/s/cormorantgaramond/v21/co3umX5slCNuHLi8bLeY9MK7whWMhyjypVO7abI26QOD_iE9GnM.ttf", fontWeight: 600 },
   ],
 });
 
 Font.register({
   family: "DM Sans",
   fonts: [
-    { src: "https://fonts.gstatic.com/s/dmsans/v15/rP2tp2ywxg089UriI5-g7vN_AYFawu1nQg.ttf", fontWeight: 400 },
-    { src: "https://fonts.gstatic.com/s/dmsans/v15/rP2tp2ywxg089UriI5-g7vN_AYFawu5nQg.ttf", fontWeight: 500 },
-    { src: "https://fonts.gstatic.com/s/dmsans/v15/rP2tp2ywxg089UriI5-g7vN_AYFawu1nQg.ttf", fontWeight: 700 },
+    { src: "https://fonts.gstatic.com/s/dmsans/v17/rP2tp2ywxg089UriI5-g4vlH9VoD8CmcqZG40F9JadbnoEwAopxhTg.ttf", fontWeight: 400 },
+    { src: "https://fonts.gstatic.com/s/dmsans/v17/rP2tp2ywxg089UriI5-g4vlH9VoD8CmcqZG40F9JadbnoEwAkJxhTg.ttf", fontWeight: 500 },
+    { src: "https://fonts.gstatic.com/s/dmsans/v17/rP2tp2ywxg089UriI5-g4vlH9VoD8CmcqZG40F9JadbnoEwARZthTg.ttf", fontWeight: 700 },
   ],
 });
 
