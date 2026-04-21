@@ -211,6 +211,10 @@ export const useVaultStore = create<VaultState>()((set) => ({
       file_path: d.filePath,
       summary: d.summary ?? null,
       ai_note: d.aiNote,
+      content_original: d.contentOriginal ?? null,
+      content_translated: d.contentTranslated ?? null,
+      original_language_code: d.originalLanguageCode ?? null,
+      translated_language_code: d.translatedLanguageCode ?? null,
     }));
     const { data } = await supabase.from("documents").insert(rows).select();
     if (data) {
@@ -219,6 +223,10 @@ export const useVaultStore = create<VaultState>()((set) => ({
         country: r.country || "", pages: r.pages || 1, extracted: r.extracted || false,
         fileUrl: r.file_url || undefined, filePath: r.file_path || undefined,
         summary: r.summary || undefined, aiNote: r.ai_note || undefined,
+        contentOriginal: r.content_original || undefined,
+        contentTranslated: r.content_translated || undefined,
+        originalLanguageCode: r.original_language_code || undefined,
+        translatedLanguageCode: r.translated_language_code || undefined,
       }));
       set((s) => ({ documents: [...s.documents, ...mapped] }));
     }
