@@ -90,6 +90,12 @@ Return this exact JSON structure:
     "englishText": ["string array of key findings translated to English"],
     "originalText": ["string array of key findings in original language (same as englishText if document is in English)"],
     "originalLang": "string (detected language name)"
+  },
+  "fullText": {
+    "original_content": "string — FULL verbatim source-language text",
+    "translated_content": "string — FULL English translation",
+    "original_language_code": "string — ISO 639-1 (e.g. sq, ar, en)",
+    "translated_language_code": "en"
   }
 }
 
