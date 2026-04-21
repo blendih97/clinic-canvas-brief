@@ -94,6 +94,7 @@ interface VaultState {
   removeMedication: (id: string) => Promise<void>;
   removeAllergy: (id: string) => Promise<void>;
   updateMedication: (id: string, updates: Partial<Medication>) => Promise<void>;
+  updateDocument: (id: string, updates: Partial<Document>) => Promise<void>;
 }
 
 export const useVaultStore = create<VaultState>()((set) => ({
