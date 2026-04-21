@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { FileDown, FileText, Filter, CheckSquare, Loader2, Lock, Languages, Calendar } from "lucide-react";
+import { FileDown, FileText, Filter, CheckSquare, Loader2, Lock, Languages, Calendar, Sparkles } from "lucide-react";
 import { useVaultStore } from "@/store/vaultStore";
 import { useAuth } from "@/hooks/useAuth";
 import { hasAccess } from "@/lib/planAccess";
 import { generateExportPDF, generateSelectionPDF, type ExportOptions } from "@/lib/pdfExport";
+import { generatePatientSummaryV2, downloadBlob, type ProgressPhase } from "@/lib/pdfExportV2";
 import { SUPPORTED_LANGUAGES, getLanguageName } from "@/lib/supportedLanguages";
 
 type ExportMode = "full" | "category" | "selection";
@@ -60,12 +61,39 @@ const ExportSection = () => {
         : dateRange,
   });
 
+  const [progressPhase, setProgressPhase] = useState<ProgressPhase | null>(null);
+
   const handleGenerate = async () => {
     setGenerating(true);
+    setProgressPhase(null);
     try {
       const options = buildOptions();
       if (mode === "selection") {
         await generateSelectionPDF(store, patientName, dob, selectedDocs, options);
+      } else if (mode === "full") {
+        // M1: route Full Health Brief through v2 engine (Patient Summary page).
+        const blob = await generatePatientSummaryV2({
+          data: {
+            bloodResults: store.bloodResults,
+            imagingResults: store.imagingResults,
+            medications: store.medications,
+            documents: store.documents,
+            alerts: store.alerts,
+            allergies: store.allergies,
+          },
+          patient: {
+            fullName: patientName,
+            dob,
+            biologicalSex: (profile as any)?.biological_sex || undefined,
+            nationality: profile?.nationality || undefined,
+            bloodType: profile?.blood_type || undefined,
+            chronicConditions: (profile as any)?.current_diagnoses || undefined,
+          },
+          language,
+          onProgress: (phase) => setProgressPhase(phase),
+        });
+        const safeName = (patientName || "patient").replace(/[^a-z0-9-_]+/gi, "-").toLowerCase();
+        downloadBlob(blob, `rinvita-health-brief-${safeName}-${language}.pdf`);
       } else {
         await generateExportPDF(store, patientName, dob, options);
       }
@@ -73,6 +101,7 @@ const ExportSection = () => {
       console.error("PDF generation error:", err);
     } finally {
       setGenerating(false);
+      setProgressPhase(null);
     }
   };
 
@@ -288,14 +317,30 @@ const ExportSection = () => {
             </label>
           </div>
 
-          <button
-            onClick={handleGenerate}
-            disabled={generateDisabled}
-            className="flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
-          >
-            {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
-            {generating ? `Translating & generating…` : `Generate PDF in ${getLanguageName(language)}`}
-          </button>
+          <div className="space-y-2">
+            <button
+              onClick={handleGenerate}
+              disabled={generateDisabled}
+              className="flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
+            >
+              {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
+              {generating
+                ? progressPhase === "translating"
+                  ? "Translating content…"
+                  : progressPhase === "rendering"
+                  ? "Rendering PDF…"
+                  : progressPhase === "ready"
+                  ? "Ready — downloading…"
+                  : "Preparing…"
+                : `Generate PDF in ${getLanguageName(language)}`}
+            </button>
+            {mode === "full" && (
+              <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                <Sparkles className="w-3 h-3 text-primary" />
+                New export engine (Milestone 1 — Patient Summary). Other sections still use the previous template.
+              </p>
+            )}
+          </div>
         </div>
       )}
     </div>
