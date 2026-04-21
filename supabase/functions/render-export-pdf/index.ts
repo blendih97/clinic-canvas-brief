@@ -173,15 +173,15 @@ interface PatientPayload {
   highlights: string[]; // 3-5 plain one-line statements
   language: string;     // ISO code of the export language
   generatedAt: string;  // ISO timestamp
-  strings: {            // localised UI labels (passed in by client)
+  isRtl?: boolean;
+  strings: {            // localised UI labels (precomputed strings only — no functions cross JSON)
     patientSummary: string;
-    atAGlance: (n: number, c: number, y: number) => string;
+    atAGlance: string;             // already interpolated client-side
     currentMedications: string;
     knownAllergies: string;
     chronicConditions: string;
     clinicalHighlights: string;
     none: string;
-    page: (i: number, total: number) => string;
     footerNote: string;
     disclaimer: string;
   };
