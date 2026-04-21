@@ -14,11 +14,15 @@ CRITICAL RULES:
 - Return ONLY valid JSON, no markdown fences, no explanation
 
 TRANSLATION RULES:
-- If the document is NOT in English, you MUST:
-  1. Translate ALL extracted findings, summaries, and text to English
-  2. ALSO preserve the original language text separately
-  3. Set originalLang to the detected language name (e.g. "Albanian", "Arabic", "Turkish", "French")
-- If the document IS in English, set originalLang to "English"
+- Detect the source language of the document.
+- ALWAYS return BOTH the full original text AND the full translated English text in the "fullText" object below.
+  - fullText.original_content = the COMPLETE verbatim text of the document in its source language (preserve line breaks, headings, lists). Do NOT summarise.
+  - fullText.translated_content = a faithful FULL English translation of the same document text (not a summary).
+  - fullText.original_language_code = ISO 639-1 code of the source language (e.g. "sq", "ar", "tr", "fr", "en").
+  - fullText.translated_language_code = always "en".
+- If the source language IS English, set original_content == translated_content and original_language_code = "en".
+- For each extracted finding/summary item, also translate to English and preserve the original where indicated.
+- Set originalLang to the detected language NAME in English (e.g. "Albanian", "Arabic", "Turkish", "French", "English").
 
 Return this exact JSON structure:
 {
