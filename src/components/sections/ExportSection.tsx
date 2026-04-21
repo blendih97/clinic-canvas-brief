@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { FileDown, FileText, Filter, CheckSquare, Loader2, Lock, Languages, Calendar } from "lucide-react";
+import { FileDown, FileText, Filter, CheckSquare, Loader2, Lock, Languages, Calendar, Sparkles } from "lucide-react";
 import { useVaultStore } from "@/store/vaultStore";
 import { useAuth } from "@/hooks/useAuth";
 import { hasAccess } from "@/lib/planAccess";
 import { generateExportPDF, generateSelectionPDF, type ExportOptions } from "@/lib/pdfExport";
+import { generatePatientSummaryV2, downloadBlob, type ProgressPhase } from "@/lib/pdfExportV2";
 import { SUPPORTED_LANGUAGES, getLanguageName } from "@/lib/supportedLanguages";
 
 type ExportMode = "full" | "category" | "selection";
@@ -60,12 +61,39 @@ const ExportSection = () => {
         : dateRange,
   });
 
+  const [progressPhase, setProgressPhase] = useState<ProgressPhase | null>(null);
+
   const handleGenerate = async () => {
     setGenerating(true);
+    setProgressPhase(null);
     try {
       const options = buildOptions();
       if (mode === "selection") {
         await generateSelectionPDF(store, patientName, dob, selectedDocs, options);
+      } else if (mode === "full") {
+        // M1: route Full Health Brief through v2 engine (Patient Summary page).
+        const blob = await generatePatientSummaryV2({
+          data: {
+            bloodResults: store.bloodResults,
+            imagingResults: store.imagingResults,
+            medications: store.medications,
+            documents: store.documents,
+            alerts: store.alerts,
+            allergies: store.allergies,
+          },
+          patient: {
+            fullName: patientName,
+            dob,
+            biologicalSex: profile?.biological_sex || undefined,
+            nationality: profile?.nationality || undefined,
+            bloodType: profile?.blood_type || undefined,
+            chronicConditions: profile?.current_diagnoses || undefined,
+          },
+          language,
+          onProgress: (phase) => setProgressPhase(phase),
+        });
+        const safeName = (patientName || "patient").replace(/[^a-z0-9-_]+/gi, "-").toLowerCase();
+        downloadBlob(blob, `rinvita-health-brief-${safeName}-${language}.pdf`);
       } else {
         await generateExportPDF(store, patientName, dob, options);
       }
@@ -73,6 +101,7 @@ const ExportSection = () => {
       console.error("PDF generation error:", err);
     } finally {
       setGenerating(false);
+      setProgressPhase(null);
     }
   };
 
