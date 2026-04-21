@@ -3,6 +3,7 @@ import { X, FileText, Download, Share2, Globe, Languages, Loader2, AlertCircle, 
 import type { Document } from "@/store/vaultStore";
 import { useVaultStore } from "@/store/vaultStore";
 import { supabase } from "@/integrations/supabase/client";
+import { SUPPORTED_LANGUAGES, getLanguageName } from "@/lib/supportedLanguages";
 
 interface Props {
   document: Document;
@@ -132,8 +133,9 @@ const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
     }
   };
 
-  const handleReprocess = async () => {
+  const handleReprocess = async (overrideTargetLang?: string) => {
     if (!storagePath || isReprocessing) return;
+    const targetLang = overrideTargetLang || doc.translatedLanguageCode || "en";
     setIsReprocessing(true);
     setReprocessError(null);
     try {
@@ -158,6 +160,7 @@ const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
           fileType: isPdf ? "pdf" : isImage ? "image" : "text",
           mediaType: fileBlob.type || "application/pdf",
           base64,
+          targetLanguage: targetLang,
         },
       });
       if (fnError) throw new Error(fnError.message || "Analysis failed");
@@ -167,7 +170,7 @@ const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
         contentOriginal: data.fullText?.original_content || undefined,
         contentTranslated: data.fullText?.translated_content || undefined,
         originalLanguageCode: data.fullText?.original_language_code || undefined,
-        translatedLanguageCode: data.fullText?.translated_language_code || "en",
+        translatedLanguageCode: data.fullText?.translated_language_code || targetLang,
         extracted: true,
       });
     } catch (e: any) {
