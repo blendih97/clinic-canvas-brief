@@ -189,10 +189,10 @@ const Sidebar = ({ active, onNavigate, onRequestRecords }: SidebarProps) => {
               onClick={() => setMoreOpen(false)}
             />
             <div
-              className="relative w-full max-h-[85vh] overflow-auto rounded-t-2xl border-t border-x border-primary/15 shadow-2xl animate-slide-in-right"
+              className="relative w-full max-h-[85vh] overflow-auto rounded-t-2xl border-t border-x border-primary/15 shadow-2xl"
               style={{
                 backgroundColor: "#F6F2E9",
-                animation: "slide-in-right 0.28s ease-out",
+                animation: "rinvita-sheet-up 0.28s cubic-bezier(0.22, 1, 0.36, 1)",
                 paddingBottom: "max(env(safe-area-inset-bottom), 16px)",
               }}
             >
