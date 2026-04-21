@@ -272,4 +272,20 @@ export const useVaultStore = create<VaultState>()((set) => ({
       medications: s.medications.map((m) => m.id === id ? { ...m, ...updates } : m),
     }));
   },
+
+  updateDocument: async (id: string, updates: Partial<Document>) => {
+    const row: Record<string, unknown> = {};
+    if (updates.summary !== undefined) row.summary = updates.summary;
+    if (updates.contentOriginal !== undefined) row.content_original = updates.contentOriginal;
+    if (updates.contentTranslated !== undefined) row.content_translated = updates.contentTranslated;
+    if (updates.originalLanguageCode !== undefined) row.original_language_code = updates.originalLanguageCode;
+    if (updates.translatedLanguageCode !== undefined) row.translated_language_code = updates.translatedLanguageCode;
+    if (updates.extracted !== undefined) row.extracted = updates.extracted;
+    if (Object.keys(row).length > 0) {
+      await supabase.from("documents").update(row).eq("id", id);
+    }
+    set((s) => ({
+      documents: s.documents.map((d) => d.id === id ? { ...d, ...updates } : d),
+    }));
+  },
 }));
