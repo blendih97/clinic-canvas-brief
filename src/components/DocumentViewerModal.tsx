@@ -295,7 +295,7 @@ const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
                     </div>
                     {storagePath ? (
                       <button
-                        onClick={handleReprocess}
+                        onClick={() => handleReprocess()}
                         disabled={isReprocessing}
                         className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-40"
                       >
@@ -416,6 +416,31 @@ const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
                   </div>
                 )}
               </>
+            )}
+
+            {storagePath && (
+              <div className="space-y-2 pt-3 border-t border-border">
+                <label className="flex items-center gap-1.5 text-[11px] tracking-wider text-muted-foreground uppercase font-medium">
+                  <Languages className="w-3 h-3" /> Retranslate to
+                </label>
+                <div className="flex gap-2">
+                  <select
+                    value={doc.translatedLanguageCode || "en"}
+                    onChange={(e) => handleReprocess(e.target.value)}
+                    disabled={isReprocessing}
+                    className="flex-1 px-3 py-2 bg-muted border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-40"
+                  >
+                    {SUPPORTED_LANGUAGES.map((l) => (
+                      <option key={l.code} value={l.code}>{l.name}</option>
+                    ))}
+                  </select>
+                  {isReprocessing && <Loader2 className="w-4 h-4 text-primary animate-spin self-center" />}
+                </div>
+                <p className="text-[10px] text-muted-foreground">
+                  Currently translated to {getLanguageName(doc.translatedLanguageCode)}. Selecting another language re-runs the AI translation.
+                </p>
+                {reprocessError && <p className="text-[11px] text-destructive">{reprocessError}</p>}
+              </div>
             )}
 
             <div className="flex gap-3 pt-3 border-t border-border">
