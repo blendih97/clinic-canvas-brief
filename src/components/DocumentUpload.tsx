@@ -26,6 +26,12 @@ interface ExtractionResult {
     originalText?: string[];
     originalLang?: string;
   };
+  fullText?: {
+    original_content?: string;
+    translated_content?: string;
+    original_language_code?: string;
+    translated_language_code?: string;
+  };
 }
 
 const processingSteps = [
