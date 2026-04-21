@@ -5,7 +5,7 @@ const corsHeaders = {
 
 const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
 
-const EXTRACTION_PROMPT = `You are a medical document extraction engine. Analyse the provided document and extract all health data present.
+const buildExtractionPrompt = (targetLang: string, targetLangName: string) => `You are a medical document extraction engine. Analyse the provided document and extract all health data present.
 
 CRITICAL RULES:
 - Only extract information EXPLICITLY present in the document
@@ -15,13 +15,14 @@ CRITICAL RULES:
 
 TRANSLATION RULES:
 - Detect the source language of the document.
-- ALWAYS return BOTH the full original text AND the full translated English text in the "fullText" object below.
+- The user wants the translation in: **${targetLangName}** (ISO code: ${targetLang}).
+- ALWAYS return BOTH the full original text AND the full translated text in the "fullText" object below.
   - fullText.original_content = the COMPLETE verbatim text of the document in its source language (preserve line breaks, headings, lists). Do NOT summarise.
-  - fullText.translated_content = a faithful FULL English translation of the same document text (not a summary).
+  - fullText.translated_content = a faithful FULL translation of the same document text into ${targetLangName} (not a summary).
   - fullText.original_language_code = ISO 639-1 code of the source language (e.g. "sq", "ar", "tr", "fr", "en").
-  - fullText.translated_language_code = always "en".
-- If the source language IS English, set original_content == translated_content and original_language_code = "en".
-- For each extracted finding/summary item, also translate to English and preserve the original where indicated.
+  - fullText.translated_language_code = "${targetLang}".
+- If the source language equals the target language, set original_content == translated_content and both codes equal.
+- For each extracted finding/summary item, also translate to ${targetLangName} and preserve the original where indicated.
 - Set originalLang to the detected language NAME in English (e.g. "Albanian", "Arabic", "Turkish", "French", "English").
 
 Return this exact JSON structure:
@@ -29,7 +30,7 @@ Return this exact JSON structure:
   "bloodResults": [
     {
       "id": "<uuid>",
-      "marker": "string (in English)",
+      "marker": "string (in ${targetLangName})",
       "value": number,
       "unit": "string",
       "range": "string",
@@ -43,11 +44,11 @@ Return this exact JSON structure:
     {
       "id": "<uuid>",
       "type": "MRI" | "CT" | "X-Ray" | "Ultrasound",
-      "region": "string (in English)",
+      "region": "string (in ${targetLangName})",
       "date": "YYYY-MM-DD",
       "facility": "string",
-      "finding": "string (translated to English)",
-      "findingOriginal": "string (in original language, same as finding if English)",
+      "finding": "string (translated to ${targetLangName})",
+      "findingOriginal": "string (in original language, same as finding if source == target)",
       "status": "normal" | "flagged",
       "originalLang": "string"
     }
@@ -87,19 +88,32 @@ Return this exact JSON structure:
     "originalLang": "string (detected language name e.g. Albanian, Arabic, English)"
   },
   "summary": {
-    "englishText": ["string array of key findings translated to English"],
-    "originalText": ["string array of key findings in original language (same as englishText if document is in English)"],
+    "englishText": ["string array of key findings translated to ${targetLangName}"],
+    "originalText": ["string array of key findings in original language (same as englishText if source == target)"],
     "originalLang": "string (detected language name)"
   },
   "fullText": {
     "original_content": "string — FULL verbatim source-language text",
-    "translated_content": "string — FULL English translation",
+    "translated_content": "string — FULL ${targetLangName} translation",
     "original_language_code": "string — ISO 639-1 (e.g. sq, ar, en)",
-    "translated_language_code": "en"
+    "translated_language_code": "${targetLang}"
   }
 }
 
 Arrays must be empty [] if no relevant data is found for that category.`;
+
+const LANG_NAME_MAP: Record<string, string> = {
+  en: "English", ar: "Arabic", zh: "Mandarin", es: "Spanish", fr: "French",
+  tr: "Turkish", ru: "Russian", pl: "Polish", hi: "Hindi", pt: "Portuguese",
+  de: "German", it: "Italian", sq: "Albanian", nl: "Dutch", el: "Greek",
+  he: "Hebrew", ja: "Japanese", ko: "Korean", th: "Thai", vi: "Vietnamese",
+  ur: "Urdu", fa: "Persian", sw: "Swahili", ro: "Romanian", uk: "Ukrainian",
+  cs: "Czech", sv: "Swedish", no: "Norwegian", da: "Danish", fi: "Finnish",
+  hu: "Hungarian", bg: "Bulgarian", sr: "Serbian", hr: "Croatian", sk: "Slovak",
+  sl: "Slovenian", lt: "Lithuanian", lv: "Latvian", et: "Estonian", bn: "Bengali",
+  ta: "Tamil", te: "Telugu", mr: "Marathi", id: "Indonesian", ms: "Malay",
+  tl: "Tagalog",
+};
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
@@ -115,7 +129,12 @@ Deno.serve(async (req: Request) => {
 
   try {
     const body = await req.json();
-    const { fileType, mediaType, base64, text, fileName } = body;
+    const { fileType, mediaType, base64, text, fileName, targetLanguage } = body;
+
+    const targetLang = (typeof targetLanguage === "string" && targetLanguage.trim().length > 0
+      ? targetLanguage.trim().toLowerCase()
+      : "en");
+    const targetLangName = LANG_NAME_MAP[targetLang] || "English";
 
     const content: any[] = [];
 
@@ -138,7 +157,7 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    content.push({ type: "text", text: EXTRACTION_PROMPT });
+    content.push({ type: "text", text: buildExtractionPrompt(targetLang, targetLangName) });
 
     const anthropicRes = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",

@@ -403,6 +403,36 @@ export type Database = {
         }
         Relationships: []
       }
+      export_translation_cache: {
+        Row: {
+          created_at: string
+          data_hash: string
+          expires_at: string
+          id: string
+          target_language: string
+          translated_payload: Json
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data_hash: string
+          expires_at?: string
+          id?: string
+          target_language: string
+          translated_payload: Json
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data_hash?: string
+          expires_at?: string
+          id?: string
+          target_language?: string
+          translated_payload?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
       family_members: {
         Row: {
           accepted_at: string | null
