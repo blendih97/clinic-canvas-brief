@@ -184,7 +184,8 @@ export async function generatePatientSummaryV2(input: PatientSummaryInput): Prom
   const langMeta = SUPPORTED_LANGUAGES.find((l) => l.code === language);
   const isRtl = !!langMeta?.rtl;
 
-  const payload = {
+  const baseStrings = getStrings(language);
+  const finalPayload = {
     patient,
     counts,
     currentMedications: currentMeds,
@@ -198,20 +199,15 @@ export async function generatePatientSummaryV2(input: PatientSummaryInput): Prom
       day: "numeric",
     }),
     strings: {
-      ...getStrings(language),
-      // Functions cannot cross JSON. Resolve them client-side into strings.
-      atAGlance: getStrings(language).atAGlance(counts.documents, counts.countries, counts.yearsSpan),
-      page: "{i} / {total}",
-    },
-  };
-
-  // Convert function-shaped entries that the edge function expects as strings.
-  const finalPayload = {
-    ...payload,
-    strings: {
-      ...payload.strings,
-      // The edge function expects functions; we send precomputed values and the
-      // edge function inlines them via render={...} or simple string fields.
+      patientSummary: baseStrings.patientSummary,
+      atAGlance: baseStrings.atAGlance(counts.documents, counts.countries, counts.yearsSpan),
+      currentMedications: baseStrings.currentMedications,
+      knownAllergies: baseStrings.knownAllergies,
+      chronicConditions: baseStrings.chronicConditions,
+      clinicalHighlights: baseStrings.clinicalHighlights,
+      none: baseStrings.none,
+      footerNote: baseStrings.footerNote,
+      disclaimer: baseStrings.disclaimer,
     },
   };
 
