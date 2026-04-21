@@ -282,7 +282,7 @@ export const useVaultStore = create<VaultState>()((set) => ({
     if (updates.translatedLanguageCode !== undefined) row.translated_language_code = updates.translatedLanguageCode;
     if (updates.extracted !== undefined) row.extracted = updates.extracted;
     if (Object.keys(row).length > 0) {
-      await supabase.from("documents").update(row).eq("id", id);
+      await supabase.from("documents").update(row as any).eq("id", id);
     }
     set((s) => ({
       documents: s.documents.map((d) => d.id === id ? { ...d, ...updates } : d),
