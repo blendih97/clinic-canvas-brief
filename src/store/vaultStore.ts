@@ -55,6 +55,10 @@ export interface Document {
     originalLang?: string;
   };
   aiNote?: string;
+  contentOriginal?: string;
+  contentTranslated?: string;
+  originalLanguageCode?: string;
+  translatedLanguageCode?: string;
 }
 
 export interface Alert {
