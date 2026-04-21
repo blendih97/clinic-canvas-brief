@@ -317,14 +317,30 @@ const ExportSection = () => {
             </label>
           </div>
 
-          <button
-            onClick={handleGenerate}
-            disabled={generateDisabled}
-            className="flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
-          >
-            {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
-            {generating ? `Translating & generating…` : `Generate PDF in ${getLanguageName(language)}`}
-          </button>
+          <div className="space-y-2">
+            <button
+              onClick={handleGenerate}
+              disabled={generateDisabled}
+              className="flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
+            >
+              {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
+              {generating
+                ? progressPhase === "translating"
+                  ? "Translating content…"
+                  : progressPhase === "rendering"
+                  ? "Rendering PDF…"
+                  : progressPhase === "ready"
+                  ? "Ready — downloading…"
+                  : "Preparing…"
+                : `Generate PDF in ${getLanguageName(language)}`}
+            </button>
+            {mode === "full" && (
+              <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                <Sparkles className="w-3 h-3 text-primary" />
+                New export engine (Milestone 1 — Patient Summary). Other sections still use the previous template.
+              </p>
+            )}
+          </div>
         </div>
       )}
     </div>
