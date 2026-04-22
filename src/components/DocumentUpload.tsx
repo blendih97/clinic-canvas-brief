@@ -402,6 +402,11 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
                     <span className="text-primary font-medium">{result.alerts!.length}</span> alerts
                   </div>
                 )}
+                {(result.visits?.length ?? 0) > 0 && (
+                  <div className="p-2.5 bg-muted rounded flex items-center gap-2">
+                    <span className="text-primary font-medium">{result.visits!.length}</span> clinical {result.visits!.length === 1 ? "visit" : "visits"}
+                  </div>
+                )}
               </div>
 
               <div className="flex gap-2">
