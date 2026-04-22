@@ -25,6 +25,12 @@ TRANSLATION RULES:
 - For each extracted finding/summary item, also translate to ${targetLangName} and preserve the original where indicated.
 - Set originalLang to the detected language NAME in English (e.g. "Albanian", "Arabic", "Turkish", "French", "English").
 
+CLINICAL VISIT EXTRACTION (NEW):
+- If this document is a clinical letter, consultation note, discharge summary, A&E record, hospital admission summary, or any structured clinical encounter, extract the visit fields below into the "visits" array. One element per visit described in the document — most letters describe a single visit, but a discharge summary can describe several encounters.
+- Use null for any field not explicitly stated. Never invent.
+- Translate human-readable values (reason_for_visit, findings, diagnosis, follow_up_recommendations) into ${targetLangName}. Keep medication names, investigation names, and facility names in their original form.
+- If the document is purely a lab report or imaging report (no clinical narrative), return an empty visits array.
+
 Return this exact JSON structure:
 {
   "bloodResults": [
@@ -76,6 +82,20 @@ Return this exact JSON structure:
     {
       "type": "critical" | "flagged",
       "message": "string"
+    }
+  ],
+  "visits": [
+    {
+      "visit_date": "YYYY-MM-DD or null",
+      "facility_name": "string or null",
+      "facility_country": "string or null",
+      "reason_for_visit": "string in ${targetLangName} or null",
+      "investigations_performed": ["string array of investigations e.g. 'Chest X-ray', 'ECG', 'FBC' — translated to ${targetLangName}"],
+      "findings": "string in ${targetLangName} or null",
+      "diagnosis": "string in ${targetLangName} or null",
+      "medications_prescribed": ["string array — keep generic + brand if both stated"],
+      "follow_up_recommendations": ["string array in ${targetLangName}"],
+      "original_lang": "detected source language name"
     }
   ],
   "documentMeta": {
