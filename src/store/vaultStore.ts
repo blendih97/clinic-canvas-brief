@@ -74,6 +74,27 @@ export interface Allergy {
   source: string;
 }
 
+export interface Visit {
+  id: string;
+  documentId?: string;
+  visitDate?: string;
+  facilityName?: string;
+  facilityCountry?: string;
+  reasonForVisit?: string;
+  investigationsPerformed: string[];
+  findings?: string;
+  diagnosis?: string;
+  medicationsPrescribed: string[];
+  followUpRecommendations: string[];
+  originalLang?: string;
+}
+
+export interface ImagingLinkOverride {
+  id: string;
+  imaging_id_a: string;
+  imaging_id_b: string;
+}
+
 interface VaultState {
   bloodResults: BloodResult[];
   imagingResults: ImagingResult[];
@@ -81,6 +102,8 @@ interface VaultState {
   documents: Document[];
   alerts: Alert[];
   allergies: Allergy[];
+  visits: Visit[];
+  imagingLinkOverrides: ImagingLinkOverride[];
   loading: boolean;
 
   loadUserData: (userId: string) => Promise<void>;
@@ -91,10 +114,13 @@ interface VaultState {
   addDocuments: (docs: Document[], userId: string) => Promise<void>;
   addAlerts: (alerts: Alert[], userId: string) => Promise<void>;
   addAllergies: (allergies: Allergy[], userId: string) => Promise<void>;
+  addVisits: (visits: Omit<Visit, "id">[], userId: string) => Promise<void>;
   removeMedication: (id: string) => Promise<void>;
   removeAllergy: (id: string) => Promise<void>;
   updateMedication: (id: string, updates: Partial<Medication>) => Promise<void>;
   updateDocument: (id: string, updates: Partial<Document>) => Promise<void>;
+  unlinkImaging: (idA: string, idB: string, userId: string) => Promise<void>;
+  relinkImaging: (idA: string, idB: string) => Promise<void>;
 }
 
 export const useVaultStore = create<VaultState>()((set) => ({
