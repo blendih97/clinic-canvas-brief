@@ -27,7 +27,7 @@ export interface PatientSummaryInput {
   onProgress?: (phase: ProgressPhase) => void;
 }
 
-// ---------- Localised UI strings (M1 only — extend per milestone) ----------
+// ---------- Localised UI strings (extended for M2 — Visit History) ----------
 type StringPack = {
   patientSummary: string;
   atAGlance: (n: number, c: number, y: number) => string;
@@ -39,6 +39,15 @@ type StringPack = {
   page: (i: number, total: number) => string;
   footerNote: string;
   disclaimer: string;
+  visitHistory: string;
+  visitHistorySubtitle: string;
+  reasonForVisit: string;
+  investigations: string;
+  findings: string;
+  diagnosis: string;
+  medicationsPrescribed: string;
+  followUp: string;
+  noVisits: string;
 };
 
 const STRINGS: Record<string, StringPack> = {
