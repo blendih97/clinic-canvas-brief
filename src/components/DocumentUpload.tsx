@@ -7,12 +7,26 @@ import { SUPPORTED_LANGUAGES, getLanguageName } from "@/lib/supportedLanguages";
 
 type Phase = "input" | "processing" | "confirm" | "done";
 
+interface ExtractedVisit {
+  visit_date?: string | null;
+  facility_name?: string | null;
+  facility_country?: string | null;
+  reason_for_visit?: string | null;
+  investigations_performed?: string[] | null;
+  findings?: string | null;
+  diagnosis?: string | null;
+  medications_prescribed?: string[] | null;
+  follow_up_recommendations?: string[] | null;
+  original_lang?: string | null;
+}
+
 interface ExtractionResult {
   bloodResults?: any[];
   imagingResults?: any[];
   medications?: any[];
   allergies?: any[];
   alerts?: any[];
+  visits?: ExtractedVisit[];
   documentMeta?: {
     name: string;
     type: string;
@@ -159,10 +173,13 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
     if (result.medications?.length) store.addMedications(result.medications, uid);
     if (result.allergies?.length) store.addAllergies(result.allergies, uid);
     if (result.alerts?.length) store.addAlerts(result.alerts, uid);
+
+    let createdDocumentId: string | undefined;
     if (result.documentMeta) {
+      createdDocumentId = crypto.randomUUID();
       store.addDocuments([
         {
-          id: crypto.randomUUID(),
+          id: createdDocumentId,
           name: result.documentMeta.name || file?.name || "Document",
           type: result.documentMeta.type || "Unknown",
           date: result.documentMeta.date || new Date().toISOString().split("T")[0],
@@ -179,6 +196,25 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
           translatedLanguageCode: result.fullText?.translated_language_code || targetLanguage,
         },
       ], uid);
+    }
+
+    if (result.visits?.length) {
+      const visitRows = result.visits
+        .filter((v) => v && (v.visit_date || v.reason_for_visit || v.diagnosis || v.findings))
+        .map((v) => ({
+          documentId: createdDocumentId,
+          visitDate: v.visit_date || undefined,
+          facilityName: v.facility_name || undefined,
+          facilityCountry: v.facility_country || undefined,
+          reasonForVisit: v.reason_for_visit || undefined,
+          investigationsPerformed: v.investigations_performed || [],
+          findings: v.findings || undefined,
+          diagnosis: v.diagnosis || undefined,
+          medicationsPrescribed: v.medications_prescribed || [],
+          followUpRecommendations: v.follow_up_recommendations || [],
+          originalLang: v.original_lang || undefined,
+        }));
+      if (visitRows.length > 0) await store.addVisits(visitRows, uid);
     }
 
     setPhase("done");
@@ -364,6 +400,11 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
                 {(result.alerts?.length ?? 0) > 0 && (
                   <div className="p-2.5 bg-muted rounded flex items-center gap-2">
                     <span className="text-primary font-medium">{result.alerts!.length}</span> alerts
+                  </div>
+                )}
+                {(result.visits?.length ?? 0) > 0 && (
+                  <div className="p-2.5 bg-muted rounded flex items-center gap-2">
+                    <span className="text-primary font-medium">{result.visits!.length}</span> clinical {result.visits!.length === 1 ? "visit" : "visits"}
                   </div>
                 )}
               </div>

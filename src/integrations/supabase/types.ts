@@ -463,6 +463,30 @@ export type Database = {
         }
         Relationships: []
       }
+      imaging_link_overrides: {
+        Row: {
+          created_at: string
+          id: string
+          imaging_id_a: string
+          imaging_id_b: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          imaging_id_a: string
+          imaging_id_b: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          imaging_id_a?: string
+          imaging_id_b?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       imaging_results: {
         Row: {
           created_at: string
@@ -848,6 +872,63 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      visits: {
+        Row: {
+          created_at: string
+          diagnosis: string | null
+          document_id: string | null
+          facility_country: string | null
+          facility_name: string | null
+          findings: string | null
+          follow_up_recommendations: Json | null
+          id: string
+          investigations_performed: Json | null
+          medications_prescribed: Json | null
+          original_lang: string | null
+          reason_for_visit: string | null
+          source: string
+          updated_at: string
+          user_id: string
+          visit_date: string | null
+        }
+        Insert: {
+          created_at?: string
+          diagnosis?: string | null
+          document_id?: string | null
+          facility_country?: string | null
+          facility_name?: string | null
+          findings?: string | null
+          follow_up_recommendations?: Json | null
+          id?: string
+          investigations_performed?: Json | null
+          medications_prescribed?: Json | null
+          original_lang?: string | null
+          reason_for_visit?: string | null
+          source?: string
+          updated_at?: string
+          user_id: string
+          visit_date?: string | null
+        }
+        Update: {
+          created_at?: string
+          diagnosis?: string | null
+          document_id?: string | null
+          facility_country?: string | null
+          facility_name?: string | null
+          findings?: string | null
+          follow_up_recommendations?: Json | null
+          id?: string
+          investigations_performed?: Json | null
+          medications_prescribed?: Json | null
+          original_lang?: string | null
+          reason_for_visit?: string | null
+          source?: string
+          updated_at?: string
+          user_id?: string
+          visit_date?: string | null
+        }
+        Relationships: []
       }
     }
     Views: {
