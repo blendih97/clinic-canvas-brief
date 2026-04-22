@@ -173,10 +173,13 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
     if (result.medications?.length) store.addMedications(result.medications, uid);
     if (result.allergies?.length) store.addAllergies(result.allergies, uid);
     if (result.alerts?.length) store.addAlerts(result.alerts, uid);
+
+    let createdDocumentId: string | undefined;
     if (result.documentMeta) {
+      createdDocumentId = crypto.randomUUID();
       store.addDocuments([
         {
-          id: crypto.randomUUID(),
+          id: createdDocumentId,
           name: result.documentMeta.name || file?.name || "Document",
           type: result.documentMeta.type || "Unknown",
           date: result.documentMeta.date || new Date().toISOString().split("T")[0],
@@ -193,6 +196,25 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
           translatedLanguageCode: result.fullText?.translated_language_code || targetLanguage,
         },
       ], uid);
+    }
+
+    if (result.visits?.length) {
+      const visitRows = result.visits
+        .filter((v) => v && (v.visit_date || v.reason_for_visit || v.diagnosis || v.findings))
+        .map((v) => ({
+          documentId: createdDocumentId,
+          visitDate: v.visit_date || undefined,
+          facilityName: v.facility_name || undefined,
+          facilityCountry: v.facility_country || undefined,
+          reasonForVisit: v.reason_for_visit || undefined,
+          investigationsPerformed: v.investigations_performed || [],
+          findings: v.findings || undefined,
+          diagnosis: v.diagnosis || undefined,
+          medicationsPrescribed: v.medications_prescribed || [],
+          followUpRecommendations: v.follow_up_recommendations || [],
+          originalLang: v.original_lang || undefined,
+        }));
+      if (visitRows.length > 0) await store.addVisits(visitRows, uid);
     }
 
     setPhase("done");
