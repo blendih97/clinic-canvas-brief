@@ -130,17 +130,21 @@ export const useVaultStore = create<VaultState>()((set) => ({
   documents: [],
   alerts: [],
   allergies: [],
+  visits: [],
+  imagingLinkOverrides: [],
   loading: false,
 
   loadUserData: async (userId: string) => {
     set({ loading: true });
-    const [blood, imaging, meds, docs, alerts, allergies] = await Promise.all([
+    const [blood, imaging, meds, docs, alerts, allergies, visits, overrides] = await Promise.all([
       supabase.from("blood_results").select("*").eq("user_id", userId),
       supabase.from("imaging_results").select("*").eq("user_id", userId),
       supabase.from("medications").select("*").eq("user_id", userId),
       supabase.from("documents").select("*").eq("user_id", userId),
       supabase.from("alerts").select("*").eq("user_id", userId),
       supabase.from("allergies").select("*").eq("user_id", userId),
+      supabase.from("visits" as any).select("*").eq("user_id", userId),
+      supabase.from("imaging_link_overrides" as any).select("*").eq("user_id", userId),
     ]);
 
     set({
@@ -176,12 +180,30 @@ export const useVaultStore = create<VaultState>()((set) => ({
         id: r.id, substance: r.substance, reaction: r.reaction || "", severity: r.severity || "",
         source: r.source || "ai",
       })),
+      visits: ((visits as any).data || []).map((r: any) => ({
+        id: r.id,
+        documentId: r.document_id || undefined,
+        visitDate: r.visit_date || undefined,
+        facilityName: r.facility_name || undefined,
+        facilityCountry: r.facility_country || undefined,
+        reasonForVisit: r.reason_for_visit || undefined,
+        investigationsPerformed: Array.isArray(r.investigations_performed) ? r.investigations_performed : [],
+        findings: r.findings || undefined,
+        diagnosis: r.diagnosis || undefined,
+        medicationsPrescribed: Array.isArray(r.medications_prescribed) ? r.medications_prescribed : [],
+        followUpRecommendations: Array.isArray(r.follow_up_recommendations) ? r.follow_up_recommendations : [],
+        originalLang: r.original_lang || undefined,
+      })),
+      imagingLinkOverrides: ((overrides as any).data || []).map((r: any) => ({
+        id: r.id, imaging_id_a: r.imaging_id_a, imaging_id_b: r.imaging_id_b,
+      })),
       loading: false,
     });
   },
 
   clearData: () => set({
     bloodResults: [], imagingResults: [], medications: [], documents: [], alerts: [], allergies: [],
+    visits: [], imagingLinkOverrides: [],
   }),
 
   addBloodResults: async (results, userId) => {
@@ -312,6 +334,74 @@ export const useVaultStore = create<VaultState>()((set) => ({
     }
     set((s) => ({
       documents: s.documents.map((d) => d.id === id ? { ...d, ...updates } : d),
+    }));
+  },
+
+  addVisits: async (newVisits, userId) => {
+    if (!newVisits || newVisits.length === 0) return;
+    const rows = newVisits.map((v) => ({
+      user_id: userId,
+      document_id: v.documentId || null,
+      visit_date: v.visitDate || null,
+      facility_name: v.facilityName || null,
+      facility_country: v.facilityCountry || null,
+      reason_for_visit: v.reasonForVisit || null,
+      investigations_performed: v.investigationsPerformed || [],
+      findings: v.findings || null,
+      diagnosis: v.diagnosis || null,
+      medications_prescribed: v.medicationsPrescribed || [],
+      follow_up_recommendations: v.followUpRecommendations || [],
+      original_lang: v.originalLang || null,
+    }));
+    const { data } = await supabase.from("visits" as any).insert(rows as any).select();
+    if (data) {
+      const mapped = (data as any[]).map((r: any) => ({
+        id: r.id,
+        documentId: r.document_id || undefined,
+        visitDate: r.visit_date || undefined,
+        facilityName: r.facility_name || undefined,
+        facilityCountry: r.facility_country || undefined,
+        reasonForVisit: r.reason_for_visit || undefined,
+        investigationsPerformed: Array.isArray(r.investigations_performed) ? r.investigations_performed : [],
+        findings: r.findings || undefined,
+        diagnosis: r.diagnosis || undefined,
+        medicationsPrescribed: Array.isArray(r.medications_prescribed) ? r.medications_prescribed : [],
+        followUpRecommendations: Array.isArray(r.follow_up_recommendations) ? r.follow_up_recommendations : [],
+        originalLang: r.original_lang || undefined,
+      }));
+      set((s) => ({ visits: [...s.visits, ...mapped] }));
+    }
+  },
+
+  unlinkImaging: async (idA, idB, userId) => {
+    const { data } = await supabase
+      .from("imaging_link_overrides" as any)
+      .insert({ user_id: userId, imaging_id_a: idA, imaging_id_b: idB } as any)
+      .select()
+      .single();
+    if (data) {
+      const row = data as any;
+      set((s) => ({
+        imagingLinkOverrides: [
+          ...s.imagingLinkOverrides,
+          { id: row.id, imaging_id_a: row.imaging_id_a, imaging_id_b: row.imaging_id_b },
+        ],
+      }));
+    }
+  },
+
+  relinkImaging: async (idA, idB) => {
+    await supabase
+      .from("imaging_link_overrides" as any)
+      .delete()
+      .or(`and(imaging_id_a.eq.${idA},imaging_id_b.eq.${idB}),and(imaging_id_a.eq.${idB},imaging_id_b.eq.${idA})`);
+    set((s) => ({
+      imagingLinkOverrides: s.imagingLinkOverrides.filter(
+        (o) => !(
+          (o.imaging_id_a === idA && o.imaging_id_b === idB) ||
+          (o.imaging_id_a === idB && o.imaging_id_b === idA)
+        ),
+      ),
     }));
   },
 }));

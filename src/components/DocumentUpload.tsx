@@ -7,12 +7,26 @@ import { SUPPORTED_LANGUAGES, getLanguageName } from "@/lib/supportedLanguages";
 
 type Phase = "input" | "processing" | "confirm" | "done";
 
+interface ExtractedVisit {
+  visit_date?: string | null;
+  facility_name?: string | null;
+  facility_country?: string | null;
+  reason_for_visit?: string | null;
+  investigations_performed?: string[] | null;
+  findings?: string | null;
+  diagnosis?: string | null;
+  medications_prescribed?: string[] | null;
+  follow_up_recommendations?: string[] | null;
+  original_lang?: string | null;
+}
+
 interface ExtractionResult {
   bloodResults?: any[];
   imagingResults?: any[];
   medications?: any[];
   allergies?: any[];
   alerts?: any[];
+  visits?: ExtractedVisit[];
   documentMeta?: {
     name: string;
     type: string;
