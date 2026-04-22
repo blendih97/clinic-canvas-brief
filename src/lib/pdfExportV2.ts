@@ -1,15 +1,20 @@
-// Builds the M1 (Patient Summary) payload for the v2 PDF engine.
+// Builds the M1 (Patient Summary) + M2 (Visit History) payload for the v2 PDF engine.
 // Translates clinical data via the existing translate-export edge function (24h cached),
-// derives the at-a-glance counts and Clinical Highlights, then POSTs to render-export-pdf.
+// derives the at-a-glance counts and Clinical Highlights, deduplicates imaging studies,
+// then POSTs to render-export-pdf.
 
 import { supabase } from "@/integrations/supabase/client";
 import type { VaultData } from "@/lib/pdfExport";
+import type { Visit, ImagingLinkOverride } from "@/store/vaultStore";
 import { SUPPORTED_LANGUAGES } from "@/lib/supportedLanguages";
+import { dedupeImaging } from "@/lib/visitDedupe";
 
 export type ProgressPhase = "translating" | "rendering" | "ready";
 
 export interface PatientSummaryInput {
   data: VaultData;
+  visits?: Visit[];
+  imagingOverrides?: ImagingLinkOverride[];
   patient: {
     fullName: string;
     dob?: string;
