@@ -117,7 +117,7 @@ const ImagingSection = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Study list */}
         <div className="space-y-3">
-          {imagingResults.map((r) => (
+          {dedupedStudies.map((r) => (
             <button
               key={r.id}
               onClick={() => setSelectedId(r.id)}
@@ -134,14 +134,40 @@ const ImagingSection = () => {
               </div>
               <p className="text-[10px] text-muted-foreground">{r.facility} · {r.date}</p>
               <p className="text-[11px] text-muted-foreground mt-1.5 italic">{getImagingInsight(r.status)}</p>
-              {r.originalLang !== "English" && (
+              {r.originalLang && r.originalLang !== "English" && (
                 <div className="flex items-center gap-1 mt-2">
                   <Languages className="w-3 h-3 text-primary" />
                   <span className="text-[10px] text-primary">Translated from {r.originalLang}</span>
                 </div>
               )}
+              {r.duplicateIds.length > 0 && (
+                <div className="mt-2 pt-2 border-t border-border/50">
+                  <p className="text-[10px] text-muted-foreground mb-1.5">
+                    Auto-merged with {r.duplicateIds.length} other {r.duplicateIds.length === 1 ? "study" : "studies"}.
+                  </p>
+                  <div className="flex flex-wrap gap-1">
+                    {r.duplicateIds.map((dupId) => (
+                      <button
+                        key={dupId}
+                        onClick={(e) => { e.stopPropagation(); handleUnlink(r.id, dupId); }}
+                        className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-muted hover:bg-destructive/10 hover:text-destructive border border-border transition-colors"
+                      >
+                        <Link2Off className="w-2.5 h-2.5" /> Unlink
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </button>
           ))}
+          {imagingLinkOverrides.length > 0 && (
+            <button
+              onClick={handleRelink}
+              className="w-full flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground hover:text-foreground py-2 border border-dashed border-border rounded-lg transition-colors"
+            >
+              <Link className="w-3 h-3" /> Undo last unlink
+            </button>
+          )}
         </div>
 
         {/* Anatomical viewer */}
