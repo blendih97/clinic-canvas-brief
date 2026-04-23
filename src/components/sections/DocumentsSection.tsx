@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FileText, CheckCircle, Send, Clock, Eye, Inbox, X, Loader2, Search, Pin } from "lucide-react";
+import { FileText, CheckCircle, Send, Clock, Eye, Inbox, X, Loader2, Search, Pin, Sparkles } from "lucide-react";
 import { useVaultStore } from "@/store/vaultStore";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
