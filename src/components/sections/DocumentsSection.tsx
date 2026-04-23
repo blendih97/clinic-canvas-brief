@@ -220,11 +220,33 @@ const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void 
                     <td className="p-4 text-xs text-muted-foreground">{d.facility}</td>
                     <td className="p-4 text-xs text-muted-foreground">{d.date}</td>
                     <td className="p-4">
-                      {d.extracted && (
-                        <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
-                          <CheckCircle className="w-3 h-3" /> Extracted
-                        </span>
-                      )}
+                      <div className="flex flex-col items-start gap-1.5">
+                        {d.extracted && (
+                          <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
+                            <CheckCircle className="w-3 h-3" /> Extracted
+                          </span>
+                        )}
+                        {documentVisitCount(d.id) > 0 && (
+                          <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                            {documentVisitCount(d.id)} visit{documentVisitCount(d.id) === 1 ? "" : "s"}
+                          </span>
+                        )}
+                        {d.filePath && (
+                          <button
+                            onClick={(e) => handleReExtractClinical(e, d)}
+                            disabled={reExtractingId === d.id}
+                            className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border border-border text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors disabled:opacity-50"
+                            title="Re-run AI extraction to capture clinical visits"
+                          >
+                            {reExtractingId === d.id ? (
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                            ) : (
+                              <Sparkles className="w-3 h-3" />
+                            )}
+                            Re-extract
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
