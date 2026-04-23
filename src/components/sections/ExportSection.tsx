@@ -71,7 +71,7 @@ const ExportSection = () => {
       if (mode === "selection") {
         await generateSelectionPDF(store, patientName, dob, selectedDocs, options);
       } else if (mode === "full") {
-        // M1: route Full Health Brief through v2 engine (Patient Summary page).
+        // M1+M2: route Full Health Brief through v2 engine (Patient Summary + Visit History).
         const blob = await generatePatientSummaryV2({
           data: {
             bloodResults: store.bloodResults,
@@ -81,6 +81,8 @@ const ExportSection = () => {
             alerts: store.alerts,
             allergies: store.allergies,
           },
+          visits: store.visits,
+          imagingOverrides: store.imagingLinkOverrides,
           patient: {
             fullName: patientName,
             dob,
@@ -337,7 +339,7 @@ const ExportSection = () => {
             {mode === "full" && (
               <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
                 <Sparkles className="w-3 h-3 text-primary" />
-                New export engine (Milestone 1 — Patient Summary). Other sections still use the previous template.
+                New export engine — Patient Summary + Visit History. Remaining sections (Blood, Imaging, Medications) still use the previous template.
               </p>
             )}
           </div>

@@ -1,6 +1,6 @@
-// Renders the new "v2" Patient Summary PDF using @react-pdf/renderer (Deno-compatible).
-// Milestone 1: Page 1 only (Patient Summary). Subsequent milestones add Visit History,
-// Medications, Blood Results, Imaging, and Original Source Documents appendix.
+// Renders the v2 Patient Summary PDF using @react-pdf/renderer (Deno-compatible).
+// Milestone 1: Page 1 (Patient Summary).
+// Milestone 2: Page 2+ (Visit History) — one page per visit, repeating header/footer.
 
 import React from "npm:react@18.3.1";
 // @ts-ignore - Deno resolves npm specifiers
@@ -34,7 +34,7 @@ Font.registerHyphenationCallback((word: string) => [word]);
 
 // ---------- Theme ----------
 const COLORS = {
-  ink: "#1C1810",       // dark charcoal — never pure black
+  ink: "#1C1810",
   muted: "#6B6256",
   hairline: "#E8E2D5",
   paper: "#FFFFFF",
@@ -49,12 +49,11 @@ const styles = StyleSheet.create({
     color: COLORS.ink,
     fontFamily: "DM Sans",
     fontSize: 10,
-    paddingTop: 56,    // ~1.5cm
+    paddingTop: 56,
     paddingBottom: 56,
     paddingHorizontal: 56,
     lineHeight: 1.5,
   },
-  // Header
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -73,7 +72,6 @@ const styles = StyleSheet.create({
   headerBrandAccent: { color: COLORS.gold },
   headerCentre: { fontSize: 9, color: COLORS.muted },
   headerRight: { fontSize: 9, color: COLORS.muted },
-  // Footer
   footer: {
     position: "absolute",
     bottom: 28,
@@ -87,7 +85,6 @@ const styles = StyleSheet.create({
     borderTopColor: COLORS.hairline,
     paddingTop: 8,
   },
-  // Hero
   patientName: {
     fontFamily: "Cormorant Garamond",
     fontSize: 30,
@@ -106,7 +103,6 @@ const styles = StyleSheet.create({
     borderLeftColor: COLORS.gold,
     marginBottom: 22,
   },
-  // Section blocks
   sectionHeading: {
     fontFamily: "Cormorant Garamond",
     fontSize: 14,
@@ -121,7 +117,6 @@ const styles = StyleSheet.create({
   bulletDot: { width: 10, color: COLORS.gold, fontSize: 10, lineHeight: 1.5 },
   bulletText: { flex: 1, fontSize: 10, color: COLORS.ink, lineHeight: 1.5 },
   emptyText: { fontSize: 9, color: COLORS.muted, fontStyle: "italic" },
-  // Highlights
   highlightsBlock: { marginTop: 4, marginBottom: 18 },
   highlightRow: {
     flexDirection: "row",
@@ -140,7 +135,6 @@ const styles = StyleSheet.create({
     color: COLORS.ink,
     lineHeight: 1.45,
   },
-  // Disclaimer
   disclaimer: {
     fontSize: 8,
     color: COLORS.muted,
@@ -150,9 +144,66 @@ const styles = StyleSheet.create({
     borderTopWidth: 0.5,
     borderTopColor: COLORS.hairline,
   },
+  // Visit History
+  pageTitle: {
+    fontFamily: "Cormorant Garamond",
+    fontSize: 24,
+    fontWeight: 600,
+    color: COLORS.ink,
+    marginBottom: 4,
+  },
+  pageSubtitle: { fontSize: 10, color: COLORS.muted, marginBottom: 18 },
+  visitCard: {
+    borderWidth: 0.5,
+    borderColor: COLORS.hairline,
+    borderRadius: 4,
+    padding: 14,
+    marginBottom: 14,
+  },
+  visitHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 8,
+    paddingBottom: 8,
+    borderBottomWidth: 0.5,
+    borderBottomColor: COLORS.hairline,
+  },
+  visitDate: {
+    fontFamily: "Cormorant Garamond",
+    fontSize: 14,
+    fontWeight: 600,
+    color: COLORS.ink,
+  },
+  visitFacility: { fontSize: 9, color: COLORS.muted, marginTop: 1 },
+  visitFieldLabel: {
+    fontSize: 8,
+    color: COLORS.gold,
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
+    marginTop: 8,
+    marginBottom: 2,
+  },
+  visitFieldValue: {
+    fontSize: 10,
+    color: COLORS.ink,
+    lineHeight: 1.5,
+  },
 });
 
-// ---------- Types (subset of VaultData consumed for M1) ----------
+// ---------- Types ----------
+interface VisitPayload {
+  visitDate?: string;
+  facilityName?: string;
+  facilityCountry?: string;
+  reasonForVisit?: string;
+  investigationsPerformed: string[];
+  findings?: string;
+  diagnosis?: string;
+  medicationsPrescribed: string[];
+  followUpRecommendations: string[];
+}
+
 interface PatientPayload {
   patient: {
     fullName: string;
@@ -169,13 +220,14 @@ interface PatientPayload {
   };
   currentMedications: { name: string; dose?: string; frequency?: string }[];
   allergies: { substance: string; severity?: string; reaction?: string }[];
-  highlights: string[]; // 3-5 plain one-line statements
-  language: string;     // ISO code of the export language
-  generatedAt: string;  // ISO timestamp
+  highlights: string[];
+  visits?: VisitPayload[];
+  language: string;
+  generatedAt: string;
   isRtl?: boolean;
-  strings: {            // localised UI labels (precomputed strings only — no functions cross JSON)
+  strings: {
     patientSummary: string;
-    atAGlance: string;             // already interpolated client-side
+    atAGlance: string;
     currentMedications: string;
     knownAllergies: string;
     chronicConditions: string;
@@ -183,10 +235,19 @@ interface PatientPayload {
     none: string;
     footerNote: string;
     disclaimer: string;
+    visitHistory: string;
+    visitHistorySubtitle: string;
+    reasonForVisit: string;
+    investigations: string;
+    findings: string;
+    diagnosis: string;
+    medicationsPrescribed: string;
+    followUp: string;
+    noVisits: string;
   };
 }
 
-// ---------- Components (React.createElement to avoid JSX in Deno bundler) ----------
+// ---------- Components ----------
 const h = React.createElement;
 
 const AmberDot = () =>
@@ -229,7 +290,7 @@ const Bullets = ({ items, empty }: { items: string[]; empty: string }) => {
 };
 
 const PatientSummaryPage = (data: PatientPayload) => {
-  const { patient, counts: _counts, currentMedications, allergies, highlights, strings, generatedAt } = data;
+  const { patient, currentMedications, allergies, highlights, strings, generatedAt } = data;
 
   const meta = [
     patient.dob && `DOB: ${patient.dob}`,
@@ -282,6 +343,63 @@ const PatientSummaryPage = (data: PatientPayload) => {
   );
 };
 
+const VisitCard = ({ visit, strings }: { visit: VisitPayload; strings: PatientPayload["strings"] }) => {
+  const dateText = visit.visitDate || "—";
+  const facilityText = [visit.facilityName, visit.facilityCountry].filter(Boolean).join(" · ");
+
+  return h(View, { style: styles.visitCard, wrap: false },
+    h(View, { style: styles.visitHeader },
+      h(View, null,
+        h(Text, { style: styles.visitDate }, dateText),
+        facilityText ? h(Text, { style: styles.visitFacility }, facilityText) : null,
+      ),
+    ),
+    visit.reasonForVisit ? h(View, null,
+      h(Text, { style: styles.visitFieldLabel }, strings.reasonForVisit),
+      h(Text, { style: styles.visitFieldValue }, visit.reasonForVisit),
+    ) : null,
+    visit.investigationsPerformed && visit.investigationsPerformed.length > 0 ? h(View, null,
+      h(Text, { style: styles.visitFieldLabel }, strings.investigations),
+      h(Bullets, { items: visit.investigationsPerformed, empty: strings.none }),
+    ) : null,
+    visit.findings ? h(View, null,
+      h(Text, { style: styles.visitFieldLabel }, strings.findings),
+      h(Text, { style: styles.visitFieldValue }, visit.findings),
+    ) : null,
+    visit.diagnosis ? h(View, null,
+      h(Text, { style: styles.visitFieldLabel }, strings.diagnosis),
+      h(Text, { style: styles.visitFieldValue }, visit.diagnosis),
+    ) : null,
+    visit.medicationsPrescribed && visit.medicationsPrescribed.length > 0 ? h(View, null,
+      h(Text, { style: styles.visitFieldLabel }, strings.medicationsPrescribed),
+      h(Bullets, { items: visit.medicationsPrescribed, empty: strings.none }),
+    ) : null,
+    visit.followUpRecommendations && visit.followUpRecommendations.length > 0 ? h(View, null,
+      h(Text, { style: styles.visitFieldLabel }, strings.followUp),
+      h(Bullets, { items: visit.followUpRecommendations, empty: strings.none }),
+    ) : null,
+  );
+};
+
+const VisitHistoryPage = (data: PatientPayload) => {
+  const { visits = [], patient, strings, generatedAt } = data;
+
+  // Sort newest first by visit_date string (ISO-comparable when present)
+  const sorted = [...visits].sort((a, b) => (b.visitDate || "").localeCompare(a.visitDate || ""));
+
+  return h(Page, { size: "A4", style: styles.page },
+    h(Header, { patientName: patient.fullName }),
+    h(Text, { style: styles.pageTitle }, strings.visitHistory),
+    h(Text, { style: styles.pageSubtitle }, strings.visitHistorySubtitle),
+    sorted.length === 0
+      ? h(Text, { style: styles.emptyText }, strings.noVisits)
+      : h(View, null,
+          sorted.map((v, i) => h(VisitCard, { key: i, visit: v, strings })),
+        ),
+    h(Footer, { generatedAt }),
+  );
+};
+
 // ---------- HTTP handler ----------
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
@@ -298,10 +416,15 @@ Deno.serve(async (req: Request) => {
       );
     }
 
+    const pages: any[] = [PatientSummaryPage(payload)];
+    // Always include the Visit History page so the document section ordering
+    // is predictable; the page itself shows an empty-state if no visits exist.
+    pages.push(VisitHistoryPage(payload));
+
     const doc = React.createElement(
       Document,
       { title: `${payload.patient.fullName} — Health Brief`, author: "RinVita" },
-      PatientSummaryPage(payload)
+      ...pages
     );
 
     const pdfBuffer = await renderToBuffer(doc);
