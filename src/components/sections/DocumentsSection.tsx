@@ -29,13 +29,17 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.E
 
 const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void }) => {
   const documents = useVaultStore((s) => s.documents);
-  const { user } = useAuth();
+  const visits = useVaultStore((s) => s.visits);
+  const addVisits = useVaultStore((s) => s.addVisits);
+  const updateDocument = useVaultStore((s) => s.updateDocument);
+  const { user, profile } = useAuth();
   const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
   const [showViewer, setShowViewer] = useState(false);
   const [tab, setTab] = useState<"documents" | "requests">("documents");
   const [requests, setRequests] = useState<RecordRequest[]>([]);
   const [loadingRequests, setLoadingRequests] = useState(false);
   const [search, setSearch] = useState("");
+  const [reExtractingId, setReExtractingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (tab === "requests" && user) loadRequests();
@@ -53,6 +57,82 @@ const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void 
     const { error } = await supabase.from("record_requests").update({ status: "cancelled" }).eq("id", id);
     if (!error) { toast.success("Request cancelled"); loadRequests(); }
   };
+
+  const handleReExtractClinical = async (e: React.MouseEvent, doc: Document) => {
+    e.stopPropagation();
+    if (!user || !doc.filePath) {
+      toast.error("Original file not available — re-extract needs the source upload.");
+      return;
+    }
+    setReExtractingId(doc.id);
+    try {
+      // Download the original file from storage so the AI sees the same bytes.
+      const { data: blob, error: dlErr } = await supabase.storage
+        .from("medical-documents")
+        .download(doc.filePath);
+      if (dlErr || !blob) throw new Error(dlErr?.message || "Could not load original file");
+
+      const base64: string = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const dataUrl = reader.result as string;
+          resolve(dataUrl.split(",")[1]);
+        };
+        reader.onerror = () => reject(new Error("File read failed"));
+        reader.readAsDataURL(blob);
+      });
+
+      const isPdf = blob.type === "application/pdf" || /\.pdf$/i.test(doc.name);
+      const isImage = blob.type.startsWith("image/") || /\.(jpe?g|png|gif|webp)$/i.test(doc.name);
+
+      const { data, error: fnError } = await supabase.functions.invoke("analyse-document", {
+        body: {
+          fileName: doc.name,
+          fileType: isPdf ? "pdf" : isImage ? "image" : "text",
+          mediaType: blob.type,
+          base64,
+          targetLanguage: profile?.preferred_translation_language || "en",
+        },
+      });
+      if (fnError) throw new Error(fnError.message || "Analysis failed");
+
+      // Save extracted visits attached to this document
+      if (data?.visits?.length) {
+        const visitRows = data.visits
+          .filter((v: any) => v && (v.visit_date || v.reason_for_visit || v.diagnosis || v.findings))
+          .map((v: any) => ({
+            documentId: doc.id,
+            visitDate: v.visit_date || undefined,
+            facilityName: v.facility_name || undefined,
+            facilityCountry: v.facility_country || undefined,
+            reasonForVisit: v.reason_for_visit || undefined,
+            investigationsPerformed: v.investigations_performed || [],
+            findings: v.findings || undefined,
+            diagnosis: v.diagnosis || undefined,
+            medicationsPrescribed: v.medications_prescribed || [],
+            followUpRecommendations: v.follow_up_recommendations || [],
+            originalLang: v.original_lang || undefined,
+          }));
+        if (visitRows.length > 0) {
+          await addVisits(visitRows, user.id);
+          toast.success(`Extracted ${visitRows.length} clinical visit${visitRows.length === 1 ? "" : "s"}.`);
+        } else {
+          toast.info("No new clinical visits found in this document.");
+        }
+      } else {
+        toast.info("No clinical visits found in this document.");
+      }
+
+      // Mark the document as re-extracted so we know we've already processed it
+      await updateDocument(doc.id, { extracted: true });
+    } catch (err: any) {
+      toast.error(err.message || "Re-extraction failed");
+    } finally {
+      setReExtractingId(null);
+    }
+  };
+
+  const documentVisitCount = (docId: string) => visits.filter((v) => v.documentId === docId).length;
 
   const handleRowClick = (doc: Document) => { setSelectedDoc(doc); setShowViewer(true); };
 
