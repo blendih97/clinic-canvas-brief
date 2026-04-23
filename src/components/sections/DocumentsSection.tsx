@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FileText, CheckCircle, Send, Clock, Eye, Inbox, X, Loader2, Search, Pin } from "lucide-react";
+import { FileText, CheckCircle, Send, Clock, Eye, Inbox, X, Loader2, Search, Pin, Sparkles } from "lucide-react";
 import { useVaultStore } from "@/store/vaultStore";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -29,13 +29,17 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.E
 
 const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void }) => {
   const documents = useVaultStore((s) => s.documents);
-  const { user } = useAuth();
+  const visits = useVaultStore((s) => s.visits);
+  const addVisits = useVaultStore((s) => s.addVisits);
+  const updateDocument = useVaultStore((s) => s.updateDocument);
+  const { user, profile } = useAuth();
   const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
   const [showViewer, setShowViewer] = useState(false);
   const [tab, setTab] = useState<"documents" | "requests">("documents");
   const [requests, setRequests] = useState<RecordRequest[]>([]);
   const [loadingRequests, setLoadingRequests] = useState(false);
   const [search, setSearch] = useState("");
+  const [reExtractingId, setReExtractingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (tab === "requests" && user) loadRequests();
@@ -53,6 +57,82 @@ const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void 
     const { error } = await supabase.from("record_requests").update({ status: "cancelled" }).eq("id", id);
     if (!error) { toast.success("Request cancelled"); loadRequests(); }
   };
+
+  const handleReExtractClinical = async (e: React.MouseEvent, doc: Document) => {
+    e.stopPropagation();
+    if (!user || !doc.filePath) {
+      toast.error("Original file not available — re-extract needs the source upload.");
+      return;
+    }
+    setReExtractingId(doc.id);
+    try {
+      // Download the original file from storage so the AI sees the same bytes.
+      const { data: blob, error: dlErr } = await supabase.storage
+        .from("medical-documents")
+        .download(doc.filePath);
+      if (dlErr || !blob) throw new Error(dlErr?.message || "Could not load original file");
+
+      const base64: string = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const dataUrl = reader.result as string;
+          resolve(dataUrl.split(",")[1]);
+        };
+        reader.onerror = () => reject(new Error("File read failed"));
+        reader.readAsDataURL(blob);
+      });
+
+      const isPdf = blob.type === "application/pdf" || /\.pdf$/i.test(doc.name);
+      const isImage = blob.type.startsWith("image/") || /\.(jpe?g|png|gif|webp)$/i.test(doc.name);
+
+      const { data, error: fnError } = await supabase.functions.invoke("analyse-document", {
+        body: {
+          fileName: doc.name,
+          fileType: isPdf ? "pdf" : isImage ? "image" : "text",
+          mediaType: blob.type,
+          base64,
+          targetLanguage: profile?.preferred_translation_language || "en",
+        },
+      });
+      if (fnError) throw new Error(fnError.message || "Analysis failed");
+
+      // Save extracted visits attached to this document
+      if (data?.visits?.length) {
+        const visitRows = data.visits
+          .filter((v: any) => v && (v.visit_date || v.reason_for_visit || v.diagnosis || v.findings))
+          .map((v: any) => ({
+            documentId: doc.id,
+            visitDate: v.visit_date || undefined,
+            facilityName: v.facility_name || undefined,
+            facilityCountry: v.facility_country || undefined,
+            reasonForVisit: v.reason_for_visit || undefined,
+            investigationsPerformed: v.investigations_performed || [],
+            findings: v.findings || undefined,
+            diagnosis: v.diagnosis || undefined,
+            medicationsPrescribed: v.medications_prescribed || [],
+            followUpRecommendations: v.follow_up_recommendations || [],
+            originalLang: v.original_lang || undefined,
+          }));
+        if (visitRows.length > 0) {
+          await addVisits(visitRows, user.id);
+          toast.success(`Extracted ${visitRows.length} clinical visit${visitRows.length === 1 ? "" : "s"}.`);
+        } else {
+          toast.info("No new clinical visits found in this document.");
+        }
+      } else {
+        toast.info("No clinical visits found in this document.");
+      }
+
+      // Mark the document as re-extracted so we know we've already processed it
+      await updateDocument(doc.id, { extracted: true });
+    } catch (err: any) {
+      toast.error(err.message || "Re-extraction failed");
+    } finally {
+      setReExtractingId(null);
+    }
+  };
+
+  const documentVisitCount = (docId: string) => visits.filter((v) => v.documentId === docId).length;
 
   const handleRowClick = (doc: Document) => { setSelectedDoc(doc); setShowViewer(true); };
 
@@ -140,11 +220,33 @@ const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void 
                     <td className="p-4 text-xs text-muted-foreground">{d.facility}</td>
                     <td className="p-4 text-xs text-muted-foreground">{d.date}</td>
                     <td className="p-4">
-                      {d.extracted && (
-                        <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
-                          <CheckCircle className="w-3 h-3" /> Extracted
-                        </span>
-                      )}
+                      <div className="flex flex-col items-start gap-1.5">
+                        {d.extracted && (
+                          <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
+                            <CheckCircle className="w-3 h-3" /> Extracted
+                          </span>
+                        )}
+                        {documentVisitCount(d.id) > 0 && (
+                          <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                            {documentVisitCount(d.id)} visit{documentVisitCount(d.id) === 1 ? "" : "s"}
+                          </span>
+                        )}
+                        {d.filePath && (
+                          <button
+                            onClick={(e) => handleReExtractClinical(e, d)}
+                            disabled={reExtractingId === d.id}
+                            className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border border-border text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors disabled:opacity-50"
+                            title="Re-run AI extraction to capture clinical visits"
+                          >
+                            {reExtractingId === d.id ? (
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                            ) : (
+                              <Sparkles className="w-3 h-3" />
+                            )}
+                            Re-extract
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}

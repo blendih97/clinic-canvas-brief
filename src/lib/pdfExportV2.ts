@@ -234,6 +234,19 @@ export async function generatePatientSummaryV2(input: PatientSummaryInput): Prom
   const langMeta = SUPPORTED_LANGUAGES.find((l) => l.code === language);
   const isRtl = !!langMeta?.rtl;
 
+  // M2: serialise visits for the edge function (snake-case-light, but keep camelCase for payload).
+  const visitsPayload = (input.visits || []).map((v) => ({
+    visitDate: v.visitDate,
+    facilityName: v.facilityName,
+    facilityCountry: v.facilityCountry,
+    reasonForVisit: v.reasonForVisit,
+    investigationsPerformed: v.investigationsPerformed || [],
+    findings: v.findings,
+    diagnosis: v.diagnosis,
+    medicationsPrescribed: v.medicationsPrescribed || [],
+    followUpRecommendations: v.followUpRecommendations || [],
+  }));
+
   const baseStrings = getStrings(language);
   const finalPayload = {
     patient,
@@ -241,6 +254,7 @@ export async function generatePatientSummaryV2(input: PatientSummaryInput): Prom
     currentMedications: currentMeds,
     allergies,
     highlights,
+    visits: visitsPayload,
     language,
     isRtl,
     generatedAt: new Date().toLocaleDateString(language === "en" ? "en-GB" : language, {
@@ -258,6 +272,15 @@ export async function generatePatientSummaryV2(input: PatientSummaryInput): Prom
       none: baseStrings.none,
       footerNote: baseStrings.footerNote,
       disclaimer: baseStrings.disclaimer,
+      visitHistory: baseStrings.visitHistory,
+      visitHistorySubtitle: baseStrings.visitHistorySubtitle,
+      reasonForVisit: baseStrings.reasonForVisit,
+      investigations: baseStrings.investigations,
+      findings: baseStrings.findings,
+      diagnosis: baseStrings.diagnosis,
+      medicationsPrescribed: baseStrings.medicationsPrescribed,
+      followUp: baseStrings.followUp,
+      noVisits: baseStrings.noVisits,
     },
   };
 
