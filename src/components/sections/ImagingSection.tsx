@@ -1,11 +1,13 @@
-import { useState } from "react";
-import { ScanLine, Languages, AlertTriangle, CheckCircle, ChevronDown, ChevronUp, Send } from "lucide-react";
+import { useState, useMemo } from "react";
+import { ScanLine, Languages, AlertTriangle, CheckCircle, ChevronDown, ChevronUp, Send, Link2Off, Link } from "lucide-react";
 import { useVaultStore } from "@/store/vaultStore";
 import { useAuth } from "@/hooks/useAuth";
 import { hasAccess } from "@/lib/planAccess";
 import { getImagingInsight } from "@/lib/insights";
+import { dedupeImaging } from "@/lib/visitDedupe";
 import MedicalDisclaimer from "@/components/MedicalDisclaimer";
 import RequestImagingModal from "@/components/RequestImagingModal";
+import { toast } from "sonner";
 
 const statusBadge = {
   normal: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
@@ -42,11 +44,37 @@ const AnatomicalViewer = ({ region }: { region: string }) => {
 
 const ImagingSection = () => {
   const imagingResults = useVaultStore((s) => s.imagingResults);
-  const { profile } = useAuth();
+  const imagingLinkOverrides = useVaultStore((s) => s.imagingLinkOverrides);
+  const unlinkImaging = useVaultStore((s) => s.unlinkImaging);
+  const relinkImaging = useVaultStore((s) => s.relinkImaging);
+  const { profile, user } = useAuth();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showAnatomy, setShowAnatomy] = useState(false);
   const [requestImagingOpen, setRequestImagingOpen] = useState(false);
-  const selected = imagingResults.find((r) => r.id === selectedId) || imagingResults[0];
+
+  // Show deduped studies in the list (M2). Each merged row also surfaces the
+  // raw duplicate ids so users can split them apart again.
+  const dedupedStudies = useMemo(
+    () => dedupeImaging(imagingResults, imagingLinkOverrides),
+    [imagingResults, imagingLinkOverrides],
+  );
+
+  const selected =
+    dedupedStudies.find((r) => r.id === selectedId) || dedupedStudies[0];
+
+  const handleUnlink = async (primaryId: string, duplicateId: string) => {
+    if (!user) return;
+    await unlinkImaging(primaryId, duplicateId, user.id);
+    toast.success("Study unlinked — it will appear separately on next refresh.");
+  };
+
+  const handleRelink = async () => {
+    // Relink the most recent override (used as a quick "undo")
+    const last = imagingLinkOverrides[imagingLinkOverrides.length - 1];
+    if (!last) return;
+    await relinkImaging(last.imaging_id_a, last.imaging_id_b);
+    toast.success("Studies re-linked.");
+  };
 
   const handleRequestImaging = () => {
     if (!hasAccess(profile, "request_imaging")) {
