@@ -82,6 +82,7 @@ const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
   const [isDownloading, setIsDownloading] = useState(false);
   const [isReprocessing, setIsReprocessing] = useState(false);
   const [reprocessError, setReprocessError] = useState<string | null>(null);
+  const [zoom, setZoom] = useState(1);
 
   const storagePath = doc.filePath || doc.fileUrl;
 
