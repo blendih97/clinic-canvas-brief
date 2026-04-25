@@ -88,6 +88,46 @@ const MediaSection = ({ onRequestRecords, onUpload }: { onRequestRecords?: () =>
     return items;
   }, [documents]);
 
+  // Resolve signed URLs for storage-backed media files
+  useEffect(() => {
+    let cancelled = false;
+    const toResolve = mediaItems.filter((item) => {
+      const path = item.filePath || item.fileUrl;
+      if (!path) return false;
+      if (path.startsWith("http")) return false;
+      if (signedUrls[item.id]) return false;
+      return true;
+    });
+    if (toResolve.length === 0) return;
+
+    (async () => {
+      const entries = await Promise.all(
+        toResolve.map(async (item) => {
+          const path = item.filePath || item.fileUrl!;
+          const { data } = await supabase.storage
+            .from("medical-documents")
+            .createSignedUrl(path, 3600);
+          return [item.id, data?.signedUrl] as const;
+        })
+      );
+      if (cancelled) return;
+      setSignedUrls((prev) => {
+        const next = { ...prev };
+        for (const [id, url] of entries) if (url) next[id] = url;
+        return next;
+      });
+    })();
+
+    return () => { cancelled = true; };
+  }, [mediaItems, signedUrls]);
+
+  const resolveUrl = (item: MediaItem): string | undefined => {
+    const raw = item.filePath || item.fileUrl;
+    if (!raw) return undefined;
+    if (raw.startsWith("http")) return raw;
+    return signedUrls[item.id];
+  };
+
   const filteredItems = useMemo(() => {
     let items = mediaItems;
 
