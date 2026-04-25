@@ -47,8 +47,9 @@ interface MarkerGroup {
 }
 
 const BloodResultsSection = ({ pinnedIds, onTogglePin }: BloodResultsSectionProps) => {
-  const [view, setView] = useState<"card" | "table" | "compare">("table");
+  const [view, setView] = useState<"panels" | "card" | "table" | "compare">("panels");
   const [expandedMarkers, setExpandedMarkers] = useState<Set<string>>(new Set());
+  const [expandedPanels, setExpandedPanels] = useState<Set<string>>(new Set());
   const bloodResults = useVaultStore((s) => s.bloodResults);
   const { profile } = useAuth();
   const sex = (profile as any)?.biological_sex as string | null;
