@@ -80,10 +80,31 @@ const BloodResultsSection = ({ pinnedIds, onTogglePin }: BloodResultsSectionProp
     [markerGroups]
   );
 
+  // Group by panel (date + source/facility) for the panels view
+  const panels = useMemo(() => {
+    const groups: Record<string, { key: string; date: string; source: string; results: any[] }> = {};
+    bloodResults.forEach((r) => {
+      const date = r.date || "Unknown date";
+      const source = r.source || "Unknown source";
+      const key = `${date}__${source}`;
+      if (!groups[key]) groups[key] = { key, date, source, results: [] };
+      groups[key].results.push(r);
+    });
+    return Object.values(groups).sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+  }, [bloodResults]);
+
   const toggleExpand = (marker: string) => {
     setExpandedMarkers((prev) => {
       const next = new Set(prev);
       if (next.has(marker)) next.delete(marker); else next.add(marker);
+      return next;
+    });
+  };
+
+  const togglePanel = (key: string) => {
+    setExpandedPanels((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key); else next.add(key);
       return next;
     });
   };
