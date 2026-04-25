@@ -189,7 +189,7 @@ const dictionary: Record<Locale, TranslationMap> = {
     sidebar: {
       tagline: "Your health history. Everywhere you go.",
       overview: "Overview",
-      blood: "Blood Results",
+      blood: "Lab Results",
       imaging: "Imaging",
       media: "Media",
       medications: "Medications",
@@ -540,7 +540,7 @@ const dictionary: Record<Locale, TranslationMap> = {
     sidebar: {
       tagline: "سجلك الصحي. معك أينما ذهبت.",
       overview: "نظرة عامة",
-      blood: "نتائج الدم",
+      blood: "نتائج المختبر",
       imaging: "التصوير",
       media: "الوسائط",
       medications: "الأدوية",

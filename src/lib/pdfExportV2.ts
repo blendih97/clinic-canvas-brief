@@ -113,7 +113,7 @@ const STRINGS: Record<string, StringPack> = {
     medActive: "Active",
     medInactive: "Inactive",
     noMedications: "No medications recorded.",
-    bloodResultsTitle: "Blood Results",
+    bloodResultsTitle: "Lab Results",
     bloodResultsSubtitle: "Most recent value per marker. Status indicators reflect reference ranges.",
     bloodColMarker: "Marker",
     bloodColValue: "Value",

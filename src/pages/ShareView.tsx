@@ -141,7 +141,7 @@ const ShareView = () => {
           <section>
             <div className="flex items-center gap-2 mb-3">
               <Droplets className="w-4 h-4 text-primary" />
-              <h2 className="font-heading text-lg text-foreground">Blood Results</h2>
+              <h2 className="font-heading text-lg text-foreground">Lab Results</h2>
             </div>
             <div className="bg-card border border-border rounded-lg overflow-hidden">
               <table className="w-full">

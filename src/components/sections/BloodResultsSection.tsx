@@ -91,11 +91,11 @@ const BloodResultsSection = ({ pinnedIds, onTogglePin }: BloodResultsSectionProp
     return (
       <div className="space-y-8">
         <div>
-          <h2 className="font-heading text-3xl font-light text-foreground">Blood Results</h2>
+          <h2 className="font-heading text-3xl font-light text-foreground">Lab Results</h2>
           <p className="text-sm text-muted-foreground mt-2">Upload a lab report to see extracted biomarkers here.</p>
         </div>
         <div className="bg-card border border-border rounded-lg p-12 text-center text-muted-foreground text-sm">
-          No blood results yet.
+          No lab results yet.
         </div>
       </div>
     );
@@ -117,7 +117,7 @@ const BloodResultsSection = ({ pinnedIds, onTogglePin }: BloodResultsSectionProp
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-heading text-3xl font-light text-foreground">Blood Results</h2>
+          <h2 className="font-heading text-3xl font-light text-foreground">Lab Results</h2>
           <p className="text-sm text-muted-foreground mt-2">Extracted biomarkers from uploaded lab reports</p>
         </div>
         <div className="flex gap-1 bg-muted rounded-lg p-0.5">

@@ -408,7 +408,7 @@ const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
 
                 {relatedBlood.length > 0 && (
                   <div>
-                    <h4 className="text-xs tracking-wider text-muted-foreground uppercase font-medium mb-2">Blood Results</h4>
+                    <h4 className="text-xs tracking-wider text-muted-foreground uppercase font-medium mb-2">Lab Results</h4>
                     <div className="border border-border rounded-lg overflow-hidden">
                       <table className="w-full text-sm">
                         <thead>

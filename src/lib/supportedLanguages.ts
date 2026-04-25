@@ -128,7 +128,7 @@ const PDF_STRINGS_EN: PdfStrings = {
   of: "of",
   alerts: "Key Alerts",
   allergies: "Allergies",
-  blood_results: "Blood Results",
+  blood_results: "Lab Results",
   imaging: "Imaging Findings",
   medications: "Medications",
   documents: "Uploaded Documents",
