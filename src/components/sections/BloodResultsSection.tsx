@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { LayoutGrid, List, TrendingUp, TrendingDown, Minus, Pin, ChevronDown, ChevronUp, BarChart3 } from "lucide-react";
+import { LayoutGrid, List, TrendingUp, TrendingDown, Minus, Pin, ChevronDown, ChevronUp, BarChart3, FolderOpen, Calendar, MapPin } from "lucide-react";
 import { useVaultStore } from "@/store/vaultStore";
 import { useAuth } from "@/hooks/useAuth";
 import { getBloodInsight } from "@/lib/insights";
@@ -47,8 +47,9 @@ interface MarkerGroup {
 }
 
 const BloodResultsSection = ({ pinnedIds, onTogglePin }: BloodResultsSectionProps) => {
-  const [view, setView] = useState<"card" | "table" | "compare">("table");
+  const [view, setView] = useState<"panels" | "card" | "table" | "compare">("panels");
   const [expandedMarkers, setExpandedMarkers] = useState<Set<string>>(new Set());
+  const [expandedPanels, setExpandedPanels] = useState<Set<string>>(new Set());
   const bloodResults = useVaultStore((s) => s.bloodResults);
   const { profile } = useAuth();
   const sex = (profile as any)?.biological_sex as string | null;
@@ -79,10 +80,31 @@ const BloodResultsSection = ({ pinnedIds, onTogglePin }: BloodResultsSectionProp
     [markerGroups]
   );
 
+  // Group by panel (date + source/facility) for the panels view
+  const panels = useMemo(() => {
+    const groups: Record<string, { key: string; date: string; source: string; results: any[] }> = {};
+    bloodResults.forEach((r) => {
+      const date = r.date || "Unknown date";
+      const source = r.source || "Unknown source";
+      const key = `${date}__${source}`;
+      if (!groups[key]) groups[key] = { key, date, source, results: [] };
+      groups[key].results.push(r);
+    });
+    return Object.values(groups).sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+  }, [bloodResults]);
+
   const toggleExpand = (marker: string) => {
     setExpandedMarkers((prev) => {
       const next = new Set(prev);
       if (next.has(marker)) next.delete(marker); else next.add(marker);
+      return next;
+    });
+  };
+
+  const togglePanel = (key: string) => {
+    setExpandedPanels((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key); else next.add(key);
       return next;
     });
   };
@@ -121,6 +143,9 @@ const BloodResultsSection = ({ pinnedIds, onTogglePin }: BloodResultsSectionProp
           <p className="text-sm text-muted-foreground mt-2">Extracted biomarkers from uploaded lab reports</p>
         </div>
         <div className="flex gap-1 bg-muted rounded-lg p-0.5">
+          <button onClick={() => setView("panels")} className={`p-1.5 rounded ${view === "panels" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`} title="Group by test panel">
+            <FolderOpen className="w-4 h-4" />
+          </button>
           <button onClick={() => setView("card")} className={`p-1.5 rounded ${view === "card" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}>
             <LayoutGrid className="w-4 h-4" />
           </button>
@@ -135,7 +160,69 @@ const BloodResultsSection = ({ pinnedIds, onTogglePin }: BloodResultsSectionProp
         </div>
       </div>
 
-      {view === "compare" ? (
+      {view === "panels" ? (
+        /* Panels View — grouped by date + source */
+        <div className="space-y-3">
+          <p className="text-sm text-muted-foreground">{panels.length} test panel{panels.length !== 1 ? "s" : ""} from your uploads. Click to expand.</p>
+          {panels.map((panel) => {
+            const isOpen = expandedPanels.has(panel.key);
+            const flaggedCount = panel.results.filter((r) => r.status === "flagged" || r.status === "critical").length;
+            return (
+              <div key={panel.key} className="bg-card border border-border rounded-xl overflow-hidden">
+                <button
+                  onClick={() => togglePanel(panel.key)}
+                  className="w-full flex items-center justify-between p-4 hover:bg-muted/40 transition-colors text-left"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <FolderOpen className="w-4 h-4 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-foreground">
+                        {panel.results.length} marker{panel.results.length !== 1 ? "s" : ""}
+                        {flaggedCount > 0 && (
+                          <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                            {flaggedCount} flagged
+                          </span>
+                        )}
+                      </p>
+                      <p className="text-xs text-muted-foreground flex items-center gap-2 mt-0.5">
+                        <span className="inline-flex items-center gap-1"><Calendar className="w-3 h-3" />{panel.date}</span>
+                        <span className="inline-flex items-center gap-1"><MapPin className="w-3 h-3" />{panel.source}</span>
+                      </p>
+                    </div>
+                  </div>
+                  {isOpen ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+                </button>
+                {isOpen && (
+                  <div className="border-t border-border divide-y divide-border/60">
+                    {panel.results.map((r) => (
+                      <div key={r.id} className={`flex items-center justify-between p-4 border-l-4 ${statusColors[r.status].border}`}>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm text-foreground font-medium">{r.marker}</p>
+                          <p className="text-[11px] text-muted-foreground italic mt-0.5">{getBloodInsight(r.status, r.trend)}</p>
+                        </div>
+                        <div className="flex items-center gap-4 shrink-0">
+                          <div className="text-right">
+                            <p className="text-sm text-foreground">{r.value} <span className="text-xs text-muted-foreground">{r.unit}</span></p>
+                            {r.range && <p className="text-[10px] text-muted-foreground">Range: {r.range}</p>}
+                          </div>
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full border ${statusColors[r.status].badge}`}>{r.status}</span>
+                          {onTogglePin && (
+                            <button onClick={() => onTogglePin(r.id)} className={`p-1 rounded hover:bg-muted ${pinnedIds?.has(r.id) ? "text-primary" : "text-muted-foreground/50"}`}>
+                              <Pin className="w-3 h-3" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      ) : view === "compare" ? (
         /* Compare Timeline View */
         <div className="space-y-6">
           <p className="text-sm text-muted-foreground">Markers with multiple results over time</p>
