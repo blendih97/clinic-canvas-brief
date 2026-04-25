@@ -80,6 +80,7 @@ const MediaSection = ({ onRequestRecords, onUpload }: { onRequestRecords?: () =>
         date: doc.date,
         country: doc.country,
         fileUrl: doc.fileUrl,
+        filePath: doc.filePath,
       });
     });
 
