@@ -18,6 +18,7 @@ interface MediaItem {
   date: string;
   country: string;
   fileUrl?: string;
+  filePath?: string;
 }
 
 const countryFlags: Record<string, string> = { UAE: "🇦🇪", UK: "🇬🇧", Qatar: "🇶🇦", Switzerland: "🇨🇭", USA: "🇺🇸" };
