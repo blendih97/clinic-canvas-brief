@@ -11,8 +11,12 @@ export interface TemplateEntry {
 
 import { template as recordRequest } from './record-request.tsx'
 import { template as familyInvite } from './family-invite.tsx'
+import { template as clinicianUpload } from './clinician-upload.tsx'
+import { template as documentProcessed } from './document-processed.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'record-request': recordRequest,
   'family-invite': familyInvite,
+  'clinician-upload': clinicianUpload,
+  'document-processed': documentProcessed,
 }
