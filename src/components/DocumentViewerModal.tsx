@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, FileText, Download, Share2, Globe, Languages, Loader2, AlertCircle, RefreshCw } from "lucide-react";
+import { X, FileText, Download, Share2, Globe, Languages, Loader2, AlertCircle, RefreshCw, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
 import type { Document } from "@/store/vaultStore";
 import { useVaultStore } from "@/store/vaultStore";
 import { supabase } from "@/integrations/supabase/client";
