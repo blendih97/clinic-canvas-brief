@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Play, Image, Upload, FileText, Search, Download, Share2, X, Film, Camera, Heart, Zap } from "lucide-react";
 import { useVaultStore } from "@/store/vaultStore";
 import { supabase } from "@/integrations/supabase/client";
