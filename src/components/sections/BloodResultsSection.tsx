@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { LayoutGrid, List, TrendingUp, TrendingDown, Minus, Pin, ChevronDown, ChevronUp, BarChart3 } from "lucide-react";
+import { LayoutGrid, List, TrendingUp, TrendingDown, Minus, Pin, ChevronDown, ChevronUp, BarChart3, FolderOpen, Calendar, MapPin } from "lucide-react";
 import { useVaultStore } from "@/store/vaultStore";
 import { useAuth } from "@/hooks/useAuth";
 import { getBloodInsight } from "@/lib/insights";
