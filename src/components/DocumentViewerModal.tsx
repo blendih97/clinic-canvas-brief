@@ -481,10 +481,16 @@ const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
                     disabled={isReprocessing}
                     className="flex-1 px-3 py-2 bg-muted border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-40"
                   >
-                    {SUPPORTED_LANGUAGES.map((l) => (
+                    {originalLangCode && (
+                      <option value={originalLangCode}>
+                        Original{originalLangName ? ` — ${originalLangName}` : ""}
+                      </option>
+                    )}
+                    {SUPPORTED_LANGUAGES.filter((l) => l.code !== originalLangCode).map((l) => (
                       <option key={l.code} value={l.code}>{l.name}</option>
                     ))}
                   </select>
+                  {isReprocessing && <Loader2 className="w-4 h-4 text-primary animate-spin self-center" />}
                   {isReprocessing && <Loader2 className="w-4 h-4 text-primary animate-spin self-center" />}
                 </div>
                 <p className="text-[10px] text-muted-foreground">
