@@ -82,15 +82,29 @@ const BloodResultsSection = ({ pinnedIds, onTogglePin }: BloodResultsSectionProp
 
   // Group by panel (date + source/facility) for the panels view
   const panels = useMemo(() => {
-    const groups: Record<string, { key: string; date: string; source: string; results: any[] }> = {};
+    const groups: Record<string, { key: string; date: string; source: string; results: any[]; isOther: boolean }> = {};
     bloodResults.forEach((r) => {
-      const date = r.date || "Unknown date";
-      const source = r.source || "Unknown source";
-      const key = `${date}__${source}`;
-      if (!groups[key]) groups[key] = { key, date, source, results: [] };
+      const hasDate = !!(r.date && String(r.date).trim());
+      const hasSource = !!(r.source && String(r.source).trim());
+      const isOther = !hasDate && !hasSource;
+      const key = isOther ? "__other__" : `${r.date || "Unknown date"}__${r.source || "Unknown source"}`;
+      if (!groups[key]) {
+        groups[key] = {
+          key,
+          date: isOther ? "" : (r.date || "Unknown date"),
+          source: isOther ? "Other" : (r.source || "Unknown source"),
+          results: [],
+          isOther,
+        };
+      }
       groups[key].results.push(r);
     });
-    return Object.values(groups).sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+    // Sort: dated panels first (newest first), "Other" last
+    return Object.values(groups).sort((a, b) => {
+      if (a.isOther) return 1;
+      if (b.isOther) return -1;
+      return (b.date || "").localeCompare(a.date || "");
+    });
   }, [bloodResults]);
 
   const toggleExpand = (marker: string) => {
@@ -187,7 +201,7 @@ const BloodResultsSection = ({ pinnedIds, onTogglePin }: BloodResultsSectionProp
                         )}
                       </p>
                       <p className="text-xs text-muted-foreground flex items-center gap-2 mt-0.5">
-                        <span className="inline-flex items-center gap-1"><Calendar className="w-3 h-3" />{panel.date}</span>
+                        {panel.date && <span className="inline-flex items-center gap-1"><Calendar className="w-3 h-3" />{panel.date}</span>}
                         <span className="inline-flex items-center gap-1"><MapPin className="w-3 h-3" />{panel.source}</span>
                       </p>
                     </div>
