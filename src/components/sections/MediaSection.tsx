@@ -305,7 +305,7 @@ const MediaSection = ({ onRequestRecords, onUpload }: { onRequestRecords?: () =>
       {/* Media Viewer Modal */}
       {selectedMedia && (
         <MediaViewerModal
-          item={selectedMedia}
+          item={{ ...selectedMedia, fileUrl: resolveUrl(selectedMedia) || selectedMedia.fileUrl }}
           onClose={() => setSelectedMedia(null)}
           onShare={() => handleShare(selectedMedia)}
           sharing={sharing}
