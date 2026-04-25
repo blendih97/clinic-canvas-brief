@@ -1,6 +1,6 @@
 // Renders the v2 Patient Summary PDF using @react-pdf/renderer (Deno-compatible).
-// Milestone 1: Page 1 (Patient Summary).
-// Milestone 2: Page 2+ (Visit History) — one page per visit, repeating header/footer.
+// Milestone 1: Patient Summary. Milestone 2: Visit History. Milestone 3: Meds, Blood, Imaging.
+// Milestone 4: RTL + CJK font fallback, typography polish, GET keep-warm probe.
 
 import React from "npm:react@18.3.1";
 // @ts-ignore - Deno resolves npm specifiers
@@ -12,6 +12,7 @@ const corsHeaders = {
 };
 
 // ---------- Font registration (Google Fonts TTFs, Unicode-safe) ----------
+// Latin display + body
 Font.register({
   family: "Cormorant Garamond",
   fonts: [
@@ -29,8 +30,88 @@ Font.register({
   ],
 });
 
+// Arabic (covers ar, ur, fa) — Noto Naskh Arabic
+Font.register({
+  family: "Noto Naskh Arabic",
+  fonts: [
+    { src: "https://fonts.gstatic.com/s/notonaskharabic/v34/RrQ5bpV-9Dd1b1OAGA6M9PkyDuVBeLU.ttf", fontWeight: 400 },
+    { src: "https://fonts.gstatic.com/s/notonaskharabic/v34/RrQ5bpV-9Dd1b1OAGA6M9PkyDuVBeLU.ttf", fontWeight: 700 },
+  ],
+});
+
+// Hebrew — Noto Sans Hebrew
+Font.register({
+  family: "Noto Sans Hebrew",
+  fonts: [
+    { src: "https://fonts.gstatic.com/s/notosanshebrew/v46/or3HQ7v33eiDljA1IufXTtVf7V6RvEEdhQlk0LlGxCyaeNKYZC0sqk3xXGiXd4qtoiJltutR2g.ttf", fontWeight: 400 },
+  ],
+});
+
+// Mandarin Chinese — Noto Sans SC
+Font.register({
+  family: "Noto Sans SC",
+  fonts: [
+    { src: "https://fonts.gstatic.com/s/notosanssc/v36/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYxNbPzS5HE.ttf", fontWeight: 400 },
+  ],
+});
+
+// Japanese — Noto Sans JP
+Font.register({
+  family: "Noto Sans JP",
+  fonts: [
+    { src: "https://fonts.gstatic.com/s/notosansjp/v53/-F6jfjtqLzI2JPCgQBnw7HFyzSD-AsregP8VFBEj75vY0rw-oME.ttf", fontWeight: 400 },
+  ],
+});
+
+// Korean — Noto Sans KR
+Font.register({
+  family: "Noto Sans KR",
+  fonts: [
+    { src: "https://fonts.gstatic.com/s/notosanskr/v36/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzuoyeLTq8H4hfeE.ttf", fontWeight: 400 },
+  ],
+});
+
+// Devanagari (Hindi, Marathi) — Noto Sans Devanagari
+Font.register({
+  family: "Noto Sans Devanagari",
+  fonts: [
+    { src: "https://fonts.gstatic.com/s/notosansdevanagari/v26/TuGoUUFzXI5FBtUq5a8bjKYTZjtRU6Sgv3NaV_SNmI0b8QQCQmHn6B2OHjbL_08AlXQly-AzoFoW4Ow.ttf", fontWeight: 400 },
+  ],
+});
+
 // Disable hyphenation — letters were splitting in old export.
 Font.registerHyphenationCallback((word: string) => [word]);
+
+// ---------- Per-language font selection ----------
+// Returns { display, body } font families. Falls back to Latin defaults.
+function fontsForLanguage(language: string): { display: string; body: string } {
+  const lang = (language || "en").toLowerCase();
+  // RTL Arabic-script: ar, ur, fa
+  if (lang === "ar" || lang === "ur" || lang === "fa") {
+    return { display: "Noto Naskh Arabic", body: "Noto Naskh Arabic" };
+  }
+  if (lang === "he") {
+    return { display: "Noto Sans Hebrew", body: "Noto Sans Hebrew" };
+  }
+  if (lang === "zh") {
+    return { display: "Noto Sans SC", body: "Noto Sans SC" };
+  }
+  if (lang === "ja") {
+    return { display: "Noto Sans JP", body: "Noto Sans JP" };
+  }
+  if (lang === "ko") {
+    return { display: "Noto Sans KR", body: "Noto Sans KR" };
+  }
+  if (lang === "hi" || lang === "mr") {
+    return { display: "Noto Sans Devanagari", body: "Noto Sans Devanagari" };
+  }
+  return { display: "Cormorant Garamond", body: "DM Sans" };
+}
+
+function isRtlLanguage(language: string): boolean {
+  const lang = (language || "en").toLowerCase();
+  return lang === "ar" || lang === "ur" || lang === "fa" || lang === "he";
+}
 
 // ---------- Theme ----------
 const COLORS = {
