@@ -1,6 +1,6 @@
 // Renders the v2 Patient Summary PDF using @react-pdf/renderer (Deno-compatible).
-// Milestone 1: Page 1 (Patient Summary).
-// Milestone 2: Page 2+ (Visit History) — one page per visit, repeating header/footer.
+// Milestone 1: Patient Summary. Milestone 2: Visit History. Milestone 3: Meds, Blood, Imaging.
+// Milestone 4: RTL + CJK font fallback, typography polish, GET keep-warm probe.
 
 import React from "npm:react@18.3.1";
 // @ts-ignore - Deno resolves npm specifiers
@@ -12,6 +12,7 @@ const corsHeaders = {
 };
 
 // ---------- Font registration (Google Fonts TTFs, Unicode-safe) ----------
+// Latin display + body
 Font.register({
   family: "Cormorant Garamond",
   fonts: [
@@ -29,8 +30,88 @@ Font.register({
   ],
 });
 
+// Arabic (covers ar, ur, fa) — Noto Naskh Arabic
+Font.register({
+  family: "Noto Naskh Arabic",
+  fonts: [
+    { src: "https://fonts.gstatic.com/s/notonaskharabic/v34/RrQ5bpV-9Dd1b1OAGA6M9PkyDuVBeLU.ttf", fontWeight: 400 },
+    { src: "https://fonts.gstatic.com/s/notonaskharabic/v34/RrQ5bpV-9Dd1b1OAGA6M9PkyDuVBeLU.ttf", fontWeight: 700 },
+  ],
+});
+
+// Hebrew — Noto Sans Hebrew
+Font.register({
+  family: "Noto Sans Hebrew",
+  fonts: [
+    { src: "https://fonts.gstatic.com/s/notosanshebrew/v46/or3HQ7v33eiDljA1IufXTtVf7V6RvEEdhQlk0LlGxCyaeNKYZC0sqk3xXGiXd4qtoiJltutR2g.ttf", fontWeight: 400 },
+  ],
+});
+
+// Mandarin Chinese — Noto Sans SC
+Font.register({
+  family: "Noto Sans SC",
+  fonts: [
+    { src: "https://fonts.gstatic.com/s/notosanssc/v36/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYxNbPzS5HE.ttf", fontWeight: 400 },
+  ],
+});
+
+// Japanese — Noto Sans JP
+Font.register({
+  family: "Noto Sans JP",
+  fonts: [
+    { src: "https://fonts.gstatic.com/s/notosansjp/v53/-F6jfjtqLzI2JPCgQBnw7HFyzSD-AsregP8VFBEj75vY0rw-oME.ttf", fontWeight: 400 },
+  ],
+});
+
+// Korean — Noto Sans KR
+Font.register({
+  family: "Noto Sans KR",
+  fonts: [
+    { src: "https://fonts.gstatic.com/s/notosanskr/v36/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzuoyeLTq8H4hfeE.ttf", fontWeight: 400 },
+  ],
+});
+
+// Devanagari (Hindi, Marathi) — Noto Sans Devanagari
+Font.register({
+  family: "Noto Sans Devanagari",
+  fonts: [
+    { src: "https://fonts.gstatic.com/s/notosansdevanagari/v26/TuGoUUFzXI5FBtUq5a8bjKYTZjtRU6Sgv3NaV_SNmI0b8QQCQmHn6B2OHjbL_08AlXQly-AzoFoW4Ow.ttf", fontWeight: 400 },
+  ],
+});
+
 // Disable hyphenation — letters were splitting in old export.
 Font.registerHyphenationCallback((word: string) => [word]);
+
+// ---------- Per-language font selection ----------
+// Returns { display, body } font families. Falls back to Latin defaults.
+function fontsForLanguage(language: string): { display: string; body: string } {
+  const lang = (language || "en").toLowerCase();
+  // RTL Arabic-script: ar, ur, fa
+  if (lang === "ar" || lang === "ur" || lang === "fa") {
+    return { display: "Noto Naskh Arabic", body: "Noto Naskh Arabic" };
+  }
+  if (lang === "he") {
+    return { display: "Noto Sans Hebrew", body: "Noto Sans Hebrew" };
+  }
+  if (lang === "zh") {
+    return { display: "Noto Sans SC", body: "Noto Sans SC" };
+  }
+  if (lang === "ja") {
+    return { display: "Noto Sans JP", body: "Noto Sans JP" };
+  }
+  if (lang === "ko") {
+    return { display: "Noto Sans KR", body: "Noto Sans KR" };
+  }
+  if (lang === "hi" || lang === "mr") {
+    return { display: "Noto Sans Devanagari", body: "Noto Sans Devanagari" };
+  }
+  return { display: "Cormorant Garamond", body: "DM Sans" };
+}
+
+function isRtlLanguage(language: string): boolean {
+  const lang = (language || "en").toLowerCase();
+  return lang === "ar" || lang === "ur" || lang === "fa" || lang === "he";
+}
 
 // ---------- Theme ----------
 const COLORS = {
@@ -43,235 +124,289 @@ const COLORS = {
   amber: "#C9853A",
 };
 
-const styles = StyleSheet.create({
-  page: {
-    backgroundColor: COLORS.paper,
-    color: COLORS.ink,
-    fontFamily: "DM Sans",
-    fontSize: 10,
-    paddingTop: 56,
-    paddingBottom: 56,
-    paddingHorizontal: 56,
-    lineHeight: 1.5,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderBottomWidth: 0.5,
-    borderBottomColor: COLORS.hairline,
-    paddingBottom: 10,
-    marginBottom: 22,
-  },
-  headerBrand: {
-    fontFamily: "Cormorant Garamond",
-    fontSize: 18,
-    color: COLORS.ink,
-    letterSpacing: 0,
-  },
-  headerBrandAccent: { color: COLORS.gold },
-  headerCentre: { fontSize: 9, color: COLORS.muted },
-  headerRight: { fontSize: 9, color: COLORS.muted },
-  footer: {
-    position: "absolute",
-    bottom: 28,
-    left: 56,
-    right: 56,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    fontSize: 8,
-    color: COLORS.muted,
-    borderTopWidth: 0.5,
-    borderTopColor: COLORS.hairline,
-    paddingTop: 8,
-  },
-  patientName: {
-    fontFamily: "Cormorant Garamond",
-    fontSize: 30,
-    fontWeight: 600,
-    color: COLORS.ink,
-    marginBottom: 4,
-  },
-  patientMeta: { fontSize: 10, color: COLORS.muted, marginBottom: 18 },
-  ataGlance: {
-    fontFamily: "Cormorant Garamond",
-    fontSize: 13,
-    color: COLORS.ink,
-    backgroundColor: COLORS.goldSoft,
-    padding: 12,
-    borderLeftWidth: 2,
-    borderLeftColor: COLORS.gold,
-    marginBottom: 22,
-  },
-  sectionHeading: {
-    fontFamily: "Cormorant Garamond",
-    fontSize: 14,
-    fontWeight: 600,
-    color: COLORS.ink,
-    marginBottom: 8,
-    marginTop: 4,
-  },
-  twoCol: { flexDirection: "row", gap: 18, marginBottom: 18 },
-  col: { flex: 1 },
-  bulletRow: { flexDirection: "row", marginBottom: 4 },
-  bulletDot: { width: 10, color: COLORS.gold, fontSize: 10, lineHeight: 1.5 },
-  bulletText: { flex: 1, fontSize: 10, color: COLORS.ink, lineHeight: 1.5 },
-  emptyText: { fontSize: 9, color: COLORS.muted, fontStyle: "italic" },
-  highlightsBlock: { marginTop: 4, marginBottom: 18 },
-  highlightRow: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    paddingVertical: 8,
-    paddingHorizontal: 10,
-    borderLeftWidth: 2,
-    borderLeftColor: COLORS.amber,
-    backgroundColor: "#FCFAF5",
-    marginBottom: 6,
-  },
-  highlightDot: { marginTop: 5, marginRight: 8 },
-  highlightText: {
-    flex: 1,
-    fontSize: 10,
-    color: COLORS.ink,
-    lineHeight: 1.45,
-  },
-  disclaimer: {
-    fontSize: 8,
-    color: COLORS.muted,
-    lineHeight: 1.5,
-    marginTop: 18,
-    paddingTop: 10,
-    borderTopWidth: 0.5,
-    borderTopColor: COLORS.hairline,
-  },
-  // Visit History
-  pageTitle: {
-    fontFamily: "Cormorant Garamond",
-    fontSize: 24,
-    fontWeight: 600,
-    color: COLORS.ink,
-    marginBottom: 4,
-  },
-  pageSubtitle: { fontSize: 10, color: COLORS.muted, marginBottom: 18 },
-  visitCard: {
-    borderWidth: 0.5,
-    borderColor: COLORS.hairline,
-    borderRadius: 4,
-    padding: 14,
-    marginBottom: 14,
-  },
-  visitHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 8,
-    paddingBottom: 8,
-    borderBottomWidth: 0.5,
-    borderBottomColor: COLORS.hairline,
-  },
-  visitDate: {
-    fontFamily: "Cormorant Garamond",
-    fontSize: 14,
-    fontWeight: 600,
-    color: COLORS.ink,
-  },
-  visitFacility: { fontSize: 9, color: COLORS.muted, marginTop: 1 },
-  visitFieldLabel: {
-    fontSize: 8,
-    color: COLORS.gold,
-    textTransform: "uppercase",
-    letterSpacing: 0.6,
-    marginTop: 8,
-    marginBottom: 2,
-  },
-  visitFieldValue: {
-    fontSize: 10,
-    color: COLORS.ink,
-    lineHeight: 1.5,
-  },
-  // M3
-  pageTitleBlock: { marginBottom: 18 },
-  table: {
-    borderWidth: 0.5,
-    borderColor: COLORS.hairline,
-    borderRadius: 4,
-    overflow: "hidden",
-    marginBottom: 14,
-  },
-  tableHeader: {
-    flexDirection: "row",
-    backgroundColor: COLORS.goldSoft,
-    paddingVertical: 7,
-    paddingHorizontal: 8,
-    borderBottomWidth: 0.5,
-    borderBottomColor: COLORS.hairline,
-  },
-  tableHeaderCell: {
-    fontSize: 8,
-    color: COLORS.gold,
-    textTransform: "uppercase",
-    letterSpacing: 0.6,
-    fontWeight: 700,
-  },
-  tableRow: {
-    flexDirection: "row",
-    paddingVertical: 7,
-    paddingHorizontal: 8,
-    borderBottomWidth: 0.5,
-    borderBottomColor: COLORS.hairline,
-  },
-  tableRowZebra: { backgroundColor: "#FBF9F4" },
-  tableRowLast: { borderBottomWidth: 0 },
-  tableCell: {
-    fontSize: 9.5,
-    color: COLORS.ink,
-    lineHeight: 1.4,
-  },
-  statusPill: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  statusGlyph: {
-    fontSize: 9,
-    fontWeight: 700,
-    width: 10,
-    color: COLORS.ink,
-  },
-  statusLabel: {
-    fontSize: 9,
-    color: COLORS.ink,
-  },
-  imagingCard: {
-    borderWidth: 0.5,
-    borderColor: COLORS.hairline,
-    borderRadius: 4,
-    padding: 12,
-    marginBottom: 10,
-  },
-  imagingHeaderRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 6,
-  },
-  imagingTitle: {
-    fontFamily: "Cormorant Garamond",
-    fontSize: 13,
-    fontWeight: 600,
-    color: COLORS.ink,
-  },
-  imagingMeta: { fontSize: 9, color: COLORS.muted, marginTop: 1 },
-  imagingFindingLabel: {
-    fontSize: 8,
-    color: COLORS.gold,
-    textTransform: "uppercase",
-    letterSpacing: 0.6,
-    marginTop: 6,
-    marginBottom: 2,
-  },
-  imagingFindingText: { fontSize: 10, color: COLORS.ink, lineHeight: 1.5 },
-});
+// Build styles for a given language. Swaps fontFamily + RTL direction so
+// Arabic/Hebrew/CJK render with the correct script and reading direction.
+function buildStyles(language: string) {
+  const { display, body } = fontsForLanguage(language);
+  const rtl = isRtlLanguage(language);
+  const dir = rtl ? "rtl" : "ltr";
+  const startAlign = rtl ? "right" : "left";
+
+  return StyleSheet.create({
+    page: {
+      backgroundColor: COLORS.paper,
+      color: COLORS.ink,
+      fontFamily: body,
+      fontSize: 10,
+      paddingTop: 56,
+      paddingBottom: 56,
+      paddingHorizontal: 56,
+      lineHeight: 1.55,
+      textAlign: startAlign as any,
+    },
+    header: {
+      flexDirection: rtl ? "row-reverse" : "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      borderBottomWidth: 0.5,
+      borderBottomColor: COLORS.hairline,
+      paddingBottom: 10,
+      marginBottom: 22,
+    },
+    headerBrand: {
+      fontFamily: display,
+      fontSize: 18,
+      color: COLORS.ink,
+      letterSpacing: 0,
+    },
+    headerBrandAccent: { color: COLORS.gold },
+    headerCentre: { fontSize: 9, color: COLORS.muted },
+    headerRight: { fontSize: 9, color: COLORS.muted },
+    footer: {
+      position: "absolute",
+      bottom: 28,
+      left: 56,
+      right: 56,
+      flexDirection: rtl ? "row-reverse" : "row",
+      justifyContent: "space-between",
+      fontSize: 8,
+      color: COLORS.muted,
+      borderTopWidth: 0.5,
+      borderTopColor: COLORS.hairline,
+      paddingTop: 8,
+    },
+    patientName: {
+      fontFamily: display,
+      fontSize: 30,
+      fontWeight: 600,
+      color: COLORS.ink,
+      marginBottom: 4,
+      textAlign: startAlign as any,
+    },
+    patientMeta: {
+      fontSize: 10,
+      color: COLORS.muted,
+      marginBottom: 18,
+      textAlign: startAlign as any,
+    },
+    ataGlance: {
+      fontFamily: display,
+      fontSize: 13,
+      color: COLORS.ink,
+      backgroundColor: COLORS.goldSoft,
+      padding: 12,
+      borderLeftWidth: rtl ? 0 : 2,
+      borderRightWidth: rtl ? 2 : 0,
+      borderLeftColor: COLORS.gold,
+      borderRightColor: COLORS.gold,
+      marginBottom: 22,
+      lineHeight: 1.5,
+      textAlign: startAlign as any,
+    },
+    sectionHeading: {
+      fontFamily: display,
+      fontSize: 14,
+      fontWeight: 600,
+      color: COLORS.ink,
+      marginBottom: 8,
+      marginTop: 4,
+      textAlign: startAlign as any,
+    },
+    twoCol: { flexDirection: rtl ? "row-reverse" : "row", gap: 18, marginBottom: 18 },
+    col: { flex: 1 },
+    bulletRow: {
+      flexDirection: rtl ? "row-reverse" : "row",
+      marginBottom: 4,
+    },
+    bulletDot: { width: 10, color: COLORS.gold, fontSize: 10, lineHeight: 1.5 },
+    bulletText: {
+      flex: 1,
+      fontSize: 10,
+      color: COLORS.ink,
+      lineHeight: 1.5,
+      textAlign: startAlign as any,
+    },
+    emptyText: { fontSize: 9, color: COLORS.muted, fontStyle: "italic" },
+    highlightsBlock: { marginTop: 4, marginBottom: 18 },
+    highlightRow: {
+      flexDirection: rtl ? "row-reverse" : "row",
+      alignItems: "flex-start",
+      paddingVertical: 8,
+      paddingHorizontal: 10,
+      borderLeftWidth: rtl ? 0 : 2,
+      borderRightWidth: rtl ? 2 : 0,
+      borderLeftColor: COLORS.amber,
+      borderRightColor: COLORS.amber,
+      backgroundColor: "#FCFAF5",
+      marginBottom: 6,
+    },
+    highlightDot: { marginTop: 5, marginHorizontal: 8 },
+    highlightText: {
+      flex: 1,
+      fontSize: 10,
+      color: COLORS.ink,
+      lineHeight: 1.5,
+      textAlign: startAlign as any,
+    },
+    disclaimer: {
+      fontSize: 8,
+      color: COLORS.muted,
+      lineHeight: 1.55,
+      marginTop: 18,
+      paddingTop: 10,
+      borderTopWidth: 0.5,
+      borderTopColor: COLORS.hairline,
+      textAlign: startAlign as any,
+    },
+    // Visit History
+    pageTitle: {
+      fontFamily: display,
+      fontSize: 24,
+      fontWeight: 600,
+      color: COLORS.ink,
+      marginBottom: 4,
+      textAlign: startAlign as any,
+    },
+    pageSubtitle: {
+      fontSize: 10,
+      color: COLORS.muted,
+      marginBottom: 18,
+      textAlign: startAlign as any,
+    },
+    visitCard: {
+      borderWidth: 0.5,
+      borderColor: COLORS.hairline,
+      borderRadius: 4,
+      padding: 14,
+      marginBottom: 14,
+    },
+    visitHeader: {
+      flexDirection: rtl ? "row-reverse" : "row",
+      justifyContent: "space-between",
+      alignItems: "flex-start",
+      marginBottom: 8,
+      paddingBottom: 8,
+      borderBottomWidth: 0.5,
+      borderBottomColor: COLORS.hairline,
+    },
+    visitDate: {
+      fontFamily: display,
+      fontSize: 14,
+      fontWeight: 600,
+      color: COLORS.ink,
+    },
+    visitFacility: { fontSize: 9, color: COLORS.muted, marginTop: 1 },
+    visitFieldLabel: {
+      fontSize: 8,
+      color: COLORS.gold,
+      textTransform: "uppercase",
+      // CJK + RTL Naskh look terrible with letter-spacing — only apply for Latin scripts.
+      letterSpacing: rtl || /^(zh|ja|ko|hi|mr)$/.test(language) ? 0 : 0.6,
+      marginTop: 8,
+      marginBottom: 2,
+      textAlign: startAlign as any,
+    },
+    visitFieldValue: {
+      fontSize: 10,
+      color: COLORS.ink,
+      lineHeight: 1.5,
+      textAlign: startAlign as any,
+    },
+    // M3
+    pageTitleBlock: { marginBottom: 18 },
+    table: {
+      borderWidth: 0.5,
+      borderColor: COLORS.hairline,
+      borderRadius: 4,
+      overflow: "hidden",
+      marginBottom: 14,
+    },
+    tableHeader: {
+      flexDirection: rtl ? "row-reverse" : "row",
+      backgroundColor: COLORS.goldSoft,
+      paddingVertical: 7,
+      paddingHorizontal: 8,
+      borderBottomWidth: 0.5,
+      borderBottomColor: COLORS.hairline,
+    },
+    tableHeaderCell: {
+      fontSize: 8,
+      color: COLORS.gold,
+      textTransform: "uppercase",
+      letterSpacing: rtl || /^(zh|ja|ko|hi|mr)$/.test(language) ? 0 : 0.6,
+      fontWeight: 700,
+      textAlign: startAlign as any,
+    },
+    tableRow: {
+      flexDirection: rtl ? "row-reverse" : "row",
+      paddingVertical: 7,
+      paddingHorizontal: 8,
+      borderBottomWidth: 0.5,
+      borderBottomColor: COLORS.hairline,
+    },
+    tableRowZebra: { backgroundColor: "#FBF9F4" },
+    tableRowLast: { borderBottomWidth: 0 },
+    tableCell: {
+      fontSize: 9.5,
+      color: COLORS.ink,
+      lineHeight: 1.4,
+      textAlign: startAlign as any,
+    },
+    statusPill: {
+      flexDirection: rtl ? "row-reverse" : "row",
+      alignItems: "center",
+      gap: 4,
+    },
+    statusGlyph: {
+      fontSize: 9,
+      fontWeight: 700,
+      width: 10,
+      color: COLORS.ink,
+    },
+    statusLabel: {
+      fontSize: 9,
+      color: COLORS.ink,
+    },
+    imagingCard: {
+      borderWidth: 0.5,
+      borderColor: COLORS.hairline,
+      borderRadius: 4,
+      padding: 12,
+      marginBottom: 10,
+    },
+    imagingHeaderRow: {
+      flexDirection: rtl ? "row-reverse" : "row",
+      justifyContent: "space-between",
+      alignItems: "flex-start",
+      marginBottom: 6,
+    },
+    imagingTitle: {
+      fontFamily: display,
+      fontSize: 13,
+      fontWeight: 600,
+      color: COLORS.ink,
+      textAlign: startAlign as any,
+    },
+    imagingMeta: { fontSize: 9, color: COLORS.muted, marginTop: 1 },
+    imagingFindingLabel: {
+      fontSize: 8,
+      color: COLORS.gold,
+      textTransform: "uppercase",
+      letterSpacing: rtl || /^(zh|ja|ko|hi|mr)$/.test(language) ? 0 : 0.6,
+      marginTop: 6,
+      marginBottom: 2,
+      textAlign: startAlign as any,
+    },
+    imagingFindingText: {
+      fontSize: 10,
+      color: COLORS.ink,
+      lineHeight: 1.5,
+      textAlign: startAlign as any,
+    },
+  });
+}
+
+type Styles = ReturnType<typeof buildStyles>;
 
 // ---------- Types ----------
 interface VisitPayload {
@@ -396,7 +531,7 @@ const AmberDot = () =>
     h(Circle, { cx: 3, cy: 3, r: 3, fill: COLORS.amber }),
   );
 
-const Header = ({ patientName }: { patientName: string }) =>
+const Header = ({ patientName, styles }: { patientName: string; styles: Styles }) =>
   h(View, { style: styles.header, fixed: true },
     h(Text, { style: styles.headerBrand },
       "Rin",
@@ -410,13 +545,13 @@ const Header = ({ patientName }: { patientName: string }) =>
     }),
   );
 
-const Footer = ({ generatedAt }: { generatedAt: string }) =>
+const Footer = ({ generatedAt, styles }: { generatedAt: string; styles: Styles }) =>
   h(View, { style: styles.footer, fixed: true },
     h(Text, null, `Generated by RinVita · ${generatedAt}`),
     h(Text, null, "ICO ZC123014 · Not a medical device"),
   );
 
-const Bullets = ({ items, empty }: { items: string[]; empty: string }) => {
+const Bullets = ({ items, empty, styles }: { items: string[]; empty: string; styles: Styles }) => {
   if (!items || items.length === 0) {
     return h(Text, { style: styles.emptyText }, empty);
   }
@@ -430,7 +565,7 @@ const Bullets = ({ items, empty }: { items: string[]; empty: string }) => {
   );
 };
 
-const PatientSummaryPage = (data: PatientPayload) => {
+const PatientSummaryPage = (data: PatientPayload, styles: Styles) => {
   const { patient, currentMedications, allergies, highlights, strings, generatedAt } = data;
 
   const meta = [
@@ -448,18 +583,18 @@ const PatientSummaryPage = (data: PatientPayload) => {
   );
 
   return h(Page, { size: "A4", style: styles.page },
-    h(Header, { patientName: patient.fullName }),
+    h(Header, { patientName: patient.fullName, styles }),
     h(Text, { style: styles.patientName }, patient.fullName),
     meta ? h(Text, { style: styles.patientMeta }, meta) : null,
     h(Text, { style: styles.ataGlance }, strings.atAGlance),
     h(View, { style: styles.twoCol },
       h(View, { style: styles.col },
         h(Text, { style: styles.sectionHeading }, strings.currentMedications),
-        h(Bullets, { items: medItems, empty: strings.none }),
+        h(Bullets, { items: medItems, empty: strings.none, styles }),
       ),
       h(View, { style: styles.col },
         h(Text, { style: styles.sectionHeading }, strings.knownAllergies),
-        h(Bullets, { items: allergyItems, empty: strings.none }),
+        h(Bullets, { items: allergyItems, empty: strings.none, styles }),
       ),
     ),
     patient.chronicConditions
@@ -468,23 +603,24 @@ const PatientSummaryPage = (data: PatientPayload) => {
           h(Text, { style: styles.bulletText }, patient.chronicConditions),
         )
       : null,
-    h(Text, { style: styles.sectionHeading }, strings.clinicalHighlights),
+    // Keep heading + at least 2 lines together to avoid orphan headings.
+    h(Text, { style: styles.sectionHeading, minPresenceAhead: 30 } as any, strings.clinicalHighlights),
     h(View, { style: styles.highlightsBlock },
       highlights.length === 0
         ? h(Text, { style: styles.emptyText }, strings.none)
         : highlights.slice(0, 5).map((highlight, i) =>
-            h(View, { key: i, style: styles.highlightRow },
+            h(View, { key: i, style: styles.highlightRow, wrap: false },
               h(View, { style: styles.highlightDot }, h(AmberDot, null)),
               h(Text, { style: styles.highlightText }, highlight),
             ),
           ),
     ),
     h(Text, { style: styles.disclaimer }, strings.disclaimer),
-    h(Footer, { generatedAt }),
+    h(Footer, { generatedAt, styles }),
   );
 };
 
-const VisitCard = ({ visit, strings }: { visit: VisitPayload; strings: PatientPayload["strings"] }) => {
+const VisitCard = ({ visit, strings, styles }: { visit: VisitPayload; strings: PatientPayload["strings"]; styles: Styles }) => {
   const dateText = visit.visitDate || "—";
   const facilityText = [visit.facilityName, visit.facilityCountry].filter(Boolean).join(" · ");
 
@@ -501,7 +637,7 @@ const VisitCard = ({ visit, strings }: { visit: VisitPayload; strings: PatientPa
     ) : null,
     visit.investigationsPerformed && visit.investigationsPerformed.length > 0 ? h(View, null,
       h(Text, { style: styles.visitFieldLabel }, strings.investigations),
-      h(Bullets, { items: visit.investigationsPerformed, empty: strings.none }),
+      h(Bullets, { items: visit.investigationsPerformed, empty: strings.none, styles }),
     ) : null,
     visit.findings ? h(View, null,
       h(Text, { style: styles.visitFieldLabel }, strings.findings),
@@ -513,31 +649,31 @@ const VisitCard = ({ visit, strings }: { visit: VisitPayload; strings: PatientPa
     ) : null,
     visit.medicationsPrescribed && visit.medicationsPrescribed.length > 0 ? h(View, null,
       h(Text, { style: styles.visitFieldLabel }, strings.medicationsPrescribed),
-      h(Bullets, { items: visit.medicationsPrescribed, empty: strings.none }),
+      h(Bullets, { items: visit.medicationsPrescribed, empty: strings.none, styles }),
     ) : null,
     visit.followUpRecommendations && visit.followUpRecommendations.length > 0 ? h(View, null,
       h(Text, { style: styles.visitFieldLabel }, strings.followUp),
-      h(Bullets, { items: visit.followUpRecommendations, empty: strings.none }),
+      h(Bullets, { items: visit.followUpRecommendations, empty: strings.none, styles }),
     ) : null,
   );
 };
 
-const VisitHistoryPage = (data: PatientPayload) => {
+const VisitHistoryPage = (data: PatientPayload, styles: Styles) => {
   const { visits = [], patient, strings, generatedAt } = data;
 
   // Sort newest first by visit_date string (ISO-comparable when present)
   const sorted = [...visits].sort((a, b) => (b.visitDate || "").localeCompare(a.visitDate || ""));
 
   return h(Page, { size: "A4", style: styles.page },
-    h(Header, { patientName: patient.fullName }),
+    h(Header, { patientName: patient.fullName, styles }),
     h(Text, { style: styles.pageTitle }, strings.visitHistory),
     h(Text, { style: styles.pageSubtitle }, strings.visitHistorySubtitle),
     sorted.length === 0
       ? h(Text, { style: styles.emptyText }, strings.noVisits)
       : h(View, null,
-          sorted.map((v, i) => h(VisitCard, { key: i, visit: v, strings })),
+          sorted.map((v, i) => h(VisitCard, { key: i, visit: v, strings, styles })),
         ),
-    h(Footer, { generatedAt }),
+    h(Footer, { generatedAt, styles }),
   );
 };
 
@@ -564,7 +700,7 @@ function imagingStatusLabel(status: string, s: PatientPayload["strings"]): strin
   return status === "flagged" ? s.imagingFlagged : s.imagingNormal;
 }
 
-const MedicationsPage = (data: PatientPayload) => {
+const MedicationsPage = (data: PatientPayload, styles: Styles) => {
   const { patient, strings, generatedAt, medicationsTable = [] } = data;
 
   const cols = [
@@ -577,7 +713,7 @@ const MedicationsPage = (data: PatientPayload) => {
   ];
 
   return h(Page, { size: "A4", style: styles.page },
-    h(Header, { patientName: patient.fullName }),
+    h(Header, { patientName: patient.fullName, styles }),
     h(View, { style: styles.pageTitleBlock },
       h(Text, { style: styles.pageTitle }, strings.medicationsTitle),
       h(Text, { style: styles.pageSubtitle }, strings.medicationsSubtitle),
@@ -609,11 +745,11 @@ const MedicationsPage = (data: PatientPayload) => {
             );
           }),
         ),
-    h(Footer, { generatedAt }),
+    h(Footer, { generatedAt, styles }),
   );
 };
 
-const BloodResultsPage = (data: PatientPayload) => {
+const BloodResultsPage = (data: PatientPayload, styles: Styles) => {
   const { patient, strings, generatedAt, bloodTable = [] } = data;
 
   const cols = [
@@ -625,7 +761,7 @@ const BloodResultsPage = (data: PatientPayload) => {
   ];
 
   return h(Page, { size: "A4", style: styles.page },
-    h(Header, { patientName: patient.fullName }),
+    h(Header, { patientName: patient.fullName, styles }),
     h(View, { style: styles.pageTitleBlock },
       h(Text, { style: styles.pageTitle }, strings.bloodResultsTitle),
       h(Text, { style: styles.pageSubtitle }, strings.bloodResultsSubtitle),
@@ -658,11 +794,11 @@ const BloodResultsPage = (data: PatientPayload) => {
             );
           }),
         ),
-    h(Footer, { generatedAt }),
+    h(Footer, { generatedAt, styles }),
   );
 };
 
-const ImagingCard = ({ row, strings }: { row: ImagingRow; strings: PatientPayload["strings"] }) => {
+const ImagingCard = ({ row, strings, styles }: { row: ImagingRow; strings: PatientPayload["strings"]; styles: Styles }) => {
   const titleText = [row.type, row.region].filter(Boolean).join(" · ");
   const metaText = [row.date, row.facility].filter(Boolean).join(" · ");
 
@@ -684,11 +820,11 @@ const ImagingCard = ({ row, strings }: { row: ImagingRow; strings: PatientPayloa
   );
 };
 
-const ImagingPage = (data: PatientPayload) => {
+const ImagingPage = (data: PatientPayload, styles: Styles) => {
   const { patient, strings, generatedAt, imagingTable = [] } = data;
 
   return h(Page, { size: "A4", style: styles.page },
-    h(Header, { patientName: patient.fullName }),
+    h(Header, { patientName: patient.fullName, styles }),
     h(View, { style: styles.pageTitleBlock },
       h(Text, { style: styles.pageTitle }, strings.imagingTitle),
       h(Text, { style: styles.pageSubtitle }, strings.imagingSubtitle),
@@ -696,9 +832,9 @@ const ImagingPage = (data: PatientPayload) => {
     imagingTable.length === 0
       ? h(Text, { style: styles.emptyText }, strings.noImaging)
       : h(View, null,
-          imagingTable.map((row, i) => h(ImagingCard, { key: i, row, strings })),
+          imagingTable.map((row, i) => h(ImagingCard, { key: i, row, strings, styles })),
         ),
-    h(Footer, { generatedAt }),
+    h(Footer, { generatedAt, styles }),
   );
 };
 
@@ -706,6 +842,19 @@ const ImagingPage = (data: PatientPayload) => {
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
+  }
+
+  // M4: GET /functions/v1/render-export-pdf?warm=1 — keep-warm probe.
+  // Returns immediately without rendering, but keeps the isolate hot.
+  if (req.method === "GET") {
+    const url = new URL(req.url);
+    if (url.searchParams.get("warm") === "1") {
+      return new Response(
+        JSON.stringify({ ok: true, warm: true, t: Date.now() }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    return new Response("Method Not Allowed", { status: 405, headers: corsHeaders });
   }
 
   try {
@@ -718,13 +867,14 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const pages: any[] = [PatientSummaryPage(payload)];
-    // M2: Visit History (always included; shows empty-state when no visits).
-    pages.push(VisitHistoryPage(payload));
-    // M3: Medications, Blood Results, Imaging.
-    pages.push(MedicationsPage(payload));
-    pages.push(BloodResultsPage(payload));
-    pages.push(ImagingPage(payload));
+    // M4: build per-language stylesheet (fonts + RTL direction).
+    const styles = buildStyles(payload.language);
+
+    const pages: any[] = [PatientSummaryPage(payload, styles)];
+    pages.push(VisitHistoryPage(payload, styles));
+    pages.push(MedicationsPage(payload, styles));
+    pages.push(BloodResultsPage(payload, styles));
+    pages.push(ImagingPage(payload, styles));
 
     const doc = React.createElement(
       Document,

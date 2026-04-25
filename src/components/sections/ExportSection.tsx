@@ -336,10 +336,19 @@ const ExportSection = () => {
                   : "Preparing…"
                 : `Generate PDF in ${getLanguageName(language)}`}
             </button>
-            {mode === "full" && (
+            {generating && mode === "full" && (
+              <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
+                <ProgressDot active={progressPhase === "translating"} done={progressPhase === "rendering" || progressPhase === "ready"} label="Translating" />
+                <span className="text-muted-foreground/40">→</span>
+                <ProgressDot active={progressPhase === "rendering"} done={progressPhase === "ready"} label="Rendering" />
+                <span className="text-muted-foreground/40">→</span>
+                <ProgressDot active={progressPhase === "ready"} done={false} label="Ready" />
+              </div>
+            )}
+            {!generating && mode === "full" && (
               <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
                 <Sparkles className="w-3 h-3 text-primary" />
-                New export engine — Patient Summary + Visit History. Remaining sections (Blood, Imaging, Medications) still use the previous template.
+                New export engine — full Patient Summary, Visit History, Medications, Blood and Imaging in 45+ languages.
               </p>
             )}
           </div>
@@ -348,6 +357,13 @@ const ExportSection = () => {
     </div>
   );
 };
+
+const ProgressDot = ({ active, done, label }: { active: boolean; done: boolean; label: string }) => (
+  <span className={`flex items-center gap-1.5 transition-opacity ${active || done ? "opacity-100 text-foreground" : "opacity-50"}`}>
+    <span className={`w-1.5 h-1.5 rounded-full ${done ? "bg-primary" : active ? "bg-primary animate-pulse" : "bg-muted-foreground/40"}`} />
+    {label}
+  </span>
+);
 
 const Stat = ({ label, value }: { label: string; value: number }) => (
   <div className="p-3 bg-muted rounded-lg">
