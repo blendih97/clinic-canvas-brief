@@ -201,7 +201,7 @@ const BloodResultsSection = ({ pinnedIds, onTogglePin }: BloodResultsSectionProp
                         )}
                       </p>
                       <p className="text-xs text-muted-foreground flex items-center gap-2 mt-0.5">
-                        <span className="inline-flex items-center gap-1"><Calendar className="w-3 h-3" />{panel.date}</span>
+                        {panel.date && <span className="inline-flex items-center gap-1"><Calendar className="w-3 h-3" />{panel.date}</span>}
                         <span className="inline-flex items-center gap-1"><MapPin className="w-3 h-3" />{panel.source}</span>
                       </p>
                     </div>
