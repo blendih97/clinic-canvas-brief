@@ -52,7 +52,7 @@ const RequestRecordsModal = ({ open, onClose }: Props) => {
 
       if (error) throw error;
 
-      const appUrl = "https://rinvita.co.uk";
+      const appUrl = window.location.origin;
       const { error: emailError } = await supabase.functions.invoke("send-transactional-email", {
         body: {
           templateName: "record-request",
