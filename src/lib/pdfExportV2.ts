@@ -372,6 +372,61 @@ export async function generatePatientSummaryV2(input: PatientSummaryInput): Prom
     reaction: a.reaction,
   }));
 
+  // M3: full medications table (including inactive), sorted active-first then by date desc.
+  const medicationsTable = [...translated.medications]
+    .sort((a, b) => {
+      if (a.active !== b.active) return a.active ? -1 : 1;
+      return (b.date || "").localeCompare(a.date || "");
+    })
+    .map((m) => ({
+      name: m.name,
+      dose: m.dose,
+      frequency: m.frequency,
+      prescriber: m.prescriber,
+      facility: m.facility,
+      date: m.date,
+      active: m.active !== false,
+    }));
+
+  // M3: blood results — most recent value per marker.
+  const byMarker = new Map<string, typeof translated.bloodResults[number]>();
+  for (const r of translated.bloodResults) {
+    const existing = byMarker.get(r.marker);
+    if (!existing || (r.date || "").localeCompare(existing.date || "") > 0) {
+      byMarker.set(r.marker, r);
+    }
+  }
+  const bloodTable = [...byMarker.values()]
+    .sort((a, b) => {
+      // Critical → flagged → normal, then by marker name.
+      const rank: Record<string, number> = { critical: 0, flagged: 1, normal: 2 };
+      const ra = rank[a.status] ?? 3;
+      const rb = rank[b.status] ?? 3;
+      if (ra !== rb) return ra - rb;
+      return a.marker.localeCompare(b.marker);
+    })
+    .map((r) => ({
+      marker: r.marker,
+      value: r.value,
+      unit: r.unit,
+      range: r.range,
+      status: r.status,
+      date: r.date,
+    }));
+
+  // M3: deduped imaging studies.
+  const dedupedImaging = dedupeImaging(translated.imagingResults, input.imagingOverrides || []);
+  const imagingTable = dedupedImaging
+    .sort((a, b) => (b.date || "").localeCompare(a.date || ""))
+    .map((i) => ({
+      type: i.type,
+      region: i.region,
+      date: i.date,
+      facility: i.facility,
+      finding: i.finding,
+      status: i.status,
+    }));
+
   const langMeta = SUPPORTED_LANGUAGES.find((l) => l.code === language);
   const isRtl = !!langMeta?.rtl;
 
@@ -396,6 +451,9 @@ export async function generatePatientSummaryV2(input: PatientSummaryInput): Prom
     allergies,
     highlights,
     visits: visitsPayload,
+    medicationsTable,
+    bloodTable,
+    imagingTable,
     language,
     isRtl,
     generatedAt: new Date().toLocaleDateString(language === "en" ? "en-GB" : language, {
@@ -422,6 +480,34 @@ export async function generatePatientSummaryV2(input: PatientSummaryInput): Prom
       medicationsPrescribed: baseStrings.medicationsPrescribed,
       followUp: baseStrings.followUp,
       noVisits: baseStrings.noVisits,
+      medicationsTitle: baseStrings.medicationsTitle,
+      medicationsSubtitle: baseStrings.medicationsSubtitle,
+      medColName: baseStrings.medColName,
+      medColDose: baseStrings.medColDose,
+      medColFrequency: baseStrings.medColFrequency,
+      medColPrescriber: baseStrings.medColPrescriber,
+      medColStarted: baseStrings.medColStarted,
+      medColStatus: baseStrings.medColStatus,
+      medActive: baseStrings.medActive,
+      medInactive: baseStrings.medInactive,
+      noMedications: baseStrings.noMedications,
+      bloodResultsTitle: baseStrings.bloodResultsTitle,
+      bloodResultsSubtitle: baseStrings.bloodResultsSubtitle,
+      bloodColMarker: baseStrings.bloodColMarker,
+      bloodColValue: baseStrings.bloodColValue,
+      bloodColRange: baseStrings.bloodColRange,
+      bloodColStatus: baseStrings.bloodColStatus,
+      bloodColDate: baseStrings.bloodColDate,
+      bloodStatusNormal: baseStrings.bloodStatusNormal,
+      bloodStatusFlagged: baseStrings.bloodStatusFlagged,
+      bloodStatusCritical: baseStrings.bloodStatusCritical,
+      noBloodResults: baseStrings.noBloodResults,
+      imagingTitle: baseStrings.imagingTitle,
+      imagingSubtitle: baseStrings.imagingSubtitle,
+      imagingFinding: baseStrings.imagingFinding,
+      imagingNormal: baseStrings.imagingNormal,
+      imagingFlagged: baseStrings.imagingFlagged,
+      noImaging: baseStrings.noImaging,
     },
   };
 
