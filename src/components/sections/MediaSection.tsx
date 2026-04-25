@@ -254,7 +254,9 @@ const MediaSection = ({ onRequestRecords, onUpload }: { onRequestRecords?: () =>
 
       {/* Media grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {filteredItems.map((item) => (
+        {filteredItems.map((item) => {
+          const url = resolveUrl(item);
+          return (
           <button
             key={item.id}
             onClick={() => setSelectedMedia(item)}
@@ -262,8 +264,8 @@ const MediaSection = ({ onRequestRecords, onUpload }: { onRequestRecords?: () =>
           >
             {/* Thumbnail */}
             <div className="aspect-[4/3] bg-muted/50 flex items-center justify-center relative">
-              {item.fileUrl && item.fileType === "image" ? (
-                <img src={item.fileUrl} alt={item.name} className="w-full h-full object-cover" />
+              {url && item.fileType === "image" ? (
+                <img src={url} alt={item.name} className="w-full h-full object-cover" />
               ) : item.fileType === "video" ? (
                 <div className="flex flex-col items-center gap-2 text-muted-foreground">
                   <div className="w-12 h-12 rounded-full bg-foreground/10 flex items-center justify-center">
@@ -290,7 +292,8 @@ const MediaSection = ({ onRequestRecords, onUpload }: { onRequestRecords?: () =>
               </div>
             </div>
           </button>
-        ))}
+          );
+        })}
       </div>
 
       {filteredItems.length === 0 && (
