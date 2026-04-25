@@ -150,7 +150,8 @@ const MediaSection = ({ onRequestRecords, onUpload }: { onRequestRecords?: () =>
   }, [mediaItems, filter, search]);
 
   const handleShare = async (item: MediaItem) => {
-    if (!user || !item.fileUrl) return;
+    const path = item.filePath || item.fileUrl;
+    if (!user || !path) return;
     setSharing(true);
     try {
       const shareToken = crypto.randomUUID();
@@ -158,7 +159,7 @@ const MediaSection = ({ onRequestRecords, onUpload }: { onRequestRecords?: () =>
 
       const { error } = await supabase.from("media_shares").insert({
         user_id: user.id,
-        file_path: item.fileUrl,
+        file_path: path,
         token: shareToken,
         expires_at: expiresAt,
       });
