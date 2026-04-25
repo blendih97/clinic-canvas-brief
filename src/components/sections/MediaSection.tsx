@@ -40,6 +40,7 @@ const MediaSection = ({ onRequestRecords, onUpload }: { onRequestRecords?: () =>
   const [search, setSearch] = useState("");
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
   const [sharing, setSharing] = useState(false);
+  const [signedUrls, setSignedUrls] = useState<Record<string, string>>({});
 
   // Derive media items from documents and imaging results
   const mediaItems: MediaItem[] = useMemo(() => {
