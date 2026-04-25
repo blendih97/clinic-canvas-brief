@@ -541,6 +541,167 @@ const VisitHistoryPage = (data: PatientPayload) => {
   );
 };
 
+// ---------- M3: Medications, Blood Results, Imaging ----------
+
+// B&W-friendly status glyphs — convey state without relying on colour.
+function bloodStatusGlyph(status: string): string {
+  if (status === "critical") return "●";
+  if (status === "flagged") return "◐";
+  return "○";
+}
+
+function bloodStatusLabel(status: string, s: PatientPayload["strings"]): string {
+  if (status === "critical") return s.bloodStatusCritical;
+  if (status === "flagged") return s.bloodStatusFlagged;
+  return s.bloodStatusNormal;
+}
+
+function imagingStatusGlyph(status: string): string {
+  return status === "flagged" ? "◐" : "○";
+}
+
+function imagingStatusLabel(status: string, s: PatientPayload["strings"]): string {
+  return status === "flagged" ? s.imagingFlagged : s.imagingNormal;
+}
+
+const MedicationsPage = (data: PatientPayload) => {
+  const { patient, strings, generatedAt, medicationsTable = [] } = data;
+
+  const cols = [
+    { label: strings.medColName, w: 26 },
+    { label: strings.medColDose, w: 14 },
+    { label: strings.medColFrequency, w: 18 },
+    { label: strings.medColPrescriber, w: 20 },
+    { label: strings.medColStarted, w: 12 },
+    { label: strings.medColStatus, w: 10 },
+  ];
+
+  return h(Page, { size: "A4", style: styles.page },
+    h(Header, { patientName: patient.fullName }),
+    h(View, { style: styles.pageTitleBlock },
+      h(Text, { style: styles.pageTitle }, strings.medicationsTitle),
+      h(Text, { style: styles.pageSubtitle }, strings.medicationsSubtitle),
+    ),
+    medicationsTable.length === 0
+      ? h(Text, { style: styles.emptyText }, strings.noMedications)
+      : h(View, { style: styles.table },
+          h(View, { style: styles.tableHeader, fixed: true },
+            ...cols.map((c, i) =>
+              h(Text, { key: i, style: [styles.tableHeaderCell, { width: `${c.w}%` }] }, c.label),
+            ),
+          ),
+          ...medicationsTable.map((r, i) => {
+            const isLast = i === medicationsTable.length - 1;
+            const rowStyle = [
+              styles.tableRow,
+              i % 2 === 1 ? styles.tableRowZebra : null,
+              isLast ? styles.tableRowLast : null,
+            ];
+            return h(View, { key: i, style: rowStyle, wrap: false },
+              h(Text, { style: [styles.tableCell, { width: "26%" }] }, r.name || "—"),
+              h(Text, { style: [styles.tableCell, { width: "14%" }] }, r.dose || "—"),
+              h(Text, { style: [styles.tableCell, { width: "18%" }] }, r.frequency || "—"),
+              h(Text, { style: [styles.tableCell, { width: "20%" }] }, r.prescriber || "—"),
+              h(Text, { style: [styles.tableCell, { width: "12%" }] }, r.date || "—"),
+              h(Text, { style: [styles.tableCell, { width: "10%" }] },
+                r.active ? strings.medActive : strings.medInactive,
+              ),
+            );
+          }),
+        ),
+    h(Footer, { generatedAt }),
+  );
+};
+
+const BloodResultsPage = (data: PatientPayload) => {
+  const { patient, strings, generatedAt, bloodTable = [] } = data;
+
+  const cols = [
+    { label: strings.bloodColMarker, w: 28 },
+    { label: strings.bloodColValue, w: 18 },
+    { label: strings.bloodColRange, w: 22 },
+    { label: strings.bloodColStatus, w: 18 },
+    { label: strings.bloodColDate, w: 14 },
+  ];
+
+  return h(Page, { size: "A4", style: styles.page },
+    h(Header, { patientName: patient.fullName }),
+    h(View, { style: styles.pageTitleBlock },
+      h(Text, { style: styles.pageTitle }, strings.bloodResultsTitle),
+      h(Text, { style: styles.pageSubtitle }, strings.bloodResultsSubtitle),
+    ),
+    bloodTable.length === 0
+      ? h(Text, { style: styles.emptyText }, strings.noBloodResults)
+      : h(View, { style: styles.table },
+          h(View, { style: styles.tableHeader, fixed: true },
+            ...cols.map((c, i) =>
+              h(Text, { key: i, style: [styles.tableHeaderCell, { width: `${c.w}%` }] }, c.label),
+            ),
+          ),
+          ...bloodTable.map((r, i) => {
+            const isLast = i === bloodTable.length - 1;
+            const rowStyle = [
+              styles.tableRow,
+              i % 2 === 1 ? styles.tableRowZebra : null,
+              isLast ? styles.tableRowLast : null,
+            ];
+            const valueText = `${r.value}${r.unit ? ` ${r.unit}` : ""}`;
+            return h(View, { key: i, style: rowStyle, wrap: false },
+              h(Text, { style: [styles.tableCell, { width: "28%" }] }, r.marker),
+              h(Text, { style: [styles.tableCell, { width: "18%" }] }, valueText),
+              h(Text, { style: [styles.tableCell, { width: "22%" }] }, r.range || "—"),
+              h(View, { style: [styles.statusPill, { width: "18%" }] },
+                h(Text, { style: styles.statusGlyph }, bloodStatusGlyph(r.status)),
+                h(Text, { style: styles.statusLabel }, bloodStatusLabel(r.status, strings)),
+              ),
+              h(Text, { style: [styles.tableCell, { width: "14%" }] }, r.date || "—"),
+            );
+          }),
+        ),
+    h(Footer, { generatedAt }),
+  );
+};
+
+const ImagingCard = ({ row, strings }: { row: ImagingRow; strings: PatientPayload["strings"] }) => {
+  const titleText = [row.type, row.region].filter(Boolean).join(" · ");
+  const metaText = [row.date, row.facility].filter(Boolean).join(" · ");
+
+  return h(View, { style: styles.imagingCard, wrap: false },
+    h(View, { style: styles.imagingHeaderRow },
+      h(View, { style: { flex: 1 } },
+        h(Text, { style: styles.imagingTitle }, titleText || "—"),
+        metaText ? h(Text, { style: styles.imagingMeta }, metaText) : null,
+      ),
+      h(View, { style: styles.statusPill },
+        h(Text, { style: styles.statusGlyph }, imagingStatusGlyph(row.status)),
+        h(Text, { style: styles.statusLabel }, imagingStatusLabel(row.status, strings)),
+      ),
+    ),
+    row.finding ? h(View, null,
+      h(Text, { style: styles.imagingFindingLabel }, strings.imagingFinding),
+      h(Text, { style: styles.imagingFindingText }, row.finding),
+    ) : null,
+  );
+};
+
+const ImagingPage = (data: PatientPayload) => {
+  const { patient, strings, generatedAt, imagingTable = [] } = data;
+
+  return h(Page, { size: "A4", style: styles.page },
+    h(Header, { patientName: patient.fullName }),
+    h(View, { style: styles.pageTitleBlock },
+      h(Text, { style: styles.pageTitle }, strings.imagingTitle),
+      h(Text, { style: styles.pageSubtitle }, strings.imagingSubtitle),
+    ),
+    imagingTable.length === 0
+      ? h(Text, { style: styles.emptyText }, strings.noImaging)
+      : h(View, null,
+          imagingTable.map((row, i) => h(ImagingCard, { key: i, row, strings })),
+        ),
+    h(Footer, { generatedAt }),
+  );
+};
+
 // ---------- HTTP handler ----------
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
