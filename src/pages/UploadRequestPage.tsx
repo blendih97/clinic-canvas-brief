@@ -55,38 +55,31 @@ const UploadRequestPage = () => {
     setUploading(true);
     setProgress(0);
     try {
+      const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+      const ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+      const endpoint = `${SUPABASE_URL}/functions/v1/upload-record-request`;
+
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         setCurrentFile(file.name);
-        const safeName = file.name.replace(/[^\w.\-]+/g, "_");
-        const filePath = `${request.user_id}/received-requests/${request.id}/${Date.now()}-${safeName}`;
-        const { error: uploadError } = await supabase.storage
-          .from("medical-documents")
-          .upload(filePath, file, { upsert: true, contentType: file.type || "application/octet-stream" });
-        if (uploadError) throw uploadError;
 
-        await supabase.from("documents").insert({
-          user_id: request.user_id,
-          name: file.name,
-          type: "Received Records",
-          date: new Date().toISOString().split("T")[0],
-          facility: request.provider_name,
-          country: "",
-          pages: 1,
-          extracted: false,
-          file_url: filePath,
-          ai_note: `Received via request from ${request.provider_name}`,
+        const fd = new FormData();
+        fd.append("token", token!);
+        fd.append("file", file);
+        fd.append("totalFiles", String(files.length));
+        fd.append("isLast", String(i === files.length - 1));
+
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${ANON_KEY}`, apikey: ANON_KEY },
+          body: fd,
         });
-
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error || `Upload failed (${res.status})`);
+        }
         setProgress(Math.round(((i + 1) / files.length) * 100));
       }
-
-      await supabase.from("record_requests").update({ status: "received" }).eq("id", request.id);
-      await supabase.from("alerts").insert({
-        user_id: request.user_id,
-        type: "records_received",
-        message: `${request.provider_name} uploaded ${files.length} file${files.length > 1 ? "s" : ""} for your records request.`,
-      });
 
       setUploaded(true);
     } catch (e: any) {
