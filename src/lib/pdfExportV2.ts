@@ -48,6 +48,35 @@ type StringPack = {
   medicationsPrescribed: string;
   followUp: string;
   noVisits: string;
+  // M3
+  medicationsTitle: string;
+  medicationsSubtitle: string;
+  medColName: string;
+  medColDose: string;
+  medColFrequency: string;
+  medColPrescriber: string;
+  medColStarted: string;
+  medColStatus: string;
+  medActive: string;
+  medInactive: string;
+  noMedications: string;
+  bloodResultsTitle: string;
+  bloodResultsSubtitle: string;
+  bloodColMarker: string;
+  bloodColValue: string;
+  bloodColRange: string;
+  bloodColStatus: string;
+  bloodColDate: string;
+  bloodStatusNormal: string;
+  bloodStatusFlagged: string;
+  bloodStatusCritical: string;
+  noBloodResults: string;
+  imagingTitle: string;
+  imagingSubtitle: string;
+  imagingFinding: string;
+  imagingNormal: string;
+  imagingFlagged: string;
+  noImaging: string;
 };
 
 const STRINGS: Record<string, StringPack> = {
@@ -73,6 +102,34 @@ const STRINGS: Record<string, StringPack> = {
     medicationsPrescribed: "Medications prescribed",
     followUp: "Follow-up",
     noVisits: "No clinical visit records extracted yet.",
+    medicationsTitle: "Medications",
+    medicationsSubtitle: "All medications recorded across uploaded documents and manual entries.",
+    medColName: "Medication",
+    medColDose: "Dose",
+    medColFrequency: "Frequency",
+    medColPrescriber: "Prescriber",
+    medColStarted: "Started",
+    medColStatus: "Status",
+    medActive: "Active",
+    medInactive: "Inactive",
+    noMedications: "No medications recorded.",
+    bloodResultsTitle: "Blood Results",
+    bloodResultsSubtitle: "Most recent value per marker. Status indicators reflect reference ranges.",
+    bloodColMarker: "Marker",
+    bloodColValue: "Value",
+    bloodColRange: "Reference range",
+    bloodColStatus: "Status",
+    bloodColDate: "Date",
+    bloodStatusNormal: "Normal",
+    bloodStatusFlagged: "Flagged",
+    bloodStatusCritical: "Critical",
+    noBloodResults: "No blood test results recorded.",
+    imagingTitle: "Imaging Studies",
+    imagingSubtitle: "Deduplicated by modality, region, facility and date.",
+    imagingFinding: "Finding",
+    imagingNormal: "Normal",
+    imagingFlagged: "Flagged",
+    noImaging: "No imaging studies recorded.",
   },
   ar: {
     patientSummary: "ملخص المريض",
@@ -95,6 +152,34 @@ const STRINGS: Record<string, StringPack> = {
     medicationsPrescribed: "الأدوية الموصوفة",
     followUp: "المتابعة",
     noVisits: "لم يتم استخراج سجلات زيارات سريرية بعد.",
+    medicationsTitle: "الأدوية",
+    medicationsSubtitle: "جميع الأدوية المسجلة عبر المستندات والإدخالات اليدوية.",
+    medColName: "الدواء",
+    medColDose: "الجرعة",
+    medColFrequency: "التكرار",
+    medColPrescriber: "الواصف",
+    medColStarted: "بدأ",
+    medColStatus: "الحالة",
+    medActive: "نشط",
+    medInactive: "غير نشط",
+    noMedications: "لا توجد أدوية مسجلة.",
+    bloodResultsTitle: "نتائج فحوصات الدم",
+    bloodResultsSubtitle: "أحدث قيمة لكل مؤشر. مؤشرات الحالة تعكس النطاقات المرجعية.",
+    bloodColMarker: "المؤشر",
+    bloodColValue: "القيمة",
+    bloodColRange: "النطاق المرجعي",
+    bloodColStatus: "الحالة",
+    bloodColDate: "التاريخ",
+    bloodStatusNormal: "طبيعي",
+    bloodStatusFlagged: "مُعلَّم",
+    bloodStatusCritical: "حرج",
+    noBloodResults: "لا توجد نتائج فحوصات دم مسجلة.",
+    imagingTitle: "دراسات التصوير",
+    imagingSubtitle: "تمت إزالة التكرار حسب النوع والمنطقة والمنشأة والتاريخ.",
+    imagingFinding: "النتيجة",
+    imagingNormal: "طبيعي",
+    imagingFlagged: "مُعلَّم",
+    noImaging: "لا توجد دراسات تصوير مسجلة.",
   },
   es: {
     patientSummary: "Resumen del paciente",
@@ -118,6 +203,34 @@ const STRINGS: Record<string, StringPack> = {
     medicationsPrescribed: "Medicación prescrita",
     followUp: "Seguimiento",
     noVisits: "Aún no se han extraído registros de visitas clínicas.",
+    medicationsTitle: "Medicación",
+    medicationsSubtitle: "Toda la medicación registrada en documentos cargados y entradas manuales.",
+    medColName: "Medicamento",
+    medColDose: "Dosis",
+    medColFrequency: "Frecuencia",
+    medColPrescriber: "Prescriptor",
+    medColStarted: "Inicio",
+    medColStatus: "Estado",
+    medActive: "Activo",
+    medInactive: "Inactivo",
+    noMedications: "Sin medicación registrada.",
+    bloodResultsTitle: "Resultados de sangre",
+    bloodResultsSubtitle: "Valor más reciente por marcador. Los indicadores reflejan los rangos de referencia.",
+    bloodColMarker: "Marcador",
+    bloodColValue: "Valor",
+    bloodColRange: "Rango de referencia",
+    bloodColStatus: "Estado",
+    bloodColDate: "Fecha",
+    bloodStatusNormal: "Normal",
+    bloodStatusFlagged: "Marcado",
+    bloodStatusCritical: "Crítico",
+    noBloodResults: "Sin resultados de análisis de sangre.",
+    imagingTitle: "Estudios de imagen",
+    imagingSubtitle: "Deduplicados por modalidad, región, centro y fecha.",
+    imagingFinding: "Hallazgo",
+    imagingNormal: "Normal",
+    imagingFlagged: "Marcado",
+    noImaging: "Sin estudios de imagen registrados.",
   },
   fr: {
     patientSummary: "Résumé du patient",
@@ -141,6 +254,34 @@ const STRINGS: Record<string, StringPack> = {
     medicationsPrescribed: "Médicaments prescrits",
     followUp: "Suivi",
     noVisits: "Aucune visite clinique extraite pour le moment.",
+    medicationsTitle: "Médicaments",
+    medicationsSubtitle: "Tous les médicaments enregistrés via les documents et les saisies manuelles.",
+    medColName: "Médicament",
+    medColDose: "Dose",
+    medColFrequency: "Fréquence",
+    medColPrescriber: "Prescripteur",
+    medColStarted: "Début",
+    medColStatus: "Statut",
+    medActive: "Actif",
+    medInactive: "Inactif",
+    noMedications: "Aucun médicament enregistré.",
+    bloodResultsTitle: "Résultats sanguins",
+    bloodResultsSubtitle: "Valeur la plus récente par marqueur. Les indicateurs reflètent les plages de référence.",
+    bloodColMarker: "Marqueur",
+    bloodColValue: "Valeur",
+    bloodColRange: "Plage de référence",
+    bloodColStatus: "Statut",
+    bloodColDate: "Date",
+    bloodStatusNormal: "Normal",
+    bloodStatusFlagged: "Signalé",
+    bloodStatusCritical: "Critique",
+    noBloodResults: "Aucun résultat sanguin enregistré.",
+    imagingTitle: "Examens d'imagerie",
+    imagingSubtitle: "Dédupliqués par modalité, région, établissement et date.",
+    imagingFinding: "Constatation",
+    imagingNormal: "Normal",
+    imagingFlagged: "Signalé",
+    noImaging: "Aucun examen d'imagerie enregistré.",
   },
 };
 
@@ -231,6 +372,61 @@ export async function generatePatientSummaryV2(input: PatientSummaryInput): Prom
     reaction: a.reaction,
   }));
 
+  // M3: full medications table (including inactive), sorted active-first then by date desc.
+  const medicationsTable = [...translated.medications]
+    .sort((a, b) => {
+      if (a.active !== b.active) return a.active ? -1 : 1;
+      return (b.date || "").localeCompare(a.date || "");
+    })
+    .map((m) => ({
+      name: m.name,
+      dose: m.dose,
+      frequency: m.frequency,
+      prescriber: m.prescriber,
+      facility: m.facility,
+      date: m.date,
+      active: m.active !== false,
+    }));
+
+  // M3: blood results — most recent value per marker.
+  const byMarker = new Map<string, typeof translated.bloodResults[number]>();
+  for (const r of translated.bloodResults) {
+    const existing = byMarker.get(r.marker);
+    if (!existing || (r.date || "").localeCompare(existing.date || "") > 0) {
+      byMarker.set(r.marker, r);
+    }
+  }
+  const bloodTable = [...byMarker.values()]
+    .sort((a, b) => {
+      // Critical → flagged → normal, then by marker name.
+      const rank: Record<string, number> = { critical: 0, flagged: 1, normal: 2 };
+      const ra = rank[a.status] ?? 3;
+      const rb = rank[b.status] ?? 3;
+      if (ra !== rb) return ra - rb;
+      return a.marker.localeCompare(b.marker);
+    })
+    .map((r) => ({
+      marker: r.marker,
+      value: r.value,
+      unit: r.unit,
+      range: r.range,
+      status: r.status,
+      date: r.date,
+    }));
+
+  // M3: deduped imaging studies.
+  const dedupedImaging = dedupeImaging(translated.imagingResults, input.imagingOverrides || []);
+  const imagingTable = dedupedImaging
+    .sort((a, b) => (b.date || "").localeCompare(a.date || ""))
+    .map((i) => ({
+      type: i.type,
+      region: i.region,
+      date: i.date,
+      facility: i.facility,
+      finding: i.finding,
+      status: i.status,
+    }));
+
   const langMeta = SUPPORTED_LANGUAGES.find((l) => l.code === language);
   const isRtl = !!langMeta?.rtl;
 
@@ -255,6 +451,9 @@ export async function generatePatientSummaryV2(input: PatientSummaryInput): Prom
     allergies,
     highlights,
     visits: visitsPayload,
+    medicationsTable,
+    bloodTable,
+    imagingTable,
     language,
     isRtl,
     generatedAt: new Date().toLocaleDateString(language === "en" ? "en-GB" : language, {
@@ -281,6 +480,34 @@ export async function generatePatientSummaryV2(input: PatientSummaryInput): Prom
       medicationsPrescribed: baseStrings.medicationsPrescribed,
       followUp: baseStrings.followUp,
       noVisits: baseStrings.noVisits,
+      medicationsTitle: baseStrings.medicationsTitle,
+      medicationsSubtitle: baseStrings.medicationsSubtitle,
+      medColName: baseStrings.medColName,
+      medColDose: baseStrings.medColDose,
+      medColFrequency: baseStrings.medColFrequency,
+      medColPrescriber: baseStrings.medColPrescriber,
+      medColStarted: baseStrings.medColStarted,
+      medColStatus: baseStrings.medColStatus,
+      medActive: baseStrings.medActive,
+      medInactive: baseStrings.medInactive,
+      noMedications: baseStrings.noMedications,
+      bloodResultsTitle: baseStrings.bloodResultsTitle,
+      bloodResultsSubtitle: baseStrings.bloodResultsSubtitle,
+      bloodColMarker: baseStrings.bloodColMarker,
+      bloodColValue: baseStrings.bloodColValue,
+      bloodColRange: baseStrings.bloodColRange,
+      bloodColStatus: baseStrings.bloodColStatus,
+      bloodColDate: baseStrings.bloodColDate,
+      bloodStatusNormal: baseStrings.bloodStatusNormal,
+      bloodStatusFlagged: baseStrings.bloodStatusFlagged,
+      bloodStatusCritical: baseStrings.bloodStatusCritical,
+      noBloodResults: baseStrings.noBloodResults,
+      imagingTitle: baseStrings.imagingTitle,
+      imagingSubtitle: baseStrings.imagingSubtitle,
+      imagingFinding: baseStrings.imagingFinding,
+      imagingNormal: baseStrings.imagingNormal,
+      imagingFlagged: baseStrings.imagingFlagged,
+      noImaging: baseStrings.noImaging,
     },
   };
 
