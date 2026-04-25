@@ -96,11 +96,24 @@ Deno.serve(async (req: Request) => {
       .maybeSingle();
 
     if (cached && new Date(cached.expires_at).getTime() > Date.now()) {
+      console.log(JSON.stringify({
+        event: "translate_export_cache_hit",
+        user_id: userId,
+        target_language: target,
+        data_hash: dataHash.slice(0, 12),
+      }));
       return new Response(
         JSON.stringify({ translated: cached.translated_payload, cached: true, language: target }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
+
+    console.log(JSON.stringify({
+      event: "translate_export_cache_miss",
+      user_id: userId,
+      target_language: target,
+      data_hash: dataHash.slice(0, 12),
+    }));
 
     // Translate via Claude
     const prompt = `You are a clinical translation engine.
