@@ -199,7 +199,7 @@ const ShareBriefSection = () => {
             <h3 className="font-heading text-xl text-foreground mb-3">Which records to include</h3>
             <div className="space-y-2">
               {([
-                ["blood", "Blood Results", bloodResults.length],
+                ["blood", "Lab Results", bloodResults.length],
                 ["imaging", "Imaging Findings", imagingResults.length],
                 ["medications", "Medications", medications.length],
                 ["allergies", "Allergies", allergies.length],

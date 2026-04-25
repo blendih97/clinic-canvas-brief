@@ -176,7 +176,7 @@ const ExportSection = () => {
                 Complete PDF including every section with source clinic and date for every entry.
               </p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                <Stat label="Blood Results" value={store.bloodResults.length} />
+                <Stat label="Lab Results" value={store.bloodResults.length} />
                 <Stat label="Imaging" value={store.imagingResults.length} />
                 <Stat label="Medications" value={store.medications.length} />
                 <Stat label="Allergies" value={store.allergies.length} />
@@ -191,7 +191,7 @@ const ExportSection = () => {
               <h3 className="font-heading text-xl text-foreground mb-4">Which records to include</h3>
               <div className="space-y-3">
                 {([
-                  ["blood", "Blood Results", store.bloodResults.length],
+                  ["blood", "Lab Results", store.bloodResults.length],
                   ["imaging", "Imaging Findings", store.imagingResults.length],
                   ["medications", "Medications", store.medications.length],
                   ["allergies", "Allergies", store.allergies.length],
