@@ -832,9 +832,9 @@ const ImagingPage = (data: PatientPayload, styles: Styles) => {
     imagingTable.length === 0
       ? h(Text, { style: styles.emptyText }, strings.noImaging)
       : h(View, null,
-          imagingTable.map((row, i) => h(ImagingCard, { key: i, row, strings })),
+          imagingTable.map((row, i) => h(ImagingCard, { key: i, row, strings, styles })),
         ),
-    h(Footer, { generatedAt }),
+    h(Footer, { generatedAt, styles }),
   );
 };
 
@@ -842,6 +842,19 @@ const ImagingPage = (data: PatientPayload, styles: Styles) => {
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
+  }
+
+  // M4: GET /functions/v1/render-export-pdf?warm=1 — keep-warm probe.
+  // Returns immediately without rendering, but keeps the isolate hot.
+  if (req.method === "GET") {
+    const url = new URL(req.url);
+    if (url.searchParams.get("warm") === "1") {
+      return new Response(
+        JSON.stringify({ ok: true, warm: true, t: Date.now() }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    return new Response("Method Not Allowed", { status: 405, headers: corsHeaders });
   }
 
   try {
@@ -854,13 +867,14 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const pages: any[] = [PatientSummaryPage(payload)];
-    // M2: Visit History (always included; shows empty-state when no visits).
-    pages.push(VisitHistoryPage(payload));
-    // M3: Medications, Blood Results, Imaging.
-    pages.push(MedicationsPage(payload));
-    pages.push(BloodResultsPage(payload));
-    pages.push(ImagingPage(payload));
+    // M4: build per-language stylesheet (fonts + RTL direction).
+    const styles = buildStyles(payload.language);
+
+    const pages: any[] = [PatientSummaryPage(payload, styles)];
+    pages.push(VisitHistoryPage(payload, styles));
+    pages.push(MedicationsPage(payload, styles));
+    pages.push(BloodResultsPage(payload, styles));
+    pages.push(ImagingPage(payload, styles));
 
     const doc = React.createElement(
       Document,
