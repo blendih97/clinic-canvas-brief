@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, FileText, Download, Share2, Globe, Languages, Loader2, AlertCircle, RefreshCw } from "lucide-react";
+import { X, FileText, Download, Share2, Globe, Languages, Loader2, AlertCircle, RefreshCw, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
 import type { Document } from "@/store/vaultStore";
 import { useVaultStore } from "@/store/vaultStore";
 import { supabase } from "@/integrations/supabase/client";
@@ -82,6 +82,7 @@ const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
   const [isDownloading, setIsDownloading] = useState(false);
   const [isReprocessing, setIsReprocessing] = useState(false);
   const [reprocessError, setReprocessError] = useState<string | null>(null);
+  const [zoom, setZoom] = useState(1);
 
   const storagePath = doc.filePath || doc.fileUrl;
 
@@ -202,20 +203,70 @@ const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
         </div>
 
         <div className="flex-1 overflow-auto flex flex-col md:flex-row">
-          <div className="md:w-1/2 border-b md:border-b-0 md:border-r border-border p-5 flex items-center justify-center min-h-[300px] bg-muted/30">
-            {signedUrl ? (
-              doc.type?.toLowerCase().includes("image") || doc.name.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
-                <img src={signedUrl} alt={doc.name} className="max-w-full max-h-full object-contain rounded" />
-              ) : (
-                <iframe src={signedUrl} className="w-full h-full min-h-[400px] rounded" title={doc.name} />
-              )
-            ) : (
-              <div className="text-center text-muted-foreground text-sm p-8">
-                <FileText className="w-10 h-10 mx-auto mb-3 opacity-40" />
-                <p>Original file preview</p>
-                <p className="text-xs mt-1">Upload a file to see it displayed here.</p>
+          <div className="md:w-1/2 border-b md:border-b-0 md:border-r border-border flex flex-col min-h-[300px] bg-muted/30 relative">
+            {signedUrl && (
+              <div className="absolute top-3 right-3 z-10 flex items-center gap-1 bg-background/95 backdrop-blur border border-border rounded-lg shadow-sm p-1">
+                <button
+                  onClick={() => setZoom((z) => Math.max(0.5, z - 0.25))}
+                  disabled={zoom <= 0.5}
+                  className="p-1.5 hover:bg-muted rounded-md transition-colors disabled:opacity-40"
+                  title="Zoom out"
+                  aria-label="Zoom out"
+                >
+                  <ZoomOut className="w-4 h-4 text-foreground" />
+                </button>
+                <span className="text-[11px] text-muted-foreground tabular-nums w-10 text-center">{Math.round(zoom * 100)}%</span>
+                <button
+                  onClick={() => setZoom((z) => Math.min(4, z + 0.25))}
+                  disabled={zoom >= 4}
+                  className="p-1.5 hover:bg-muted rounded-md transition-colors disabled:opacity-40"
+                  title="Zoom in"
+                  aria-label="Zoom in"
+                >
+                  <ZoomIn className="w-4 h-4 text-foreground" />
+                </button>
+                <button
+                  onClick={() => setZoom(1)}
+                  disabled={zoom === 1}
+                  className="p-1.5 hover:bg-muted rounded-md transition-colors disabled:opacity-40"
+                  title="Reset zoom"
+                  aria-label="Reset zoom"
+                >
+                  <RotateCcw className="w-4 h-4 text-foreground" />
+                </button>
               </div>
             )}
+            <div className="flex-1 overflow-auto p-5 flex items-start justify-center">
+              {signedUrl ? (
+                doc.type?.toLowerCase().includes("image") || doc.name.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                  <img
+                    src={signedUrl}
+                    alt={doc.name}
+                    className="max-w-none rounded transition-transform origin-top"
+                    style={{ transform: `scale(${zoom})`, transformOrigin: "top center" }}
+                  />
+                ) : (
+                  <iframe
+                    src={signedUrl}
+                    className="rounded border-0"
+                    style={{
+                      width: `${100 / zoom}%`,
+                      height: `${600 / zoom}px`,
+                      transform: `scale(${zoom})`,
+                      transformOrigin: "top left",
+                      minHeight: "400px",
+                    }}
+                    title={doc.name}
+                  />
+                )
+              ) : (
+                <div className="text-center text-muted-foreground text-sm p-8 m-auto">
+                  <FileText className="w-10 h-10 mx-auto mb-3 opacity-40" />
+                  <p>Original file preview</p>
+                  <p className="text-xs mt-1">Upload a file to see it displayed here.</p>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="md:w-1/2 p-5 overflow-auto space-y-5">
@@ -430,10 +481,16 @@ const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
                     disabled={isReprocessing}
                     className="flex-1 px-3 py-2 bg-muted border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-40"
                   >
-                    {SUPPORTED_LANGUAGES.map((l) => (
+                    {originalLangCode && (
+                      <option value={originalLangCode}>
+                        Original{originalLangName ? ` — ${originalLangName}` : ""}
+                      </option>
+                    )}
+                    {SUPPORTED_LANGUAGES.filter((l) => l.code !== originalLangCode).map((l) => (
                       <option key={l.code} value={l.code}>{l.name}</option>
                     ))}
                   </select>
+                  {isReprocessing && <Loader2 className="w-4 h-4 text-primary animate-spin self-center" />}
                   {isReprocessing && <Loader2 className="w-4 h-4 text-primary animate-spin self-center" />}
                 </div>
                 <p className="text-[10px] text-muted-foreground">

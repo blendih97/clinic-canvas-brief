@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Play, Image, Upload, FileText, Search, Download, Share2, X, Film, Camera, Heart, Zap } from "lucide-react";
 import { useVaultStore } from "@/store/vaultStore";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,6 +18,7 @@ interface MediaItem {
   date: string;
   country: string;
   fileUrl?: string;
+  filePath?: string;
 }
 
 const countryFlags: Record<string, string> = { UAE: "🇦🇪", UK: "🇬🇧", Qatar: "🇶🇦", Switzerland: "🇨🇭", USA: "🇺🇸" };
@@ -39,6 +40,7 @@ const MediaSection = ({ onRequestRecords, onUpload }: { onRequestRecords?: () =>
   const [search, setSearch] = useState("");
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
   const [sharing, setSharing] = useState(false);
+  const [signedUrls, setSignedUrls] = useState<Record<string, string>>({});
 
   // Derive media items from documents and imaging results
   const mediaItems: MediaItem[] = useMemo(() => {
@@ -79,11 +81,52 @@ const MediaSection = ({ onRequestRecords, onUpload }: { onRequestRecords?: () =>
         date: doc.date,
         country: doc.country,
         fileUrl: doc.fileUrl,
+        filePath: doc.filePath,
       });
     });
 
     return items;
   }, [documents]);
+
+  // Resolve signed URLs for storage-backed media files
+  useEffect(() => {
+    let cancelled = false;
+    const toResolve = mediaItems.filter((item) => {
+      const path = item.filePath || item.fileUrl;
+      if (!path) return false;
+      if (path.startsWith("http")) return false;
+      if (signedUrls[item.id]) return false;
+      return true;
+    });
+    if (toResolve.length === 0) return;
+
+    (async () => {
+      const entries = await Promise.all(
+        toResolve.map(async (item) => {
+          const path = item.filePath || item.fileUrl!;
+          const { data } = await supabase.storage
+            .from("medical-documents")
+            .createSignedUrl(path, 3600);
+          return [item.id, data?.signedUrl] as const;
+        })
+      );
+      if (cancelled) return;
+      setSignedUrls((prev) => {
+        const next = { ...prev };
+        for (const [id, url] of entries) if (url) next[id] = url;
+        return next;
+      });
+    })();
+
+    return () => { cancelled = true; };
+  }, [mediaItems, signedUrls]);
+
+  const resolveUrl = (item: MediaItem): string | undefined => {
+    const raw = item.filePath || item.fileUrl;
+    if (!raw) return undefined;
+    if (raw.startsWith("http")) return raw;
+    return signedUrls[item.id];
+  };
 
   const filteredItems = useMemo(() => {
     let items = mediaItems;
@@ -107,7 +150,8 @@ const MediaSection = ({ onRequestRecords, onUpload }: { onRequestRecords?: () =>
   }, [mediaItems, filter, search]);
 
   const handleShare = async (item: MediaItem) => {
-    if (!user || !item.fileUrl) return;
+    const path = item.filePath || item.fileUrl;
+    if (!user || !path) return;
     setSharing(true);
     try {
       const shareToken = crypto.randomUUID();
@@ -115,7 +159,7 @@ const MediaSection = ({ onRequestRecords, onUpload }: { onRequestRecords?: () =>
 
       const { error } = await supabase.from("media_shares").insert({
         user_id: user.id,
-        file_path: item.fileUrl,
+        file_path: path,
         token: shareToken,
         expires_at: expiresAt,
       });
@@ -211,7 +255,9 @@ const MediaSection = ({ onRequestRecords, onUpload }: { onRequestRecords?: () =>
 
       {/* Media grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {filteredItems.map((item) => (
+        {filteredItems.map((item) => {
+          const url = resolveUrl(item);
+          return (
           <button
             key={item.id}
             onClick={() => setSelectedMedia(item)}
@@ -219,8 +265,8 @@ const MediaSection = ({ onRequestRecords, onUpload }: { onRequestRecords?: () =>
           >
             {/* Thumbnail */}
             <div className="aspect-[4/3] bg-muted/50 flex items-center justify-center relative">
-              {item.fileUrl && item.fileType === "image" ? (
-                <img src={item.fileUrl} alt={item.name} className="w-full h-full object-cover" />
+              {url && item.fileType === "image" ? (
+                <img src={url} alt={item.name} className="w-full h-full object-cover" />
               ) : item.fileType === "video" ? (
                 <div className="flex flex-col items-center gap-2 text-muted-foreground">
                   <div className="w-12 h-12 rounded-full bg-foreground/10 flex items-center justify-center">
@@ -247,7 +293,8 @@ const MediaSection = ({ onRequestRecords, onUpload }: { onRequestRecords?: () =>
               </div>
             </div>
           </button>
-        ))}
+          );
+        })}
       </div>
 
       {filteredItems.length === 0 && (
@@ -259,7 +306,7 @@ const MediaSection = ({ onRequestRecords, onUpload }: { onRequestRecords?: () =>
       {/* Media Viewer Modal */}
       {selectedMedia && (
         <MediaViewerModal
-          item={selectedMedia}
+          item={{ ...selectedMedia, fileUrl: resolveUrl(selectedMedia) || selectedMedia.fileUrl }}
           onClose={() => setSelectedMedia(null)}
           onShare={() => handleShare(selectedMedia)}
           sharing={sharing}
