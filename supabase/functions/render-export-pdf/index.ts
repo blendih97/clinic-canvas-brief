@@ -719,9 +719,12 @@ Deno.serve(async (req: Request) => {
     }
 
     const pages: any[] = [PatientSummaryPage(payload)];
-    // Always include the Visit History page so the document section ordering
-    // is predictable; the page itself shows an empty-state if no visits exist.
+    // M2: Visit History (always included; shows empty-state when no visits).
     pages.push(VisitHistoryPage(payload));
+    // M3: Medications, Blood Results, Imaging.
+    pages.push(MedicationsPage(payload));
+    pages.push(BloodResultsPage(payload));
+    pages.push(ImagingPage(payload));
 
     const doc = React.createElement(
       Document,
