@@ -48,6 +48,35 @@ type StringPack = {
   medicationsPrescribed: string;
   followUp: string;
   noVisits: string;
+  // M3
+  medicationsTitle: string;
+  medicationsSubtitle: string;
+  medColName: string;
+  medColDose: string;
+  medColFrequency: string;
+  medColPrescriber: string;
+  medColStarted: string;
+  medColStatus: string;
+  medActive: string;
+  medInactive: string;
+  noMedications: string;
+  bloodResultsTitle: string;
+  bloodResultsSubtitle: string;
+  bloodColMarker: string;
+  bloodColValue: string;
+  bloodColRange: string;
+  bloodColStatus: string;
+  bloodColDate: string;
+  bloodStatusNormal: string;
+  bloodStatusFlagged: string;
+  bloodStatusCritical: string;
+  noBloodResults: string;
+  imagingTitle: string;
+  imagingSubtitle: string;
+  imagingFinding: string;
+  imagingNormal: string;
+  imagingFlagged: string;
+  noImaging: string;
 };
 
 const STRINGS: Record<string, StringPack> = {
