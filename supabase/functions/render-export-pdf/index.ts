@@ -189,6 +189,88 @@ const styles = StyleSheet.create({
     color: COLORS.ink,
     lineHeight: 1.5,
   },
+  // M3
+  pageTitleBlock: { marginBottom: 18 },
+  table: {
+    borderWidth: 0.5,
+    borderColor: COLORS.hairline,
+    borderRadius: 4,
+    overflow: "hidden",
+    marginBottom: 14,
+  },
+  tableHeader: {
+    flexDirection: "row",
+    backgroundColor: COLORS.goldSoft,
+    paddingVertical: 7,
+    paddingHorizontal: 8,
+    borderBottomWidth: 0.5,
+    borderBottomColor: COLORS.hairline,
+  },
+  tableHeaderCell: {
+    fontSize: 8,
+    color: COLORS.gold,
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
+    fontWeight: 700,
+  },
+  tableRow: {
+    flexDirection: "row",
+    paddingVertical: 7,
+    paddingHorizontal: 8,
+    borderBottomWidth: 0.5,
+    borderBottomColor: COLORS.hairline,
+  },
+  tableRowZebra: { backgroundColor: "#FBF9F4" },
+  tableRowLast: { borderBottomWidth: 0 },
+  tableCell: {
+    fontSize: 9.5,
+    color: COLORS.ink,
+    lineHeight: 1.4,
+  },
+  statusPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  statusGlyph: {
+    fontSize: 9,
+    fontWeight: 700,
+    width: 10,
+    color: COLORS.ink,
+  },
+  statusLabel: {
+    fontSize: 9,
+    color: COLORS.ink,
+  },
+  imagingCard: {
+    borderWidth: 0.5,
+    borderColor: COLORS.hairline,
+    borderRadius: 4,
+    padding: 12,
+    marginBottom: 10,
+  },
+  imagingHeaderRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 6,
+  },
+  imagingTitle: {
+    fontFamily: "Cormorant Garamond",
+    fontSize: 13,
+    fontWeight: 600,
+    color: COLORS.ink,
+  },
+  imagingMeta: { fontSize: 9, color: COLORS.muted, marginTop: 1 },
+  imagingFindingLabel: {
+    fontSize: 8,
+    color: COLORS.gold,
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
+    marginTop: 6,
+    marginBottom: 2,
+  },
+  imagingFindingText: { fontSize: 10, color: COLORS.ink, lineHeight: 1.5 },
 });
 
 // ---------- Types ----------
@@ -202,6 +284,34 @@ interface VisitPayload {
   diagnosis?: string;
   medicationsPrescribed: string[];
   followUpRecommendations: string[];
+}
+
+interface MedicationRow {
+  name: string;
+  dose?: string;
+  frequency?: string;
+  prescriber?: string;
+  facility?: string;
+  date?: string;
+  active: boolean;
+}
+
+interface BloodRow {
+  marker: string;
+  value: number | string;
+  unit?: string;
+  range?: string;
+  status: "normal" | "flagged" | "critical" | string;
+  date?: string;
+}
+
+interface ImagingRow {
+  type: string;
+  region?: string;
+  date?: string;
+  facility?: string;
+  finding?: string;
+  status: "normal" | "flagged" | string;
 }
 
 interface PatientPayload {
@@ -222,6 +332,9 @@ interface PatientPayload {
   allergies: { substance: string; severity?: string; reaction?: string }[];
   highlights: string[];
   visits?: VisitPayload[];
+  medicationsTable?: MedicationRow[];
+  bloodTable?: BloodRow[];
+  imagingTable?: ImagingRow[];
   language: string;
   generatedAt: string;
   isRtl?: boolean;
@@ -244,6 +357,34 @@ interface PatientPayload {
     medicationsPrescribed: string;
     followUp: string;
     noVisits: string;
+    medicationsTitle: string;
+    medicationsSubtitle: string;
+    medColName: string;
+    medColDose: string;
+    medColFrequency: string;
+    medColPrescriber: string;
+    medColStarted: string;
+    medColStatus: string;
+    medActive: string;
+    medInactive: string;
+    noMedications: string;
+    bloodResultsTitle: string;
+    bloodResultsSubtitle: string;
+    bloodColMarker: string;
+    bloodColValue: string;
+    bloodColRange: string;
+    bloodColStatus: string;
+    bloodColDate: string;
+    bloodStatusNormal: string;
+    bloodStatusFlagged: string;
+    bloodStatusCritical: string;
+    noBloodResults: string;
+    imagingTitle: string;
+    imagingSubtitle: string;
+    imagingFinding: string;
+    imagingNormal: string;
+    imagingFlagged: string;
+    noImaging: string;
   };
 }
 
