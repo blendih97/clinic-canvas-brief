@@ -384,11 +384,20 @@ function DemoHero() {
   );
 }
 
+const EarlyAccessBanner = () => (
+  <div style={{ marginTop: 68, padding: "10px 20px", background: marketingColors.goldSoft, borderBottom: `1px solid ${marketingColors.goldBorder}`, textAlign: "center", fontSize: 13, color: marketingColors.ink }}>
+    <span style={{ color: marketingColors.gold, fontWeight: 600, letterSpacing: "0.08em", fontSize: 11, marginRight: 10 }}>EARLY ACCESS</span>
+    RinVita is in Early Access — try free until 1 June 2026.{" "}
+    <Link to="/auth?mode=signup" style={{ color: marketingColors.gold, fontWeight: 600, textDecoration: "underline", marginLeft: 4 }}>Sign up free →</Link>
+  </div>
+);
+
 const ProductDemoPage = () => {
   return (
     <div className="marketing-page" style={{ background: marketingColors.cream, color: marketingColors.ink }}>
       <MarketingStyles />
       <MarketingNav currentPage="demo" />
+      <EarlyAccessBanner />
       <DemoHero />
       <div style={{ background: marketingColors.cream, minHeight: "60vh" }}>
         <DemoArea />
