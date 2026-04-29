@@ -43,52 +43,57 @@ function AppMockup({ scale = 1 }: { scale?: number }) {
             <div style={{ width: 20, height: 8, borderRadius: 4, border: `1px solid ${marketingColors.softText}` }} />
           </div>
         </div>
-        <div style={{ display: "flex", height: "100%", paddingTop: 48 }}>
-          <div style={{ width: 68, background: marketingColors.cream2, display: "flex", flexDirection: "column", padding: "12px 0", borderRight: `1px solid ${marketingColors.goldBorder}` }}>
-            <div style={{ padding: "0 0 12px", display: "flex", justifyContent: "center", borderBottom: `1px solid ${marketingColors.goldBorder}` }}>
-              <LogoMark size={18} color={marketingColors.gold} />
-            </div>
-            {[
-              { icon: "▦", label: "Overview", active: true },
-              { icon: "◈", label: "Records", active: false },
-              { icon: "⊙", label: "Imaging", active: false },
-              { icon: "↗", label: "Share", active: false },
-            ].map((item) => (
-              <div key={item.label} style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "8px 4px", background: item.active ? marketingColors.goldSoft : "transparent", borderLeft: item.active ? `2px solid ${marketingColors.gold}` : "2px solid transparent" }}>
-                <span style={{ fontSize: 12, color: item.active ? marketingColors.gold : marketingColors.softText }}>{item.icon}</span>
-                <span style={{ fontSize: 7, color: item.active ? marketingColors.gold : marketingColors.softText, marginTop: 2 }}>{item.label}</span>
-              </div>
-            ))}
-          </div>
-          <div style={{ flex: 1, background: marketingColors.cream, overflowY: "auto", padding: "10px 10px 24px" }}>
-            <div style={{ background: marketingColors.cream2, border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 5, padding: "6px 8px", display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-              <span style={{ fontSize: 8, color: marketingColors.mutedText }}>Free Trial — 8 days remaining</span>
-              <div style={{ background: marketingColors.gold, color: "hsl(var(--primary-foreground))", fontSize: 7, fontWeight: 600, padding: "2px 6px", borderRadius: 3 }}>Upgrade</div>
-            </div>
-            <div style={{ fontFamily: "Cormorant Garamond", fontSize: 16, color: marketingColors.ink, marginBottom: 1 }}>Your Health Overview</div>
-            <div style={{ fontSize: 8, color: marketingColors.softText, marginBottom: 10 }}>4 documents · 4 languages</div>
-            <div style={{ background: marketingColors.surface, border: `1px solid ${marketingColors.surfaceBorder}`, borderRadius: 5, padding: "5px 8px", display: "flex", gap: 5, alignItems: "center", marginBottom: 10 }}>
-              <span style={{ fontSize: 9, color: marketingColors.faintText }}>🔍</span>
-              <span style={{ fontSize: 8, color: marketingColors.faintText }}>Search records, facilities…</span>
-            </div>
-            <div style={{ background: marketingColors.gold, borderRadius: 7, padding: "10px 9px", marginBottom: 8 }}>
-              <div style={{ fontSize: 9, fontWeight: 600, color: "hsl(var(--primary-foreground))" }}>Upload Document</div>
-              <div style={{ fontSize: 7, color: "hsl(var(--primary-foreground) / 0.75)", marginTop: 1 }}>Any language · Any country · Any year</div>
-            </div>
-            <div style={{ fontSize: 8, fontWeight: 600, color: marketingColors.softText, marginBottom: 7, letterSpacing: "0.06em", textTransform: "uppercase" }}>Recent Documents</div>
-            {docs.map((doc) => (
-              <div key={doc.name} style={{ background: marketingColors.surface, border: `1px solid hsl(var(--foreground) / 0.07)`, borderRadius: 5, padding: "6px 8px", display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
-                <span style={{ fontSize: 14 }}>{doc.flag}</span>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 8, fontWeight: 500, color: marketingColors.ink, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{doc.name}</div>
-                  <div style={{ fontSize: 7, color: marketingColors.softText, marginTop: 1 }}>{doc.facility}</div>
-                </div>
-                <div style={{ fontSize: 6, padding: "2px 4px", background: marketingColors.successSoft, border: `1px solid ${marketingColors.successBorder}`, borderRadius: 3, color: marketingColors.success, whiteSpace: "nowrap" }}>✓ Done</div>
-              </div>
-            ))}
-          </div>
+        {/* App header (matches real mobile header: logo left, avatar right) */}
+        <div style={{ position: "absolute", top: 48, left: 0, right: 0, height: 38, zIndex: 9, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 16px", background: marketingColors.cream2, borderBottom: `1px solid ${marketingColors.goldBorder}` }}>
+          <div style={{ fontFamily: "Cormorant Garamond", fontSize: 15, fontWeight: 300, letterSpacing: "0.15em", color: marketingColors.gold }}>RinVita</div>
+          <div style={{ width: 24, height: 24, borderRadius: "50%", background: marketingColors.goldSoft, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 600, color: marketingColors.gold, fontFamily: "Cormorant Garamond" }}>A</div>
         </div>
-        <div style={{ position: "absolute", bottom: 6, left: "50%", transform: "translateX(-50%)", width: 100, height: 3.5, borderRadius: 2, background: "hsl(var(--foreground) / 0.18)", zIndex: 60 }} />
+
+        {/* Content area */}
+        <div style={{ position: "absolute", top: 86, left: 0, right: 0, bottom: 56, background: marketingColors.cream, overflowY: "auto", padding: "12px 14px 18px" }}>
+          <div style={{ background: marketingColors.cream2, border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 5, padding: "6px 8px", display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+            <span style={{ fontSize: 8, color: marketingColors.mutedText }}>Free Trial — 8 days remaining</span>
+            <div style={{ background: marketingColors.gold, color: "hsl(var(--primary-foreground))", fontSize: 7, fontWeight: 600, padding: "2px 6px", borderRadius: 3 }}>Upgrade</div>
+          </div>
+          <div style={{ fontFamily: "Cormorant Garamond", fontSize: 18, color: marketingColors.ink, marginBottom: 2 }}>Your Health Overview</div>
+          <div style={{ fontSize: 8, color: marketingColors.softText, marginBottom: 12 }}>4 documents · 4 languages</div>
+          <div style={{ background: marketingColors.surface, border: `1px solid ${marketingColors.surfaceBorder}`, borderRadius: 5, padding: "6px 8px", display: "flex", gap: 5, alignItems: "center", marginBottom: 12 }}>
+            <span style={{ fontSize: 9, color: marketingColors.faintText }}>🔍</span>
+            <span style={{ fontSize: 8, color: marketingColors.faintText }}>Search records, facilities…</span>
+          </div>
+          <div style={{ background: marketingColors.gold, borderRadius: 7, padding: "10px 10px", marginBottom: 10 }}>
+            <div style={{ fontSize: 10, fontWeight: 600, color: "hsl(var(--primary-foreground))" }}>Upload Document</div>
+            <div style={{ fontSize: 7, color: "hsl(var(--primary-foreground) / 0.75)", marginTop: 1 }}>Any language · Any country · Any year</div>
+          </div>
+          <div style={{ fontSize: 8, fontWeight: 600, color: marketingColors.softText, marginBottom: 7, letterSpacing: "0.06em", textTransform: "uppercase" }}>Recent Documents</div>
+          {docs.map((doc) => (
+            <div key={doc.name} style={{ background: marketingColors.surface, border: `1px solid hsl(var(--foreground) / 0.07)`, borderRadius: 5, padding: "6px 8px", display: "flex", alignItems: "center", gap: 6, marginBottom: 5 }}>
+              <span style={{ fontSize: 14 }}>{doc.flag}</span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 8, fontWeight: 500, color: marketingColors.ink, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{doc.name}</div>
+                <div style={{ fontSize: 7, color: marketingColors.softText, marginTop: 1 }}>{doc.facility}</div>
+              </div>
+              <div style={{ fontSize: 6, padding: "2px 4px", background: marketingColors.successSoft, border: `1px solid ${marketingColors.successBorder}`, borderRadius: 3, color: marketingColors.success, whiteSpace: "nowrap" }}>✓ Done</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Bottom nav (matches real mobile app: 5 tabs) */}
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 56, background: marketingColors.cream2, borderTop: `1px solid ${marketingColors.goldBorder}`, display: "grid", gridTemplateColumns: "repeat(5, 1fr)", zIndex: 20, paddingBottom: 8 }}>
+          {[
+            { icon: "▦", label: "Overview", active: true },
+            { icon: "◈", label: "Lab", active: false },
+            { icon: "⊙", label: "Imaging", active: false },
+            { icon: "▤", label: "Records", active: false },
+            { icon: "⋯", label: "More", active: false },
+          ].map((item) => (
+            <div key={item.label} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2 }}>
+              <span style={{ fontSize: 13, color: item.active ? marketingColors.gold : marketingColors.softText, lineHeight: 1 }}>{item.icon}</span>
+              <span style={{ fontSize: 7, fontWeight: item.active ? 600 : 400, color: item.active ? marketingColors.gold : marketingColors.softText }}>{item.label}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ position: "absolute", bottom: 2, left: "50%", transform: "translateX(-50%)", width: 100, height: 3.5, borderRadius: 2, background: "hsl(var(--foreground) / 0.18)", zIndex: 60 }} />
       </div>
     </div>
   );
