@@ -303,15 +303,35 @@ function Pricing() {
       name: "Standard",
       price: "£39",
       period: "/month",
-      desc: "Your entire medical history, from every country, always ready.",
-      features: ["14-day free trial", "Unlimited documents", "Clinician sharing links", "Priority support"],
+      desc: "For individuals managing complex medical history.",
+      highlight: null as string | null,
+      features: [
+        "1 user account",
+        "Unlimited document uploads",
+        "Translation in 50+ languages",
+        "AI-structured medical summaries",
+        "Clinician sharing links (full collaboration)",
+        "Priority support",
+        "Cancel anytime",
+      ],
     },
     {
       name: "Family",
       price: "£89.99",
       period: "/month",
       desc: "One plan for the whole family, across every border.",
-      features: ["Up to 6 members", "Separate health passports", "Family admin dashboard"],
+      highlight: "Best for families",
+      features: [
+        "Up to 6 family members",
+        "Separate health passport per member",
+        "Unlimited document uploads per member",
+        "Translation in 50+ languages",
+        "AI-structured medical summaries",
+        "Family admin dashboard",
+        "Clinician sharing links (full collaboration)",
+        "Priority support",
+        "Cancel anytime",
+      ],
     },
   ];
 
@@ -320,61 +340,84 @@ function Pricing() {
       <div ref={ref} className="marketing-reveal" style={{ maxWidth: 1100, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: isMobile ? 40 : 56 }}>
           <span className="marketing-section-label">Pricing</span>
-          <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 32 : "clamp(34px,3.8vw,52px)", fontWeight: 300, color: marketingColors.ink, marginBottom: 16 }}>Free during Early Access</h2>
+          <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 32 : "clamp(34px,3.8vw,52px)", fontWeight: 300, color: marketingColors.ink, marginBottom: 16 }}>Simple pricing. Pay only for what you need.</h2>
           <p style={{ fontSize: isMobile ? 14 : 16, color: marketingColors.mutedText, maxWidth: 560, margin: "0 auto", lineHeight: 1.7, fontWeight: 300 }}>
-            RinVita is in Early Access ahead of our 11 May launch. Sign up now and use everything free through 1 June 2026 — plus get a 25% lifetime discount when paid pricing begins.
+            RinVita is free during Early Access through 1 June 2026. Sign up now with just an email — plus lock in a 25% lifetime discount when paid pricing begins.
           </p>
         </div>
 
-        {/* Early Access card */}
-        <div style={{ padding: isMobile ? "32px 24px" : "44px 48px", background: marketingColors.surface, border: `1.5px solid ${marketingColors.gold}`, borderRadius: 2, position: "relative", boxShadow: "0 12px 48px hsl(var(--primary) / 0.12)", marginBottom: isMobile ? 36 : 48 }}>
-          <div style={{ position: "absolute", top: -12, left: isMobile ? 24 : 48, background: marketingColors.gold, color: "hsl(var(--primary-foreground))", fontSize: 10, fontWeight: 600, letterSpacing: "0.12em", padding: "4px 16px", borderRadius: 1 }}>{earlyAccess.badge}</div>
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 24 : 48, alignItems: "center" }}>
-            <div>
-              <div style={{ fontFamily: "Cormorant Garamond", fontSize: 11, color: "hsl(var(--primary) / 0.7)", letterSpacing: "0.1em", marginBottom: 8 }}>{earlyAccess.name.toUpperCase()}</div>
-              <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 4 }}>
-                <span style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 44 : 56, fontWeight: 300, color: marketingColors.ink, lineHeight: 1 }}>{earlyAccess.price}</span>
-                <span style={{ fontSize: 13, color: marketingColors.softText }}>{earlyAccess.period}</span>
-              </div>
-              <p style={{ fontSize: 14, color: marketingColors.mutedText, marginTop: 12, marginBottom: 24, lineHeight: 1.7 }}>{earlyAccess.desc}</p>
-              <Link to="/auth?mode=signup" style={{ display: "inline-block", padding: "14px 28px", background: marketingColors.gold, borderRadius: 2, color: "hsl(var(--primary-foreground))", fontSize: 14, fontWeight: 600, letterSpacing: "0.06em", textDecoration: "none" }}>{earlyAccess.cta}</Link>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {earlyAccess.features.map((feature) => (
-                <div key={feature} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-                  <span style={{ color: marketingColors.gold, fontSize: 16 }}>✓</span>
-                  <span style={{ fontSize: 14, color: "hsl(var(--foreground) / 0.78)", fontWeight: 300, lineHeight: 1.6 }}>{feature}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+
 
         {/* Future paid plans */}
         <div style={{ textAlign: "center", marginBottom: 24 }}>
-          <span style={{ fontSize: 11, letterSpacing: "0.16em", color: marketingColors.softText, fontWeight: 500, textTransform: "uppercase" }}>Available from 1 June 2026</span>
+          <span style={{ fontSize: 11, letterSpacing: "0.16em", color: marketingColors.softText, fontWeight: 500, textTransform: "uppercase" }}>Paid plans — available from 1 June 2026</span>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2,1fr)", gap: isMobile ? 16 : 20, alignItems: "stretch", opacity: 0.65 }}>
-          {futurePlans.map((plan) => (
-            <div key={plan.name} style={{ padding: isMobile ? "28px 24px" : 36, background: marketingColors.surface, border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 2, position: "relative" }}>
-              <div style={{ position: "absolute", top: 14, right: 14, fontSize: 9, letterSpacing: "0.1em", color: marketingColors.softText, fontWeight: 500, padding: "3px 8px", background: "hsl(var(--foreground) / 0.05)", borderRadius: 1 }}>FROM 1 JUN 2026</div>
-              <div style={{ fontFamily: "Cormorant Garamond", fontSize: 11, color: "hsl(var(--primary) / 0.7)", letterSpacing: "0.1em", marginBottom: 8 }}>{plan.name.toUpperCase()}</div>
-              <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginBottom: 4 }}>
-                <span style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 38 : 44, fontWeight: 300, color: marketingColors.ink, lineHeight: 1 }}>{plan.price}</span>
-                <span style={{ fontSize: 13, color: marketingColors.softText }}>{plan.period}</span>
-              </div>
-              <p style={{ fontSize: 13, color: marketingColors.mutedText, marginTop: 8, marginBottom: 18, lineHeight: 1.6 }}>{plan.desc}</p>
-              <div style={{ height: 1, background: marketingColors.goldBorder, marginBottom: 18 }} />
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {plan.features.map((feature) => (
-                  <div key={feature} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-                    <span style={{ color: marketingColors.gold, fontSize: 13 }}>✓</span>
-                    <span style={{ fontSize: 13, color: "hsl(var(--foreground) / 0.7)", fontWeight: 300 }}>{feature}</span>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2,1fr)", gap: isMobile ? 20 : 24, alignItems: "stretch" }}>
+          {futurePlans.map((plan) => {
+            const isFamily = plan.name === "Family";
+            return (
+              <div
+                key={plan.name}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  padding: isMobile ? "32px 24px" : "40px 36px",
+                  background: marketingColors.surface,
+                  border: isFamily ? `1.5px solid ${marketingColors.gold}` : `1px solid ${marketingColors.goldBorder}`,
+                  borderRadius: 2,
+                  position: "relative",
+                  boxShadow: isFamily ? "0 12px 48px hsl(var(--primary) / 0.10)" : "none",
+                }}
+              >
+                {plan.highlight && (
+                  <div style={{ position: "absolute", top: -12, left: isMobile ? 24 : 36, background: marketingColors.gold, color: "hsl(var(--primary-foreground))", fontSize: 10, fontWeight: 600, letterSpacing: "0.12em", padding: "4px 14px", borderRadius: 1, textTransform: "uppercase" }}>
+                    {plan.highlight}
                   </div>
-                ))}
+                )}
+                <div style={{ position: "absolute", top: 14, right: 14, fontSize: 9, letterSpacing: "0.1em", color: marketingColors.softText, fontWeight: 500, padding: "3px 8px", background: "hsl(var(--foreground) / 0.05)", borderRadius: 1 }}>FROM 1 JUN 2026</div>
+                <div style={{ fontFamily: "Cormorant Garamond", fontSize: 11, color: "hsl(var(--primary) / 0.7)", letterSpacing: "0.1em", marginBottom: 12, marginTop: plan.highlight ? 4 : 0 }}>{plan.name.toUpperCase()}</div>
+
+                {/* 14-day free trial banner above price */}
+                <div style={{ display: "inline-flex", alignSelf: "flex-start", alignItems: "center", gap: 6, padding: "5px 10px", background: "hsl(var(--primary) / 0.08)", border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 999, fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", color: marketingColors.gold, textTransform: "uppercase", marginBottom: 12 }}>
+                  ✦ 14-day free trial
+                </div>
+
+                <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginBottom: 6 }}>
+                  <span style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 40 : 48, fontWeight: 300, color: marketingColors.ink, lineHeight: 1 }}>{plan.price}</span>
+                  <span style={{ fontSize: 13, color: marketingColors.softText }}>{plan.period}</span>
+                </div>
+                <p style={{ fontSize: 13, color: marketingColors.mutedText, marginTop: 8, marginBottom: 20, lineHeight: 1.6 }}>{plan.desc}</p>
+                <div style={{ height: 1, background: marketingColors.goldBorder, marginBottom: 20 }} />
+                <div style={{ display: "flex", flexDirection: "column", gap: 11, flex: 1 }}>
+                  {plan.features.map((feature) => (
+                    <div key={feature} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                      <span style={{ color: marketingColors.gold, fontSize: 13, marginTop: 2 }}>✓</span>
+                      <span style={{ fontSize: 13.5, color: "hsl(var(--foreground) / 0.78)", fontWeight: 300, lineHeight: 1.55 }}>{feature}</span>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  disabled
+                  style={{
+                    marginTop: 24,
+                    padding: "13px 20px",
+                    width: "100%",
+                    background: "hsl(var(--foreground) / 0.06)",
+                    color: marketingColors.softText,
+                    border: `1px solid ${marketingColors.goldBorder}`,
+                    borderRadius: 2,
+                    fontSize: 13,
+                    fontWeight: 600,
+                    letterSpacing: "0.06em",
+                    textTransform: "uppercase",
+                    cursor: "not-allowed",
+                  }}
+                >
+                  Available 1 June 2026
+                </button>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* What's included in Early Access */}
@@ -383,9 +426,9 @@ function Pricing() {
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2,1fr)", gap: isMobile ? 16 : 20 }}>
             {[
               "Full access to all features — uploads, translation, share briefs, family management",
-              "No payment required — sign up with just an email",
+              "No payment required during Early Access — sign up with just an email",
               "25% lifetime discount on paid pricing when it begins on 1 June 2026",
-              "Direct feedback line to the founding team — your input shapes the product",
+              "Direct line to the founding team — your input shapes the product",
             ].map((item) => (
               <div key={item} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
                 <span style={{ color: marketingColors.gold, fontSize: 14, marginTop: 2 }}>◆</span>
