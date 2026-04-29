@@ -426,9 +426,9 @@ function Pricing() {
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2,1fr)", gap: isMobile ? 16 : 20 }}>
             {[
               "Full access to all features — uploads, translation, share briefs, family management",
-              "No payment required — sign up with just an email",
+              "No payment required during Early Access — sign up with just an email",
               "25% lifetime discount on paid pricing when it begins on 1 June 2026",
-              "Direct feedback line to the founding team — your input shapes the product",
+              "Direct line to the founding team — your input shapes the product",
             ].map((item) => (
               <div key={item} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
                 <span style={{ color: marketingColors.gold, fontSize: 14, marginTop: 2 }}>◆</span>
