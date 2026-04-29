@@ -346,9 +346,7 @@ function Pricing() {
           </p>
         </div>
 
-        {/* Early Access card */}
-...
-        </div>
+
 
         {/* Future paid plans */}
         <div style={{ textAlign: "center", marginBottom: 24 }}>
