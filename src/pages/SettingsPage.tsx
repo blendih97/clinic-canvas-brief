@@ -192,16 +192,10 @@ const SettingsPage = () => {
               </div>
               <span className="text-[10px] px-2 py-0.5 bg-muted text-muted-foreground rounded-full">{t("settings.comingSoon")}</span>
             </div>
-            <button onClick={handleExportData}
-              className="w-full flex items-center gap-2 px-4 py-3 border border-border rounded-lg text-sm text-foreground hover:bg-muted transition-colors text-left">
-              <Download className="w-4 h-4 text-muted-foreground" />
-              <div className="flex-1"><p>{t("settings.exportAllData")}</p><p className="text-xs text-muted-foreground">{t("settings.exportAllDataDesc")}</p></div>
-            </button>
-            <button onClick={() => setShowDeleteDialog(true)}
-              className="w-full flex items-center gap-2 px-4 py-3 border border-destructive/30 rounded-lg text-sm text-left text-destructive hover:bg-destructive/5 transition-colors">
-              <Trash2 className="w-4 h-4" />
-              <div className="flex-1"><p>{t("settings.deleteAccount")}</p><p className="text-xs text-muted-foreground">{t("settings.deleteAccountDesc")}</p></div>
-            </button>
+          </div>
+        </section>
+        {/* (Export and Delete moved up to "Your data, your control" section) */}
+        <div style={{ display: "none" }}>
           </div>
         </section>
 
