@@ -336,6 +336,9 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
               >
                 Upload and translate to {getLanguageName(targetLanguage)}
               </button>
+              <p className="text-[11px] text-muted-foreground text-center leading-relaxed mt-2">
+                🔒 Encrypted before upload · Source preserved · Only you can access this.
+              </p>
             </div>
           )}
 
