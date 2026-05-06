@@ -194,8 +194,6 @@ const SettingsPage = () => {
             </div>
           </div>
         </section>
-        {/* (Export and Delete moved up to "Your data, your control" section) */}
-        <div style={{ display: "none" }}>
           </div>
         </section>
 
