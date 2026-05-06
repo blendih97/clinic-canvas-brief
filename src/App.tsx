@@ -23,6 +23,7 @@ import NotFound from "./pages/NotFound.tsx";
 import PrivacyPage from "./pages/PrivacyPage.tsx";
 import TermsPage from "./pages/TermsPage.tsx";
 import UnsubscribePage from "./pages/UnsubscribePage.tsx";
+import SecurityPage from "./pages/SecurityPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -105,6 +106,7 @@ const App = () => (
               <Route path="/privacy" element={<PrivacyPage />} />
               <Route path="/terms" element={<TermsPage />} />
               <Route path="/unsubscribe" element={<UnsubscribePage />} />
+              <Route path="/security" element={<SecurityPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

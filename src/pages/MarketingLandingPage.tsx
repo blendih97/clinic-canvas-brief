@@ -119,9 +119,17 @@ function Hero() {
             <br />
             <em style={{ fontStyle: "italic", color: marketingColors.gold }}>In every language.</em>
           </h1>
-          <p style={{ fontSize: isMobile ? 16 : 17, lineHeight: 1.8, color: marketingColors.mutedText, maxWidth: 480, marginBottom: isMobile ? 32 : 48, fontWeight: 300 }}>
+          <p style={{ fontSize: isMobile ? 16 : 17, lineHeight: 1.8, color: marketingColors.mutedText, maxWidth: 480, marginBottom: isMobile ? 20 : 24, fontWeight: 300 }}>
             For families who've lived in more than one country. Upload medical records from any hospital, any language, any year — and hand your next doctor a complete, translated health picture in 30 seconds. Because the next time you see a new doctor shouldn't be the moment you realise you can't explain your mother's medication list.
           </p>
+          <div style={{ display: "inline-flex", flexWrap: "wrap", alignItems: "center", gap: 8, marginBottom: isMobile ? 28 : 40, fontSize: 12, color: marketingColors.mutedText, letterSpacing: "0.04em" }}>
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: marketingColors.gold }} />
+            <span>ICO registered</span>
+            <span style={{ color: marketingColors.faintText }}>·</span>
+            <span>EU infrastructure</span>
+            <span style={{ color: marketingColors.faintText }}>·</span>
+            <span>End-to-end encrypted</span>
+          </div>
           <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 12, alignItems: isMobile ? "stretch" : "center" }}>
             <Link to="/auth?mode=signup" style={{ padding: isMobile ? "16px 24px" : "15px 32px", background: marketingColors.gold, borderRadius: 2, color: "hsl(var(--primary-foreground))", fontSize: 14, fontWeight: 600, letterSpacing: "0.06em", textDecoration: "none", textAlign: "center", boxShadow: "0 4px 24px hsl(var(--primary) / 0.35)" }}>
               Get Early Access
@@ -270,6 +278,63 @@ function Features() {
               <div style={{ display: "inline-block", fontSize: 10, letterSpacing: "0.1em", color: marketingColors.gold, fontWeight: 500, padding: "3px 10px", border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 1, marginBottom: 12 }}>{tag}</div>
               <h3 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 24 : 27, fontWeight: 400, color: marketingColors.ink, marginBottom: 10, lineHeight: 1.2 }}>{title}</h3>
               <p style={{ fontSize: 14, lineHeight: 1.8, color: marketingColors.mutedText, fontWeight: 300 }}>{desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ClinicalSafety() {
+  const ref = useReveal<HTMLDivElement>();
+  const { isMobile, isTablet } = useMarketingBreakpoint();
+  const paddingX = isMobile ? 20 : isTablet ? 32 : 56;
+
+  const pillars = [
+    {
+      icon: "🔒",
+      title: "Your records, not ours",
+      body: "End-to-end encryption. Your medical history is encrypted at rest and in transit. We can't read your documents without your explicit permission. You can delete everything anytime.",
+    },
+    {
+      icon: "📄",
+      title: "Source documents always preserved",
+      body: "Every AI translation and summary keeps the original document one click away. Doctors can verify any detail against the original at any moment. We never replace your records — we organise them.",
+    },
+    {
+      icon: "✦",
+      title: "AI assists, doesn't replace",
+      body: "Our AI structures and translates. It doesn't make clinical decisions. Every share brief is reviewed and approved by you before any clinician sees it. AI-generated content is clearly marked.",
+    },
+    {
+      icon: "🇪🇺",
+      title: "EU-hosted, UK-compliant",
+      body: "Built on EU infrastructure (Ireland). UK GDPR compliant. ICO registered (ZC123014). Article 9 lawful basis for special-category health data processing.",
+    },
+    {
+      icon: "🛡",
+      title: "Audit trail",
+      body: "Every change, every access, every share is logged. You can see exactly who accessed what, and when.",
+    },
+  ];
+
+  return (
+    <section id="security" style={{ padding: `${isMobile ? 72 : 120}px ${paddingX}px`, background: marketingColors.cream }}>
+      <div ref={ref} className="marketing-reveal" style={{ maxWidth: 1180, margin: "0 auto" }}>
+        <div style={{ textAlign: "center", marginBottom: isMobile ? 48 : 72 }}>
+          <span className="marketing-section-label">Trust & Safety</span>
+          <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 32 : "clamp(34px,3.8vw,52px)", fontWeight: 300, color: marketingColors.ink, marginBottom: 16 }}>Built for clinical safety</h2>
+          <p style={{ fontSize: isMobile ? 14 : 16, color: marketingColors.mutedText, maxWidth: 600, margin: "0 auto", lineHeight: 1.7, fontWeight: 300 }}>
+            We treat your health data the way we'd want our own family's records treated. Here's exactly how.
+          </p>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr 1fr" : "repeat(3,1fr)", gap: 16 }}>
+          {pillars.map((p) => (
+            <div key={p.title} style={{ padding: isMobile ? "26px 22px" : "32px 28px", background: marketingColors.surface, border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 2 }}>
+              <div style={{ width: 40, height: 40, borderRadius: "50%", border: `1px solid ${marketingColors.goldBorder}`, background: marketingColors.goldSoft, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16, fontSize: 18 }}>{p.icon}</div>
+              <h3 style={{ fontFamily: "Cormorant Garamond", fontSize: 22, fontWeight: 400, color: marketingColors.ink, marginBottom: 10, lineHeight: 1.25 }}>{p.title}</h3>
+              <p style={{ fontSize: 13.5, lineHeight: 1.75, color: marketingColors.mutedText, fontWeight: 300 }}>{p.body}</p>
             </div>
           ))}
         </div>
@@ -490,6 +555,7 @@ const MarketingLandingPage = () => {
       <HowItWorks />
       <WhyRinVita />
       <Features />
+      <ClinicalSafety />
       <Pricing />
       <FAQ />
       <MarketingFooter />

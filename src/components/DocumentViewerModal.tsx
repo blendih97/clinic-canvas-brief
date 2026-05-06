@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, FileText, Download, Share2, Globe, Languages, Loader2, AlertCircle, RefreshCw, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
+import { X, FileText, Download, Share2, Globe, Languages, Loader2, AlertCircle, RefreshCw, ZoomIn, ZoomOut, RotateCcw, Sparkles } from "lucide-react";
 import type { Document } from "@/store/vaultStore";
 import { useVaultStore } from "@/store/vaultStore";
 import { supabase } from "@/integrations/supabase/client";
@@ -297,6 +297,16 @@ const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
                   <Languages className="w-3 h-3" /> Original ({originalLangName})
                 </button>
               </div>
+            )}
+
+            {!showOriginal && hasOriginalLanguage && (
+              <button
+                onClick={() => setLang("original")}
+                className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary hover:bg-primary/15 transition-colors"
+                title="View original document"
+              >
+                <Sparkles className="w-3 h-3" /> AI-translated · view original
+              </button>
             )}
 
             <div className="space-y-2">

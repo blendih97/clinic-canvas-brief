@@ -97,6 +97,12 @@ const ShareView = () => {
       </header>
 
       <main className="max-w-3xl mx-auto px-6 py-8 space-y-8">
+        <div className="bg-card border border-primary/20 rounded-lg p-5 text-sm text-foreground/80 leading-relaxed">
+          <p className="font-medium text-foreground mb-1.5">For the receiving clinician</p>
+          <p>
+            This is a patient-curated medical summary. Records have been organised and translated by AI from original documents at the patient's request. All source documents are accessible below. This is not a substitute for clinical records from the originating institution.
+          </p>
+        </div>
         <div className="bg-primary/5 border border-primary/10 rounded-lg p-4 text-sm text-primary">
           Scope: {brief.scope || "Full Health History"} · Created {new Date(brief.created_at).toLocaleDateString()}
         </div>

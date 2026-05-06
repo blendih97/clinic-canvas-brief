@@ -343,6 +343,7 @@ export function MarketingFooter() {
   ];
 
   const legalLinks = [
+    { label: "Security & Trust", href: "/security" },
     { label: "Privacy Policy", href: "/privacy" },
     { label: "Terms of Service", href: "/terms" },
   ];
