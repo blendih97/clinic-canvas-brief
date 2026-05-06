@@ -7,7 +7,7 @@ const SecurityPage = () => {
   const sections = [
     {
       title: "Encryption at rest and in transit",
-      body: "All medical documents are encrypted using AES-256 in storage and TLS 1.3 in transit. Decryption keys are scoped per user — no RinVita employee can read your documents without an explicit, logged access grant from you.",
+      body: "All medical documents are encrypted with AES-256 in storage and TLS 1.3 in transit. Access is isolated per user through row-level security, and no RinVita employee can read your documents without an explicit, logged access grant from you. We do not currently offer end-to-end (zero-knowledge) encryption — our AI translation and extraction features require documents to be processed on secure server infrastructure.",
     },
     {
       title: "EU data residency",
@@ -45,7 +45,7 @@ const SecurityPage = () => {
             Confidential health records demand more than a privacy policy. Here is exactly how RinVita is built — what we do, what we never do, and what you can verify yourself.
           </p>
           <div style={{ fontSize: 12, color: marketingColors.softText, letterSpacing: "0.04em", marginBottom: 48 }}>
-            ICO ZC123014 · EU infrastructure (Ireland) · End-to-end encrypted
+            ICO ZC123014 · EU infrastructure (Ireland) · AES-256 at rest · TLS 1.3 in transit
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
             {sections.map((s) => (
