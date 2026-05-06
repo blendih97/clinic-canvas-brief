@@ -363,7 +363,7 @@ const ShareBriefSection = () => {
               <Shield className="w-6 h-6 text-primary" />
             </div>
             <h3 className="font-heading text-xl text-foreground mb-1">Encrypted Link Ready</h3>
-            <p className="text-xs text-muted-foreground mb-4">AES-256 encrypted · {getLanguageName(language)} · End-to-end secure</p>
+            <p className="text-xs text-muted-foreground mb-4">AES-256 encrypted · {getLanguageName(language)} · Tokenised share link</p>
             <div className="flex items-center gap-2 bg-muted rounded-lg border border-border p-3 mb-4">
               <code className="flex-1 text-xs text-foreground/70 truncate">{shareLink}</code>
               <button onClick={handleCopy} className="px-3 py-1.5 bg-primary text-primary-foreground rounded-lg text-xs font-medium flex items-center gap-1 hover:bg-primary/90">

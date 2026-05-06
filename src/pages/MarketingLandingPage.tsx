@@ -128,7 +128,7 @@ function Hero() {
             <span style={{ color: marketingColors.faintText }}>·</span>
             <span>EU infrastructure</span>
             <span style={{ color: marketingColors.faintText }}>·</span>
-            <span>End-to-end encrypted</span>
+            <span>Encrypted at rest & in transit</span>
           </div>
           <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 12, alignItems: isMobile ? "stretch" : "center" }}>
             <Link to="/auth?mode=signup" style={{ padding: isMobile ? "16px 24px" : "15px 32px", background: marketingColors.gold, borderRadius: 2, color: "hsl(var(--primary-foreground))", fontSize: 14, fontWeight: 600, letterSpacing: "0.06em", textDecoration: "none", textAlign: "center", boxShadow: "0 4px 24px hsl(var(--primary) / 0.35)" }}>
@@ -295,7 +295,7 @@ function ClinicalSafety() {
     {
       icon: "🔒",
       title: "Your records, not ours",
-      body: "End-to-end encryption. Your medical history is encrypted at rest and in transit. We can't read your documents without your explicit permission. You can delete everything anytime.",
+      body: "Your medical history is encrypted with AES-256 at rest and TLS 1.3 in transit, isolated per user with row-level security. No RinVita employee can read your documents without an explicit, logged access grant from you. You can delete everything anytime.",
     },
     {
       icon: "📄",
