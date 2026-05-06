@@ -299,6 +299,16 @@ const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
               </div>
             )}
 
+            {!showOriginal && hasOriginalLanguage && (
+              <button
+                onClick={() => setLang("original")}
+                className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary hover:bg-primary/15 transition-colors"
+                title="View original document"
+              >
+                <Sparkles className="w-3 h-3" /> AI-translated · view original
+              </button>
+            )}
+
             <div className="space-y-2">
               <div className="flex justify-between text-sm"><span className="text-muted-foreground">Date</span><span className="text-foreground">{doc.date}</span></div>
               <div className="flex justify-between text-sm"><span className="text-muted-foreground">Facility</span><span className="text-foreground">{doc.facility}</span></div>
