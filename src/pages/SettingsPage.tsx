@@ -194,8 +194,7 @@ const SettingsPage = () => {
             </div>
           </div>
         </section>
-          </div>
-        </section>
+
 
         <section className="bg-card border border-border rounded-xl p-6 mb-6">
           <h2 className="font-heading text-lg text-foreground mb-4">{t("settings.subscription")}</h2>
