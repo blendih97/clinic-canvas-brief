@@ -498,6 +498,7 @@ const MarketingLandingPage = () => {
       <HowItWorks />
       <WhyRinVita />
       <Features />
+      <ClinicalSafety />
       <Pricing />
       <FAQ />
       <MarketingFooter />
