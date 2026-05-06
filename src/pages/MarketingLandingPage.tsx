@@ -119,9 +119,17 @@ function Hero() {
             <br />
             <em style={{ fontStyle: "italic", color: marketingColors.gold }}>In every language.</em>
           </h1>
-          <p style={{ fontSize: isMobile ? 16 : 17, lineHeight: 1.8, color: marketingColors.mutedText, maxWidth: 480, marginBottom: isMobile ? 32 : 48, fontWeight: 300 }}>
+          <p style={{ fontSize: isMobile ? 16 : 17, lineHeight: 1.8, color: marketingColors.mutedText, maxWidth: 480, marginBottom: isMobile ? 20 : 24, fontWeight: 300 }}>
             For families who've lived in more than one country. Upload medical records from any hospital, any language, any year — and hand your next doctor a complete, translated health picture in 30 seconds. Because the next time you see a new doctor shouldn't be the moment you realise you can't explain your mother's medication list.
           </p>
+          <div style={{ display: "inline-flex", flexWrap: "wrap", alignItems: "center", gap: 8, marginBottom: isMobile ? 28 : 40, fontSize: 12, color: marketingColors.mutedText, letterSpacing: "0.04em" }}>
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: marketingColors.gold }} />
+            <span>ICO registered</span>
+            <span style={{ color: marketingColors.faintText }}>·</span>
+            <span>EU infrastructure</span>
+            <span style={{ color: marketingColors.faintText }}>·</span>
+            <span>End-to-end encrypted</span>
+          </div>
           <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 12, alignItems: isMobile ? "stretch" : "center" }}>
             <Link to="/auth?mode=signup" style={{ padding: isMobile ? "16px 24px" : "15px 32px", background: marketingColors.gold, borderRadius: 2, color: "hsl(var(--primary-foreground))", fontSize: 14, fontWeight: 600, letterSpacing: "0.06em", textDecoration: "none", textAlign: "center", boxShadow: "0 4px 24px hsl(var(--primary) / 0.35)" }}>
               Get Early Access
