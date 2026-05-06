@@ -123,6 +123,38 @@ const SettingsPage = () => {
           </div>
         </div>
 
+        <section className="bg-card border border-primary/30 rounded-xl p-6 mb-6">
+          <div className="flex items-start gap-2 mb-4">
+            <Shield className="w-5 h-5 text-primary mt-0.5" />
+            <div>
+              <h2 className="font-heading text-lg text-foreground">Your data, your control</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">Export, audit, revoke, or delete — at any time. No questions, no waiting.</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button onClick={handleExportData}
+              className="flex items-start gap-2 px-4 py-3 border border-border rounded-lg text-sm text-foreground hover:bg-muted transition-colors text-left">
+              <Download className="w-4 h-4 text-primary mt-0.5" />
+              <div className="flex-1"><p className="font-medium">Download all my data</p><p className="text-xs text-muted-foreground">GDPR Article 15 — full export as JSON.</p></div>
+            </button>
+            <button onClick={() => toast.info("Audit log coming soon — full access history with timestamps.")}
+              className="flex items-start gap-2 px-4 py-3 border border-border rounded-lg text-sm text-foreground hover:bg-muted transition-colors text-left">
+              <Info className="w-4 h-4 text-primary mt-0.5" />
+              <div className="flex-1"><p className="font-medium">View my audit log</p><p className="text-xs text-muted-foreground">Who accessed what, and when.</p></div>
+            </button>
+            <button onClick={() => navigate("/app?section=share")}
+              className="flex items-start gap-2 px-4 py-3 border border-border rounded-lg text-sm text-foreground hover:bg-muted transition-colors text-left">
+              <Shield className="w-4 h-4 text-primary mt-0.5" />
+              <div className="flex-1"><p className="font-medium">Manage active share links</p><p className="text-xs text-muted-foreground">Review and revoke any active share briefs.</p></div>
+            </button>
+            <button onClick={() => setShowDeleteDialog(true)}
+              className="flex items-start gap-2 px-4 py-3 border border-destructive/30 rounded-lg text-sm text-left text-destructive hover:bg-destructive/5 transition-colors">
+              <Trash2 className="w-4 h-4 mt-0.5" />
+              <div className="flex-1"><p className="font-medium">Delete my account and all data</p><p className="text-xs text-muted-foreground">Permanent and irreversible.</p></div>
+            </button>
+          </div>
+        </section>
+
         <section className="bg-card border border-border rounded-xl p-6 mb-6">
           <h2 className="font-heading text-lg text-foreground mb-4">{t("settings.notifications")}</h2>
           <div className="space-y-4">
