@@ -83,7 +83,6 @@ const App = () => (
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <CookieConsent />
           <BrowserRouter>
             <Routes>
               <Route path="/auth" element={<AuthRoute><AuthPage /></AuthRoute>} />
