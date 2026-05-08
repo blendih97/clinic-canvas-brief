@@ -309,7 +309,7 @@ const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
                 className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary hover:bg-primary/15 transition-colors"
                 title="View original document"
               >
-                <Sparkles className="w-3 h-3" /> AI-translated · view original
+                <Sparkles className="w-3 h-3" /> AI-translated to {translatedLangName} · view original
               </button>
             )}
 
