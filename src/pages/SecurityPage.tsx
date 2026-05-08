@@ -55,7 +55,7 @@ const SecurityPage = () => {
               </div>
             ))}
             <div style={{ borderTop: `1px solid hsl(var(--foreground) / 0.1)`, paddingTop: 24, marginTop: 12, fontSize: 13, color: marketingColors.softText }}>
-              Questions? Email <a href="mailto:security@rinvita.health" style={{ color: marketingColors.gold }}>security@rinvita.health</a>.
+              Questions? Email <a href="mailto:hello@rinvita.co.uk" style={{ color: marketingColors.gold }}>hello@rinvita.co.uk</a>.
             </div>
           </div>
         </div>
