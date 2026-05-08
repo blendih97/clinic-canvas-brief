@@ -421,6 +421,12 @@ const AuthPage = () => {
                            {t("auth.marketingConsent")}
                         </span>
                       </label>
+                      <p className="text-[11px] text-muted-foreground/80 leading-relaxed pt-1">
+                        By creating an account you agree to our{" "}
+                        <Link to="/terms" target="_blank" rel="noopener" className="underline hover:text-primary">Terms of Service</Link>
+                        {" "}and{" "}
+                        <Link to="/privacy" target="_blank" rel="noopener" className="underline hover:text-primary">Privacy Policy</Link>.
+                      </p>
                     </div>
                   )}
 
