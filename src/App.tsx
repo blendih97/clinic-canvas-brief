@@ -24,6 +24,7 @@ import PrivacyPage from "./pages/PrivacyPage.tsx";
 import TermsPage from "./pages/TermsPage.tsx";
 import UnsubscribePage from "./pages/UnsubscribePage.tsx";
 import SecurityPage from "./pages/SecurityPage.tsx";
+import CookieConsent from "./components/CookieConsent";
 
 const queryClient = new QueryClient();
 
