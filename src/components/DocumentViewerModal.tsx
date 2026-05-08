@@ -112,6 +112,10 @@ const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
   const isRtl = !!originalLangCode && RTL_CODES.has(originalLangCode);
   const hasOriginalLanguage = !!originalLangName && originalLangName.toLowerCase() !== "english";
 
+  const translatedLangCode = (doc.translatedLanguageCode || "en").toLowerCase();
+  const translatedLangName = resolveLangName(translatedLangCode) || "English";
+  const isTranslatedRtl = RTL_CODES.has(translatedLangCode);
+
   const hasFullOriginal = !!doc.contentOriginal && doc.contentOriginal.trim().length > 0;
   const hasFullTranslated = !!doc.contentTranslated && doc.contentTranslated.trim().length > 0;
 
