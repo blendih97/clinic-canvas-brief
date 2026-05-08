@@ -286,7 +286,7 @@ const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  <Globe className="w-3 h-3" /> English
+                  <Globe className="w-3 h-3" /> {translatedLangName}
                 </button>
                 <button
                   role="tab"
