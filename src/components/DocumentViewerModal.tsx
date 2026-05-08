@@ -112,6 +112,10 @@ const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
   const isRtl = !!originalLangCode && RTL_CODES.has(originalLangCode);
   const hasOriginalLanguage = !!originalLangName && originalLangName.toLowerCase() !== "english";
 
+  const translatedLangCode = (doc.translatedLanguageCode || "en").toLowerCase();
+  const translatedLangName = resolveLangName(translatedLangCode) || "English";
+  const isTranslatedRtl = RTL_CODES.has(translatedLangCode);
+
   const hasFullOriginal = !!doc.contentOriginal && doc.contentOriginal.trim().length > 0;
   const hasFullTranslated = !!doc.contentTranslated && doc.contentTranslated.trim().length > 0;
 
@@ -282,7 +286,7 @@ const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  <Globe className="w-3 h-3" /> English
+                  <Globe className="w-3 h-3" /> {translatedLangName}
                 </button>
                 <button
                   role="tab"
@@ -305,7 +309,7 @@ const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
                 className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary hover:bg-primary/15 transition-colors"
                 title="View original document"
               >
-                <Sparkles className="w-3 h-3" /> AI-translated · view original
+                <Sparkles className="w-3 h-3" /> AI-translated to {translatedLangName} · view original
               </button>
             )}
 
@@ -395,8 +399,12 @@ const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
               <>
                 {hasFullTranslated && (
                   <div>
-                    <h4 className="text-xs tracking-wider text-muted-foreground uppercase font-medium mb-2">Full Text (English)</h4>
-                    <div className="text-sm text-foreground/85 leading-relaxed whitespace-pre-wrap p-4 bg-muted/40 rounded-lg border border-border/60 max-h-72 overflow-auto">
+                    <h4 className="text-xs tracking-wider text-muted-foreground uppercase font-medium mb-2">Full Text ({translatedLangName})</h4>
+                    <div
+                      dir={isTranslatedRtl ? "rtl" : "ltr"}
+                      lang={translatedLangCode}
+                      className={`text-sm text-foreground/85 leading-relaxed whitespace-pre-wrap p-4 bg-muted/40 rounded-lg border border-border/60 max-h-72 overflow-auto ${isTranslatedRtl ? "text-right" : "text-left"}`}
+                    >
                       {translatedDisplayText}
                     </div>
                   </div>
@@ -500,7 +508,6 @@ const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
                       <option key={l.code} value={l.code}>{l.name}</option>
                     ))}
                   </select>
-                  {isReprocessing && <Loader2 className="w-4 h-4 text-primary animate-spin self-center" />}
                   {isReprocessing && <Loader2 className="w-4 h-4 text-primary animate-spin self-center" />}
                 </div>
                 <p className="text-[10px] text-muted-foreground">
