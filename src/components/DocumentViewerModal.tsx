@@ -75,9 +75,10 @@ const getSummaryContent = (summary?: Document["summary"]) => {
   };
 };
 
-const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
+const DocumentViewerModal = ({ document: docProp, onClose, onShare }: Props) => {
   const [lang, setLang] = useState<"english" | "original">("english");
-  const { bloodResults, imagingResults, medications, updateDocument } = useVaultStore();
+  const { bloodResults, imagingResults, medications, updateDocument, documents } = useVaultStore();
+  const doc = documents.find((d) => d.id === docProp.id) || docProp;
   const [signedUrl, setSignedUrl] = useState<string | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const [isReprocessing, setIsReprocessing] = useState(false);
