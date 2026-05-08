@@ -399,8 +399,12 @@ const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
               <>
                 {hasFullTranslated && (
                   <div>
-                    <h4 className="text-xs tracking-wider text-muted-foreground uppercase font-medium mb-2">Full Text (English)</h4>
-                    <div className="text-sm text-foreground/85 leading-relaxed whitespace-pre-wrap p-4 bg-muted/40 rounded-lg border border-border/60 max-h-72 overflow-auto">
+                    <h4 className="text-xs tracking-wider text-muted-foreground uppercase font-medium mb-2">Full Text ({translatedLangName})</h4>
+                    <div
+                      dir={isTranslatedRtl ? "rtl" : "ltr"}
+                      lang={translatedLangCode}
+                      className={`text-sm text-foreground/85 leading-relaxed whitespace-pre-wrap p-4 bg-muted/40 rounded-lg border border-border/60 max-h-72 overflow-auto ${isTranslatedRtl ? "text-right" : "text-left"}`}
+                    >
                       {translatedDisplayText}
                     </div>
                   </div>
