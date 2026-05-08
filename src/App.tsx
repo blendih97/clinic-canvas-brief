@@ -110,6 +110,7 @@ const App = () => (
               <Route path="/security" element={<SecurityPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
+            <CookieConsent />
           </BrowserRouter>
         </TooltipProvider>
       </LocaleProvider>
