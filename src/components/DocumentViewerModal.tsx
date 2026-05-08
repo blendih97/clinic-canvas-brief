@@ -509,7 +509,6 @@ const DocumentViewerModal = ({ document: doc, onClose, onShare }: Props) => {
                     ))}
                   </select>
                   {isReprocessing && <Loader2 className="w-4 h-4 text-primary animate-spin self-center" />}
-                  {isReprocessing && <Loader2 className="w-4 h-4 text-primary animate-spin self-center" />}
                 </div>
                 <p className="text-[10px] text-muted-foreground">
                   Currently translated to {getLanguageName(doc.translatedLanguageCode)}. Selecting another language re-runs the AI translation.
