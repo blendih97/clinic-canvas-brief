@@ -348,6 +348,7 @@ function Pricing() {
   const ref = useReveal<HTMLDivElement>();
   const { isMobile, isTablet } = useMarketingBreakpoint();
   const paddingX = isMobile ? 20 : isTablet ? 32 : 56;
+  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">("annual");
 
   const earlyAccess = {
     name: "Free Early Access",
@@ -367,7 +368,10 @@ function Pricing() {
   const futurePlans = [
     {
       name: "Standard",
-      price: "£39",
+      monthlyPrice: "£39",
+      annualPricePerMonth: "£29.25",
+      annualBill: "£351",
+      monthlySaving: "You save £117 a year",
       period: "/month",
       desc: "For individuals managing complex medical history.",
       highlight: null as string | null,
@@ -383,7 +387,10 @@ function Pricing() {
     },
     {
       name: "Family",
-      price: "£89.99",
+      monthlyPrice: "£89.99",
+      annualPricePerMonth: "£67.49",
+      annualBill: "£809.88",
+      monthlySaving: "You save £269.88 a year",
       period: "/month",
       desc: "One plan for the whole family, across every border.",
       highlight: "Best for families",
@@ -412,7 +419,60 @@ function Pricing() {
           </p>
         </div>
 
-
+        {/* Monthly / Annual Toggle */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginBottom: isMobile ? 32 : 40 }}>
+          <button
+            onClick={() => setBillingPeriod("monthly")}
+            style={{
+              padding: "10px 24px",
+              borderRadius: 2,
+              fontSize: 13,
+              fontWeight: 600,
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
+              cursor: "pointer",
+              border: billingPeriod === "monthly" ? "1px solid hsl(var(--foreground))" : `1px solid ${marketingColors.goldBorder}`,
+              background: billingPeriod === "monthly" ? "hsl(var(--foreground))" : "transparent",
+              color: billingPeriod === "monthly" ? "hsl(var(--background))" : marketingColors.mutedText,
+              transition: "all 0.2s ease",
+            }}
+          >
+            Monthly
+          </button>
+          <button
+            onClick={() => setBillingPeriod("annual")}
+            style={{
+              position: "relative",
+              padding: "10px 24px",
+              borderRadius: 2,
+              fontSize: 13,
+              fontWeight: 600,
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
+              cursor: "pointer",
+              border: billingPeriod === "annual" ? `1px solid ${marketingColors.gold}` : `1px solid ${marketingColors.goldBorder}`,
+              background: billingPeriod === "annual" ? marketingColors.gold : "transparent",
+              color: billingPeriod === "annual" ? "hsl(var(--primary-foreground))" : marketingColors.mutedText,
+              transition: "all 0.2s ease",
+            }}
+          >
+            Annual
+            <span style={{
+              position: "absolute",
+              top: -10,
+              right: -8,
+              background: "#d97706",
+              color: "#fff",
+              fontSize: 9,
+              fontWeight: 700,
+              padding: "3px 7px",
+              borderRadius: 999,
+              letterSpacing: "0.04em",
+            }}>
+              SAVE 25%
+            </span>
+          </button>
+        </div>
 
         {/* Future paid plans */}
         <div style={{ textAlign: "center", marginBottom: 24 }}>
@@ -421,6 +481,8 @@ function Pricing() {
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2,1fr)", gap: isMobile ? 20 : 24, alignItems: "stretch" }}>
           {futurePlans.map((plan) => {
             const isFamily = plan.name === "Family";
+            const isAnnual = billingPeriod === "annual";
+            const displayPrice = isAnnual ? plan.annualPricePerMonth : plan.monthlyPrice;
             return (
               <div
                 key={plan.name}
@@ -433,11 +495,17 @@ function Pricing() {
                   borderRadius: 2,
                   position: "relative",
                   boxShadow: isFamily ? "0 12px 48px hsl(var(--primary) / 0.10)" : "none",
+                  transition: "all 0.3s ease",
                 }}
               >
                 {plan.highlight && (
                   <div style={{ position: "absolute", top: -12, left: isMobile ? 24 : 36, background: marketingColors.gold, color: "hsl(var(--primary-foreground))", fontSize: 10, fontWeight: 600, letterSpacing: "0.12em", padding: "4px 14px", borderRadius: 1, textTransform: "uppercase" }}>
                     {plan.highlight}
+                  </div>
+                )}
+                {isAnnual && (
+                  <div style={{ position: "absolute", top: -12, right: isMobile ? 24 : 36, background: "#d97706", color: "#fff", fontSize: 9, fontWeight: 700, letterSpacing: "0.04em", padding: "4px 10px", borderRadius: 1, textTransform: "uppercase" }}>
+                    SAVE 25%
                   </div>
                 )}
                 <div style={{ position: "absolute", top: 14, right: 14, fontSize: 9, letterSpacing: "0.1em", color: marketingColors.softText, fontWeight: 500, padding: "3px 8px", background: "hsl(var(--foreground) / 0.05)", borderRadius: 1 }}>FROM 1 JUN 2026</div>
@@ -448,11 +516,24 @@ function Pricing() {
                   ✦ 14-day free trial
                 </div>
 
-                <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginBottom: 6 }}>
-                  <span style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 40 : 48, fontWeight: 300, color: marketingColors.ink, lineHeight: 1 }}>{plan.price}</span>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginBottom: 2 }}>
+                  <span style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 40 : 48, fontWeight: 300, color: marketingColors.ink, lineHeight: 1 }}>{displayPrice}</span>
                   <span style={{ fontSize: 13, color: marketingColors.softText }}>{plan.period}</span>
                 </div>
-                <p style={{ fontSize: 13, color: marketingColors.mutedText, marginTop: 8, marginBottom: 20, lineHeight: 1.6 }}>{plan.desc}</p>
+
+                {isAnnual && (
+                  <p style={{ fontSize: 12, color: marketingColors.softText, marginBottom: 8 }}>
+                    billed annually ({plan.annualBill}/year)
+                  </p>
+                )}
+
+                {isAnnual && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 10px", background: "rgba(217, 119, 6, 0.08)", border: "1px solid rgba(217, 119, 6, 0.22)", borderRadius: 2, marginBottom: 12, alignSelf: "flex-start" }}>
+                    <span style={{ color: "#d97706", fontSize: 11, fontWeight: 600 }}>→ {plan.monthlySaving}</span>
+                  </div>
+                )}
+
+                <p style={{ fontSize: 13, color: marketingColors.mutedText, marginTop: 4, marginBottom: 20, lineHeight: 1.6 }}>{plan.desc}</p>
                 <div style={{ height: 1, background: marketingColors.goldBorder, marginBottom: 20 }} />
                 <div style={{ display: "flex", flexDirection: "column", gap: 11, flex: 1 }}>
                   {plan.features.map((feature) => (
