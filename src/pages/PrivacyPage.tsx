@@ -1,4 +1,5 @@
 import { MarketingFooter, MarketingNav, MarketingStyles, marketingColors, useMarketingBreakpoint } from "@/components/marketing/shared";
+import SEO from "@/components/SEO";
 
 const PrivacyPage = () => {
   const { isMobile, isTablet } = useMarketingBreakpoint();
