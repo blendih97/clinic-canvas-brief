@@ -8,6 +8,7 @@ import {
   LogoMark,
   useMarketingBreakpoint,
 } from "@/components/marketing/shared";
+import SEO from "@/components/SEO";
 
 const steps = [
   { label: "Upload", icon: "⬆" },
@@ -395,6 +396,7 @@ const EarlyAccessBanner = () => (
 const ProductDemoPage = () => {
   return (
     <div className="marketing-page" style={{ background: marketingColors.cream, color: marketingColors.ink }}>
+      <SEO title="Interactive Demo — RinVita" description="See RinVita in action: upload a medical document, watch AI extract and translate it, and generate a clinician-ready share brief." path="/demo" />
       <MarketingStyles />
       <MarketingNav currentPage="demo" />
       <EarlyAccessBanner />

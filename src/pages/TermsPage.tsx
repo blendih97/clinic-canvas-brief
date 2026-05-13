@@ -1,4 +1,5 @@
 import { MarketingFooter, MarketingNav, MarketingStyles, marketingColors, useMarketingBreakpoint } from "@/components/marketing/shared";
+import SEO from "@/components/SEO";
 
 const TermsPage = () => {
   const { isMobile, isTablet } = useMarketingBreakpoint();
@@ -22,6 +23,7 @@ const TermsPage = () => {
 
   return (
     <div className="marketing-page" style={{ background: marketingColors.cream, color: marketingColors.ink }}>
+      <SEO title="Terms of Service — RinVita" description="Interim Terms of Service governing use of RinVita during Early Access. Full terms from our solicitor coming shortly." path="/terms" />
       <MarketingStyles />
       <MarketingNav currentPage="home" />
       <section style={{ padding: `${isMobile ? 100 : 140}px ${paddingX}px ${isMobile ? 56 : 80}px`, background: marketingColors.cream }}>

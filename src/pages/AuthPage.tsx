@@ -9,6 +9,7 @@ import CountryCombobox, { type CountryOption } from "@/components/CountryCombobo
 import { Checkbox } from "@/components/ui/checkbox";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useLocale } from "@/hooks/useLocale";
+import SEO from "@/components/SEO";
 
 const totalSignupSteps = 5;
 
@@ -229,6 +230,7 @@ const AuthPage = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <SEO title="Sign in or create your account — RinVita" description="Access your RinVita health vault. Sign in or create a free Early Access account." path="/auth" noindex />
       <div className="w-full max-w-md">
         <div className="mb-8 flex flex-col items-center gap-4 text-center">
           <LanguageSwitcher />

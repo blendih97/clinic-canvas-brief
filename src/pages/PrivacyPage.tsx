@@ -1,4 +1,5 @@
 import { MarketingFooter, MarketingNav, MarketingStyles, marketingColors, useMarketingBreakpoint } from "@/components/marketing/shared";
+import SEO from "@/components/SEO";
 
 const PrivacyPage = () => {
   const { isMobile, isTablet } = useMarketingBreakpoint();
@@ -35,6 +36,7 @@ const PrivacyPage = () => {
 
   return (
     <div className="marketing-page" style={{ background: marketingColors.cream, color: marketingColors.ink }}>
+      <SEO title="Privacy Policy — RinVita" description="How RinVita collects, processes, and protects your personal and medical data. UK GDPR, ICO registered, EU-hosted." path="/privacy" />
       <MarketingStyles />
       <MarketingNav currentPage="home" />
       <section style={{ padding: `${isMobile ? 100 : 140}px ${paddingX}px ${isMobile ? 56 : 80}px`, background: marketingColors.cream }}>
