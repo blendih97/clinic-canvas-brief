@@ -1,0 +1,18 @@
+# RinVita
+
+> Your health history. Everywhere you go. RinVita is a personal medical-records workspace that lets you upload documents in any language, uses AI to extract and translate them, and lets you share a clear summary with any clinician worldwide.
+
+RinVita Ltd is a UK company (registered in England and Wales, number 17163153), ICO registered (ZC123014). All infrastructure is hosted in the EU (Ireland). Data is encrypted with AES-256 at rest and TLS 1.3 in transit. Records are processed under UK GDPR Article 9(2)(h) with explicit consent.
+
+## Pages
+
+- [Home](/): Product overview, how it works, pricing, and FAQ.
+- [Interactive demo](/demo): Walkthrough of the upload, translation, and share-brief flow.
+- [Security & Trust](/security): Encryption, EU data residency, GDPR, audit logging, and user rights.
+- [Privacy Policy](/privacy): How RinVita collects, processes, and protects personal and health data.
+- [Terms of Service](/terms): Interim terms governing use of the service during Early Access.
+- [Sign in / Sign up](/auth): Account access.
+
+## Optional
+
+- [Unsubscribe](/unsubscribe): Email preferences.
