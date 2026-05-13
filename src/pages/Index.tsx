@@ -42,7 +42,7 @@ const Index = () => {
   const requestUpload = () => {
     if (!canUpload) {
       setUpgradeFeature("unlimited_uploads");
-      setUpgradeMessage("Document limit reached. Upgrade to Standard at £39/month for unlimited uploads.");
+      setUpgradeMessage("Document limit reached. Upgrade to Standard for unlimited uploads.");
       return;
     }
     setUploadOpen(true);
