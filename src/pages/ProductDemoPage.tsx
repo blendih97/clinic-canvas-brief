@@ -8,6 +8,7 @@ import {
   LogoMark,
   useMarketingBreakpoint,
 } from "@/components/marketing/shared";
+import SEO from "@/components/SEO";
 
 const steps = [
   { label: "Upload", icon: "⬆" },
