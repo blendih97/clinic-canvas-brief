@@ -550,6 +550,11 @@ function FAQ() {
 const MarketingLandingPage = () => {
   return (
     <div className="marketing-page" style={{ background: marketingColors.cream, color: marketingColors.ink }}>
+      <SEO
+        title="RinVita — Your health history. Everywhere you go."
+        description="Upload medical documents in any language, AI extracts and translates them, share securely with any clinician worldwide. Encrypted, EU-hosted, ICO registered."
+        path="/"
+      />
       <MarketingStyles />
       <MarketingNav currentPage="home" />
       <Hero />
