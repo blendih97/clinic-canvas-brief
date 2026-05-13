@@ -2,11 +2,32 @@
 import type { Profile } from "@/hooks/useAuth";
 
 export type Plan = "free" | "standard" | "family";
+export type BillingPeriod = "monthly" | "annual";
 
 export const PLAN_PRICES = {
   free: { label: "Free Trial", price: "Free", period: "14-day trial" },
-  standard: { label: "Standard", price: "£39", period: "/month" },
-  family: { label: "Family", price: "£89.99", period: "/month" },
+  standard: {
+    label: "Standard",
+    monthlyPrice: "£39",
+    annualPricePerMonth: "£29.25",
+    annualBill: "£351",
+    monthlyPeriod: "/month",
+    annualPeriod: "/month",
+    annualPeriodSub: "billed annually",
+    monthlySaving: "You save £117 a year",
+    annualSaving: "You save £117 a year",
+  },
+  family: {
+    label: "Family",
+    monthlyPrice: "£89.99",
+    annualPricePerMonth: "£67.49",
+    annualBill: "£809.88",
+    monthlyPeriod: "/month",
+    annualPeriod: "/month",
+    annualPeriodSub: "billed annually",
+    monthlySaving: "You save £269.88 a year",
+    annualSaving: "You save £269.88 a year",
+  },
 } as const;
 
 export const TRIAL_DAYS = 14;
@@ -49,10 +70,14 @@ export function getRequiredPlanLabel(feature: Feature): string {
   return PLAN_PRICES[required].label;
 }
 
-export function getRequiredPlanPrice(feature: Feature): string {
+export function getRequiredPlanPrice(feature: Feature, period: BillingPeriod = "monthly"): string {
   const required = FEATURE_REQUIREMENTS[feature][0];
   const p = PLAN_PRICES[required];
-  return `${p.price}${p.period}`;
+  if (required === "free") return `${p.price}${p.period}`;
+  if (period === "annual") {
+    return `${p.annualPricePerMonth}${p.annualPeriod}`;
+  }
+  return `${p.monthlyPrice}${p.monthlyPeriod}`;
 }
 
 // TESTING PHASE: unlimited uploads for everyone.
