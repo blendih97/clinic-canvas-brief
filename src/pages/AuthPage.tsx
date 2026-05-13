@@ -9,6 +9,7 @@ import CountryCombobox, { type CountryOption } from "@/components/CountryCombobo
 import { Checkbox } from "@/components/ui/checkbox";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useLocale } from "@/hooks/useLocale";
+import SEO from "@/components/SEO";
 
 const totalSignupSteps = 5;
 
