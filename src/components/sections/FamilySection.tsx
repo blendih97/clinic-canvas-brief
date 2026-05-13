@@ -146,7 +146,7 @@ const FamilySection = ({ onViewMember }: { onViewMember: (memberId: string, memb
           </div>
           <h3 className="font-heading text-xl text-foreground mb-2">Family Plan Required</h3>
           <p className="text-sm text-muted-foreground mb-4 max-w-md mx-auto">
-            The Family Vault is available on the Family plan at £89.99/month. Manage health records for up to 6 members from one account.
+            The Family Vault is available on the Family plan. Manage health records for up to 6 members from one account.
           </p>
           <p className="text-xs text-muted-foreground">Upgrade coming soon.</p>
         </div>

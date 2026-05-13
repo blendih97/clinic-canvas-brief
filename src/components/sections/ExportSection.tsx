@@ -126,7 +126,7 @@ const ExportSection = () => {
           </div>
           <h3 className="font-heading text-xl text-foreground mb-2">Standard Plan Required</h3>
           <p className="text-sm text-muted-foreground mb-2 max-w-md mx-auto">
-            PDF Export is available on the Standard plan at £39/month.
+            PDF Export is available on the Standard plan.
           </p>
           <p className="text-xs text-muted-foreground">Upgrade coming soon.</p>
         </div>
