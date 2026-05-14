@@ -408,13 +408,18 @@ const AuthPage = () => {
                       <label className="flex items-start gap-3 cursor-pointer">
                         <Checkbox checked={termsConsent} onCheckedChange={(checked) => setTermsConsent(checked === true)} className="mt-0.5" />
                         <span className="text-xs text-muted-foreground leading-relaxed">
-                           {t("auth.agreeTerms")}
+                          I have read and agree to the{" "}
+                          <Link to="/terms" target="_blank" rel="noopener" className="underline text-foreground hover:text-primary">Terms of Service</Link>
+                          {" "}and{" "}
+                          <Link to="/privacy" target="_blank" rel="noopener" className="underline text-foreground hover:text-primary">Privacy Policy</Link>.
                         </span>
                       </label>
                       <label className="flex items-start gap-3 cursor-pointer">
                         <Checkbox checked={healthConsent} onCheckedChange={(checked) => setHealthConsent(checked === true)} className="mt-0.5" />
                         <span className="text-xs text-muted-foreground leading-relaxed">
-                           {t("auth.healthConsent")}
+                          I consent to RinVita Ltd processing my personal and health data as described in the{" "}
+                          <Link to="/privacy" target="_blank" rel="noopener" className="underline text-foreground hover:text-primary">Privacy Policy</Link>.
+                          {" "}I understand I can withdraw consent and delete my data at any time.
                         </span>
                       </label>
                       <label className="flex items-start gap-3 cursor-pointer">
@@ -424,10 +429,7 @@ const AuthPage = () => {
                         </span>
                       </label>
                       <p className="text-[11px] text-muted-foreground/80 leading-relaxed pt-1">
-                        By creating an account you agree to our{" "}
-                        <Link to="/terms" target="_blank" rel="noopener" className="underline hover:text-primary">Terms of Service</Link>
-                        {" "}and{" "}
-                        <Link to="/privacy" target="_blank" rel="noopener" className="underline hover:text-primary">Privacy Policy</Link>.
+                        Both consents above are required to create an account. Marketing emails are optional.
                       </p>
                     </div>
                   )}
