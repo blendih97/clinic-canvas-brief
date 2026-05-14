@@ -4,6 +4,9 @@ import { useVaultStore } from "@/store/vaultStore";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { SUPPORTED_LANGUAGES, getLanguageName } from "@/lib/supportedLanguages";
+import UploadConsentModal from "@/components/UploadConsentModal";
+
+const uploadConsentKey = (uid: string) => `rinvita.uploadConsent.${uid}`;
 
 type Phase = "input" | "processing" | "confirm" | "done";
 
