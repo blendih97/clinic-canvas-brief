@@ -362,7 +362,7 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
               </div>
 
               <button
-                onClick={handleSubmit}
+                onClick={attemptSubmit}
                 disabled={!file && !pastedText.trim()}
                 className="w-full py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium disabled:opacity-40 hover:bg-primary/90 transition-colors"
               >
