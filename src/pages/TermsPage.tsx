@@ -57,6 +57,39 @@ const TermsPage = () => {
             </p>
           </div>
 
+          <div style={{
+            background: "hsl(var(--card))",
+            border: `1px solid ${marketingColors.goldBorder}`,
+            borderLeft: `3px solid ${marketingColors.gold}`,
+            padding: "18px 22px",
+            borderRadius: 6,
+            marginBottom: 36,
+          }}>
+            <div style={{
+              fontSize: 11,
+              letterSpacing: "0.12em",
+              color: marketingColors.gold,
+              fontWeight: 600,
+              textTransform: "uppercase",
+              marginBottom: 8,
+            }}>
+              AI Usage Disclaimer
+            </div>
+            <p style={{
+              fontSize: isMobile ? 14 : 15,
+              lineHeight: 1.7,
+              color: marketingColors.ink,
+              margin: 0,
+              fontWeight: 400,
+            }}>
+              RinVita uses artificial intelligence to extract and structure
+              information from uploaded medical documents. This process is
+              automated and may contain inaccuracies. Always verify important
+              medical information with a qualified healthcare professional.
+              RinVita is not a medical device and does not provide medical advice.
+            </p>
+          </div>
+
           <h2 style={headingStyle}>1. About these Terms</h2>
           <p style={bodyStyle}>These interim Terms of Service ("Terms") govern your use of the RinVita web application and related services (the "Service") provided by RinVita Ltd, a company registered in England and Wales (company number 17163153), with registered office at Unit A435, 4-6 Greatorex Street, London E1 5NF, United Kingdom ("RinVita", "we", "us"). By creating an account or otherwise using the Service, you agree to be bound by these Terms.</p>
 

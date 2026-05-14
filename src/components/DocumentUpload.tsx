@@ -4,6 +4,9 @@ import { useVaultStore } from "@/store/vaultStore";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { SUPPORTED_LANGUAGES, getLanguageName } from "@/lib/supportedLanguages";
+import UploadConsentModal from "@/components/UploadConsentModal";
+
+const uploadConsentKey = (uid: string) => `rinvita.uploadConsent.${uid}`;
 
 type Phase = "input" | "processing" | "confirm" | "done";
 
@@ -69,6 +72,7 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
   const store = useVaultStore();
   const { user, profile } = useAuth();
   const [targetLanguage, setTargetLanguage] = useState<string>(profile?.preferred_translation_language || "en");
+  const [showConsent, setShowConsent] = useState(false);
 
   useEffect(() => {
     if (profile?.preferred_translation_language) {
@@ -151,6 +155,34 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
       setPhase("input");
     }
   }, [file, pastedText, targetLanguage]);
+
+  const attemptSubmit = useCallback(() => {
+    if (!file && !pastedText.trim()) {
+      setError("Please upload a file or paste text.");
+      return;
+    }
+    const uid = user?.id;
+    if (uid) {
+      try {
+        if (localStorage.getItem(uploadConsentKey(uid)) === "true") {
+          void handleSubmit();
+          return;
+        }
+      } catch { /* ignore */ }
+      setShowConsent(true);
+      return;
+    }
+    void handleSubmit();
+  }, [file, pastedText, user, handleSubmit]);
+
+  const acceptConsent = () => {
+    const uid = user?.id;
+    if (uid) {
+      try { localStorage.setItem(uploadConsentKey(uid), "true"); } catch { /* ignore */ }
+    }
+    setShowConsent(false);
+    void handleSubmit();
+  };
 
   const handleConfirm = async () => {
     if (!result || !user) return;
@@ -330,7 +362,7 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
               </div>
 
               <button
-                onClick={handleSubmit}
+                onClick={attemptSubmit}
                 disabled={!file && !pastedText.trim()}
                 className="w-full py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium disabled:opacity-40 hover:bg-primary/90 transition-colors"
               >
@@ -437,6 +469,11 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
           )}
         </div>
       </div>
+      <UploadConsentModal
+        open={showConsent}
+        onAccept={acceptConsent}
+        onCancel={() => setShowConsent(false)}
+      />
     </div>
   );
 };

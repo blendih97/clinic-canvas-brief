@@ -17,13 +17,23 @@ interface SharedBrief {
 const ShareView = () => {
   const { token } = useParams<{ token: string }>();
   const [brief, setBrief] = useState<SharedBrief | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [expired, setExpired] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState("");
+  const [accepted, setAccepted] = useState(false);
+  const [declined, setDeclined] = useState(false);
+  const [submittingAccept, setSubmittingAccept] = useState(false);
 
-  useEffect(() => {
-    const fetchBrief = async () => {
-      if (!token) { setLoading(false); return; }
+  const handleAccept = async () => {
+    if (!token) return;
+    setSubmittingAccept(true);
+    setLoading(true);
+    try {
+      // Best-effort audit log (timestamp + IP captured server-side)
+      void supabase.functions
+        .invoke("log-share-acceptance", { body: { token } })
+        .catch(() => undefined);
+
       const { data, error } = await supabase
         .from("shared_briefs")
         .select("*")
@@ -36,11 +46,13 @@ const ShareView = () => {
         setExpired(true);
       } else {
         setBrief(data as SharedBrief);
+        setAccepted(true);
       }
+    } finally {
       setLoading(false);
-    };
-    fetchBrief();
-  }, [token]);
+      setSubmittingAccept(false);
+    }
+  };
 
   useEffect(() => {
     if (!brief) return;
@@ -55,6 +67,57 @@ const ShareView = () => {
     const interval = setInterval(update, 60000);
     return () => clearInterval(interval);
   }, [brief]);
+
+  if (declined) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-6">
+        <div className="text-center max-w-md">
+          <Shield className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-40" />
+          <h1 className="font-heading text-2xl text-foreground mb-2">Access declined</h1>
+          <p className="text-sm text-muted-foreground">Please contact the person who shared these records.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!accepted) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-6">
+        <div className="max-w-xl w-full bg-card border border-border rounded-xl p-8 shadow-sm">
+          <div className="flex items-center gap-3 mb-5">
+            <Shield className="w-5 h-5 text-primary" />
+            <h1 className="font-heading text-xl text-foreground">Clinician access agreement</h1>
+          </div>
+          <p className="text-sm text-foreground/80 leading-relaxed mb-4">
+            You are about to access health records shared by a RinVita user. By proceeding you confirm that:
+          </p>
+          <ol className="text-sm text-foreground/80 leading-relaxed mb-5 space-y-2 list-decimal pl-5">
+            <li>You are a qualified healthcare professional accessing these records for clinical purposes only;</li>
+            <li>You will not store, share or process this data beyond the clinical purpose intended;</li>
+            <li>You acknowledge this data is protected under UK GDPR and you accept responsibility for handling it lawfully.</li>
+          </ol>
+          <p className="text-xs text-muted-foreground mb-6">
+            Your acceptance, including timestamp and IP address, is logged for audit purposes.
+          </p>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setDeclined(true)}
+              className="flex-1 py-2.5 bg-muted text-foreground rounded-lg text-sm font-medium hover:bg-muted/80 transition-colors"
+            >
+              Decline
+            </button>
+            <button
+              onClick={handleAccept}
+              disabled={submittingAccept}
+              className="flex-[2] py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
+            >
+              {submittingAccept ? "Loading…" : "I Accept"}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
