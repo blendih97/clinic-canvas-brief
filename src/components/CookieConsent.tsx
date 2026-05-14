@@ -87,8 +87,8 @@ const CookieConsent = () => {
       {!showPrefs ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           <div style={{ fontSize: 14, lineHeight: 1.6, color: "hsl(var(--foreground) / 0.78)" }}>
-            We use essential cookies to make RinVita work. With your permission, we'd also like to use
-            analytics and marketing cookies to understand how the site is used and improve it. See our{" "}
+            We use cookies to improve your experience and for analytics. By
+            clicking Accept you consent to our use of cookies. See our{" "}
             <Link to="/privacy" style={{ color: "hsl(var(--primary))", textDecoration: "underline" }}>
               Privacy Policy
             </Link>{" "}
@@ -101,27 +101,13 @@ const CookieConsent = () => {
                 padding: "8px 14px",
                 fontSize: 13,
                 background: "transparent",
-                color: "hsl(var(--foreground) / 0.7)",
+                color: "hsl(var(--foreground) / 0.85)",
                 border: "1px solid hsl(var(--border))",
                 borderRadius: 6,
                 cursor: "pointer",
               }}
             >
               Manage preferences
-            </button>
-            <button
-              onClick={rejectAll}
-              style={{
-                padding: "8px 14px",
-                fontSize: 13,
-                background: "transparent",
-                color: "hsl(var(--foreground))",
-                border: "1px solid hsl(var(--border))",
-                borderRadius: 6,
-                cursor: "pointer",
-              }}
-            >
-              Reject
             </button>
             <button
               onClick={acceptAll}
