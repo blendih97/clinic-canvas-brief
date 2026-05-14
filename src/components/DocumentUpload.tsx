@@ -469,6 +469,11 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
           )}
         </div>
       </div>
+      <UploadConsentModal
+        open={showConsent}
+        onAccept={acceptConsent}
+        onCancel={() => setShowConsent(false)}
+      />
     </div>
   );
 };
