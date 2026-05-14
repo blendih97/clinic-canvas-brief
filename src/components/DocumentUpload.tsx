@@ -72,6 +72,7 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
   const store = useVaultStore();
   const { user, profile } = useAuth();
   const [targetLanguage, setTargetLanguage] = useState<string>(profile?.preferred_translation_language || "en");
+  const [showConsent, setShowConsent] = useState(false);
 
   useEffect(() => {
     if (profile?.preferred_translation_language) {
