@@ -784,6 +784,33 @@ export type Database = {
         }
         Relationships: []
       }
+      share_brief_acceptances: {
+        Row: {
+          accepted_at: string
+          created_at: string
+          id: string
+          ip_address: string | null
+          token: string
+          user_agent: string | null
+        }
+        Insert: {
+          accepted_at?: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          token: string
+          user_agent?: string | null
+        }
+        Update: {
+          accepted_at?: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          token?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       shared_briefs: {
         Row: {
           allergies: Json | null
