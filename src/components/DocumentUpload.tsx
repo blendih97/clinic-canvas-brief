@@ -156,6 +156,34 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
     }
   }, [file, pastedText, targetLanguage]);
 
+  const attemptSubmit = useCallback(() => {
+    if (!file && !pastedText.trim()) {
+      setError("Please upload a file or paste text.");
+      return;
+    }
+    const uid = user?.id;
+    if (uid) {
+      try {
+        if (localStorage.getItem(uploadConsentKey(uid)) === "true") {
+          void handleSubmit();
+          return;
+        }
+      } catch { /* ignore */ }
+      setShowConsent(true);
+      return;
+    }
+    void handleSubmit();
+  }, [file, pastedText, user, handleSubmit]);
+
+  const acceptConsent = () => {
+    const uid = user?.id;
+    if (uid) {
+      try { localStorage.setItem(uploadConsentKey(uid), "true"); } catch { /* ignore */ }
+    }
+    setShowConsent(false);
+    void handleSubmit();
+  };
+
   const handleConfirm = async () => {
     if (!result || !user) return;
     const uid = user.id;
