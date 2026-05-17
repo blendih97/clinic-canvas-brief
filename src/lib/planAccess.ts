@@ -5,7 +5,7 @@ export type Plan = "free" | "standard" | "family";
 export type BillingPeriod = "monthly" | "annual";
 
 export const PLAN_PRICES = {
-  free: { label: "Free Trial", price: "Free", period: "14-day trial" },
+  free: { label: "Free", price: "Free", period: "3 documents" },
   standard: {
     label: "Standard",
     monthlyPrice: "£39",
@@ -38,7 +38,9 @@ export function getPriceId(plan: "standard" | "family", period: BillingPeriod): 
   return period === "annual" ? PLAN_PRICES[plan].annualPriceId : PLAN_PRICES[plan].monthlyPriceId;
 }
 
-export const TRIAL_DAYS = 14;
+// Free plan: users can upload up to this many documents, see full AI extraction
+// + translation, and preview PDF exports. Downloading the PDF requires a paid plan.
+export const FREE_DOC_LIMIT = 3;
 
 export interface TrialState {
   isTrial: boolean;
@@ -46,8 +48,8 @@ export interface TrialState {
   expired: boolean;
 }
 
+// Kept for backwards-compat with existing imports — no trial concept anymore.
 export function getTrialState(_profile: Profile | null): TrialState {
-  // TESTING PHASE: trial banner disabled, everyone gets full access.
   return { isTrial: false, daysRemaining: 0, expired: false };
 }
 
@@ -68,8 +70,10 @@ const FEATURE_REQUIREMENTS: Record<Feature, Plan[]> = {
   unlimited_uploads: ["standard", "family"],
 };
 
+// UI-level access (lets free users see and preview features so they understand
+// the value). The real paywall lives at the action layer — e.g. PDF download
+// checks the live subscription via useSubscription().
 export function hasAccess(_profile: Profile | null, _feature: Feature): boolean {
-  // TESTING PHASE: grant all features to all users (Family tier access).
   return true;
 }
 
@@ -88,7 +92,13 @@ export function getRequiredPlanPrice(feature: Feature, period: BillingPeriod = "
   return `${(p as typeof PLAN_PRICES.standard).monthlyPrice}${(p as typeof PLAN_PRICES.standard).monthlyPeriod}`;
 }
 
-// TESTING PHASE: unlimited uploads for everyone.
-export function canUploadDocument(_profile: Profile | null, _currentDocCount: number): boolean {
-  return true;
+// Free users can upload up to FREE_DOC_LIMIT documents. Paid subscribers
+// (isActive) have unlimited uploads. Pass the live subscription state in.
+export function canUploadDocument(
+  _profile: Profile | null,
+  currentDocCount: number,
+  isActiveSubscriber: boolean = false,
+): boolean {
+  if (isActiveSubscriber) return true;
+  return currentDocCount < FREE_DOC_LIMIT;
 }

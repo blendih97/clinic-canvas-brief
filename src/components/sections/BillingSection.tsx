@@ -6,7 +6,7 @@ import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { getTrialState, getPriceId, PLAN_PRICES, type BillingPeriod } from "@/lib/planAccess";
+import { getPriceId, PLAN_PRICES, FREE_DOC_LIMIT, type BillingPeriod } from "@/lib/planAccess";
 
 interface PlanCard {
   id: "free" | "standard" | "family";
@@ -17,13 +17,14 @@ interface PlanCard {
 const planCards: PlanCard[] = [
   {
     id: "free",
-    name: "Free Trial",
+    name: "Free",
     features: [
-      "3 document uploads",
+      `${FREE_DOC_LIMIT} document uploads`,
       "AI extraction & translation",
       "Blood results dashboard",
       "Imaging viewer",
-      "No sharing, export, or record requests",
+      "PDF preview (download requires upgrade)",
+      "No sharing or record requests",
     ],
   },
   {
@@ -55,7 +56,7 @@ const BillingSection = () => {
   const { subscription, isActive } = useSubscription();
   const { openCheckout, checkoutElement } = useStripeCheckout();
   const userPlan = profile?.plan || "free";
-  const trial = getTrialState(profile);
+  
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>("annual");
   const [portalLoading, setPortalLoading] = useState(false);
 
@@ -91,7 +92,7 @@ const BillingSection = () => {
   };
 
   const getPrice = (planId: "free" | "standard" | "family") => {
-    if (planId === "free") return { price: "Free", period: "14-day trial", sub: null };
+    if (planId === "free") return { price: "Free", period: `${FREE_DOC_LIMIT} documents`, sub: null };
     const p = PLAN_PRICES[planId];
     if (billingPeriod === "annual") {
       return {
@@ -117,10 +118,10 @@ const BillingSection = () => {
         <p className="text-sm text-muted-foreground mt-2">Manage your RinVita membership</p>
       </div>
 
-      {trial.isTrial && (
+      {!isActive && (
         <div className="bg-primary/10 border border-primary/30 rounded-lg p-4">
           <p className="text-sm text-foreground">
-            <span className="font-medium">Free Trial</span> — {trial.daysRemaining} day{trial.daysRemaining === 1 ? "" : "s"} remaining. Upgrade to Standard to unlock all features.
+            <span className="font-medium">Free plan</span> — preview everything, upload up to {FREE_DOC_LIMIT} documents. Upgrade for unlimited uploads, PDF download and sharing.
           </p>
         </div>
       )}
@@ -222,7 +223,7 @@ const BillingSection = () => {
                 </button>
               ) : plan.id === "free" ? (
                 <button className="w-full py-2 rounded-md text-sm font-medium bg-muted/50 text-muted-foreground cursor-default" disabled>
-                  Trial only
+                  Free
                 </button>
               ) : (
                 <button

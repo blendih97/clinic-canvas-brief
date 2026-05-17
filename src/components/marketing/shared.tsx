@@ -247,7 +247,7 @@ export function MarketingNav({ currentPage }: MarketingNavProps) {
                 textDecoration: "none",
               }}
             >
-              Start free trial
+              Try free
             </Link>
             <button
               onClick={() => setMenuOpen((open) => !open)}

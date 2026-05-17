@@ -19,7 +19,8 @@ import { Upload, ArrowLeft, Inbox, Lock } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useVaultStore } from "@/store/vaultStore";
 import { supabase } from "@/integrations/supabase/client";
-import { getTrialState, canUploadDocument, hasAccess, type Feature } from "@/lib/planAccess";
+import { canUploadDocument, hasAccess, type Feature, FREE_DOC_LIMIT } from "@/lib/planAccess";
+import { useSubscription } from "@/hooks/useSubscription";
 
 type Section = "overview" | "blood" | "imaging" | "media" | "medications" | "documents" | "share" | "billing" | "export" | "family";
 
@@ -36,13 +37,15 @@ const Index = () => {
   const { user, profile } = useAuth();
   const { loadUserData, documents } = useVaultStore();
 
-  const trial = getTrialState(profile);
-  const canUpload = canUploadDocument(profile, documents.length);
+  const { isActive } = useSubscription();
+  const canUpload = canUploadDocument(profile, documents.length, isActive);
+  const freeDocsUsed = Math.min(documents.length, FREE_DOC_LIMIT);
+  const showFreeBanner = !isActive && !viewingMember;
 
   const requestUpload = () => {
     if (!canUpload) {
       setUpgradeFeature("unlimited_uploads");
-      setUpgradeMessage("Document limit reached. Upgrade to Standard for unlimited uploads.");
+      setUpgradeMessage(`You've used all ${FREE_DOC_LIMIT} free uploads. Upgrade to Standard for unlimited documents, PDF download, and sharing.`);
       return;
     }
     setUploadOpen(true);
@@ -185,10 +188,11 @@ const Index = () => {
             </div>
           )}
 
-          {trial.isTrial && !viewingMember && (
+          {showFreeBanner && (
             <div className="mb-4 p-3 bg-primary/10 border border-primary/30 rounded-lg flex items-center justify-between">
               <p className="text-sm text-foreground">
-                <span className="font-medium">Free Trial</span> — {trial.daysRemaining} day{trial.daysRemaining === 1 ? "" : "s"} remaining. Upgrade to Standard to unlock all features.
+                <span className="font-medium">Free plan</span> — {freeDocsUsed} of {FREE_DOC_LIMIT} documents used.
+                {canUpload ? " Upgrade anytime for unlimited uploads, PDF download and sharing." : " Upgrade to unlock unlimited uploads, PDF download and sharing."}
               </p>
               <button onClick={() => setSection("billing")}
                 className="shrink-0 ml-3 px-4 py-1.5 bg-primary text-primary-foreground rounded-lg text-xs font-medium hover:bg-primary/90">
