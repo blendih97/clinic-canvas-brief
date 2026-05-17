@@ -24,7 +24,9 @@ import PrivacyPage from "./pages/PrivacyPage.tsx";
 import TermsPage from "./pages/TermsPage.tsx";
 import UnsubscribePage from "./pages/UnsubscribePage.tsx";
 import SecurityPage from "./pages/SecurityPage.tsx";
+import CheckoutReturn from "./pages/CheckoutReturn.tsx";
 import CookieConsent from "./components/CookieConsent";
+import { PaymentTestModeBanner } from "./components/PaymentTestModeBanner";
 
 const queryClient = new QueryClient();
 
@@ -84,6 +86,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <PaymentTestModeBanner />
             <Routes>
               <Route path="/auth" element={<AuthRoute><AuthPage /></AuthRoute>} />
               <Route path="/" element={<HomeRoute />} />
@@ -108,6 +111,7 @@ const App = () => (
               <Route path="/terms" element={<TermsPage />} />
               <Route path="/unsubscribe" element={<UnsubscribePage />} />
               <Route path="/security" element={<SecurityPage />} />
+              <Route path="/checkout/return" element={<CheckoutReturn />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
             <CookieConsent />

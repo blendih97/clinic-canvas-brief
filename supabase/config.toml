@@ -15,3 +15,9 @@ project_id = "gnxctlydesugjdwbavdx"
     verify_jwt = false
   [functions.upload-record-request]
     verify_jwt = false
+  [functions.create-checkout]
+    verify_jwt = false
+  [functions.payments-webhook]
+    verify_jwt = false
+  [functions.create-portal-session]
+    verify_jwt = false
