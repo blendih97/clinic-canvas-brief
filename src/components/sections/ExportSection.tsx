@@ -1,8 +1,9 @@
-import { useState } from "react";
-import { FileDown, FileText, Filter, CheckSquare, Loader2, Lock, Languages, Calendar, Sparkles } from "lucide-react";
+import { useEffect, useState } from "react";
+import { FileDown, FileText, Filter, CheckSquare, Loader2, Languages, Calendar, Sparkles, Lock } from "lucide-react";
 import { useVaultStore } from "@/store/vaultStore";
 import { useAuth } from "@/hooks/useAuth";
-import { hasAccess } from "@/lib/planAccess";
+import { useSubscription } from "@/hooks/useSubscription";
+import UpgradeModal from "@/components/UpgradeModal";
 import { generateExportPDF, generateSelectionPDF, type ExportOptions } from "@/lib/pdfExport";
 import { generatePatientSummaryV2, downloadBlob, type ProgressPhase } from "@/lib/pdfExportV2";
 import { SUPPORTED_LANGUAGES, getLanguageName } from "@/lib/supportedLanguages";
@@ -13,10 +14,13 @@ type DateRangeKey = "all" | "12m" | "6m" | "custom";
 const ExportSection = () => {
   const [mode, setMode] = useState<ExportMode | null>(null);
   const [generating, setGenerating] = useState(false);
+  const [previewBlob, setPreviewBlob] = useState<Blob | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [showUpgrade, setShowUpgrade] = useState(false);
 
   const store = useVaultStore();
   const { profile } = useAuth();
-  const locked = !hasAccess(profile, "export");
+  const { isActive } = useSubscription();
 
   // Modal state — shared across all three modes
   const [language, setLanguage] = useState<string>(profile?.preferred_ui_language || "en");
