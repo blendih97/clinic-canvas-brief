@@ -1,7 +1,12 @@
 import { useState } from "react";
-import { CheckCircle, Crown, ArrowRight } from "lucide-react";
+import { CheckCircle, Crown, ArrowRight, ExternalLink } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { getTrialState, PLAN_PRICES, type BillingPeriod } from "@/lib/planAccess";
+import { useSubscription } from "@/hooks/useSubscription";
+import { useStripeCheckout } from "@/hooks/useStripeCheckout";
+import { getStripeEnvironment } from "@/lib/stripe";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { getTrialState, getPriceId, PLAN_PRICES, type BillingPeriod } from "@/lib/planAccess";
 
 interface PlanCard {
   id: "free" | "standard" | "family";
