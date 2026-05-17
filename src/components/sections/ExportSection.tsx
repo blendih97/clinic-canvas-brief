@@ -68,14 +68,20 @@ const ExportSection = () => {
   const [progressPhase, setProgressPhase] = useState<ProgressPhase | null>(null);
 
   const handleGenerate = async () => {
+    if (!isActive && (mode === "category" || mode === "selection")) {
+      setShowUpgrade(true);
+      return;
+    }
     setGenerating(true);
     setProgressPhase(null);
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewBlob(null);
+    setPreviewUrl(null);
     try {
       const options = buildOptions();
       if (mode === "selection") {
         await generateSelectionPDF(store, patientName, dob, selectedDocs, options);
       } else if (mode === "full") {
-        // M1+M2: route Full Health Brief through v2 engine (Patient Summary + Visit History).
         const blob = await generatePatientSummaryV2({
           data: {
             bloodResults: store.bloodResults,
@@ -99,7 +105,12 @@ const ExportSection = () => {
           onProgress: (phase) => setProgressPhase(phase),
         });
         const safeName = (patientName || "patient").replace(/[^a-z0-9-_]+/gi, "-").toLowerCase();
-        downloadBlob(blob, `rinvita-health-brief-${safeName}-${language}.pdf`);
+        if (isActive) {
+          downloadBlob(blob, `rinvita-health-brief-${safeName}-${language}.pdf`);
+        } else {
+          setPreviewBlob(blob);
+          setPreviewUrl(URL.createObjectURL(blob));
+        }
       } else {
         await generateExportPDF(store, patientName, dob, options);
       }
@@ -111,32 +122,22 @@ const ExportSection = () => {
     }
   };
 
+  const handleDownloadFromPreview = () => {
+    if (!previewBlob) return;
+    if (!isActive) { setShowUpgrade(true); return; }
+    const safeName = (patientName || "patient").replace(/[^a-z0-9-_]+/gi, "-").toLowerCase();
+    downloadBlob(previewBlob, `rinvita-health-brief-${safeName}-${language}.pdf`);
+  };
+
+  useEffect(() => {
+    return () => { if (previewUrl) URL.revokeObjectURL(previewUrl); };
+  }, [previewUrl]);
+
   const cards: { id: ExportMode; icon: React.ElementType; title: string; desc: string }[] = [
     { id: "full", icon: FileText, title: "Full Health Brief", desc: "Complete health record compiled into a single professional PDF" },
     { id: "category", icon: Filter, title: "Export by Category", desc: "Select which sections to include in your export" },
     { id: "selection", icon: CheckSquare, title: "Export by Selection", desc: "Pick individual documents to combine into one PDF" },
   ];
-
-  if (locked) {
-    return (
-      <div className="space-y-6">
-        <div>
-          <h2 className="font-heading text-3xl font-light text-foreground">Export</h2>
-          <p className="text-sm text-muted-foreground mt-2">Generate professional PDF reports from your vault data</p>
-        </div>
-        <div className="bg-card border border-border rounded-xl p-12 text-center">
-          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-            <Lock className="w-5 h-5 text-primary" />
-          </div>
-          <h3 className="font-heading text-xl text-foreground mb-2">Standard Plan Required</h3>
-          <p className="text-sm text-muted-foreground mb-2 max-w-md mx-auto">
-            PDF Export is available on the Standard plan.
-          </p>
-          <p className="text-xs text-muted-foreground">Upgrade coming soon.</p>
-        </div>
-      </div>
-    );
-  }
 
   const generateDisabled =
     generating ||
