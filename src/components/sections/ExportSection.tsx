@@ -357,8 +357,45 @@ const ExportSection = () => {
               </p>
             )}
           </div>
+
+          {/* PDF preview for free users — paywalls the download button */}
+          {previewUrl && (
+            <div className="bg-card border border-border rounded-xl overflow-hidden">
+              <div className="flex items-center justify-between p-4 border-b border-border bg-primary/5">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-primary" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Preview ready</p>
+                    <p className="text-[11px] text-muted-foreground">
+                      {isActive ? "Your full Health Brief is ready to download." : "Upgrade to download the full PDF."}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={handleDownloadFromPreview}
+                  className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90"
+                >
+                  {isActive ? <FileDown className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
+                  {isActive ? "Download PDF" : "Unlock & download"}
+                </button>
+              </div>
+              <iframe
+                src={previewUrl}
+                title="Health Brief preview"
+                className="w-full"
+                style={{ height: "70vh", border: 0, background: "hsl(var(--muted))" }}
+              />
+            </div>
+          )}
         </div>
       )}
+
+      <UpgradeModal
+        open={showUpgrade}
+        onClose={() => setShowUpgrade(false)}
+        feature="export"
+        customMessage="Downloading your Health Brief PDF is a Standard feature. Free accounts get full preview — upgrade to download, share, and request records."
+      />
     </div>
   );
 };
