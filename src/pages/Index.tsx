@@ -191,7 +191,7 @@ const Index = () => {
           {showFreeBanner && (
             <div className="mb-4 p-3 bg-primary/10 border border-primary/30 rounded-lg flex items-center justify-between">
               <p className="text-sm text-foreground">
-                <span className="font-medium">Free plan</span> — {freeDocsUsed} of {FREE_DOC_LIMIT} document{FREE_DOC_LIMIT === 1 ? "" : "s"} used.
+                <span className="font-medium">Free plan</span> — {freeDocsUsed} of {FREE_DOC_LIMIT} documents used.
                 {canUpload ? " Upgrade anytime for unlimited uploads, PDF download and sharing." : " Upgrade to unlock unlimited uploads, PDF download and sharing."}
               </p>
               <button onClick={() => setSection("billing")}
