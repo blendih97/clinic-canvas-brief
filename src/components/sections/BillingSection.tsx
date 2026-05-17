@@ -51,10 +51,44 @@ const planCards: PlanCard[] = [
 ];
 
 const BillingSection = () => {
-  const { profile } = useAuth();
+  const { profile, user } = useAuth();
+  const { subscription, isActive } = useSubscription();
+  const { openCheckout, checkoutElement } = useStripeCheckout();
   const userPlan = profile?.plan || "free";
   const trial = getTrialState(profile);
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>("annual");
+  const [portalLoading, setPortalLoading] = useState(false);
+
+  // Determine active plan from Stripe subscription (price_id like "standard_monthly")
+  const activePlanId: "free" | "standard" | "family" =
+    isActive && subscription?.price_id?.startsWith("family") ? "family"
+    : isActive && subscription?.price_id?.startsWith("standard") ? "standard"
+    : (userPlan as "free" | "standard" | "family");
+
+  const handleUpgrade = (planId: "standard" | "family") => {
+    if (!user) return;
+    openCheckout({
+      priceId: getPriceId(planId, billingPeriod),
+      customerEmail: user.email,
+      userId: user.id,
+      returnUrl: `${window.location.origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
+    });
+  };
+
+  const handleManage = async () => {
+    setPortalLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-portal-session", {
+        body: { environment: getStripeEnvironment(), returnUrl: `${window.location.origin}/app/settings` },
+      });
+      if (error || !data?.url) throw new Error(error?.message || "Failed to open billing portal");
+      window.open(data.url, "_blank");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to open billing portal");
+    } finally {
+      setPortalLoading(false);
+    }
+  };
 
   const getPrice = (planId: "free" | "standard" | "family") => {
     if (planId === "free") return { price: "Free", period: "14-day trial", sub: null };
@@ -120,7 +154,7 @@ const BillingSection = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {planCards.map((plan) => {
-          const isCurrent = userPlan === plan.id;
+          const isCurrent = activePlanId === plan.id;
           const priceInfo = getPrice(plan.id);
           const isPaid = plan.id !== "free";
           const isAnnual = billingPeriod === "annual";
@@ -173,20 +207,36 @@ const BillingSection = () => {
                 ))}
               </div>
 
-              {isCurrent ? (
+              {isCurrent && plan.id !== "free" ? (
+                <button
+                  onClick={handleManage}
+                  disabled={portalLoading}
+                  className="w-full py-2 rounded-md text-sm font-medium bg-foreground/5 text-foreground hover:bg-foreground/10 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
+                >
+                  {portalLoading ? "Opening…" : "Manage subscription"}
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </button>
+              ) : isCurrent ? (
                 <button className="w-full py-2 rounded-md text-sm font-medium bg-muted text-muted-foreground cursor-default" disabled>
                   Current Plan
                 </button>
+              ) : plan.id === "free" ? (
+                <button className="w-full py-2 rounded-md text-sm font-medium bg-muted/50 text-muted-foreground cursor-default" disabled>
+                  Trial only
+                </button>
               ) : (
-                <button className="w-full py-2 rounded-md text-sm font-medium bg-primary/10 text-primary cursor-default relative" disabled>
-                  Upgrade
-                  <span className="ml-2 text-[10px] px-1.5 py-0.5 bg-muted text-muted-foreground rounded">Coming Soon</span>
+                <button
+                  onClick={() => handleUpgrade(plan.id as "standard" | "family")}
+                  className="w-full py-2 rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                >
+                  {activePlanId === "free" ? "Upgrade" : (plan.id === "family" ? "Upgrade to Family" : "Switch to Standard")}
                 </button>
               )}
             </div>
           );
         })}
       </div>
+      {checkoutElement}
     </div>
   );
 };
