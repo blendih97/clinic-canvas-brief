@@ -5,7 +5,7 @@ export type Plan = "free" | "standard" | "family";
 export type BillingPeriod = "monthly" | "annual";
 
 export const PLAN_PRICES = {
-  free: { label: "Free Trial", price: "Free", period: "14-day trial" },
+  free: { label: "Free", price: "Free", period: "3 documents" },
   standard: {
     label: "Standard",
     monthlyPrice: "£39",
