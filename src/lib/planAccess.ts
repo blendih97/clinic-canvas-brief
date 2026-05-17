@@ -16,6 +16,8 @@ export const PLAN_PRICES = {
     annualPeriodSub: "billed annually",
     monthlySaving: "You save £117 a year",
     annualSaving: "You save £117 a year",
+    monthlyPriceId: "standard_monthly",
+    annualPriceId: "standard_annual",
   },
   family: {
     label: "Family",
@@ -27,8 +29,14 @@ export const PLAN_PRICES = {
     annualPeriodSub: "billed annually",
     monthlySaving: "You save £269.88 a year",
     annualSaving: "You save £269.88 a year",
+    monthlyPriceId: "family_monthly",
+    annualPriceId: "family_annual",
   },
 } as const;
+
+export function getPriceId(plan: "standard" | "family", period: BillingPeriod): string {
+  return period === "annual" ? PLAN_PRICES[plan].annualPriceId : PLAN_PRICES[plan].monthlyPriceId;
+}
 
 export const TRIAL_DAYS = 14;
 
