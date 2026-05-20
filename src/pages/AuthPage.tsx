@@ -191,6 +191,9 @@ const AuthPage = () => {
       return;
     }
 
+    // Meta Pixel: standard Lead event (no health/PII payload)
+    try { (await import("@/lib/metaPixel")).trackLead(); } catch {}
+
     resetSignupFlow();
 
     if (session) {

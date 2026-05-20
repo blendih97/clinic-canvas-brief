@@ -1,5 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import { initMetaPixel, trackPageView } from "@/lib/metaPixel";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -78,6 +80,13 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+const MetaPixelTracker = () => {
+  const location = useLocation();
+  useEffect(() => { initMetaPixel(); }, []);
+  useEffect(() => { trackPageView(); }, [location.pathname]);
+  return null;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
@@ -86,6 +95,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <MetaPixelTracker />
             <PaymentTestModeBanner />
             <Routes>
               <Route path="/auth" element={<AuthRoute><AuthPage /></AuthRoute>} />
