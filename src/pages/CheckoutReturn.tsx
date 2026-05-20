@@ -1,9 +1,21 @@
 import { useSearchParams, Link } from "react-router-dom";
+import { useEffect } from "react";
 import { CheckCircle } from "lucide-react";
+import { trackPurchase } from "@/lib/metaPixel";
 
 export default function CheckoutReturn() {
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get("session_id");
+
+  useEffect(() => {
+    if (sessionId) {
+      // Meta Pixel: Purchase. Value/currency are placeholder behavioural data;
+      // no health information is included. Replace with real values when the
+      // checkout return endpoint surfaces the session amount.
+      trackPurchase({ value: 0, currency: "GBP" });
+    }
+  }, [sessionId]);
+
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-6">

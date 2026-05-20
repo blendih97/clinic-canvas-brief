@@ -35,6 +35,11 @@ const UpgradeModal = ({ open, onClose, feature, customMessage }: Props) => {
 
   const handleUpgrade = (plan: "standard" | "family") => {
     if (!user) return;
+    // Meta Pixel: InitiateCheckout (behavioural only, no health data)
+    import("@/lib/metaPixel").then(m => m.trackInitiateCheckout({
+      content_name: `${plan}_${period}`,
+      currency: "GBP",
+    })).catch(() => {});
     onClose();
     openCheckout({
       priceId: getPriceId(plan, period),
