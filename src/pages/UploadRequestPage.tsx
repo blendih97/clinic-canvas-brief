@@ -24,18 +24,20 @@ const UploadRequestPage = () => {
   useEffect(() => {
     const loadRequest = async () => {
       if (!token) { setNotFound(true); setLoading(false); return; }
-      const { data, error } = await supabase.from("record_requests").select("*").eq("token", token).maybeSingle();
-      if (error || !data) { setNotFound(true); setLoading(false); return; }
-      if (new Date(data.expires_at) < new Date()) { setExpired(true); setLoading(false); return; }
-      if (data.status === "received") { setAlreadyReceived(true); setLoading(false); return; }
-      if (data.status === "pending") {
-        await supabase.from("record_requests").update({ status: "link_opened" }).eq("id", data.id);
-      }
-      setRequest(data);
+      // Token-gated lookup via secure edge function (no broad anon RLS).
+      const { data, error } = await supabase.functions.invoke("get-record-request", {
+        body: { token },
+      });
+      const req = (data as any)?.request;
+      if (error || !req) { setNotFound(true); setLoading(false); return; }
+      if (new Date(req.expires_at) < new Date()) { setExpired(true); setLoading(false); return; }
+      if (req.status === "received") { setAlreadyReceived(true); setLoading(false); return; }
+      setRequest(req);
       setLoading(false);
     };
     loadRequest();
   }, [token]);
+
 
   const addFiles = (newFiles: FileList | File[]) => {
     const arr = Array.from(newFiles);
