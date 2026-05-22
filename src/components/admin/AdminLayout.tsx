@@ -1,4 +1,4 @@
-import { BarChart3, Clock3, FileText, Home, LogOut, Settings, Shield, Users } from "lucide-react";
+import { BarChart3, Clock3, Eye, FileText, Home, LogOut, Settings, Shield, Users } from "lucide-react";
 import { NavLink, Outlet } from "react-router-dom";
 
 import { useAuth } from "@/hooks/useAuth";
@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 const navItems = [
   { to: "/admin", label: "Dashboard", icon: Home, end: true },
   { to: "/admin/users", label: "Users", icon: Users },
+  { to: "/admin/visitors", label: "Visitors", icon: Eye },
   { to: "/admin/subscriptions", label: "Subscriptions", icon: BarChart3 },
   { to: "/admin/documents", label: "Documents", icon: FileText },
   { to: "/admin/activity", label: "Activity Log", icon: Clock3 },

@@ -17,6 +17,7 @@ import ProductDemoPage from "./pages/ProductDemoPage.tsx";
 import AdminLayout from "./components/admin/AdminLayout.tsx";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage.tsx";
 import AdminPlaceholderPage from "./pages/admin/AdminPlaceholderPage.tsx";
+import AdminVisitorsPage from "./pages/admin/AdminVisitorsPage.tsx";
 import AdminMfaPanel from "./components/admin/AdminMfaPanel";
 import ProfilePage from "./pages/ProfilePage.tsx";
 import SettingsPage from "./pages/SettingsPage.tsx";
@@ -109,6 +110,7 @@ const App = () => (
               <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
                 <Route index element={<AdminDashboardPage />} />
                 <Route path="users" element={<AdminPlaceholderPage title="Users" description="Review member access, plan state, and high-touch support actions." mode="users" />} />
+                <Route path="visitors" element={<AdminVisitorsPage />} />
                 <Route path="subscriptions" element={<AdminPlaceholderPage title="Subscriptions" description="Inspect estimated recurring revenue, trial expiry windows, and comped access." mode="subscriptions" />} />
                 <Route path="documents" element={<AdminPlaceholderPage title="Documents" description="Monitor upload processing, language coverage, and recent platform throughput." mode="documents" />} />
                 <Route path="activity" element={<AdminPlaceholderPage title="Activity log" description="Track platform signups, admin interventions, and security-sensitive events." mode="activity" />} />
