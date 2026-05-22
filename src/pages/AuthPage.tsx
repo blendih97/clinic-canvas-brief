@@ -194,6 +194,24 @@ const AuthPage = () => {
     // Meta Pixel: standard Lead event (no health/PII payload)
     try { (await import("@/lib/metaPixel")).trackLead(); } catch {}
 
+    // Fire-and-forget admin notification (never block signup)
+    try {
+      void supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "new-signup-admin",
+          recipientEmail: "hello@rinvita.co.uk",
+          idempotencyKey: `new-signup-${email}-${consentTime}`,
+          templateData: {
+            fullName: fullName || `${firstName} ${lastName}`.trim(),
+            email,
+            country: residenceCountryCode || nationalityCode || "—",
+            plan: "free",
+            signedUpAt: consentTime,
+          },
+        },
+      });
+    } catch {}
+
     resetSignupFlow();
 
     if (session) {
