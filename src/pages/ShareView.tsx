@@ -34,20 +34,22 @@ const ShareView = () => {
         .invoke("log-share-acceptance", { body: { token } })
         .catch(() => undefined);
 
-      const { data, error } = await supabase
-        .from("shared_briefs")
-        .select("*")
-        .eq("token", token)
-        .single();
+      // Token-gated lookup via secure edge function (no broad anon RLS).
+      const { data, error } = await supabase.functions.invoke("get-shared-brief", {
+        body: { token },
+      });
+      const brief = (data as any)?.brief;
+      const isExpired = (data as any)?.expired;
 
-      if (error || !data) {
+      if (error || !brief || isExpired) {
         setExpired(true);
-      } else if (new Date(data.expires_at) < new Date()) {
+      } else if (brief.expires_at && new Date(brief.expires_at) < new Date()) {
         setExpired(true);
       } else {
-        setBrief(data as SharedBrief);
+        setBrief(brief as SharedBrief);
         setAccepted(true);
       }
+
     } finally {
       setLoading(false);
       setSubmittingAccept(false);
