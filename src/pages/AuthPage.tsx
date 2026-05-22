@@ -468,11 +468,12 @@ const AuthPage = () => {
                     </div>
 
                     <div className="flex items-center gap-3">
-                      {signupStep === 4 ? (
+                      {signupStep >= 2 && signupStep <= 4 ? (
                         <button type="button" onClick={() => setSignupStep(5)} className="text-xs text-muted-foreground hover:text-foreground">
                            {t("auth.skipForNow")}
                         </button>
                       ) : null}
+
 
                       {signupStep < totalSignupSteps ? (
                         <button type="button" onClick={goToNextStep}
