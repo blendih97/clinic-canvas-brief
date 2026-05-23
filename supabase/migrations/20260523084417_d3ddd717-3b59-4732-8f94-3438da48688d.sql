@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Anyone can view media share by token" ON public.media_shares;
