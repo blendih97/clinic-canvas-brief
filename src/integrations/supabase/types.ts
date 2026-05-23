@@ -855,6 +855,7 @@ export type Database = {
           medications: Json | null
           scope: string | null
           token: string
+          user_id: string | null
         }
         Insert: {
           allergies?: Json | null
@@ -866,6 +867,7 @@ export type Database = {
           medications?: Json | null
           scope?: string | null
           token: string
+          user_id?: string | null
         }
         Update: {
           allergies?: Json | null
@@ -877,6 +879,7 @@ export type Database = {
           medications?: Json | null
           scope?: string | null
           token?: string
+          user_id?: string | null
         }
         Relationships: []
       }

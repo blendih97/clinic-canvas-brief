@@ -115,8 +115,17 @@ const ShareBriefSection = () => {
       .map(([k]) => k)
       .join(" + ")) || "custom";
 
+    const { data: authData } = await supabase.auth.getUser();
+    const ownerId = authData?.user?.id;
+    if (!ownerId) {
+      console.error("Not authenticated");
+      setGenerating(false);
+      return;
+    }
+
     const { error } = await supabase.from("shared_briefs").insert({
       token,
+      user_id: ownerId,
       scope: `${sectionLabel} · ${getLanguageName(language)}`,
       expires_at: expiresAt,
       blood_results: translated.bloodResults as any,
