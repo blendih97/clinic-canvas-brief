@@ -69,58 +69,54 @@ const CookieConsent = () => {
       aria-label="Cookie consent"
       style={{
         position: "fixed",
-        left: 16,
-        right: 16,
-        bottom: 16,
+        left: 0,
+        right: 0,
+        bottom: 0,
         zIndex: 9999,
-        maxWidth: 720,
-        margin: "0 auto",
-        background: "hsl(var(--card))",
+        background: "hsl(var(--card) / 0.97)",
+        backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)",
         color: "hsl(var(--foreground))",
-        border: "1px solid hsl(var(--border))",
-        borderRadius: 10,
-        boxShadow: "0 10px 40px -10px hsl(var(--foreground) / 0.18)",
-        padding: 18,
+        borderTop: "1px solid hsl(var(--border))",
+        boxShadow: "0 -4px 24px -8px hsl(var(--foreground) / 0.12)",
+        padding: showPrefs ? 16 : "10px 14px",
         fontFamily: "var(--font-body)",
       }}
     >
       {!showPrefs ? (
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <div style={{ fontSize: 14, lineHeight: 1.6, color: "hsl(var(--foreground) / 0.78)" }}>
-            We use cookies to improve your experience and for analytics. By
-            clicking Accept you consent to our use of cookies. See our{" "}
+        <div
+          style={{
+            maxWidth: 1100,
+            margin: "0 auto",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
+            flexWrap: "wrap",
+          }}
+        >
+          <div style={{ fontSize: 12.5, lineHeight: 1.5, color: "hsl(var(--foreground) / 0.78)", flex: "1 1 240px", minWidth: 0 }}>
+            We use cookies for analytics and to improve your experience. See our{" "}
             <Link to="/privacy" style={{ color: "hsl(var(--primary))", textDecoration: "underline" }}>
               Privacy Policy
-            </Link>{" "}
-            for details.
+            </Link>.
           </div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "flex-end" }}>
+          <div style={{ display: "flex", gap: 6, alignItems: "center", flexShrink: 0 }}>
             <button
               onClick={() => setShowPrefs(true)}
-              style={{
-                padding: "8px 14px",
-                fontSize: 13,
-                background: "transparent",
-                color: "hsl(var(--foreground) / 0.85)",
-                border: "1px solid hsl(var(--border))",
-                borderRadius: 6,
-                cursor: "pointer",
-              }}
+              style={{ padding: "6px 10px", fontSize: 12, background: "transparent", color: "hsl(var(--foreground) / 0.7)", border: "none", cursor: "pointer", textDecoration: "underline" }}
             >
-              Manage preferences
+              Manage
+            </button>
+            <button
+              onClick={rejectAll}
+              style={{ padding: "7px 12px", fontSize: 12, background: "transparent", color: "hsl(var(--foreground) / 0.85)", border: "1px solid hsl(var(--border))", borderRadius: 4, cursor: "pointer" }}
+            >
+              Reject
             </button>
             <button
               onClick={acceptAll}
-              style={{
-                padding: "8px 16px",
-                fontSize: 13,
-                background: "hsl(var(--primary))",
-                color: "hsl(var(--primary-foreground))",
-                border: "none",
-                borderRadius: 6,
-                cursor: "pointer",
-                fontWeight: 500,
-              }}
+              style={{ padding: "7px 14px", fontSize: 12, background: "hsl(var(--primary))", color: "hsl(var(--primary-foreground))", border: "none", borderRadius: 4, cursor: "pointer", fontWeight: 600 }}
             >
               Accept
             </button>
