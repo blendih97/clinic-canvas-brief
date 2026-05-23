@@ -113,31 +113,29 @@ function Hero() {
             <div style={{ width: 5, height: 5, borderRadius: "50%", background: marketingColors.gold, animation: "marketing-pulse 2s infinite" }} />
             <span style={{ fontSize: isMobile ? 9 : 11, letterSpacing: "0.14em", color: marketingColors.gold, fontWeight: 500 }}>EARLY ACCESS — FREE UNTIL 1 JUNE 2026</span>
           </div>
-          <h1 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 40 : isTablet ? 52 : "clamp(44px,5vw,68px)", fontWeight: 300, lineHeight: 1.1, color: marketingColors.ink, marginBottom: isMobile ? 20 : 28, letterSpacing: "-0.02em" }}>
-            Your medical history,
+          <h1 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 40 : isTablet ? 52 : "clamp(44px,5vw,68px)", fontWeight: 300, lineHeight: 1.1, color: marketingColors.ink, marginBottom: isMobile ? 18 : 24, letterSpacing: "-0.02em" }}>
+            All your medical records.
             <br />
-            finally in one place.
-            <br />
-            <em style={{ fontStyle: "italic", color: marketingColors.gold }}>In every language.</em>
+            <em style={{ fontStyle: "italic", color: marketingColors.gold }}>Any language. In 30 seconds.</em>
           </h1>
-          <p style={{ fontSize: isMobile ? 16 : 17, lineHeight: 1.8, color: marketingColors.mutedText, maxWidth: 480, marginBottom: isMobile ? 20 : 24, fontWeight: 300 }}>
-            For families who've lived in more than one country. Upload medical records from any hospital, any language, any year — and hand your next doctor a complete, translated health picture in 30 seconds. Because the next time you see a new doctor shouldn't be the moment you realise you can't explain your mother's medication list.
+          <p style={{ fontSize: isMobile ? 16 : 17, lineHeight: 1.7, color: marketingColors.mutedText, maxWidth: 480, marginBottom: isMobile ? 22 : 28, fontWeight: 300 }}>
+            Upload medical records from any hospital, any language, any year — and hand your next doctor a complete, translated health picture in seconds.
           </p>
-          <div style={{ display: "inline-flex", flexWrap: "wrap", alignItems: "center", gap: 8, marginBottom: isMobile ? 28 : 40, fontSize: 12, color: marketingColors.mutedText, letterSpacing: "0.04em" }}>
-            <span style={{ width: 6, height: 6, borderRadius: "50%", background: marketingColors.gold }} />
-            <span>ICO registered</span>
-            <span style={{ color: marketingColors.faintText }}>·</span>
-            <span>EU infrastructure</span>
-            <span style={{ color: marketingColors.faintText }}>·</span>
-            <span>Encrypted at rest & in transit</span>
-          </div>
           <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 12, alignItems: isMobile ? "stretch" : "center" }}>
-            <Link to="/auth?mode=signup" style={{ padding: isMobile ? "16px 24px" : "15px 32px", background: marketingColors.gold, borderRadius: 2, color: "hsl(var(--primary-foreground))", fontSize: 14, fontWeight: 600, letterSpacing: "0.06em", textDecoration: "none", textAlign: "center", boxShadow: "0 4px 24px hsl(var(--primary) / 0.35)" }}>
-              Get Early Access
+            <Link to="/auth?mode=signup" style={{ padding: isMobile ? "18px 24px" : "16px 34px", background: marketingColors.gold, borderRadius: 2, color: "hsl(var(--primary-foreground))", fontSize: isMobile ? 15 : 14, fontWeight: 600, letterSpacing: "0.06em", textDecoration: "none", textAlign: "center", boxShadow: "0 6px 28px hsl(var(--primary) / 0.4)" }}>
+              Get Early Access — Free
             </Link>
             <Link to="/demo" style={{ padding: isMobile ? "15px 24px" : "15px 28px", background: "transparent", border: `1px solid hsl(var(--foreground) / 0.18)`, borderRadius: 2, color: marketingColors.mutedText, fontSize: 14, textDecoration: "none", textAlign: "center" }}>
               See how it works →
             </Link>
+          </div>
+          <div style={{ display: "inline-flex", flexWrap: "wrap", alignItems: "center", gap: 8, marginTop: isMobile ? 18 : 22, fontSize: 11.5, color: marketingColors.softText, letterSpacing: "0.04em" }}>
+            <span style={{ width: 5, height: 5, borderRadius: "50%", background: marketingColors.gold }} />
+            <span>Free until 1 June 2026</span>
+            <span style={{ color: marketingColors.faintText }}>·</span>
+            <span>ICO registered</span>
+            <span style={{ color: marketingColors.faintText }}>·</span>
+            <span>Encrypted, EU-hosted</span>
           </div>
           {isMobile && (
             <div style={{ marginTop: 28, display: "flex", justifyContent: "center" }}>
