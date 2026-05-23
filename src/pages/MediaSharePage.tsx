@@ -13,10 +13,13 @@ const MediaSharePage = () => {
   useEffect(() => {
     const loadShare = async () => {
       if (!token) { setNotFound(true); setLoading(false); return; }
-      const { data, error } = await supabase.from("media_shares").select("*").eq("token", token).maybeSingle();
-      if (error || !data) { setNotFound(true); setLoading(false); return; }
-      if (new Date(data.expires_at) < new Date()) { setExpired(true); setLoading(false); return; }
-      setShare(data);
+      const { data, error } = await supabase.functions.invoke("get-media-share", { body: { token } });
+      if (error || !data?.share) {
+        if (data?.expired) { setExpired(true); } else { setNotFound(true); }
+        setLoading(false);
+        return;
+      }
+      setShare(data.share);
       setLoading(false);
     };
     loadShare();
