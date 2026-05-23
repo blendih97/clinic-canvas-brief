@@ -27,6 +27,16 @@ export function usePageTracking() {
     const track = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
+
+        // Exclude admins from tracking so the data reflects real visitors
+        if (user?.id) {
+          const { data: isAdmin } = await supabase.rpc("has_role", {
+            _user_id: user.id,
+            _role: "admin",
+          });
+          if (isAdmin) return;
+        }
+
         await supabase.from("page_views").insert({
           session_id: getSessionId(),
           user_id: user?.id ?? null,
