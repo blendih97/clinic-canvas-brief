@@ -1236,6 +1236,7 @@ export type Database = {
         Args: { _codes: string[] }
         Returns: number
       }
+      user_has_paid_access: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "user"
