@@ -103,6 +103,7 @@ const App = () => (
             <PaymentTestModeBanner />
             <Routes>
               <Route path="/auth" element={<AuthRoute><AuthPage /></AuthRoute>} />
+              <Route path="/check-email" element={<CheckEmailPage />} />
               <Route path="/" element={<HomeRoute />} />
               <Route path="/demo" element={<ProductDemoPage />} />
               <Route path="/app" element={<ProtectedRoute><Index /></ProtectedRoute>} />
