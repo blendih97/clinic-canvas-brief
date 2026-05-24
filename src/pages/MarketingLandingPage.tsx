@@ -629,6 +629,47 @@ function FAQ() {
   );
 }
 
+function Testimonial() {
+  const ref = useReveal<HTMLDivElement>();
+  const { isMobile } = useMarketingBreakpoint();
+  return (
+    <section style={{ padding: `${isMobile ? 72 : 100}px ${isMobile ? 20 : 56}px`, background: marketingColors.cream }}>
+      <div ref={ref} className="marketing-reveal" style={{ maxWidth: 720, margin: "0 auto" }}>
+        <div style={{ textAlign: "center", marginBottom: 32 }}>
+          <span className="marketing-section-label">From our members</span>
+        </div>
+        <div style={{ padding: isMobile ? "32px 24px" : "48px 56px", background: marketingColors.surface, border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 2, textAlign: "center", boxShadow: "0 8px 32px hsl(var(--foreground) / 0.04)" }}>
+          <div style={{ fontFamily: "Cormorant Garamond", fontSize: 40, color: marketingColors.gold, lineHeight: 1, marginBottom: 12 }}>“</div>
+          <p style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 20 : 24, fontWeight: 300, fontStyle: "italic", lineHeight: 1.55, color: marketingColors.ink, marginBottom: 24 }}>
+            Since moving from Dubai to London, keeping track of my medical records across two countries was a nightmare. RinVita changed that completely.
+          </p>
+          <div style={{ width: 32, height: 1, background: marketingColors.goldStrong, margin: "0 auto 16px" }} />
+          <div style={{ fontSize: 13, fontWeight: 600, color: marketingColors.ink, letterSpacing: "0.04em" }}>Sarah K.</div>
+          <div style={{ fontSize: 12, color: marketingColors.softText, marginTop: 4 }}>London (previously Dubai)</div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function MobileStickyCTA() {
+  const { isMobile } = useMarketingBreakpoint();
+  if (!isMobile) return null;
+  return (
+    <>
+      <div style={{ height: 92 }} aria-hidden />
+      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 180, padding: "12px 16px calc(12px + env(safe-area-inset-bottom))", background: "hsl(var(--background) / 0.97)", backdropFilter: "blur(20px)", borderTop: `1px solid ${marketingColors.goldBorder}` }}>
+        <Link to="/auth?mode=signup" style={{ display: "block", width: "100%", padding: "16px", background: marketingColors.gold, borderRadius: 2, color: "hsl(var(--primary-foreground))", fontSize: 15, fontWeight: 600, letterSpacing: "0.06em", textAlign: "center", textDecoration: "none", boxShadow: "0 6px 24px hsl(var(--primary) / 0.35)" }}>
+          Get Early Access — Free
+        </Link>
+        <div style={{ marginTop: 6, fontSize: 11, color: marketingColors.softText, textAlign: "center" }}>
+          No credit card required · Cancel anytime
+        </div>
+      </div>
+    </>
+  );
+}
+
 const MarketingLandingPage = () => {
   return (
     <div className="marketing-page" style={{ background: marketingColors.cream, color: marketingColors.ink }}>
@@ -646,7 +687,9 @@ const MarketingLandingPage = () => {
       <ClinicalSafety />
       <Pricing />
       <FAQ />
+      <Testimonial />
       <MarketingFooter />
+      <MobileStickyCTA />
     </div>
   );
 };
