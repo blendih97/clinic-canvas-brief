@@ -12,6 +12,7 @@ import { useAdminAccess } from "@/hooks/useAdminAccess";
 import Index from "./pages/Index.tsx";
 import ShareView from "./pages/ShareView.tsx";
 import AuthPage from "./pages/AuthPage.tsx";
+import CheckEmailPage from "./pages/CheckEmailPage.tsx";
 import MarketingLandingPage from "./pages/MarketingLandingPage.tsx";
 import ProductDemoPage from "./pages/ProductDemoPage.tsx";
 import AdminLayout from "./components/admin/AdminLayout.tsx";
@@ -102,6 +103,7 @@ const App = () => (
             <PaymentTestModeBanner />
             <Routes>
               <Route path="/auth" element={<AuthRoute><AuthPage /></AuthRoute>} />
+              <Route path="/check-email" element={<CheckEmailPage />} />
               <Route path="/" element={<HomeRoute />} />
               <Route path="/demo" element={<ProductDemoPage />} />
               <Route path="/app" element={<ProtectedRoute><Index /></ProtectedRoute>} />

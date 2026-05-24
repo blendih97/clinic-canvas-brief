@@ -15,7 +15,8 @@ import DocumentUpload from "@/components/DocumentUpload";
 import RequestRecordsModal from "@/components/RequestRecordsModal";
 import UpgradeModal from "@/components/UpgradeModal";
 import { AppFooterDisclaimer } from "@/components/MedicalDisclaimer";
-import { Upload, ArrowLeft, Inbox, Lock } from "lucide-react";
+import { Upload, ArrowLeft, Inbox, Lock, UserCog, X } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useVaultStore } from "@/store/vaultStore";
 import { supabase } from "@/integrations/supabase/client";
@@ -41,6 +42,19 @@ const Index = () => {
   const canUpload = canUploadDocument(profile, documents.length, isActive);
   const freeDocsUsed = Math.min(documents.length, FREE_DOC_LIMIT);
   const showFreeBanner = !isActive && !viewingMember;
+
+  const profileIncomplete = !!profile && !viewingMember && (
+    !profile.nationality || !profile.emergency_contact_name || !profile.emergency_contact_phone
+  );
+  const [profilePromptDismissed, setProfilePromptDismissed] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem("rinvita-profile-prompt-dismissed") === "1";
+  });
+  const dismissProfilePrompt = () => {
+    setProfilePromptDismissed(true);
+    try { localStorage.setItem("rinvita-profile-prompt-dismissed", "1"); } catch {}
+  };
+  const showProfilePrompt = profileIncomplete && !profilePromptDismissed;
 
   const requestUpload = () => {
     if (!canUpload) {
@@ -185,6 +199,32 @@ const Index = () => {
                 <ArrowLeft className="w-3.5 h-3.5" />
                 Return to My Vault
               </button>
+            </div>
+          )}
+
+          {showProfilePrompt && (
+            <div className="mb-4 p-4 bg-primary/5 border border-primary/20 rounded-lg flex items-start sm:items-center justify-between gap-3">
+              <div className="flex items-start sm:items-center gap-3">
+                <div className="hidden sm:flex w-9 h-9 rounded-full bg-primary/10 items-center justify-center shrink-0">
+                  <UserCog className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm text-foreground">
+                    <span className="font-medium">Complete your profile</span> — add nationality, country of residence, allergies, current medications and emergency contact so your records are ready when you need them.
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">You can fill these in any time from your profile settings.</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <Link to="/app/profile"
+                  className="px-4 py-1.5 bg-primary text-primary-foreground rounded-lg text-xs font-medium hover:bg-primary/90 whitespace-nowrap">
+                  Complete profile
+                </Link>
+                <button onClick={dismissProfilePrompt} aria-label="Dismiss"
+                  className="p-1 text-muted-foreground hover:text-foreground">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           )}
 
