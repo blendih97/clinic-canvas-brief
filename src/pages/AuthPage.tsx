@@ -501,6 +501,9 @@ const AuthPage = () => {
                       )}
                     </div>
                   </div>
+                  <p className="text-[11px] text-muted-foreground text-center pt-1">
+                    No credit card required · Cancel anytime
+                  </p>
                 </form>
               )}
 
