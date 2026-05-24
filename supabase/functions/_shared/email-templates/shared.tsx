@@ -20,10 +20,11 @@ interface EmailShellProps {
   ctaLabel?: string
   ctaHref?: string
   footer: string
+  signOff?: React.ReactNode
   children: React.ReactNode
 }
 
-export const EmailShell = ({ preview, title, eyebrow, ctaLabel, ctaHref, footer, children }: EmailShellProps) => (
+export const EmailShell = ({ preview, title, eyebrow, ctaLabel, ctaHref, footer, signOff, children }: EmailShellProps) => (
   <Html lang="en" dir="ltr">
     <Head />
     <Preview>{preview}</Preview>
@@ -34,9 +35,12 @@ export const EmailShell = ({ preview, title, eyebrow, ctaLabel, ctaHref, footer,
         <Heading style={heading}>{title}</Heading>
         <Section>{children}</Section>
         {ctaLabel && ctaHref ? (
-          <Button href={ctaHref} style={button}>{ctaLabel}</Button>
+          <Section style={{ textAlign: 'center', margin: '28px 0 8px' }}>
+            <Button href={ctaHref} style={button}>{ctaLabel}</Button>
+          </Section>
         ) : null}
         <Text style={footerStyle}>{footer}</Text>
+        {signOff ? <Text style={signOffStyle}>{signOff}</Text> : null}
       </Container>
     </Body>
   </Html>
@@ -44,7 +48,7 @@ export const EmailShell = ({ preview, title, eyebrow, ctaLabel, ctaHref, footer,
 
 export const copyText = {
   fontSize: '15px',
-  color: 'hsl(215, 10%, 50%)',
+  color: 'hsl(215, 15%, 30%)',
   lineHeight: '1.65',
   margin: '0 0 18px',
 }
@@ -73,23 +77,27 @@ const main = {
 }
 
 const container = {
-  padding: '36px 32px',
+  padding: '40px 32px',
   border: '1px solid hsl(210, 14%, 89%)',
-  borderRadius: '8px',
+  borderRadius: '10px',
   maxWidth: '560px',
   margin: '0 auto',
+  backgroundColor: '#ffffff',
 }
 
 const brand = {
-  color: 'hsl(42, 65%, 44%)',
-  fontSize: '28px',
+  color: '#C9A84C',
+  fontSize: '32px',
   lineHeight: '1',
-  margin: '0 0 18px',
+  letterSpacing: '4px',
+  margin: '0 0 24px',
   fontFamily: 'Cormorant Garamond, Georgia, serif',
+  fontWeight: '300' as const,
+  textAlign: 'center' as const,
 }
 
 const eyebrowStyle = {
-  color: 'hsl(42, 65%, 44%)',
+  color: '#C9A84C',
   fontSize: '11px',
   textTransform: 'uppercase' as const,
   letterSpacing: '2px',
@@ -98,26 +106,35 @@ const eyebrowStyle = {
 
 const heading = {
   fontSize: '30px',
-  lineHeight: '1.15',
-  fontWeight: '500' as const,
+  lineHeight: '1.2',
+  fontWeight: '400' as const,
   color: 'hsl(215, 25%, 20%)',
-  margin: '0 0 18px',
+  margin: '0 0 22px',
   fontFamily: 'Cormorant Garamond, Georgia, serif',
 }
 
 const button = {
-  backgroundColor: 'hsl(42, 65%, 44%)',
+  backgroundColor: '#C9A84C',
   color: '#ffffff',
-  fontSize: '14px',
+  fontSize: '15px',
+  fontWeight: '500' as const,
   borderRadius: '8px',
-  padding: '12px 20px',
+  padding: '14px 28px',
   textDecoration: 'none',
-  marginTop: '12px',
+  display: 'inline-block',
+  letterSpacing: '0.5px',
 }
 
 const footerStyle = {
   fontSize: '12px',
   color: 'hsl(215, 10%, 50%)',
   lineHeight: '1.6',
-  margin: '24px 0 0',
+  margin: '28px 0 0',
+}
+
+const signOffStyle = {
+  fontSize: '12px',
+  color: 'hsl(215, 10%, 50%)',
+  lineHeight: '1.6',
+  margin: '14px 0 0',
 }
