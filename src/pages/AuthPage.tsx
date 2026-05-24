@@ -1,19 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { lovable } from "@/integrations/lovable/index";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ArrowLeft, ArrowRight, Eye, EyeOff, ShieldCheck, CreditCard, XCircle } from "lucide-react";
-import CountryCombobox, { type CountryOption } from "@/components/CountryCombobox";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Eye, EyeOff, ShieldCheck, CreditCard, XCircle } from "lucide-react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useLocale } from "@/hooks/useLocale";
 import SEO from "@/components/SEO";
-
-const totalSignupSteps = 5;
-
-const stepLabels = ["Account", "Personal", "Countries", "Health", "Consent"] as const;
 
 const AuthPage = () => {
   const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
