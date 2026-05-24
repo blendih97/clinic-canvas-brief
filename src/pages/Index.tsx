@@ -43,6 +43,19 @@ const Index = () => {
   const freeDocsUsed = Math.min(documents.length, FREE_DOC_LIMIT);
   const showFreeBanner = !isActive && !viewingMember;
 
+  const profileIncomplete = !!profile && !viewingMember && (
+    !profile.nationality || !profile.emergency_contact_name || !profile.emergency_contact_phone
+  );
+  const [profilePromptDismissed, setProfilePromptDismissed] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem("rinvita-profile-prompt-dismissed") === "1";
+  });
+  const dismissProfilePrompt = () => {
+    setProfilePromptDismissed(true);
+    try { localStorage.setItem("rinvita-profile-prompt-dismissed", "1"); } catch {}
+  };
+  const showProfilePrompt = profileIncomplete && !profilePromptDismissed;
+
   const requestUpload = () => {
     if (!canUpload) {
       setUpgradeFeature("unlimited_uploads");
