@@ -23,19 +23,24 @@ const ACTIVE_STATUSES = new Set(["active", "trialing", "past_due"]);
 export function useSubscription() {
   const { user } = useAuth();
   const [subscription, setSubscription] = useState<SubscriptionRow | null>(null);
+  const [hasPaidAccess, setHasPaidAccess] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const fetch = useCallback(async () => {
-    if (!user) { setSubscription(null); setLoading(false); return; }
-    const { data } = await supabase
-      .from("subscriptions" as any)
-      .select("*")
-      .eq("user_id", user.id)
-      .eq("environment", getStripeEnvironment())
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    setSubscription((data as unknown as SubscriptionRow | null) ?? null);
+    if (!user) { setSubscription(null); setHasPaidAccess(false); setLoading(false); return; }
+    const [{ data: sub }, { data: paid }] = await Promise.all([
+      supabase
+        .from("subscriptions" as any)
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("environment", getStripeEnvironment())
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+      supabase.rpc("user_has_paid_access" as any, { _user_id: user.id }),
+    ]);
+    setSubscription((sub as unknown as SubscriptionRow | null) ?? null);
+    setHasPaidAccess(!!paid);
     setLoading(false);
   }, [user]);
 
@@ -52,11 +57,15 @@ export function useSubscription() {
     return () => { supabase.removeChannel(channel); };
   }, [user, fetch]);
 
-  const isActive = !!subscription && (
+  const directActive = !!subscription && (
     ACTIVE_STATUSES.has(subscription.status) ||
     (subscription.status === "canceled" && subscription.current_period_end &&
       new Date(subscription.current_period_end) > new Date())
   );
+
+  // Active = direct subscription OR admin / accepted family member of an
+  // owner with an active subscription (resolved server-side via RPC).
+  const isActive = directActive || hasPaidAccess;
 
   return { subscription, loading, isActive, refresh: fetch };
 }
