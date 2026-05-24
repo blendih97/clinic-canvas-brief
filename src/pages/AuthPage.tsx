@@ -112,8 +112,7 @@ const AuthPage = () => {
 
   const validateStep = (step: number) => {
     if (step === 1) {
-      if (!email || !password || !confirmPassword) return t("auth.completeAccountFields");
-      if (password !== confirmPassword) return t("auth.passwordsDoNotMatch");
+      if (!email || !password) return t("auth.completeAccountFields");
       if (password.length < 6) return t("auth.passwordTooShort");
     }
 
