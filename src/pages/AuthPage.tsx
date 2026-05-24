@@ -112,8 +112,7 @@ const AuthPage = () => {
 
   const validateStep = (step: number) => {
     if (step === 1) {
-      if (!email || !password || !confirmPassword) return t("auth.completeAccountFields");
-      if (password !== confirmPassword) return t("auth.passwordsDoNotMatch");
+      if (!email || !password) return t("auth.completeAccountFields");
       if (password.length < 6) return t("auth.passwordTooShort");
     }
 
@@ -361,13 +360,9 @@ const AuthPage = () => {
                         <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
                           className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
                       </div>
-                      <div>
-                         <label className="text-xs font-medium text-foreground">{t("auth.confirmPassword")}</label>
-                        <input type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
-                          className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
-                      </div>
                     </div>
                   )}
+
 
                   {signupStep === 2 && (
                     <div className="space-y-4">
@@ -506,6 +501,9 @@ const AuthPage = () => {
                       )}
                     </div>
                   </div>
+                  <p className="text-[11px] text-muted-foreground text-center pt-1">
+                    No credit card required · Cancel anytime
+                  </p>
                 </form>
               )}
 
