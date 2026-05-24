@@ -138,6 +138,10 @@ const AuthPage = () => {
       toast.error(error);
       return;
     }
+    // Fire Lead when user completes step 1 — gives us a real funnel signal
+    if (signupStep === 1) {
+      try { void import("@/lib/metaPixel").then((m) => m.trackLead()); } catch {}
+    }
     setSignupStep((current) => Math.min(current + 1, totalSignupSteps));
   };
 
@@ -191,8 +195,12 @@ const AuthPage = () => {
       return;
     }
 
-    // Meta Pixel: standard Lead event (no health/PII payload)
-    try { (await import("@/lib/metaPixel")).trackLead(); } catch {}
+    // Meta Pixel: standard Lead + CompleteRegistration (no health/PII payload)
+    try {
+      const m = await import("@/lib/metaPixel");
+      m.trackLead();
+      m.trackCompleteRegistration({ content_name: "signup_completed" });
+    } catch {}
 
     // Fire-and-forget admin notification (never block signup)
     try {
@@ -299,6 +307,11 @@ const AuthPage = () => {
                   <p className="text-xs text-foreground/80 leading-relaxed">
                     <span className="font-medium text-foreground">Try it free</span> · 3 documents, fully translated · No card required
                   </p>
+                  <div className="mt-2 flex items-center justify-center gap-3 text-[10px] text-muted-foreground">
+                    <span className="inline-flex items-center gap-1"><ShieldCheck className="w-3 h-3 text-primary" /> Bank-level encryption</span>
+                    <span className="inline-flex items-center gap-1"><XCircle className="w-3 h-3 text-primary" /> Cancel anytime</span>
+                    <span className="inline-flex items-center gap-1"><CreditCard className="w-3 h-3 text-primary" /> No card</span>
+                  </div>
                 </div>
               )}
 
@@ -351,15 +364,28 @@ const AuthPage = () => {
 
                   {signupStep === 1 && (
                     <div className="space-y-4">
+                      <p className="text-[11px] text-muted-foreground">Takes about 60 seconds.</p>
                       <div>
                          <label className="text-xs font-medium text-foreground">{t("auth.email")}</label>
                         <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-                          className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                          inputMode="email" autoComplete="email" autoCapitalize="none" autoCorrect="off" spellCheck={false}
+                          className="w-full mt-1 px-3 py-2.5 bg-background border border-border rounded-lg text-base text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
                       </div>
                       <div>
                          <label className="text-xs font-medium text-foreground">{t("auth.password")}</label>
-                        <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
-                          className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                        <div className="relative mt-1">
+                          <input type={showPassword ? "text" : "password"} required value={password} onChange={(e) => setPassword(e.target.value)}
+                            autoComplete="new-password" autoCapitalize="none" autoCorrect="off" spellCheck={false}
+                            className="w-full px-3 py-2.5 pr-10 bg-background border border-border rounded-lg text-base text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                          <button type="button" onClick={() => setShowPassword((v) => !v)}
+                            aria-label={showPassword ? "Hide password" : "Show password"}
+                            className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground">
+                            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          </button>
+                        </div>
+                        <p className={`text-[11px] mt-1 ${password.length >= 6 ? "text-primary" : "text-muted-foreground"}`}>
+                          {password.length >= 6 ? "✓ Strong enough" : "At least 6 characters"}
+                        </p>
                       </div>
                     </div>
                   )}
