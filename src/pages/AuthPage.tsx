@@ -537,6 +537,17 @@ const AuthPage = () => {
             </>
           )}
         </div>
+
+        {mode === "signup" && (
+          <figure className="mt-5 rounded-lg border border-border/60 bg-card/60 px-4 py-3 text-center">
+            <blockquote className="text-xs italic text-muted-foreground leading-relaxed">
+              "Since moving from Dubai to London, keeping track of my medical records across two countries was a nightmare. RinVita changed that completely."
+            </blockquote>
+            <figcaption className="mt-1.5 text-[10px] tracking-[0.12em] uppercase text-muted-foreground/80">
+              Sarah K. · London (previously Dubai)
+            </figcaption>
+          </figure>
+        )}
       </div>
     </div>
   );
