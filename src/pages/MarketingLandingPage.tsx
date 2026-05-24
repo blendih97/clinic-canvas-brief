@@ -129,6 +129,9 @@ function Hero() {
               See how it works →
             </Link>
           </div>
+          <div style={{ marginTop: 10, fontSize: 12, color: marketingColors.softText, textAlign: isMobile ? "center" : "left" }}>
+            No credit card required · Cancel anytime
+          </div>
           <div style={{ display: "inline-flex", flexWrap: "wrap", alignItems: "center", gap: 8, marginTop: isMobile ? 18 : 22, fontSize: 11.5, color: marketingColors.softText, letterSpacing: "0.04em" }}>
             <span style={{ width: 5, height: 5, borderRadius: "50%", background: marketingColors.gold }} />
             <span>Free until 1 June 2026</span>
