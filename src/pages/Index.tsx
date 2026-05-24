@@ -202,6 +202,32 @@ const Index = () => {
             </div>
           )}
 
+          {showProfilePrompt && (
+            <div className="mb-4 p-4 bg-primary/5 border border-primary/20 rounded-lg flex items-start sm:items-center justify-between gap-3">
+              <div className="flex items-start sm:items-center gap-3">
+                <div className="hidden sm:flex w-9 h-9 rounded-full bg-primary/10 items-center justify-center shrink-0">
+                  <UserCog className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm text-foreground">
+                    <span className="font-medium">Complete your profile</span> — add nationality, country of residence, allergies, current medications and emergency contact so your records are ready when you need them.
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">You can fill these in any time from your profile settings.</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <Link to="/app/profile"
+                  className="px-4 py-1.5 bg-primary text-primary-foreground rounded-lg text-xs font-medium hover:bg-primary/90 whitespace-nowrap">
+                  Complete profile
+                </Link>
+                <button onClick={dismissProfilePrompt} aria-label="Dismiss"
+                  className="p-1 text-muted-foreground hover:text-foreground">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
+
           {showFreeBanner && (
             <div className="mb-4 p-3 bg-primary/10 border border-primary/30 rounded-lg flex items-center justify-between">
               <p className="text-sm text-foreground">
