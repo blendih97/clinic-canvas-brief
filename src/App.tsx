@@ -12,6 +12,7 @@ import { useAdminAccess } from "@/hooks/useAdminAccess";
 import Index from "./pages/Index.tsx";
 import ShareView from "./pages/ShareView.tsx";
 import AuthPage from "./pages/AuthPage.tsx";
+import CheckEmailPage from "./pages/CheckEmailPage.tsx";
 import MarketingLandingPage from "./pages/MarketingLandingPage.tsx";
 import ProductDemoPage from "./pages/ProductDemoPage.tsx";
 import AdminLayout from "./components/admin/AdminLayout.tsx";
