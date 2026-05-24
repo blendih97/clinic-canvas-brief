@@ -79,6 +79,8 @@ function fire(event: string, params?: Record<string, any>) {
 
 export const trackPageView = () => fire("PageView");
 export const trackLead = () => fire("Lead");
+export const trackCompleteRegistration = (params?: { content_name?: string }) =>
+  fire("CompleteRegistration", params);
 export const trackInitiateCheckout = (params?: { value?: number; currency?: string; content_name?: string }) =>
   fire("InitiateCheckout", params);
 export const trackPurchase = (params: { value: number; currency: string }) =>

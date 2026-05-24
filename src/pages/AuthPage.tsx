@@ -4,7 +4,7 @@ import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { lovable } from "@/integrations/lovable/index";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Eye, EyeOff, ShieldCheck, CreditCard, XCircle } from "lucide-react";
 import CountryCombobox, { type CountryOption } from "@/components/CountryCombobox";
 import { Checkbox } from "@/components/ui/checkbox";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -23,6 +23,7 @@ const AuthPage = () => {
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [signupStep, setSignupStep] = useState(1);
+  const [showPassword, setShowPassword] = useState(false);
   const [countries, setCountries] = useState<CountryOption[]>([]);
   const [countriesLoading, setCountriesLoading] = useState(false);
 
