@@ -17,12 +17,12 @@ const corsHeaders = {
 }
 
 const EMAIL_SUBJECTS: Record<string, string> = {
-  signup: 'Confirm your email',
-  invite: "You've been invited",
-  magiclink: 'Your login link',
-  recovery: 'Reset your password',
+  signup: 'Confirm your RinVita account',
+  invite: "You've been invited to RinVita",
+  magiclink: 'Your RinVita sign-in link',
+  recovery: 'Reset your RinVita password',
   email_change: 'Confirm your new email',
-  reauthentication: 'Your verification code',
+  reauthentication: 'Your RinVita verification code',
 }
 
 // Template mapping
