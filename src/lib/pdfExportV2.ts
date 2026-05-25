@@ -77,6 +77,16 @@ type StringPack = {
   imagingNormal: string;
   imagingFlagged: string;
   noImaging: string;
+  documentsTitle: string;
+  documentsSubtitle: string;
+  docColName: string;
+  docColType: string;
+  docColDate: string;
+  docColFacility: string;
+  docColCountry: string;
+  noDocuments: string;
+  headerTitle: string;
+  pageOf: (i: number, total: number) => string;
 };
 
 const STRINGS: Record<string, StringPack> = {
