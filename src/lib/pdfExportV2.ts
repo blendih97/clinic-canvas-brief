@@ -322,6 +322,16 @@ const STRINGS: Record<string, StringPack> = {
     imagingNormal: "Normal",
     imagingFlagged: "Signalé",
     noImaging: "Aucun examen d'imagerie enregistré.",
+    documentsTitle: "Archives des documents",
+    documentsSubtitle: "Tous les documents sources, dédupliqués par date, établissement et type.",
+    docColName: "Document",
+    docColType: "Type",
+    docColDate: "Date",
+    docColFacility: "Établissement",
+    docColCountry: "Pays",
+    noDocuments: "Aucun document enregistré.",
+    headerTitle: "Dossier de santé RinVita",
+    pageOf: (i, total) => `Page ${i} sur ${total}`,
   },
 };
 
