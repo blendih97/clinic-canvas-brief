@@ -448,15 +448,63 @@ function dedupeVisits<T extends {
   return [...buckets.values()];
 }
 
-// Document dedupe — by date + facility + type + normalised name.
+// Document dedupe — by date + facility + type only (ignore name, since the same
+// source document is often re-indexed with subtle name variations like
+// "John Doe" vs "Doe, John").
 function dedupeDocuments<T extends { name?: string; type?: string; date?: string; facility?: string }>(docs: T[]): T[] {
-  const norm = (s?: string) => (s || "").trim().toLowerCase().replace(/\s+/g, " ");
+  const norm = (s?: string) => (s || "").trim().toLowerCase().replace(/[,\s]+/g, " ");
   const seen = new Map<string, T>();
   for (const d of docs) {
-    const key = `${norm(d.date)}|${norm(d.facility)}|${norm(d.type)}|${norm(d.name)}`;
+    const key = `${norm(d.date)}|${norm(d.facility)}|${norm(d.type)}`;
     if (!seen.has(key)) seen.set(key, d);
   }
   return [...seen.values()];
+}
+
+// --- Cross-language frequency/dose normalisation ---
+// Translate common foreign-language frequency/dosing words to English so the
+// PDF reads cleanly even when the source document was not in English.
+const FREQUENCY_DICT: Record<string, string> = {
+  // German
+  "täglich": "Daily", "taeglich": "Daily", "tägl": "Daily", "tägl.": "Daily",
+  "einmal täglich": "Once daily", "1x täglich": "Once daily", "1 x täglich": "Once daily",
+  "zweimal täglich": "Twice daily", "2x täglich": "Twice daily", "2 x täglich": "Twice daily",
+  "dreimal täglich": "Three times daily", "3x täglich": "Three times daily",
+  "morgens": "In the morning", "abends": "In the evening", "mittags": "At midday",
+  "nach bedarf": "As needed", "bei bedarf": "As needed",
+  "wöchentlich": "Weekly", "monatlich": "Monthly", "stündlich": "Hourly",
+  // French
+  "quotidien": "Daily", "quotidienne": "Daily", "par jour": "Daily",
+  "une fois par jour": "Once daily", "deux fois par jour": "Twice daily",
+  "trois fois par jour": "Three times daily", "au besoin": "As needed",
+  "le matin": "In the morning", "le soir": "In the evening",
+  "hebdomadaire": "Weekly", "mensuel": "Monthly",
+  // Spanish
+  "diario": "Daily", "diaria": "Daily", "al día": "Daily",
+  "una vez al día": "Once daily", "dos veces al día": "Twice daily",
+  "tres veces al día": "Three times daily", "según necesidad": "As needed",
+  "por la mañana": "In the morning", "por la noche": "In the evening",
+  "semanal": "Weekly", "mensual": "Monthly",
+  // Italian
+  "giornaliero": "Daily", "al giorno": "Daily",
+  "una volta al giorno": "Once daily", "due volte al giorno": "Twice daily",
+  "al bisogno": "As needed",
+  // Latin / RX shorthand (already widely-understood but normalise)
+  "qd": "Once daily", "bid": "Twice daily", "tid": "Three times daily",
+  "qid": "Four times daily", "prn": "As needed", "qhs": "At bedtime",
+};
+function translateFrequency(s?: string): string | undefined {
+  if (!s) return s;
+  const trimmed = s.trim();
+  const lower = trimmed.toLowerCase();
+  if (FREQUENCY_DICT[lower]) return FREQUENCY_DICT[lower];
+  // word-replace within longer phrases
+  let out = trimmed;
+  for (const [k, v] of Object.entries(FREQUENCY_DICT)) {
+    const re = new RegExp(`\\b${k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "gi");
+    out = out.replace(re, v);
+  }
+  return out;
 }
 
 // ---------- Translation ----------
