@@ -404,6 +404,12 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
                   </span>
                 </div>
               ))}
+              {stepIndex >= processingSteps.length && (
+                <div className="flex items-center gap-3 pt-2 border-t border-border/60 mt-2">
+                  <CheckCircle className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-medium text-foreground">Complete</span>
+                </div>
+              )}
             </div>
           )}
 
