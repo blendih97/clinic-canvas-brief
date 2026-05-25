@@ -310,10 +310,24 @@ function computeCounts(data: VaultData): { documents: number; countries: number;
   return { documents, countries, yearsSpan };
 }
 
+// Imaging is flagged only when the finding describes a confirmed abnormality.
+// "Preserved EF", mild/monitored/stable findings should NOT trigger a red flag.
+function isTrulyFlaggedImaging(row: { status?: string; finding?: string }): boolean {
+  if (row.status !== "flagged") return false;
+  const text = (row.finding || "").toLowerCase();
+  if (!text) return false;
+  // Benign patterns — downgrade to normal.
+  if (/preserved\s+(ef|ejection\s*fraction|lv\s*function)/.test(text)) return false;
+  if (/\bno\s+(acute|significant|abnormal|new)\b/.test(text)) return false;
+  if (/\bnormal\b/.test(text) && !/abnormal/.test(text)) return false;
+  if (/\b(mild|trivial|trace|minimal)\b/.test(text) &&
+      /\b(monitor|surveillance|follow.?up|stable|unchanged|chronic)\b/.test(text)) return false;
+  return true;
+}
+
 function deriveHighlights(data: VaultData): string[] {
   const out: string[] = [];
 
-  // Out-of-range blood markers, most recent first.
   const flagged = data.bloodResults
     .filter((r) => r.status === "flagged" || r.status === "critical")
     .sort((a, b) => (b.date || "").localeCompare(a.date || ""));
@@ -324,9 +338,8 @@ function deriveHighlights(data: VaultData): string[] {
     out.push(`${r.marker} ${r.value} ${r.unit} — out of range${rangeBit}${dateBit}.`);
   }
 
-  // Imaging findings flagged non-normal.
   const flaggedImaging = data.imagingResults
-    .filter((i) => i.status === "flagged")
+    .filter(isTrulyFlaggedImaging)
     .sort((a, b) => (b.date || "").localeCompare(a.date || ""));
 
   for (const img of flaggedImaging.slice(0, Math.max(0, 5 - out.length))) {
@@ -335,6 +348,65 @@ function deriveHighlights(data: VaultData): string[] {
   }
 
   return out.slice(0, 5);
+}
+
+// --- Visit deduplication ---
+// Group by (date, facility, reason). Keep the entry with the most complete content;
+// merge investigations / medications / follow-ups across duplicates.
+function dedupeVisits<T extends {
+  visitDate?: string; facilityName?: string; reasonForVisit?: string;
+  findings?: string; diagnosis?: string;
+  investigationsPerformed?: string[]; medicationsPrescribed?: string[]; followUpRecommendations?: string[];
+}>(visits: T[]): T[] {
+  const norm = (s?: string) => (s || "").trim().toLowerCase().replace(/\s+/g, " ");
+  const completeness = (v: T) =>
+    (v.reasonForVisit?.length || 0) + (v.findings?.length || 0) + (v.diagnosis?.length || 0) +
+    (v.investigationsPerformed?.length || 0) * 10 +
+    (v.medicationsPrescribed?.length || 0) * 10 +
+    (v.followUpRecommendations?.length || 0) * 10;
+
+  const buckets = new Map<string, T>();
+  for (const v of visits) {
+    const key = `${norm(v.visitDate)}|${norm(v.facilityName)}|${norm(v.reasonForVisit).slice(0, 40)}`;
+    const existing = buckets.get(key);
+    if (!existing) { buckets.set(key, { ...v,
+      investigationsPerformed: [...(v.investigationsPerformed || [])],
+      medicationsPrescribed: [...(v.medicationsPrescribed || [])],
+      followUpRecommendations: [...(v.followUpRecommendations || [])],
+    }); continue; }
+    // merge unique array items
+    const mergeUniq = (a: string[] = [], b: string[] = []) => {
+      const seen = new Set(a.map((x) => norm(x)));
+      const out = [...a];
+      for (const item of b) { const k = norm(item); if (!seen.has(k)) { seen.add(k); out.push(item); } }
+      return out;
+    };
+    existing.investigationsPerformed = mergeUniq(existing.investigationsPerformed, v.investigationsPerformed);
+    existing.medicationsPrescribed = mergeUniq(existing.medicationsPrescribed, v.medicationsPrescribed);
+    existing.followUpRecommendations = mergeUniq(existing.followUpRecommendations, v.followUpRecommendations);
+    // pick more complete text fields
+    if (completeness(v) > completeness(existing)) {
+      existing.reasonForVisit = v.reasonForVisit || existing.reasonForVisit;
+      existing.findings = v.findings || existing.findings;
+      existing.diagnosis = v.diagnosis || existing.diagnosis;
+    } else {
+      existing.reasonForVisit = existing.reasonForVisit || v.reasonForVisit;
+      existing.findings = existing.findings || v.findings;
+      existing.diagnosis = existing.diagnosis || v.diagnosis;
+    }
+  }
+  return [...buckets.values()];
+}
+
+// Document dedupe — by date + facility + type + normalised name.
+function dedupeDocuments<T extends { name?: string; type?: string; date?: string; facility?: string }>(docs: T[]): T[] {
+  const norm = (s?: string) => (s || "").trim().toLowerCase().replace(/\s+/g, " ");
+  const seen = new Map<string, T>();
+  for (const d of docs) {
+    const key = `${norm(d.date)}|${norm(d.facility)}|${norm(d.type)}|${norm(d.name)}`;
+    if (!seen.has(key)) seen.set(key, d);
+  }
+  return [...seen.values()];
 }
 
 // ---------- Translation ----------
