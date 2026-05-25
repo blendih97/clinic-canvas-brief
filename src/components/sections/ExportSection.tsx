@@ -21,7 +21,7 @@ const ExportSection = () => {
   const [showUpgrade, setShowUpgrade] = useState(false);
 
   const store = useVaultStore();
-  const { profile } = useAuth();
+  const { profile, user } = useAuth();
   const { isActive } = useSubscription();
 
   // Modal state — shared across all three modes
