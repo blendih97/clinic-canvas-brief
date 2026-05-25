@@ -86,8 +86,11 @@ const DocumentViewerModal = ({ document: docProp, onClose, onShare }: Props) => 
   const [isReprocessing, setIsReprocessing] = useState(false);
   const [reprocessError, setReprocessError] = useState<string | null>(null);
   const [zoom, setZoom] = useState(1);
+  const isMobile = useIsMobile();
 
   const storagePath = doc.filePath || doc.fileUrl;
+  const isImageDoc = !!(doc.type?.toLowerCase().includes("image") || doc.name.match(/\.(jpg|jpeg|png|gif|webp)$/i));
+  const isPdfDoc = !isImageDoc && (doc.name.toLowerCase().endsWith(".pdf") || doc.type?.toLowerCase().includes("pdf"));
 
   useEffect(() => {
     if (!storagePath) return;
