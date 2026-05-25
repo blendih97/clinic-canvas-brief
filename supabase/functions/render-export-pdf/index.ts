@@ -716,6 +716,7 @@ const VisitHistoryPage = (data: PatientPayload, styles: Styles) => {
   return h(Page, { size: "A4", style: styles.page },
     h(Header, { title: strings.headerTitle || "Health Record", styles }),
     h(Text, { style: styles.pageTitle }, strings.visitHistory),
+      h(View, { style: styles.pageTitleRule }),
     h(Text, { style: styles.pageSubtitle }, strings.visitHistorySubtitle),
     sorted.length === 0
       ? h(Text, { style: styles.emptyText }, strings.noVisits)
@@ -766,6 +767,7 @@ const MedicationsPage = (data: PatientPayload, styles: Styles) => {
     h(Header, { title: strings.headerTitle || "Health Record", styles }),
     h(View, { style: styles.pageTitleBlock },
       h(Text, { style: styles.pageTitle }, strings.medicationsTitle),
+      h(View, { style: styles.pageTitleRule }),
       h(Text, { style: styles.pageSubtitle }, strings.medicationsSubtitle),
     ),
     medicationsTable.length === 0
@@ -814,6 +816,7 @@ const BloodResultsPage = (data: PatientPayload, styles: Styles) => {
     h(Header, { title: strings.headerTitle || "Health Record", styles }),
     h(View, { style: styles.pageTitleBlock },
       h(Text, { style: styles.pageTitle }, strings.bloodResultsTitle),
+      h(View, { style: styles.pageTitleRule }),
       h(Text, { style: styles.pageSubtitle }, strings.bloodResultsSubtitle),
     ),
     bloodTable.length === 0
@@ -877,6 +880,7 @@ const ImagingPage = (data: PatientPayload, styles: Styles) => {
     h(Header, { title: strings.headerTitle || "Health Record", styles }),
     h(View, { style: styles.pageTitleBlock },
       h(Text, { style: styles.pageTitle }, strings.imagingTitle),
+      h(View, { style: styles.pageTitleRule }),
       h(Text, { style: styles.pageSubtitle }, strings.imagingSubtitle),
     ),
     imagingTable.length === 0
@@ -901,6 +905,7 @@ const DocumentsPage = (data: PatientPayload, styles: Styles) => {
     h(Header, { title: strings.headerTitle || "Health Record", styles }),
     h(View, { style: styles.pageTitleBlock },
       h(Text, { style: styles.pageTitle }, strings.documentsTitle || "Documents Archive"),
+      h(View, { style: styles.pageTitleRule }),
       h(Text, { style: styles.pageSubtitle }, strings.documentsSubtitle || ""),
     ),
     documentsTable.length === 0
