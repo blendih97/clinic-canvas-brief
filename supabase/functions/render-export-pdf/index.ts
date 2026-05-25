@@ -11,73 +11,62 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// ---------- Font registration (Google Fonts TTFs, Unicode-safe) ----------
-// Latin display + body
-Font.register({
-  family: "Cormorant Garamond",
-  fonts: [
-    { src: "https://fonts.gstatic.com/s/cormorantgaramond/v21/co3umX5slCNuHLi8bLeY9MK7whWMhyjypVO7abI26QOD_v86GnM.ttf", fontWeight: 400 },
-    { src: "https://fonts.gstatic.com/s/cormorantgaramond/v21/co3umX5slCNuHLi8bLeY9MK7whWMhyjypVO7abI26QOD_iE9GnM.ttf", fontWeight: 600 },
-  ],
-});
+// ---------- Font registration (prefetched buffers to avoid race conditions) ----------
+// @react-pdf/renderer in Deno edge-runtime occasionally fails layout with
+// "Cannot read properties of undefined (reading 'unitsPerEm')" when font URLs
+// are still in flight at render time. We prefetch each TTF once and register
+// the buffer so the font is synchronously available.
 
-Font.register({
-  family: "DM Sans",
-  fonts: [
-    { src: "https://fonts.gstatic.com/s/dmsans/v17/rP2tp2ywxg089UriI5-g4vlH9VoD8CmcqZG40F9JadbnoEwAopxhTg.ttf", fontWeight: 400 },
-    { src: "https://fonts.gstatic.com/s/dmsans/v17/rP2tp2ywxg089UriI5-g4vlH9VoD8CmcqZG40F9JadbnoEwAkJxhTg.ttf", fontWeight: 500 },
-    { src: "https://fonts.gstatic.com/s/dmsans/v17/rP2tp2ywxg089UriI5-g4vlH9VoD8CmcqZG40F9JadbnoEwARZthTg.ttf", fontWeight: 700 },
+const FONT_SOURCES: Record<string, { url: string; weight: number }[]> = {
+  "Cormorant Garamond": [
+    { url: "https://fonts.gstatic.com/s/cormorantgaramond/v21/co3umX5slCNuHLi8bLeY9MK7whWMhyjypVO7abI26QOD_v86GnM.ttf", weight: 400 },
+    { url: "https://fonts.gstatic.com/s/cormorantgaramond/v21/co3umX5slCNuHLi8bLeY9MK7whWMhyjypVO7abI26QOD_iE9GnM.ttf", weight: 600 },
   ],
-});
+  "DM Sans": [
+    { url: "https://fonts.gstatic.com/s/dmsans/v17/rP2tp2ywxg089UriI5-g4vlH9VoD8CmcqZG40F9JadbnoEwAopxhTg.ttf", weight: 400 },
+    { url: "https://fonts.gstatic.com/s/dmsans/v17/rP2tp2ywxg089UriI5-g4vlH9VoD8CmcqZG40F9JadbnoEwAkJxhTg.ttf", weight: 500 },
+    { url: "https://fonts.gstatic.com/s/dmsans/v17/rP2tp2ywxg089UriI5-g4vlH9VoD8CmcqZG40F9JadbnoEwARZthTg.ttf", weight: 700 },
+  ],
+  "Noto Naskh Arabic": [
+    { url: "https://fonts.gstatic.com/s/notonaskharabic/v34/RrQ5bpV-9Dd1b1OAGA6M9PkyDuVBeLU.ttf", weight: 400 },
+  ],
+  "Noto Sans Hebrew": [
+    { url: "https://fonts.gstatic.com/s/notosanshebrew/v46/or3HQ7v33eiDljA1IufXTtVf7V6RvEEdhQlk0LlGxCyaeNKYZC0sqk3xXGiXd4qtoiJltutR2g.ttf", weight: 400 },
+  ],
+  "Noto Sans SC": [
+    { url: "https://fonts.gstatic.com/s/notosanssc/v36/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYxNbPzS5HE.ttf", weight: 400 },
+  ],
+  "Noto Sans JP": [
+    { url: "https://fonts.gstatic.com/s/notosansjp/v53/-F6jfjtqLzI2JPCgQBnw7HFyzSD-AsregP8VFBEj75vY0rw-oME.ttf", weight: 400 },
+  ],
+  "Noto Sans KR": [
+    { url: "https://fonts.gstatic.com/s/notosanskr/v36/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzuoyeLTq8H4hfeE.ttf", weight: 400 },
+  ],
+  "Noto Sans Devanagari": [
+    { url: "https://fonts.gstatic.com/s/notosansdevanagari/v26/TuGoUUFzXI5FBtUq5a8bjKYTZjtRU6Sgv3NaV_SNmI0b8QQCQmHn6B2OHjbL_08AlXQly-AzoFoW4Ow.ttf", weight: 400 },
+  ],
+};
 
-// Arabic (covers ar, ur, fa) — Noto Naskh Arabic
-Font.register({
-  family: "Noto Naskh Arabic",
-  fonts: [
-    { src: "https://fonts.gstatic.com/s/notonaskharabic/v34/RrQ5bpV-9Dd1b1OAGA6M9PkyDuVBeLU.ttf", fontWeight: 400 },
-    { src: "https://fonts.gstatic.com/s/notonaskharabic/v34/RrQ5bpV-9Dd1b1OAGA6M9PkyDuVBeLU.ttf", fontWeight: 700 },
-  ],
-});
+const fontBuffers = new Map<string, Uint8Array>();
+const registeredFamilies = new Set<string>();
 
-// Hebrew — Noto Sans Hebrew
-Font.register({
-  family: "Noto Sans Hebrew",
-  fonts: [
-    { src: "https://fonts.gstatic.com/s/notosanshebrew/v46/or3HQ7v33eiDljA1IufXTtVf7V6RvEEdhQlk0LlGxCyaeNKYZC0sqk3xXGiXd4qtoiJltutR2g.ttf", fontWeight: 400 },
-  ],
-});
-
-// Mandarin Chinese — Noto Sans SC
-Font.register({
-  family: "Noto Sans SC",
-  fonts: [
-    { src: "https://fonts.gstatic.com/s/notosanssc/v36/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYxNbPzS5HE.ttf", fontWeight: 400 },
-  ],
-});
-
-// Japanese — Noto Sans JP
-Font.register({
-  family: "Noto Sans JP",
-  fonts: [
-    { src: "https://fonts.gstatic.com/s/notosansjp/v53/-F6jfjtqLzI2JPCgQBnw7HFyzSD-AsregP8VFBEj75vY0rw-oME.ttf", fontWeight: 400 },
-  ],
-});
-
-// Korean — Noto Sans KR
-Font.register({
-  family: "Noto Sans KR",
-  fonts: [
-    { src: "https://fonts.gstatic.com/s/notosanskr/v36/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzuoyeLTq8H4hfeE.ttf", fontWeight: 400 },
-  ],
-});
-
-// Devanagari (Hindi, Marathi) — Noto Sans Devanagari
-Font.register({
-  family: "Noto Sans Devanagari",
-  fonts: [
-    { src: "https://fonts.gstatic.com/s/notosansdevanagari/v26/TuGoUUFzXI5FBtUq5a8bjKYTZjtRU6Sgv3NaV_SNmI0b8QQCQmHn6B2OHjbL_08AlXQly-AzoFoW4Ow.ttf", fontWeight: 400 },
-  ],
-});
+async function ensureFontFamily(family: string): Promise<void> {
+  if (registeredFamilies.has(family)) return;
+  const defs = FONT_SOURCES[family];
+  if (!defs) return;
+  const fonts = await Promise.all(defs.map(async (def) => {
+    let buf = fontBuffers.get(def.url);
+    if (!buf) {
+      const res = await fetch(def.url);
+      if (!res.ok) throw new Error(`Failed to fetch font ${family} (${def.weight}): ${res.status}`);
+      buf = new Uint8Array(await res.arrayBuffer());
+      fontBuffers.set(def.url, buf);
+    }
+    return { src: buf as any, fontWeight: def.weight };
+  }));
+  Font.register({ family, fonts } as any);
+  registeredFamilies.add(family);
+}
 
 // Disable hyphenation — letters were splitting in old export.
 Font.registerHyphenationCallback((word: string) => [word]);
