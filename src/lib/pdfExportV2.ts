@@ -537,6 +537,7 @@ export async function generatePatientSummaryV2(input: PatientSummaryInput): Prom
     medicationsTable,
     bloodTable,
     imagingTable,
+    documentsTable,
     language,
     isRtl,
     generatedAt: new Date().toLocaleDateString(language === "en" ? "en-GB" : language, {
