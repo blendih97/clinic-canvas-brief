@@ -857,6 +857,49 @@ const ImagingPage = (data: PatientPayload, styles: Styles) => {
   );
 };
 
+const DocumentsPage = (data: PatientPayload, styles: Styles) => {
+  const { strings, documentsTable = [] } = data;
+  const cols = [
+    { label: strings.docColName || "Document", w: 34 },
+    { label: strings.docColType || "Type", w: 16 },
+    { label: strings.docColDate || "Date", w: 14 },
+    { label: strings.docColFacility || "Facility", w: 24 },
+    { label: strings.docColCountry || "Country", w: 12 },
+  ];
+  return h(Page, { size: "A4", style: styles.page },
+    h(Header, { title: strings.headerTitle || "RinVita Health Record", styles }),
+    h(View, { style: styles.pageTitleBlock },
+      h(Text, { style: styles.pageTitle }, strings.documentsTitle || "Documents Archive"),
+      h(Text, { style: styles.pageSubtitle }, strings.documentsSubtitle || ""),
+    ),
+    documentsTable.length === 0
+      ? h(Text, { style: styles.emptyText }, strings.noDocuments || "No documents recorded.")
+      : h(View, { style: styles.table },
+          h(View, { style: styles.tableHeader, fixed: true },
+            ...cols.map((c, i) =>
+              h(Text, { key: i, style: [styles.tableHeaderCell, { width: `${c.w}%` }] }, c.label),
+            ),
+          ),
+          ...documentsTable.map((r, i) => {
+            const isLast = i === documentsTable.length - 1;
+            const rowStyle = [
+              styles.tableRow,
+              i % 2 === 1 ? styles.tableRowZebra : null,
+              isLast ? styles.tableRowLast : null,
+            ];
+            return h(View, { key: i, style: rowStyle, wrap: false },
+              h(Text, { style: [styles.tableCell, { width: "34%" }] }, r.name || "—"),
+              h(Text, { style: [styles.tableCell, { width: "16%" }] }, r.type || "—"),
+              h(Text, { style: [styles.tableCell, { width: "14%" }] }, r.date || "—"),
+              h(Text, { style: [styles.tableCell, { width: "24%" }] }, r.facility || "—"),
+              h(Text, { style: [styles.tableCell, { width: "12%" }] }, r.country || "—"),
+            );
+          }),
+        ),
+    h(Footer, { styles }),
+  );
+};
+
 // ---------- HTTP handler ----------
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
@@ -864,7 +907,6 @@ Deno.serve(async (req: Request) => {
   }
 
   // M4: GET /functions/v1/render-export-pdf?warm=1 — keep-warm probe.
-  // Returns immediately without rendering, but keeps the isolate hot.
   if (req.method === "GET") {
     const url = new URL(req.url);
     if (url.searchParams.get("warm") === "1") {
@@ -886,16 +928,19 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // M4: build per-language stylesheet (fonts + RTL direction).
     const { display, body } = fontsForLanguage(payload.language);
     await Promise.all([ensureFontFamily(display), ensureFontFamily(body)]);
     const styles = buildStyles(payload.language);
 
-    const pages: any[] = [PatientSummaryPage(payload, styles)];
-    pages.push(VisitHistoryPage(payload, styles));
-    pages.push(MedicationsPage(payload, styles));
-    pages.push(BloodResultsPage(payload, styles));
-    pages.push(ImagingPage(payload, styles));
+    // Section order: Cover → Lab Results → Medications → Visit History → Imaging → Documents.
+    const pages: any[] = [
+      PatientSummaryPage(payload, styles),
+      BloodResultsPage(payload, styles),
+      MedicationsPage(payload, styles),
+      VisitHistoryPage(payload, styles),
+      ImagingPage(payload, styles),
+      DocumentsPage(payload, styles),
+    ];
 
     const doc = React.createElement(
       Document,
