@@ -14,6 +14,7 @@ type DateRangeKey = "all" | "12m" | "6m" | "custom";
 
 const ExportSection = () => {
   const [mode, setMode] = useState<ExportMode | null>(null);
+  const isMobile = useIsMobile();
   const [generating, setGenerating] = useState(false);
   const [previewBlob, setPreviewBlob] = useState<Blob | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
