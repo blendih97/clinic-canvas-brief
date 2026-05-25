@@ -77,6 +77,16 @@ type StringPack = {
   imagingNormal: string;
   imagingFlagged: string;
   noImaging: string;
+  documentsTitle: string;
+  documentsSubtitle: string;
+  docColName: string;
+  docColType: string;
+  docColDate: string;
+  docColFacility: string;
+  docColCountry: string;
+  noDocuments: string;
+  headerTitle: string;
+  pageOf: (i: number, total: number) => string;
 };
 
 const STRINGS: Record<string, StringPack> = {
@@ -130,6 +140,16 @@ const STRINGS: Record<string, StringPack> = {
     imagingNormal: "Normal",
     imagingFlagged: "Flagged",
     noImaging: "No imaging studies recorded.",
+    documentsTitle: "Documents Archive",
+    documentsSubtitle: "All source documents in this record, deduplicated by date, facility and type.",
+    docColName: "Document",
+    docColType: "Type",
+    docColDate: "Date",
+    docColFacility: "Facility",
+    docColCountry: "Country",
+    noDocuments: "No documents recorded.",
+    headerTitle: "RinVita Health Record",
+    pageOf: (i, total) => `Page ${i} of ${total}`,
   },
   ar: {
     patientSummary: "ملخص المريض",
@@ -180,6 +200,16 @@ const STRINGS: Record<string, StringPack> = {
     imagingNormal: "طبيعي",
     imagingFlagged: "مُعلَّم",
     noImaging: "لا توجد دراسات تصوير مسجلة.",
+    documentsTitle: "أرشيف المستندات",
+    documentsSubtitle: "جميع المستندات المصدر في هذا السجل، بدون تكرار.",
+    docColName: "المستند",
+    docColType: "النوع",
+    docColDate: "التاريخ",
+    docColFacility: "المنشأة",
+    docColCountry: "الدولة",
+    noDocuments: "لا توجد مستندات مسجلة.",
+    headerTitle: "السجل الصحي RinVita",
+    pageOf: (i, total) => `صفحة ${i} من ${total}`,
   },
   es: {
     patientSummary: "Resumen del paciente",
@@ -231,6 +261,16 @@ const STRINGS: Record<string, StringPack> = {
     imagingNormal: "Normal",
     imagingFlagged: "Marcado",
     noImaging: "Sin estudios de imagen registrados.",
+    documentsTitle: "Archivo de documentos",
+    documentsSubtitle: "Todos los documentos de origen, deduplicados por fecha, centro y tipo.",
+    docColName: "Documento",
+    docColType: "Tipo",
+    docColDate: "Fecha",
+    docColFacility: "Centro",
+    docColCountry: "País",
+    noDocuments: "Sin documentos registrados.",
+    headerTitle: "Historial de salud RinVita",
+    pageOf: (i, total) => `Página ${i} de ${total}`,
   },
   fr: {
     patientSummary: "Résumé du patient",
@@ -282,6 +322,16 @@ const STRINGS: Record<string, StringPack> = {
     imagingNormal: "Normal",
     imagingFlagged: "Signalé",
     noImaging: "Aucun examen d'imagerie enregistré.",
+    documentsTitle: "Archives des documents",
+    documentsSubtitle: "Tous les documents sources, dédupliqués par date, établissement et type.",
+    docColName: "Document",
+    docColType: "Type",
+    docColDate: "Date",
+    docColFacility: "Établissement",
+    docColCountry: "Pays",
+    noDocuments: "Aucun document enregistré.",
+    headerTitle: "Dossier de santé RinVita",
+    pageOf: (i, total) => `Page ${i} sur ${total}`,
   },
 };
 
@@ -310,10 +360,24 @@ function computeCounts(data: VaultData): { documents: number; countries: number;
   return { documents, countries, yearsSpan };
 }
 
+// Imaging is flagged only when the finding describes a confirmed abnormality.
+// "Preserved EF", mild/monitored/stable findings should NOT trigger a red flag.
+function isTrulyFlaggedImaging(row: { status?: string; finding?: string }): boolean {
+  if (row.status !== "flagged") return false;
+  const text = (row.finding || "").toLowerCase();
+  if (!text) return false;
+  // Benign patterns — downgrade to normal.
+  if (/preserved\s+(ef|ejection\s*fraction|lv\s*function)/.test(text)) return false;
+  if (/\bno\s+(acute|significant|abnormal|new)\b/.test(text)) return false;
+  if (/\bnormal\b/.test(text) && !/abnormal/.test(text)) return false;
+  if (/\b(mild|trivial|trace|minimal)\b/.test(text) &&
+      /\b(monitor|surveillance|follow.?up|stable|unchanged|chronic)\b/.test(text)) return false;
+  return true;
+}
+
 function deriveHighlights(data: VaultData): string[] {
   const out: string[] = [];
 
-  // Out-of-range blood markers, most recent first.
   const flagged = data.bloodResults
     .filter((r) => r.status === "flagged" || r.status === "critical")
     .sort((a, b) => (b.date || "").localeCompare(a.date || ""));
@@ -324,9 +388,8 @@ function deriveHighlights(data: VaultData): string[] {
     out.push(`${r.marker} ${r.value} ${r.unit} — out of range${rangeBit}${dateBit}.`);
   }
 
-  // Imaging findings flagged non-normal.
   const flaggedImaging = data.imagingResults
-    .filter((i) => i.status === "flagged")
+    .filter(isTrulyFlaggedImaging)
     .sort((a, b) => (b.date || "").localeCompare(a.date || ""));
 
   for (const img of flaggedImaging.slice(0, Math.max(0, 5 - out.length))) {
@@ -335,6 +398,65 @@ function deriveHighlights(data: VaultData): string[] {
   }
 
   return out.slice(0, 5);
+}
+
+// --- Visit deduplication ---
+// Group by (date, facility, reason). Keep the entry with the most complete content;
+// merge investigations / medications / follow-ups across duplicates.
+function dedupeVisits<T extends {
+  visitDate?: string; facilityName?: string; reasonForVisit?: string;
+  findings?: string; diagnosis?: string;
+  investigationsPerformed?: string[]; medicationsPrescribed?: string[]; followUpRecommendations?: string[];
+}>(visits: T[]): T[] {
+  const norm = (s?: string) => (s || "").trim().toLowerCase().replace(/\s+/g, " ");
+  const completeness = (v: T) =>
+    (v.reasonForVisit?.length || 0) + (v.findings?.length || 0) + (v.diagnosis?.length || 0) +
+    (v.investigationsPerformed?.length || 0) * 10 +
+    (v.medicationsPrescribed?.length || 0) * 10 +
+    (v.followUpRecommendations?.length || 0) * 10;
+
+  const buckets = new Map<string, T>();
+  for (const v of visits) {
+    const key = `${norm(v.visitDate)}|${norm(v.facilityName)}|${norm(v.reasonForVisit).slice(0, 40)}`;
+    const existing = buckets.get(key);
+    if (!existing) { buckets.set(key, { ...v,
+      investigationsPerformed: [...(v.investigationsPerformed || [])],
+      medicationsPrescribed: [...(v.medicationsPrescribed || [])],
+      followUpRecommendations: [...(v.followUpRecommendations || [])],
+    }); continue; }
+    // merge unique array items
+    const mergeUniq = (a: string[] = [], b: string[] = []) => {
+      const seen = new Set(a.map((x) => norm(x)));
+      const out = [...a];
+      for (const item of b) { const k = norm(item); if (!seen.has(k)) { seen.add(k); out.push(item); } }
+      return out;
+    };
+    existing.investigationsPerformed = mergeUniq(existing.investigationsPerformed, v.investigationsPerformed);
+    existing.medicationsPrescribed = mergeUniq(existing.medicationsPrescribed, v.medicationsPrescribed);
+    existing.followUpRecommendations = mergeUniq(existing.followUpRecommendations, v.followUpRecommendations);
+    // pick more complete text fields
+    if (completeness(v) > completeness(existing)) {
+      existing.reasonForVisit = v.reasonForVisit || existing.reasonForVisit;
+      existing.findings = v.findings || existing.findings;
+      existing.diagnosis = v.diagnosis || existing.diagnosis;
+    } else {
+      existing.reasonForVisit = existing.reasonForVisit || v.reasonForVisit;
+      existing.findings = existing.findings || v.findings;
+      existing.diagnosis = existing.diagnosis || v.diagnosis;
+    }
+  }
+  return [...buckets.values()];
+}
+
+// Document dedupe — by date + facility + type + normalised name.
+function dedupeDocuments<T extends { name?: string; type?: string; date?: string; facility?: string }>(docs: T[]): T[] {
+  const norm = (s?: string) => (s || "").trim().toLowerCase().replace(/\s+/g, " ");
+  const seen = new Map<string, T>();
+  for (const d of docs) {
+    const key = `${norm(d.date)}|${norm(d.facility)}|${norm(d.type)}|${norm(d.name)}`;
+    if (!seen.has(key)) seen.set(key, d);
+  }
+  return [...seen.values()];
 }
 
 // ---------- Translation ----------
@@ -414,7 +536,7 @@ export async function generatePatientSummaryV2(input: PatientSummaryInput): Prom
       date: r.date,
     }));
 
-  // M3: deduped imaging studies.
+  // M3: deduped imaging studies (with refined flagging).
   const dedupedImaging = dedupeImaging(translated.imagingResults, input.imagingOverrides || []);
   const imagingTable = dedupedImaging
     .sort((a, b) => (b.date || "").localeCompare(a.date || ""))
@@ -424,14 +546,25 @@ export async function generatePatientSummaryV2(input: PatientSummaryInput): Prom
       date: i.date,
       facility: i.facility,
       finding: i.finding,
-      status: i.status,
+      status: isTrulyFlaggedImaging(i) ? "flagged" : "normal",
+    }));
+
+  // Documents archive — deduplicated by date+facility+type+name.
+  const documentsTable = dedupeDocuments(translated.documents || [])
+    .sort((a, b) => (b.date || "").localeCompare(a.date || ""))
+    .map((d) => ({
+      name: d.name,
+      type: d.type,
+      date: d.date,
+      facility: d.facility,
+      country: d.country,
     }));
 
   const langMeta = SUPPORTED_LANGUAGES.find((l) => l.code === language);
   const isRtl = !!langMeta?.rtl;
 
-  // M2: serialise visits for the edge function (snake-case-light, but keep camelCase for payload).
-  const visitsPayload = (input.visits || []).map((v) => ({
+  // Serialise visits, then dedupe before sending.
+  const visitsPayload = dedupeVisits((input.visits || []).map((v) => ({
     visitDate: v.visitDate,
     facilityName: v.facilityName,
     facilityCountry: v.facilityCountry,
@@ -441,7 +574,7 @@ export async function generatePatientSummaryV2(input: PatientSummaryInput): Prom
     diagnosis: v.diagnosis,
     medicationsPrescribed: v.medicationsPrescribed || [],
     followUpRecommendations: v.followUpRecommendations || [],
-  }));
+  })));
 
   const baseStrings = getStrings(language);
   const finalPayload = {
@@ -454,6 +587,7 @@ export async function generatePatientSummaryV2(input: PatientSummaryInput): Prom
     medicationsTable,
     bloodTable,
     imagingTable,
+    documentsTable,
     language,
     isRtl,
     generatedAt: new Date().toLocaleDateString(language === "en" ? "en-GB" : language, {
@@ -508,6 +642,15 @@ export async function generatePatientSummaryV2(input: PatientSummaryInput): Prom
       imagingNormal: baseStrings.imagingNormal,
       imagingFlagged: baseStrings.imagingFlagged,
       noImaging: baseStrings.noImaging,
+      documentsTitle: baseStrings.documentsTitle,
+      documentsSubtitle: baseStrings.documentsSubtitle,
+      docColName: baseStrings.docColName,
+      docColType: baseStrings.docColType,
+      docColDate: baseStrings.docColDate,
+      docColFacility: baseStrings.docColFacility,
+      docColCountry: baseStrings.docColCountry,
+      noDocuments: baseStrings.noDocuments,
+      headerTitle: baseStrings.headerTitle,
     },
   };
 
