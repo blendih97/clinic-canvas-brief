@@ -148,7 +148,7 @@ const STRINGS: Record<string, StringPack> = {
     docColFacility: "Facility",
     docColCountry: "Country",
     noDocuments: "No documents recorded.",
-    headerTitle: "RinVita Health Record",
+    headerTitle: "Health Record",
     pageOf: (i, total) => `Page ${i} of ${total}`,
   },
   ar: {
@@ -208,7 +208,7 @@ const STRINGS: Record<string, StringPack> = {
     docColFacility: "المنشأة",
     docColCountry: "الدولة",
     noDocuments: "لا توجد مستندات مسجلة.",
-    headerTitle: "السجل الصحي RinVita",
+    headerTitle: "السجل الصحي",
     pageOf: (i, total) => `صفحة ${i} من ${total}`,
   },
   es: {
@@ -269,7 +269,7 @@ const STRINGS: Record<string, StringPack> = {
     docColFacility: "Centro",
     docColCountry: "País",
     noDocuments: "Sin documentos registrados.",
-    headerTitle: "Historial de salud RinVita",
+    headerTitle: "Historial de salud",
     pageOf: (i, total) => `Página ${i} de ${total}`,
   },
   fr: {
@@ -330,7 +330,7 @@ const STRINGS: Record<string, StringPack> = {
     docColFacility: "Établissement",
     docColCountry: "Pays",
     noDocuments: "Aucun document enregistré.",
-    headerTitle: "Dossier de santé RinVita",
+    headerTitle: "Dossier de santé",
     pageOf: (i, total) => `Page ${i} sur ${total}`,
   },
 };
