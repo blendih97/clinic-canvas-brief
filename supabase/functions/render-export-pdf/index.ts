@@ -847,7 +847,7 @@ const BloodResultsPage = (data: PatientPayload, styles: Styles) => {
               h(Text, { style: valueStyle }, valueText),
               h(Text, { style: [styles.tableCell, { width: "22%" }] }, r.range || "—"),
               h(View, { style: [styles.statusPill, { width: "18%" }] },
-                h(Text, { style: glyphStyle }, isFlagged ? "▲" : "✓"),
+                h(Text, { style: glyphStyle }, isFlagged ? "!" : "+"),
                 h(Text, { style: labelStyle }, bloodStatusLabel(r.status, strings)),
               ),
               h(Text, { style: [styles.tableCell, { width: "14%" }] }, r.date || "—"),
