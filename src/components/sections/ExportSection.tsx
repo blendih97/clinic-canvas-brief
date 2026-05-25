@@ -42,7 +42,8 @@ const ExportSection = () => {
   const [selectedDocs, setSelectedDocs] = useState<Set<string>>(new Set());
 
   // Demo override for advertising account.
-  const isDemoAccount = user?.email?.toLowerCase() === "info@greenbears";
+  // Demo override for advertising account.
+  const isDemoAccount = (user?.email || "").toLowerCase().includes("greenbears");
   const patientName = isDemoAccount ? "John Doe" : (profile?.full_name || "Patient");
   const dob = profile?.date_of_birth || "";
 
