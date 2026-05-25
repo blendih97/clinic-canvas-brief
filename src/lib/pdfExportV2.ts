@@ -541,11 +541,6 @@ export async function generatePatientSummaryV2(input: PatientSummaryInput): Prom
     severity: a.severity,
     reaction: a.reaction,
   }));
-  const allergies = translated.allergies.map((a) => ({
-    substance: a.substance,
-    severity: a.severity,
-    reaction: a.reaction,
-  }));
 
   // M3: full medications table (including inactive), sorted active-first then by date desc.
   const medicationsTable = [...translated.medications]
