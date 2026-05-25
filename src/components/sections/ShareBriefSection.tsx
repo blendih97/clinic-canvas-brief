@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Clock, Eye, Lock, Copy, CheckCircle, Shield, ArrowRight, ArrowLeft, Languages, Calendar } from "lucide-react";
-import { useVaultStore } from "@/store/vaultStore";
+import { dedupeMedications, useVaultStore } from "@/store/vaultStore";
 import { useAuth } from "@/hooks/useAuth";
 import { hasAccess } from "@/lib/planAccess";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,6 +25,7 @@ const ShareBriefSection = () => {
   const [generating, setGenerating] = useState(false);
 
   const { bloodResults, medications, allergies, imagingResults, documents, alerts } = useVaultStore();
+  const uniqueMedications = dedupeMedications(medications).unique;
   const { profile } = useAuth();
   const locked = !hasAccess(profile, "share_brief");
 
@@ -38,7 +39,7 @@ const ShareBriefSection = () => {
   const [customTo, setCustomTo] = useState("");
   const [includeOriginals, setIncludeOriginals] = useState(true);
 
-  const totalRecords = bloodResults.length + medications.length;
+  const totalRecords = bloodResults.length + uniqueMedications.length;
   const selectedExpiry = expiries.find((e) => e.id === expiry) || expiries[1];
 
   useEffect(() => {
@@ -86,7 +87,7 @@ const ShareBriefSection = () => {
     const payload = {
       bloodResults: sections.blood ? bloodResults.filter((r) => withinDateRange(r.date)) : [],
       imagingResults: sections.imaging ? imagingResults.filter((r) => withinDateRange(r.date)) : [],
-      medications: sections.medications ? medications.filter((r) => withinDateRange(r.date)) : [],
+      medications: sections.medications ? uniqueMedications.filter((r) => withinDateRange(r.date)) : [],
       allergies: sections.allergies ? allergies : [],
       documents: sections.documents ? documents.filter((r) => withinDateRange(r.date)) : [],
       alerts,
