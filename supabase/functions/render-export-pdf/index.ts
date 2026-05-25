@@ -835,13 +835,20 @@ const BloodResultsPage = (data: PatientPayload, styles: Styles) => {
               isLast ? styles.tableRowLast : null,
             ];
             const valueText = `${r.value}${r.unit ? ` ${r.unit}` : ""}`;
+            const isFlagged = r.status === "flagged" || r.status === "critical";
+            const valueStyle = [styles.tableCell, { width: "18%" },
+              isFlagged ? styles.tableCellDanger : styles.tableCellSuccess];
+            const glyphStyle = [styles.statusGlyph,
+              isFlagged ? styles.statusGlyphDanger : styles.statusGlyphSuccess];
+            const labelStyle = [styles.statusLabel,
+              isFlagged ? styles.statusLabelDanger : styles.statusLabelSuccess];
             return h(View, { key: i, style: rowStyle, wrap: false },
               h(Text, { style: [styles.tableCell, { width: "28%" }] }, r.marker),
-              h(Text, { style: [styles.tableCell, { width: "18%" }] }, valueText),
+              h(Text, { style: valueStyle }, valueText),
               h(Text, { style: [styles.tableCell, { width: "22%" }] }, r.range || "—"),
               h(View, { style: [styles.statusPill, { width: "18%" }] },
-                h(Text, { style: styles.statusGlyph }, bloodStatusGlyph(r.status)),
-                h(Text, { style: styles.statusLabel }, bloodStatusLabel(r.status, strings)),
+                h(Text, { style: glyphStyle }, isFlagged ? "▲" : "✓"),
+                h(Text, { style: labelStyle }, bloodStatusLabel(r.status, strings)),
               ),
               h(Text, { style: [styles.tableCell, { width: "14%" }] }, r.date || "—"),
             );
