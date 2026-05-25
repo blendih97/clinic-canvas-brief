@@ -272,11 +272,10 @@ export const useVaultStore = create<VaultState>()((set, get) => ({
 
   addMedications: async (meds, userId) => {
     const existing = get().medications;
-    const norm = (s: string) => (s || "").trim().toLowerCase().replace(/\s+/g, " ");
-    const seenKeys = new Set(existing.map((m) => `${norm(m.name)}|${norm(m.dose)}`));
+    const seenKeys = new Set(existing.map((m) => medicationKey(m)));
     const deduped: typeof meds = [];
     for (const m of meds) {
-      const key = `${norm(m.name)}|${norm(m.dose)}`;
+      const key = medicationKey(m);
       if (!key.startsWith("|") && !seenKeys.has(key)) {
         seenKeys.add(key);
         deduped.push(m);
@@ -295,7 +294,7 @@ export const useVaultStore = create<VaultState>()((set, get) => ({
         prescriber: r.prescriber || "", facility: r.facility || "", date: r.date || "", active: r.active,
         source: r.source || "ai",
       }));
-      set((s) => ({ medications: [...s.medications, ...mapped] }));
+      set((s) => ({ medications: dedupeMedications([...s.medications, ...mapped]).unique }));
     }
   },
 
