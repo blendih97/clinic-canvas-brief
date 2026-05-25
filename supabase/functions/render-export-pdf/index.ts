@@ -226,7 +226,7 @@ function buildStyles(language: string) {
       lineHeight: 1.5,
       textAlign: startAlign as any,
     },
-    emptyText: { fontSize: 9, color: COLORS.muted, fontStyle: "italic" },
+    emptyText: { fontSize: 9, color: COLORS.muted },
     highlightsBlock: { marginTop: 4, marginBottom: 18 },
     highlightRow: {
       flexDirection: rtl ? "row-reverse" : "row",
