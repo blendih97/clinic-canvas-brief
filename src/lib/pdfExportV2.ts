@@ -642,6 +642,15 @@ export async function generatePatientSummaryV2(input: PatientSummaryInput): Prom
       imagingNormal: baseStrings.imagingNormal,
       imagingFlagged: baseStrings.imagingFlagged,
       noImaging: baseStrings.noImaging,
+      documentsTitle: baseStrings.documentsTitle,
+      documentsSubtitle: baseStrings.documentsSubtitle,
+      docColName: baseStrings.docColName,
+      docColType: baseStrings.docColType,
+      docColDate: baseStrings.docColDate,
+      docColFacility: baseStrings.docColFacility,
+      docColCountry: baseStrings.docColCountry,
+      noDocuments: baseStrings.noDocuments,
+      headerTitle: baseStrings.headerTitle,
     },
   };
 
