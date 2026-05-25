@@ -121,6 +121,14 @@ const COLORS = {
   gold: "#B8952A",
   goldSoft: "#F6F2E9",
   amber: "#C9853A",
+  // Clinical status colours
+  navy: "#0E2A3E",
+  navyInk: "#FFFFFF",
+  danger: "#B91C1C",
+  dangerSoft: "#FEF2F2",
+  success: "#15803D",
+  zebra: "#F7F7F5",
+  borderStrong: "#D9D2C2",
 };
 
 // Build styles for a given language. Swaps fontFamily + RTL direction so
@@ -153,18 +161,18 @@ function buildStyles(language: string) {
       marginBottom: 22,
     },
     headerBrand: {
-      fontFamily: display,
-      fontSize: 16,
+      fontFamily: body,
+      fontSize: 11,
+      fontWeight: 700,
       color: COLORS.ink,
       letterSpacing: 0,
     },
     headerBrandAccent: { color: COLORS.gold },
-    headerCentre: { fontSize: 9, color: COLORS.muted },
     headerRight: {
       fontSize: 9,
       color: COLORS.muted,
-      letterSpacing: rtl ? 0 : 0.6,
-      textTransform: "uppercase",
+      fontWeight: 500,
+      letterSpacing: 0,
     },
     footer: {
       position: "absolute",
@@ -174,14 +182,14 @@ function buildStyles(language: string) {
       flexDirection: rtl ? "row-reverse" : "row",
       justifyContent: "space-between",
       alignItems: "center",
-      fontSize: 8,
+      fontSize: 7.5,
       color: COLORS.muted,
       borderTopWidth: 0.5,
       borderTopColor: COLORS.hairline,
-      paddingTop: 8,
+      paddingTop: 6,
     },
-    footerLeft: { fontSize: 8, color: COLORS.muted },
-    footerRight: { fontSize: 8, color: COLORS.muted },
+    footerLeft: { fontSize: 7.5, color: COLORS.muted },
+    footerRight: { fontSize: 7.5, color: COLORS.muted, fontWeight: 500 },
     patientName: {
       fontFamily: display,
       fontSize: 30,
@@ -193,8 +201,15 @@ function buildStyles(language: string) {
     patientMeta: {
       fontSize: 10,
       color: COLORS.muted,
-      marginBottom: 18,
+      marginBottom: 14,
       textAlign: startAlign as any,
+    },
+    coverRule: {
+      height: 1.5,
+      backgroundColor: COLORS.gold,
+      marginTop: 4,
+      marginBottom: 22,
+      width: "30%",
     },
     ataGlance: {
       fontFamily: display,
@@ -211,14 +226,18 @@ function buildStyles(language: string) {
       textAlign: startAlign as any,
     },
     sectionHeading: {
-      fontFamily: display,
-      fontSize: 14,
-      fontWeight: 600,
+      fontFamily: body,
+      fontSize: 13,
+      fontWeight: 700,
       color: COLORS.ink,
-      marginBottom: 8,
+      marginBottom: 4,
       marginTop: 4,
+      paddingBottom: 4,
+      borderBottomWidth: 1.2,
+      borderBottomColor: COLORS.gold,
       textAlign: startAlign as any,
     },
+    sectionHeadingSpacer: { marginBottom: 10 },
     twoCol: { flexDirection: rtl ? "row-reverse" : "row", gap: 18, marginBottom: 18 },
     col: { flex: 1 },
     bulletRow: {
@@ -266,18 +285,25 @@ function buildStyles(language: string) {
       textAlign: startAlign as any,
     },
     // Visit History
+    // Page title (big, with gold underline)
     pageTitle: {
-      fontFamily: display,
-      fontSize: 24,
-      fontWeight: 600,
+      fontFamily: body,
+      fontSize: 20,
+      fontWeight: 700,
       color: COLORS.ink,
       marginBottom: 4,
       textAlign: startAlign as any,
     },
+    pageTitleRule: {
+      height: 1.5,
+      backgroundColor: COLORS.gold,
+      width: 36,
+      marginBottom: 8,
+    },
     pageSubtitle: {
-      fontSize: 10,
+      fontSize: 9.5,
       color: COLORS.muted,
-      marginBottom: 18,
+      marginBottom: 14,
       textAlign: startAlign as any,
     },
     visitCard: {
@@ -323,22 +349,20 @@ function buildStyles(language: string) {
     pageTitleBlock: { marginBottom: 18 },
     table: {
       borderWidth: 0.5,
-      borderColor: COLORS.hairline,
-      borderRadius: 4,
+      borderColor: COLORS.borderStrong,
+      borderRadius: 3,
       overflow: "hidden",
       marginBottom: 14,
     },
     tableHeader: {
       flexDirection: rtl ? "row-reverse" : "row",
-      backgroundColor: COLORS.goldSoft,
-      paddingVertical: 7,
+      backgroundColor: COLORS.navy,
+      paddingVertical: 6,
       paddingHorizontal: 8,
-      borderBottomWidth: 0.5,
-      borderBottomColor: COLORS.hairline,
     },
     tableHeaderCell: {
       fontSize: 8,
-      color: COLORS.gold,
+      color: COLORS.navyInk,
       textTransform: "uppercase",
       letterSpacing: rtl || /^(zh|ja|ko|hi|mr)$/.test(language) ? 0 : 0.6,
       fontWeight: 700,
@@ -346,19 +370,21 @@ function buildStyles(language: string) {
     },
     tableRow: {
       flexDirection: rtl ? "row-reverse" : "row",
-      paddingVertical: 7,
+      paddingVertical: 4.5,
       paddingHorizontal: 8,
       borderBottomWidth: 0.5,
       borderBottomColor: COLORS.hairline,
     },
-    tableRowZebra: { backgroundColor: "#FBF9F4" },
+    tableRowZebra: { backgroundColor: COLORS.zebra },
     tableRowLast: { borderBottomWidth: 0 },
     tableCell: {
-      fontSize: 9.5,
+      fontSize: 9,
       color: COLORS.ink,
-      lineHeight: 1.4,
+      lineHeight: 1.35,
       textAlign: startAlign as any,
     },
+    tableCellDanger: { color: COLORS.danger, fontWeight: 700 },
+    tableCellSuccess: { color: COLORS.success, fontWeight: 600 },
     statusPill: {
       flexDirection: rtl ? "row-reverse" : "row",
       alignItems: "center",
@@ -370,10 +396,14 @@ function buildStyles(language: string) {
       width: 10,
       color: COLORS.ink,
     },
+    statusGlyphDanger: { color: COLORS.danger },
+    statusGlyphSuccess: { color: COLORS.success },
     statusLabel: {
-      fontSize: 9,
+      fontSize: 8.5,
       color: COLORS.ink,
     },
+    statusLabelDanger: { color: COLORS.danger, fontWeight: 700 },
+    statusLabelSuccess: { color: COLORS.success, fontWeight: 600 },
     imagingCard: {
       borderWidth: 0.5,
       borderColor: COLORS.hairline,
@@ -601,9 +631,10 @@ const PatientSummaryPage = (data: PatientPayload, styles: Styles) => {
   );
 
   return h(Page, { size: "A4", style: styles.page },
-    h(Header, { title: strings.headerTitle || "RinVita Health Record", styles }),
+    h(Header, { title: strings.headerTitle || "Health Record", styles }),
     h(Text, { style: styles.patientName }, patient.fullName),
     meta ? h(Text, { style: styles.patientMeta }, meta) : null,
+    h(View, { style: styles.coverRule }),
     h(Text, { style: styles.ataGlance }, strings.atAGlance),
     h(View, { style: styles.twoCol },
       h(View, { style: styles.col },
@@ -683,8 +714,9 @@ const VisitHistoryPage = (data: PatientPayload, styles: Styles) => {
   const sorted = [...visits].sort((a, b) => (b.visitDate || "").localeCompare(a.visitDate || ""));
 
   return h(Page, { size: "A4", style: styles.page },
-    h(Header, { title: strings.headerTitle || "RinVita Health Record", styles }),
+    h(Header, { title: strings.headerTitle || "Health Record", styles }),
     h(Text, { style: styles.pageTitle }, strings.visitHistory),
+      h(View, { style: styles.pageTitleRule }),
     h(Text, { style: styles.pageSubtitle }, strings.visitHistorySubtitle),
     sorted.length === 0
       ? h(Text, { style: styles.emptyText }, strings.noVisits)
@@ -732,9 +764,10 @@ const MedicationsPage = (data: PatientPayload, styles: Styles) => {
   ];
 
   return h(Page, { size: "A4", style: styles.page },
-    h(Header, { title: strings.headerTitle || "RinVita Health Record", styles }),
+    h(Header, { title: strings.headerTitle || "Health Record", styles }),
     h(View, { style: styles.pageTitleBlock },
       h(Text, { style: styles.pageTitle }, strings.medicationsTitle),
+      h(View, { style: styles.pageTitleRule }),
       h(Text, { style: styles.pageSubtitle }, strings.medicationsSubtitle),
     ),
     medicationsTable.length === 0
@@ -780,9 +813,10 @@ const BloodResultsPage = (data: PatientPayload, styles: Styles) => {
   ];
 
   return h(Page, { size: "A4", style: styles.page },
-    h(Header, { title: strings.headerTitle || "RinVita Health Record", styles }),
+    h(Header, { title: strings.headerTitle || "Health Record", styles }),
     h(View, { style: styles.pageTitleBlock },
       h(Text, { style: styles.pageTitle }, strings.bloodResultsTitle),
+      h(View, { style: styles.pageTitleRule }),
       h(Text, { style: styles.pageSubtitle }, strings.bloodResultsSubtitle),
     ),
     bloodTable.length === 0
@@ -801,13 +835,20 @@ const BloodResultsPage = (data: PatientPayload, styles: Styles) => {
               isLast ? styles.tableRowLast : null,
             ];
             const valueText = `${r.value}${r.unit ? ` ${r.unit}` : ""}`;
+            const isFlagged = r.status === "flagged" || r.status === "critical";
+            const valueStyle = [styles.tableCell, { width: "18%" },
+              isFlagged ? styles.tableCellDanger : styles.tableCellSuccess];
+            const glyphStyle = [styles.statusGlyph,
+              isFlagged ? styles.statusGlyphDanger : styles.statusGlyphSuccess];
+            const labelStyle = [styles.statusLabel,
+              isFlagged ? styles.statusLabelDanger : styles.statusLabelSuccess];
             return h(View, { key: i, style: rowStyle, wrap: false },
               h(Text, { style: [styles.tableCell, { width: "28%" }] }, r.marker),
-              h(Text, { style: [styles.tableCell, { width: "18%" }] }, valueText),
+              h(Text, { style: valueStyle }, valueText),
               h(Text, { style: [styles.tableCell, { width: "22%" }] }, r.range || "—"),
               h(View, { style: [styles.statusPill, { width: "18%" }] },
-                h(Text, { style: styles.statusGlyph }, bloodStatusGlyph(r.status)),
-                h(Text, { style: styles.statusLabel }, bloodStatusLabel(r.status, strings)),
+                h(Text, { style: glyphStyle }, isFlagged ? "!" : "+"),
+                h(Text, { style: labelStyle }, bloodStatusLabel(r.status, strings)),
               ),
               h(Text, { style: [styles.tableCell, { width: "14%" }] }, r.date || "—"),
             );
@@ -843,9 +884,10 @@ const ImagingPage = (data: PatientPayload, styles: Styles) => {
   const { patient, strings, generatedAt, imagingTable = [] } = data;
 
   return h(Page, { size: "A4", style: styles.page },
-    h(Header, { title: strings.headerTitle || "RinVita Health Record", styles }),
+    h(Header, { title: strings.headerTitle || "Health Record", styles }),
     h(View, { style: styles.pageTitleBlock },
       h(Text, { style: styles.pageTitle }, strings.imagingTitle),
+      h(View, { style: styles.pageTitleRule }),
       h(Text, { style: styles.pageSubtitle }, strings.imagingSubtitle),
     ),
     imagingTable.length === 0
@@ -867,9 +909,10 @@ const DocumentsPage = (data: PatientPayload, styles: Styles) => {
     { label: strings.docColCountry || "Country", w: 12 },
   ];
   return h(Page, { size: "A4", style: styles.page },
-    h(Header, { title: strings.headerTitle || "RinVita Health Record", styles }),
+    h(Header, { title: strings.headerTitle || "Health Record", styles }),
     h(View, { style: styles.pageTitleBlock },
       h(Text, { style: styles.pageTitle }, strings.documentsTitle || "Documents Archive"),
+      h(View, { style: styles.pageTitleRule }),
       h(Text, { style: styles.pageSubtitle }, strings.documentsSubtitle || ""),
     ),
     documentsTable.length === 0

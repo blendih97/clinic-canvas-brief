@@ -148,7 +148,7 @@ const STRINGS: Record<string, StringPack> = {
     docColFacility: "Facility",
     docColCountry: "Country",
     noDocuments: "No documents recorded.",
-    headerTitle: "RinVita Health Record",
+    headerTitle: "Health Record",
     pageOf: (i, total) => `Page ${i} of ${total}`,
   },
   ar: {
@@ -208,7 +208,7 @@ const STRINGS: Record<string, StringPack> = {
     docColFacility: "المنشأة",
     docColCountry: "الدولة",
     noDocuments: "لا توجد مستندات مسجلة.",
-    headerTitle: "السجل الصحي RinVita",
+    headerTitle: "السجل الصحي",
     pageOf: (i, total) => `صفحة ${i} من ${total}`,
   },
   es: {
@@ -269,7 +269,7 @@ const STRINGS: Record<string, StringPack> = {
     docColFacility: "Centro",
     docColCountry: "País",
     noDocuments: "Sin documentos registrados.",
-    headerTitle: "Historial de salud RinVita",
+    headerTitle: "Historial de salud",
     pageOf: (i, total) => `Página ${i} de ${total}`,
   },
   fr: {
@@ -330,7 +330,7 @@ const STRINGS: Record<string, StringPack> = {
     docColFacility: "Établissement",
     docColCountry: "Pays",
     noDocuments: "Aucun document enregistré.",
-    headerTitle: "Dossier de santé RinVita",
+    headerTitle: "Dossier de santé",
     pageOf: (i, total) => `Page ${i} sur ${total}`,
   },
 };
@@ -415,14 +415,19 @@ function dedupeVisits<T extends {
     (v.medicationsPrescribed?.length || 0) * 10 +
     (v.followUpRecommendations?.length || 0) * 10;
 
+  const uniq = (arr: string[] = []) => {
+    const seen = new Set<string>(); const out: string[] = [];
+    for (const item of arr) { const k = norm(item); if (k && !seen.has(k)) { seen.add(k); out.push(item); } }
+    return out;
+  };
   const buckets = new Map<string, T>();
   for (const v of visits) {
     const key = `${norm(v.visitDate)}|${norm(v.facilityName)}|${norm(v.reasonForVisit).slice(0, 40)}`;
     const existing = buckets.get(key);
     if (!existing) { buckets.set(key, { ...v,
-      investigationsPerformed: [...(v.investigationsPerformed || [])],
-      medicationsPrescribed: [...(v.medicationsPrescribed || [])],
-      followUpRecommendations: [...(v.followUpRecommendations || [])],
+      investigationsPerformed: uniq(v.investigationsPerformed),
+      medicationsPrescribed: uniq(v.medicationsPrescribed),
+      followUpRecommendations: uniq(v.followUpRecommendations),
     }); continue; }
     // merge unique array items
     const mergeUniq = (a: string[] = [], b: string[] = []) => {
@@ -448,15 +453,63 @@ function dedupeVisits<T extends {
   return [...buckets.values()];
 }
 
-// Document dedupe — by date + facility + type + normalised name.
+// Document dedupe — by date + facility + type only (ignore name, since the same
+// source document is often re-indexed with subtle name variations like
+// "John Doe" vs "Doe, John").
 function dedupeDocuments<T extends { name?: string; type?: string; date?: string; facility?: string }>(docs: T[]): T[] {
-  const norm = (s?: string) => (s || "").trim().toLowerCase().replace(/\s+/g, " ");
+  const norm = (s?: string) => (s || "").trim().toLowerCase().replace(/[,\s]+/g, " ");
   const seen = new Map<string, T>();
   for (const d of docs) {
-    const key = `${norm(d.date)}|${norm(d.facility)}|${norm(d.type)}|${norm(d.name)}`;
+    const key = `${norm(d.date)}|${norm(d.facility)}|${norm(d.type)}`;
     if (!seen.has(key)) seen.set(key, d);
   }
   return [...seen.values()];
+}
+
+// --- Cross-language frequency/dose normalisation ---
+// Translate common foreign-language frequency/dosing words to English so the
+// PDF reads cleanly even when the source document was not in English.
+const FREQUENCY_DICT: Record<string, string> = {
+  // German
+  "täglich": "Daily", "taeglich": "Daily", "tägl": "Daily", "tägl.": "Daily",
+  "einmal täglich": "Once daily", "1x täglich": "Once daily", "1 x täglich": "Once daily",
+  "zweimal täglich": "Twice daily", "2x täglich": "Twice daily", "2 x täglich": "Twice daily",
+  "dreimal täglich": "Three times daily", "3x täglich": "Three times daily",
+  "morgens": "In the morning", "abends": "In the evening", "mittags": "At midday",
+  "nach bedarf": "As needed", "bei bedarf": "As needed",
+  "wöchentlich": "Weekly", "monatlich": "Monthly", "stündlich": "Hourly",
+  // French
+  "quotidien": "Daily", "quotidienne": "Daily", "par jour": "Daily",
+  "une fois par jour": "Once daily", "deux fois par jour": "Twice daily",
+  "trois fois par jour": "Three times daily", "au besoin": "As needed",
+  "le matin": "In the morning", "le soir": "In the evening",
+  "hebdomadaire": "Weekly", "mensuel": "Monthly",
+  // Spanish
+  "diario": "Daily", "diaria": "Daily", "al día": "Daily",
+  "una vez al día": "Once daily", "dos veces al día": "Twice daily",
+  "tres veces al día": "Three times daily", "según necesidad": "As needed",
+  "por la mañana": "In the morning", "por la noche": "In the evening",
+  "semanal": "Weekly", "mensual": "Monthly",
+  // Italian
+  "giornaliero": "Daily", "al giorno": "Daily",
+  "una volta al giorno": "Once daily", "due volte al giorno": "Twice daily",
+  "al bisogno": "As needed",
+  // Latin / RX shorthand (already widely-understood but normalise)
+  "qd": "Once daily", "bid": "Twice daily", "tid": "Three times daily",
+  "qid": "Four times daily", "prn": "As needed", "qhs": "At bedtime",
+};
+function translateFrequency(s?: string): string | undefined {
+  if (!s) return s;
+  const trimmed = s.trim();
+  const lower = trimmed.toLowerCase();
+  if (FREQUENCY_DICT[lower]) return FREQUENCY_DICT[lower];
+  // word-replace within longer phrases
+  let out = trimmed;
+  for (const [k, v] of Object.entries(FREQUENCY_DICT)) {
+    const re = new RegExp(`\\b${k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "gi");
+    out = out.replace(re, v);
+  }
+  return out;
 }
 
 // ---------- Translation ----------
@@ -487,7 +540,7 @@ export async function generatePatientSummaryV2(input: PatientSummaryInput): Prom
   const highlights = deriveHighlights(translated);
   const currentMeds = translated.medications
     .filter((m) => m.active !== false)
-    .map((m) => ({ name: m.name, dose: m.dose, frequency: m.frequency }));
+    .map((m) => ({ name: m.name, dose: m.dose, frequency: translateFrequency(m.frequency) }));
   const allergies = translated.allergies.map((a) => ({
     substance: a.substance,
     severity: a.severity,
@@ -503,7 +556,7 @@ export async function generatePatientSummaryV2(input: PatientSummaryInput): Prom
     .map((m) => ({
       name: m.name,
       dose: m.dose,
-      frequency: m.frequency,
+      frequency: translateFrequency(m.frequency),
       prescriber: m.prescriber,
       facility: m.facility,
       date: m.date,
@@ -536,9 +589,41 @@ export async function generatePatientSummaryV2(input: PatientSummaryInput): Prom
       date: r.date,
     }));
 
-  // M3: deduped imaging studies (with refined flagging).
-  const dedupedImaging = dedupeImaging(translated.imagingResults, input.imagingOverrides || []);
-  const imagingTable = dedupedImaging
+  // Stronger imaging dedupe: collapse by normalised modality + facility + date(±3d),
+  // ignoring region/status variance (the same study often gets re-extracted as a
+  // separate row with a slightly different status). Keep the most complete finding.
+  function normModality(s?: string): string {
+    const x = (s || "").toLowerCase().trim();
+    if (/echo|tte|tee/.test(x)) return "echo";
+    if (/x.?ray|chest\s*x|radiograph/.test(x)) return "xray";
+    if (/^ct\b|computed.tom/.test(x)) return "ct";
+    if (/^mri\b|magnetic.res/.test(x)) return "mri";
+    if (/ultrasound|sonogr|^us\b/.test(x)) return "us";
+    if (/pet/.test(x)) return "pet";
+    return x.replace(/[^a-z]/g, "");
+  }
+  const DAY = 86_400_000;
+  function nearDate(a?: string, b?: string): boolean {
+    const da = Date.parse(a || ""); const db = Date.parse(b || "");
+    if (Number.isNaN(da) || Number.isNaN(db)) return (a || "").trim() === (b || "").trim();
+    return Math.abs(da - db) <= 3 * DAY;
+  }
+  const imagingBuckets: any[] = [];
+  for (const i of translated.imagingResults) {
+    const match = imagingBuckets.find((b) =>
+      normModality(b.type) === normModality(i.type) &&
+      (b.facility || "").trim().toLowerCase() === (i.facility || "").trim().toLowerCase() &&
+      nearDate(b.date, i.date));
+    if (match) {
+      if ((i.finding?.length || 0) > (match.finding?.length || 0)) match.finding = i.finding;
+      if (!match.region && i.region) match.region = i.region;
+      // promote to flagged only if either is truly flagged
+      if (i.status === "flagged") match._anyFlagged = true;
+    } else {
+      imagingBuckets.push({ ...i, _anyFlagged: i.status === "flagged" });
+    }
+  }
+  const imagingTable = imagingBuckets
     .sort((a, b) => (b.date || "").localeCompare(a.date || ""))
     .map((i) => ({
       type: i.type,
@@ -546,7 +631,7 @@ export async function generatePatientSummaryV2(input: PatientSummaryInput): Prom
       date: i.date,
       facility: i.facility,
       finding: i.finding,
-      status: isTrulyFlaggedImaging(i) ? "flagged" : "normal",
+      status: (i._anyFlagged && isTrulyFlaggedImaging(i)) ? "flagged" : "normal",
     }));
 
   // Documents archive — deduplicated by date+facility+type+name.
