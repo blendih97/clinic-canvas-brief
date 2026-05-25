@@ -200,8 +200,8 @@ const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void 
             {search ? "No documents match your search." : "No documents yet. Upload documents to build your health archive."}
           </div>
         ) : (
-          <div className="bg-card border border-border rounded-lg overflow-hidden">
-            <table className="w-full">
+          <div className="bg-card border border-border rounded-lg overflow-x-auto">
+            <table className="w-full min-w-[720px]">
               <thead>
                 <tr className="border-b border-border text-left">
                   <th className="p-4 text-[10px] tracking-wider text-muted-foreground uppercase font-medium">Document</th>
