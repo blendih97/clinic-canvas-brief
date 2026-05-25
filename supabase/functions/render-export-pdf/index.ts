@@ -47,22 +47,32 @@ const FONT_SOURCES: Record<string, { url: string; weight: number }[]> = {
   ],
 };
 
-const fontBuffers = new Map<string, Uint8Array>();
+const fontDataUrls = new Map<string, string>();
 const registeredFamilies = new Set<string>();
+
+function toBase64(bytes: Uint8Array): string {
+  let bin = "";
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    bin += String.fromCharCode.apply(null, Array.from(bytes.subarray(i, i + chunk)));
+  }
+  return btoa(bin);
+}
 
 async function ensureFontFamily(family: string): Promise<void> {
   if (registeredFamilies.has(family)) return;
   const defs = FONT_SOURCES[family];
   if (!defs) return;
   const fonts = await Promise.all(defs.map(async (def) => {
-    let buf = fontBuffers.get(def.url);
-    if (!buf) {
+    let dataUrl = fontDataUrls.get(def.url);
+    if (!dataUrl) {
       const res = await fetch(def.url);
       if (!res.ok) throw new Error(`Failed to fetch font ${family} (${def.weight}): ${res.status}`);
-      buf = new Uint8Array(await res.arrayBuffer());
-      fontBuffers.set(def.url, buf);
+      const buf = new Uint8Array(await res.arrayBuffer());
+      dataUrl = `data:font/ttf;base64,${toBase64(buf)}`;
+      fontDataUrls.set(def.url, dataUrl);
     }
-    return { src: buf as any, fontWeight: def.weight };
+    return { src: dataUrl, fontWeight: def.weight };
   }));
   Font.register({ family, fonts } as any);
   registeredFamilies.add(family);
