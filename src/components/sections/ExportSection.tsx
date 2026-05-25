@@ -381,12 +381,29 @@ const ExportSection = () => {
                   {isActive ? "Download PDF" : "Unlock & download"}
                 </button>
               </div>
-              <iframe
-                src={previewUrl}
-                title="Health Brief preview"
-                className="w-full"
-                style={{ height: "70vh", border: 0, background: "hsl(var(--muted))" }}
-              />
+              {isMobile ? (
+                <div className="flex flex-col items-center justify-center gap-3 p-8 text-center" style={{ minHeight: "40vh", background: "hsl(var(--muted))" }}>
+                  <FileText className="w-10 h-10 text-muted-foreground" />
+                  <p className="text-sm text-foreground">PDF preview isn't supported inline on mobile.</p>
+                  <p className="text-xs text-muted-foreground">Open the preview in a new tab to view it.</p>
+                  <a
+                    href={previewUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    Open preview
+                  </a>
+                </div>
+              ) : (
+                <iframe
+                  src={previewUrl}
+                  title="Health Brief preview"
+                  className="w-full"
+                  style={{ height: "70vh", border: 0, background: "hsl(var(--muted))" }}
+                />
+              )}
             </div>
           )}
         </div>
