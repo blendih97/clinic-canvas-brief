@@ -270,7 +270,7 @@ const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void 
                       <button
                         onClick={(e) => handleDelete(e, d)}
                         disabled={deletingId === d.id}
-                        className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all disabled:opacity-50"
+                        className="opacity-100 md:opacity-0 md:group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all disabled:opacity-50 p-1"
                         title="Delete document"
                       >
                         {deletingId === d.id ? (
