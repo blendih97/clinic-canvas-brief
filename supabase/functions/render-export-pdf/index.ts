@@ -857,6 +857,8 @@ Deno.serve(async (req: Request) => {
     }
 
     // M4: build per-language stylesheet (fonts + RTL direction).
+    const { display, body } = fontsForLanguage(payload.language);
+    await Promise.all([ensureFontFamily(display), ensureFontFamily(body)]);
     const styles = buildStyles(payload.language);
 
     const pages: any[] = [PatientSummaryPage(payload, styles)];
