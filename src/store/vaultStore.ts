@@ -124,7 +124,7 @@ interface VaultState {
   relinkImaging: (idA: string, idB: string) => Promise<void>;
 }
 
-export const useVaultStore = create<VaultState>()((set) => ({
+export const useVaultStore = create<VaultState>()((set, get) => ({
   bloodResults: [],
   imagingResults: [],
   medications: [],
