@@ -201,11 +201,15 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
     // Upload original file to storage and get file_path
     let filePath: string | undefined;
     if (file) {
-      const storagePath = `${uid}/${Date.now()}-${file.name}`;
+      const safeName = file.name.replace(/[^\w.\-]+/g, "_");
+      const storagePath = `${uid}/${Date.now()}-${safeName}`;
       const { error: uploadErr } = await supabase.storage
         .from("medical-documents")
-        .upload(storagePath, file, { upsert: true });
-      if (!uploadErr) {
+        .upload(storagePath, file, { upsert: true, contentType: file.type || "application/octet-stream" });
+      if (uploadErr) {
+        console.error("Original file upload failed:", uploadErr);
+        setError(`Could not store original file: ${uploadErr.message}`);
+      } else {
         filePath = storagePath;
       }
     }
