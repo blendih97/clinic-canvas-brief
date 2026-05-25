@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
-import { X, FileText, Download, Share2, Globe, Languages, Loader2, AlertCircle, RefreshCw, ZoomIn, ZoomOut, RotateCcw, Sparkles } from "lucide-react";
+import { X, FileText, Download, Share2, Globe, Languages, Loader2, AlertCircle, RefreshCw, ZoomIn, ZoomOut, RotateCcw, Sparkles, ExternalLink } from "lucide-react";
 import type { Document } from "@/store/vaultStore";
 import { useVaultStore } from "@/store/vaultStore";
 import { supabase } from "@/integrations/supabase/client";
 import { SUPPORTED_LANGUAGES, getLanguageName } from "@/lib/supportedLanguages";
+import { useIsMobile } from "@/hooks/use-mobile";
+
 
 interface Props {
   document: Document;
@@ -84,8 +86,11 @@ const DocumentViewerModal = ({ document: docProp, onClose, onShare }: Props) => 
   const [isReprocessing, setIsReprocessing] = useState(false);
   const [reprocessError, setReprocessError] = useState<string | null>(null);
   const [zoom, setZoom] = useState(1);
+  const isMobile = useIsMobile();
 
   const storagePath = doc.filePath || doc.fileUrl;
+  const isImageDoc = !!(doc.type?.toLowerCase().includes("image") || doc.name.match(/\.(jpg|jpeg|png|gif|webp)$/i));
+  const isPdfDoc = !isImageDoc && (doc.name.toLowerCase().endsWith(".pdf") || doc.type?.toLowerCase().includes("pdf"));
 
   useEffect(() => {
     if (!storagePath) return;
@@ -243,13 +248,36 @@ const DocumentViewerModal = ({ document: docProp, onClose, onShare }: Props) => 
             )}
             <div className="flex-1 overflow-auto p-5 flex items-start justify-center">
               {signedUrl ? (
-                doc.type?.toLowerCase().includes("image") || doc.name.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                isImageDoc ? (
                   <img
                     src={signedUrl}
                     alt={doc.name}
                     className="max-w-none rounded transition-transform origin-top"
                     style={{ transform: `scale(${zoom})`, transformOrigin: "top center" }}
                   />
+                ) : isPdfDoc && isMobile ? (
+                  <div className="w-full flex flex-col items-center justify-center text-center gap-4 py-10">
+                    <FileText className="w-12 h-12 text-primary/60" />
+                    <div>
+                      <p className="text-sm text-foreground font-medium">{doc.name}</p>
+                      <p className="text-xs text-muted-foreground mt-1">PDF preview isn't supported inline on mobile.</p>
+                    </div>
+                    <a
+                      href={signedUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+                    >
+                      <ExternalLink className="w-4 h-4" /> Open original
+                    </a>
+                    <button
+                      onClick={handleDownload}
+                      disabled={isDownloading}
+                      className="inline-flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-xs text-foreground hover:bg-muted transition-colors disabled:opacity-50"
+                    >
+                      {isDownloading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />} Download
+                    </button>
+                  </div>
                 ) : (
                   <iframe
                     src={signedUrl}
