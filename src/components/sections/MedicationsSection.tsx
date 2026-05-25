@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Pill, AlertTriangle, CheckCircle, Plus, X, Edit2, Trash2 } from "lucide-react";
-import { useVaultStore } from "@/store/vaultStore";
+import { dedupeMedications, useVaultStore } from "@/store/vaultStore";
 import { useAuth } from "@/hooks/useAuth";
 import MedicalDisclaimer from "@/components/MedicalDisclaimer";
 
 const MedicationsSection = () => {
   const { medications, allergies, addMedications, addAllergies, removeMedication, removeAllergy, updateMedication } = useVaultStore();
+  const uniqueMedications = dedupeMedications(medications).unique;
   const { user } = useAuth();
   const [showMedModal, setShowMedModal] = useState(false);
   const [showAllergyModal, setShowAllergyModal] = useState(false);
@@ -118,16 +119,16 @@ const MedicationsSection = () => {
             <Pill className="w-4 h-4 text-primary" />
             <h3 className="font-heading text-lg text-foreground">Medications</h3>
             <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
-              {medications.filter((m) => m.active).length} active
+              {uniqueMedications.filter((m) => m.active).length} active
             </span>
           </div>
           <button onClick={() => { resetMedForm(); setShowMedModal(true); }} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-primary border border-primary/30 rounded-lg hover:bg-primary/5 transition-colors">
             <Plus className="w-3 h-3" /> Add Medication
           </button>
         </div>
-        {medications.length > 0 ? (
+        {uniqueMedications.length > 0 ? (
           <div className="bg-card border border-border rounded-lg overflow-hidden divide-y divide-border/50">
-            {medications.map((m) => (
+            {uniqueMedications.map((m) => (
               <div key={m.id} className="p-4 flex items-center gap-4 hover:bg-muted/50 transition-colors">
                 <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                   <CheckCircle className="w-4 h-4 text-primary" />

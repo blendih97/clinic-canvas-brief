@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FileText, Upload, Share2, AlertTriangle, Pill, CheckCircle, Send, Search, Pin } from "lucide-react";
-import { useVaultStore } from "@/store/vaultStore";
+import { dedupeMedications, useVaultStore } from "@/store/vaultStore";
 
 type Section = "overview" | "blood" | "imaging" | "media" | "medications" | "documents" | "share" | "billing" | "export" | "family";
 
@@ -47,7 +47,7 @@ const OverviewSection = ({ onNavigate, onUpload, onRequestRecords }: OverviewPro
   );
 
   const recentDocs = [...filteredDocs].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
-  const activeMeds = medications.filter((m) => m.active);
+  const activeMeds = dedupeMedications(medications.filter((m) => m.active)).unique;
 
   const pinnedDocs = documents.filter(d => pinnedDocIds.has(d.id));
   const pinnedBlood = bloodResults.filter(b => pinnedBloodIds.has(b.id));
