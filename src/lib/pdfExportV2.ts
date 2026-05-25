@@ -415,14 +415,19 @@ function dedupeVisits<T extends {
     (v.medicationsPrescribed?.length || 0) * 10 +
     (v.followUpRecommendations?.length || 0) * 10;
 
+  const uniq = (arr: string[] = []) => {
+    const seen = new Set<string>(); const out: string[] = [];
+    for (const item of arr) { const k = norm(item); if (k && !seen.has(k)) { seen.add(k); out.push(item); } }
+    return out;
+  };
   const buckets = new Map<string, T>();
   for (const v of visits) {
     const key = `${norm(v.visitDate)}|${norm(v.facilityName)}|${norm(v.reasonForVisit).slice(0, 40)}`;
     const existing = buckets.get(key);
     if (!existing) { buckets.set(key, { ...v,
-      investigationsPerformed: [...(v.investigationsPerformed || [])],
-      medicationsPrescribed: [...(v.medicationsPrescribed || [])],
-      followUpRecommendations: [...(v.followUpRecommendations || [])],
+      investigationsPerformed: uniq(v.investigationsPerformed),
+      medicationsPrescribed: uniq(v.medicationsPrescribed),
+      followUpRecommendations: uniq(v.followUpRecommendations),
     }); continue; }
     // merge unique array items
     const mergeUniq = (a: string[] = [], b: string[] = []) => {
