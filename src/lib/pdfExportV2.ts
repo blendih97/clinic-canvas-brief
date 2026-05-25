@@ -535,7 +535,12 @@ export async function generatePatientSummaryV2(input: PatientSummaryInput): Prom
   const highlights = deriveHighlights(translated);
   const currentMeds = translated.medications
     .filter((m) => m.active !== false)
-    .map((m) => ({ name: m.name, dose: m.dose, frequency: m.frequency }));
+    .map((m) => ({ name: m.name, dose: m.dose, frequency: translateFrequency(m.frequency) }));
+  const allergies = translated.allergies.map((a) => ({
+    substance: a.substance,
+    severity: a.severity,
+    reaction: a.reaction,
+  }));
   const allergies = translated.allergies.map((a) => ({
     substance: a.substance,
     severity: a.severity,
