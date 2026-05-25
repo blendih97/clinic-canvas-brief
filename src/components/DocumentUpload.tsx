@@ -158,6 +158,7 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
       if (fnError) throw new Error(fnError.message || "Analysis failed");
 
       setResult(data);
+      setStepIndex(processingSteps.length); // mark all ticks complete
       setPhase("confirm");
     } catch (e: any) {
       setError(e.message || "Something went wrong");
