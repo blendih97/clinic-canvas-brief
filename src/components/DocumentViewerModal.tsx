@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
-import { X, FileText, Download, Share2, Globe, Languages, Loader2, AlertCircle, RefreshCw, ZoomIn, ZoomOut, RotateCcw, Sparkles } from "lucide-react";
+import { X, FileText, Download, Share2, Globe, Languages, Loader2, AlertCircle, RefreshCw, ZoomIn, ZoomOut, RotateCcw, Sparkles, ExternalLink } from "lucide-react";
 import type { Document } from "@/store/vaultStore";
 import { useVaultStore } from "@/store/vaultStore";
 import { supabase } from "@/integrations/supabase/client";
 import { SUPPORTED_LANGUAGES, getLanguageName } from "@/lib/supportedLanguages";
+import { useIsMobile } from "@/hooks/use-mobile";
+
 
 interface Props {
   document: Document;
