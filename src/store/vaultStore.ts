@@ -101,7 +101,7 @@ const normalizeMedicationPart = (value?: string) =>
 const medicationKey = (med: Pick<Medication, "name" | "dose">) =>
   `${normalizeMedicationPart(med.name)}|${normalizeMedicationPart(med.dose)}`;
 
-const dedupeMedications = <T extends Medication>(medications: T[]) => {
+export const dedupeMedications = <T extends Medication>(medications: T[]) => {
   const seen = new Set<string>();
   const unique: T[] = [];
   const duplicateIds: string[] = [];
