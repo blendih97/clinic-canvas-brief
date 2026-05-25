@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { useVaultStore } from "@/store/vaultStore";
+import { dedupeMedications, useVaultStore } from "@/store/vaultStore";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ArrowLeft, Camera } from "lucide-react";
@@ -97,7 +97,7 @@ const ProfilePage = () => {
   const initials = (fullName || user?.email?.split("@")[0] || "U")
     .split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
 
-  const activeMeds = medications.filter((m) => m.active);
+  const activeMeds = dedupeMedications(medications.filter((m) => m.active)).unique;
 
   return (
     <div className="min-h-screen bg-background">
