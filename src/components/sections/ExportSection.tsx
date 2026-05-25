@@ -118,6 +118,8 @@ const ExportSection = () => {
       }
     } catch (err) {
       console.error("PDF generation error:", err);
+      const message = err instanceof Error ? err.message : "PDF generation failed. Please try again.";
+      (await import("sonner")).toast.error(message);
     } finally {
       setGenerating(false);
       setProgressPhase(null);
