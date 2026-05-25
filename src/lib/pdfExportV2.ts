@@ -584,9 +584,41 @@ export async function generatePatientSummaryV2(input: PatientSummaryInput): Prom
       date: r.date,
     }));
 
-  // M3: deduped imaging studies (with refined flagging).
-  const dedupedImaging = dedupeImaging(translated.imagingResults, input.imagingOverrides || []);
-  const imagingTable = dedupedImaging
+  // Stronger imaging dedupe: collapse by normalised modality + facility + date(±3d),
+  // ignoring region/status variance (the same study often gets re-extracted as a
+  // separate row with a slightly different status). Keep the most complete finding.
+  function normModality(s?: string): string {
+    const x = (s || "").toLowerCase().trim();
+    if (/echo|tte|tee/.test(x)) return "echo";
+    if (/x.?ray|chest\s*x|radiograph/.test(x)) return "xray";
+    if (/^ct\b|computed.tom/.test(x)) return "ct";
+    if (/^mri\b|magnetic.res/.test(x)) return "mri";
+    if (/ultrasound|sonogr|^us\b/.test(x)) return "us";
+    if (/pet/.test(x)) return "pet";
+    return x.replace(/[^a-z]/g, "");
+  }
+  const DAY = 86_400_000;
+  function nearDate(a?: string, b?: string): boolean {
+    const da = Date.parse(a || ""); const db = Date.parse(b || "");
+    if (Number.isNaN(da) || Number.isNaN(db)) return (a || "").trim() === (b || "").trim();
+    return Math.abs(da - db) <= 3 * DAY;
+  }
+  const imagingBuckets: any[] = [];
+  for (const i of translated.imagingResults) {
+    const match = imagingBuckets.find((b) =>
+      normModality(b.type) === normModality(i.type) &&
+      (b.facility || "").trim().toLowerCase() === (i.facility || "").trim().toLowerCase() &&
+      nearDate(b.date, i.date));
+    if (match) {
+      if ((i.finding?.length || 0) > (match.finding?.length || 0)) match.finding = i.finding;
+      if (!match.region && i.region) match.region = i.region;
+      // promote to flagged only if either is truly flagged
+      if (i.status === "flagged") match._anyFlagged = true;
+    } else {
+      imagingBuckets.push({ ...i, _anyFlagged: i.status === "flagged" });
+    }
+  }
+  const imagingTable = imagingBuckets
     .sort((a, b) => (b.date || "").localeCompare(a.date || ""))
     .map((i) => ({
       type: i.type,
@@ -594,7 +626,7 @@ export async function generatePatientSummaryV2(input: PatientSummaryInput): Prom
       date: i.date,
       facility: i.facility,
       finding: i.finding,
-      status: isTrulyFlaggedImaging(i) ? "flagged" : "normal",
+      status: (i._anyFlagged && isTrulyFlaggedImaging(i)) ? "flagged" : "normal",
     }));
 
   // Documents archive — deduplicated by date+facility+type+name.
