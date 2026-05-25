@@ -211,7 +211,7 @@ const ShareBriefSection = () => {
               {([
                 ["blood", "Lab Results", bloodResults.length],
                 ["imaging", "Imaging Findings", imagingResults.length],
-                ["medications", "Medications", medications.length],
+                ["medications", "Medications", uniqueMedications.length],
                 ["allergies", "Allergies", allergies.length],
                 ["documents", "Documents", documents.length],
               ] as const).map(([key, label, count]) => (
@@ -350,10 +350,10 @@ const ShareBriefSection = () => {
                 <p className="text-foreground/70">{allergies.map((a) => `${a.substance} (${a.reaction})`).join(" · ")}</p>
               </div>
             )}
-            {medications.length > 0 && sections.medications && (
+            {uniqueMedications.length > 0 && sections.medications && (
               <div className="mt-3 p-4 bg-muted rounded-lg text-xs">
                 <p className="text-muted-foreground mb-1">Active Medications</p>
-                <p className="text-foreground/70">{medications.map((m) => `${m.name} ${m.dose}`).join(" · ")}</p>
+                <p className="text-foreground/70">{uniqueMedications.map((m) => `${m.name} ${m.dose}`).join(" · ")}</p>
               </div>
             )}
           </div>
