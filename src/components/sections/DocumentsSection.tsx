@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FileText, CheckCircle, Send, Clock, Eye, Inbox, X, Loader2, Search, Pin, Sparkles } from "lucide-react";
+import { FileText, CheckCircle, Send, Clock, Eye, Inbox, X, Loader2, Search, Pin, Sparkles, Trash2 } from "lucide-react";
 import { useVaultStore } from "@/store/vaultStore";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -32,6 +32,7 @@ const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void 
   const visits = useVaultStore((s) => s.visits);
   const addVisits = useVaultStore((s) => s.addVisits);
   const updateDocument = useVaultStore((s) => s.updateDocument);
+  const removeDocument = useVaultStore((s) => s.removeDocument);
   const { user, profile } = useAuth();
   const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
   const [showViewer, setShowViewer] = useState(false);
@@ -40,6 +41,7 @@ const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void 
   const [loadingRequests, setLoadingRequests] = useState(false);
   const [search, setSearch] = useState("");
   const [reExtractingId, setReExtractingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (tab === "requests" && user) loadRequests();
@@ -134,6 +136,21 @@ const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void 
 
   const documentVisitCount = (docId: string) => visits.filter((v) => v.documentId === docId).length;
 
+  const handleDelete = async (e: React.MouseEvent, doc: Document) => {
+    e.stopPropagation();
+    if (!user) return;
+    if (!window.confirm(`Are you sure you want to delete "${doc.name}"? This cannot be undone.`)) return;
+    setDeletingId(doc.id);
+    try {
+      await removeDocument(doc.id, doc.filePath);
+      toast.success("Document deleted");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete document");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   const handleRowClick = (doc: Document) => { setSelectedDoc(doc); setShowViewer(true); };
 
   const q = search.toLowerCase();
@@ -193,12 +210,13 @@ const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void 
                   <th className="p-4 text-[10px] tracking-wider text-muted-foreground uppercase font-medium">Facility</th>
                   <th className="p-4 text-[10px] tracking-wider text-muted-foreground uppercase font-medium">Date</th>
                   <th className="p-4 text-[10px] tracking-wider text-muted-foreground uppercase font-medium">Status</th>
+                  <th className="p-4 text-[10px] tracking-wider text-muted-foreground uppercase font-medium w-10"></th>
                 </tr>
               </thead>
               <tbody>
                 {filteredDocs.map((d) => (
                   <tr key={d.id} onClick={() => handleRowClick(d)}
-                    className="border-b border-border/50 hover:bg-muted/50 transition-colors cursor-pointer">
+                    className="border-b border-border/50 hover:bg-muted/50 transition-colors cursor-pointer group">
                     <td className="p-4">
                       <div className="flex items-center gap-2">
                         <FileText className="w-4 h-4 text-primary" />
@@ -247,6 +265,20 @@ const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void 
                           </button>
                         )}
                       </div>
+                    </td>
+                    <td className="p-4">
+                      <button
+                        onClick={(e) => handleDelete(e, d)}
+                        disabled={deletingId === d.id}
+                        className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all disabled:opacity-50"
+                        title="Delete document"
+                      >
+                        {deletingId === d.id ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="w-4 h-4" />
+                        )}
+                      </button>
                     </td>
                   </tr>
                 ))}

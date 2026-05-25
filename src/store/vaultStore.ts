@@ -117,6 +117,7 @@ interface VaultState {
   addVisits: (visits: Omit<Visit, "id">[], userId: string) => Promise<void>;
   removeMedication: (id: string) => Promise<void>;
   removeAllergy: (id: string) => Promise<void>;
+  removeDocument: (id: string, filePath?: string) => Promise<void>;
   updateMedication: (id: string, updates: Partial<Medication>) => Promise<void>;
   updateDocument: (id: string, updates: Partial<Document>) => Promise<void>;
   unlinkImaging: (idA: string, idB: string, userId: string) => Promise<void>;
@@ -312,6 +313,17 @@ export const useVaultStore = create<VaultState>()((set) => ({
   removeAllergy: async (id: string) => {
     await supabase.from("allergies").delete().eq("id", id);
     set((s) => ({ allergies: s.allergies.filter((a) => a.id !== id) }));
+  },
+
+  removeDocument: async (id: string, filePath?: string) => {
+    if (filePath) {
+      await supabase.storage.from("medical-documents").remove([filePath]);
+    }
+    await supabase.from("documents").delete().eq("id", id);
+    set((s) => ({
+      documents: s.documents.filter((d) => d.id !== id),
+      visits: s.visits.filter((v) => v.documentId !== id),
+    }));
   },
 
   updateMedication: async (id: string, updates: Partial<Medication>) => {
