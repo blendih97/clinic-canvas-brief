@@ -631,7 +631,7 @@ const PatientSummaryPage = (data: PatientPayload, styles: Styles) => {
   );
 
   return h(Page, { size: "A4", style: styles.page },
-    h(Header, { title: strings.headerTitle || "RinVita Health Record", styles }),
+    h(Header, { title: strings.headerTitle || "Health Record", styles }),
     h(Text, { style: styles.patientName }, patient.fullName),
     meta ? h(Text, { style: styles.patientMeta }, meta) : null,
     h(Text, { style: styles.ataGlance }, strings.atAGlance),
@@ -713,7 +713,7 @@ const VisitHistoryPage = (data: PatientPayload, styles: Styles) => {
   const sorted = [...visits].sort((a, b) => (b.visitDate || "").localeCompare(a.visitDate || ""));
 
   return h(Page, { size: "A4", style: styles.page },
-    h(Header, { title: strings.headerTitle || "RinVita Health Record", styles }),
+    h(Header, { title: strings.headerTitle || "Health Record", styles }),
     h(Text, { style: styles.pageTitle }, strings.visitHistory),
     h(Text, { style: styles.pageSubtitle }, strings.visitHistorySubtitle),
     sorted.length === 0
@@ -762,7 +762,7 @@ const MedicationsPage = (data: PatientPayload, styles: Styles) => {
   ];
 
   return h(Page, { size: "A4", style: styles.page },
-    h(Header, { title: strings.headerTitle || "RinVita Health Record", styles }),
+    h(Header, { title: strings.headerTitle || "Health Record", styles }),
     h(View, { style: styles.pageTitleBlock },
       h(Text, { style: styles.pageTitle }, strings.medicationsTitle),
       h(Text, { style: styles.pageSubtitle }, strings.medicationsSubtitle),
@@ -810,7 +810,7 @@ const BloodResultsPage = (data: PatientPayload, styles: Styles) => {
   ];
 
   return h(Page, { size: "A4", style: styles.page },
-    h(Header, { title: strings.headerTitle || "RinVita Health Record", styles }),
+    h(Header, { title: strings.headerTitle || "Health Record", styles }),
     h(View, { style: styles.pageTitleBlock },
       h(Text, { style: styles.pageTitle }, strings.bloodResultsTitle),
       h(Text, { style: styles.pageSubtitle }, strings.bloodResultsSubtitle),
@@ -873,7 +873,7 @@ const ImagingPage = (data: PatientPayload, styles: Styles) => {
   const { patient, strings, generatedAt, imagingTable = [] } = data;
 
   return h(Page, { size: "A4", style: styles.page },
-    h(Header, { title: strings.headerTitle || "RinVita Health Record", styles }),
+    h(Header, { title: strings.headerTitle || "Health Record", styles }),
     h(View, { style: styles.pageTitleBlock },
       h(Text, { style: styles.pageTitle }, strings.imagingTitle),
       h(Text, { style: styles.pageSubtitle }, strings.imagingSubtitle),
@@ -897,7 +897,7 @@ const DocumentsPage = (data: PatientPayload, styles: Styles) => {
     { label: strings.docColCountry || "Country", w: 12 },
   ];
   return h(Page, { size: "A4", style: styles.page },
-    h(Header, { title: strings.headerTitle || "RinVita Health Record", styles }),
+    h(Header, { title: strings.headerTitle || "Health Record", styles }),
     h(View, { style: styles.pageTitleBlock },
       h(Text, { style: styles.pageTitle }, strings.documentsTitle || "Documents Archive"),
       h(Text, { style: styles.pageSubtitle }, strings.documentsSubtitle || ""),
