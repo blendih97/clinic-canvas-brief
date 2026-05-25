@@ -210,12 +210,13 @@ const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void 
                   <th className="p-4 text-[10px] tracking-wider text-muted-foreground uppercase font-medium">Facility</th>
                   <th className="p-4 text-[10px] tracking-wider text-muted-foreground uppercase font-medium">Date</th>
                   <th className="p-4 text-[10px] tracking-wider text-muted-foreground uppercase font-medium">Status</th>
+                  <th className="p-4 text-[10px] tracking-wider text-muted-foreground uppercase font-medium w-10"></th>
                 </tr>
               </thead>
               <tbody>
                 {filteredDocs.map((d) => (
                   <tr key={d.id} onClick={() => handleRowClick(d)}
-                    className="border-b border-border/50 hover:bg-muted/50 transition-colors cursor-pointer">
+                    className="border-b border-border/50 hover:bg-muted/50 transition-colors cursor-pointer group">
                     <td className="p-4">
                       <div className="flex items-center gap-2">
                         <FileText className="w-4 h-4 text-primary" />
@@ -264,6 +265,20 @@ const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void 
                           </button>
                         )}
                       </div>
+                    </td>
+                    <td className="p-4">
+                      <button
+                        onClick={(e) => handleDelete(e, d)}
+                        disabled={deletingId === d.id}
+                        className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all disabled:opacity-50"
+                        title="Delete document"
+                      >
+                        {deletingId === d.id ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="w-4 h-4" />
+                        )}
+                      </button>
                     </td>
                   </tr>
                 ))}
