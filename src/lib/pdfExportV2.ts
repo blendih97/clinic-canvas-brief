@@ -537,6 +537,15 @@ export async function generatePatientSummaryV2(input: PatientSummaryInput): Prom
 
 export function downloadBlob(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob);
+  // Mobile browsers (iOS Safari especially) ignore the `download` attribute on
+  // anchor tags — the click silently does nothing. Open in a new tab instead.
+  const isMobile = typeof navigator !== "undefined" && /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if (isMobile) {
+    const win = window.open(url, "_blank");
+    if (!win) window.location.href = url;
+    setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    return;
+  }
   const a = document.createElement("a");
   a.href = url;
   a.download = filename;
