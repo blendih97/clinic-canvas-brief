@@ -775,7 +775,7 @@ const MedicationsPage = (data: PatientPayload, styles: Styles) => {
     medicationsTable.length === 0
       ? h(Text, { style: styles.emptyText }, strings.noMedications)
       : h(View, { style: styles.table },
-          h(View, { style: styles.tableHeader, fixed: true },
+          h(View, { style: styles.tableHeader },
             ...cols.map((c, i) =>
               h(Text, { key: i, style: [styles.tableHeaderCell, { width: `${c.w}%` }] }, c.label),
             ),
@@ -824,7 +824,7 @@ const BloodResultsPage = (data: PatientPayload, styles: Styles) => {
     bloodTable.length === 0
       ? h(Text, { style: styles.emptyText }, strings.noBloodResults)
       : h(View, { style: styles.table },
-          h(View, { style: styles.tableHeader, fixed: true },
+          h(View, { style: styles.tableHeader },
             ...cols.map((c, i) =>
               h(Text, { key: i, style: [styles.tableHeaderCell, { width: `${c.w}%` }] }, c.label),
             ),
@@ -920,7 +920,7 @@ const DocumentsPage = (data: PatientPayload, styles: Styles) => {
     documentsTable.length === 0
       ? h(Text, { style: styles.emptyText }, strings.noDocuments || "No documents recorded.")
       : h(View, { style: styles.table },
-          h(View, { style: styles.tableHeader, fixed: true },
+          h(View, { style: styles.tableHeader },
             ...cols.map((c, i) =>
               h(Text, { key: i, style: [styles.tableHeaderCell, { width: `${c.w}%` }] }, c.label),
             ),
