@@ -350,9 +350,6 @@ function buildStyles(language: string) {
     // M3
     pageTitleBlock: { marginBottom: 18 },
     table: {
-      borderWidth: 0.5,
-      borderColor: COLORS.borderStrong,
-      borderRadius: 3,
       marginBottom: 14,
     },
     tableHeader: {
