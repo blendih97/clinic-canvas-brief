@@ -121,6 +121,14 @@ const COLORS = {
   gold: "#B8952A",
   goldSoft: "#F6F2E9",
   amber: "#C9853A",
+  // Clinical status colours
+  navy: "#0E2A3E",
+  navyInk: "#FFFFFF",
+  danger: "#B91C1C",
+  dangerSoft: "#FEF2F2",
+  success: "#15803D",
+  zebra: "#F7F7F5",
+  borderStrong: "#D9D2C2",
 };
 
 // Build styles for a given language. Swaps fontFamily + RTL direction so
