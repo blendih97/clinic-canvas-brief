@@ -353,7 +353,6 @@ function buildStyles(language: string) {
       borderWidth: 0.5,
       borderColor: COLORS.borderStrong,
       borderRadius: 3,
-      overflow: "hidden",
       marginBottom: 14,
     },
     tableHeader: {
