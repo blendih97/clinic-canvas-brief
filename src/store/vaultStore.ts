@@ -277,7 +277,7 @@ export const useVaultStore = create<VaultState>()((set, get) => ({
     const deduped: typeof meds = [];
     for (const m of meds) {
       const key = medicationKey(m);
-      if (!key.startsWith("|") && !seenKeys.has(key)) {
+      if (key && !seenKeys.has(key)) {
         seenKeys.add(key);
         deduped.push(m);
       }
