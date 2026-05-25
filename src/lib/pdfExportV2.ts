@@ -551,7 +551,7 @@ export async function generatePatientSummaryV2(input: PatientSummaryInput): Prom
     .map((m) => ({
       name: m.name,
       dose: m.dose,
-      frequency: m.frequency,
+      frequency: translateFrequency(m.frequency),
       prescriber: m.prescriber,
       facility: m.facility,
       date: m.date,
