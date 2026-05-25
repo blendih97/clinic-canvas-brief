@@ -99,7 +99,8 @@ const normalizeMedicationPart = (value?: string) =>
   (value || "").trim().toLowerCase().replace(/\s+/g, " ");
 
 const medicationKey = (med: Pick<Medication, "name" | "dose">) =>
-  `${normalizeMedicationPart(med.name)}|${normalizeMedicationPart(med.dose)}`;
+  normalizeMedicationPart(`${med.name || ""} ${med.dose || ""}`)
+    .replace(/\b(\d+(?:\.\d+)?)\s+(mg|mcg|g|ml|iu|units?)\b/g, "$1$2");
 
 export const dedupeMedications = <T extends Medication>(medications: T[]) => {
   const seen = new Set<string>();
@@ -108,7 +109,7 @@ export const dedupeMedications = <T extends Medication>(medications: T[]) => {
 
   for (const med of medications) {
     const key = medicationKey(med);
-    if (key.startsWith("|")) continue;
+    if (!key) continue;
     if (seen.has(key)) {
       duplicateIds.push(med.id);
       continue;
