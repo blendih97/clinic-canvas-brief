@@ -21,7 +21,7 @@ const ExportSection = () => {
   const [showUpgrade, setShowUpgrade] = useState(false);
 
   const store = useVaultStore();
-  const { profile } = useAuth();
+  const { profile, user } = useAuth();
   const { isActive } = useSubscription();
 
   // Modal state — shared across all three modes
@@ -41,7 +41,9 @@ const ExportSection = () => {
   // Selection-only state
   const [selectedDocs, setSelectedDocs] = useState<Set<string>>(new Set());
 
-  const patientName = profile?.full_name || "Patient";
+  // Demo override for advertising account.
+  const isDemoAccount = user?.email?.toLowerCase() === "info@greenbears";
+  const patientName = isDemoAccount ? "John Doe" : (profile?.full_name || "Patient");
   const dob = profile?.date_of_birth || "";
 
   const toggleSection = (key: keyof typeof sections) => {

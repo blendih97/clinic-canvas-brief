@@ -192,15 +192,17 @@ function buildStyles(language: string) {
     footerRight: { fontSize: 7.5, color: COLORS.muted, fontWeight: 500 },
     patientName: {
       fontFamily: display,
-      fontSize: 30,
+      fontSize: 24,
       fontWeight: 600,
       color: COLORS.ink,
-      marginBottom: 4,
+      lineHeight: 1.15,
+      marginBottom: 8,
       textAlign: startAlign as any,
     },
     patientMeta: {
       fontSize: 10,
       color: COLORS.muted,
+      marginTop: 2,
       marginBottom: 14,
       textAlign: startAlign as any,
     },
@@ -773,7 +775,7 @@ const MedicationsPage = (data: PatientPayload, styles: Styles) => {
     medicationsTable.length === 0
       ? h(Text, { style: styles.emptyText }, strings.noMedications)
       : h(View, { style: styles.table },
-          h(View, { style: styles.tableHeader, fixed: true },
+          h(View, { style: styles.tableHeader },
             ...cols.map((c, i) =>
               h(Text, { key: i, style: [styles.tableHeaderCell, { width: `${c.w}%` }] }, c.label),
             ),
@@ -822,7 +824,7 @@ const BloodResultsPage = (data: PatientPayload, styles: Styles) => {
     bloodTable.length === 0
       ? h(Text, { style: styles.emptyText }, strings.noBloodResults)
       : h(View, { style: styles.table },
-          h(View, { style: styles.tableHeader, fixed: true },
+          h(View, { style: styles.tableHeader },
             ...cols.map((c, i) =>
               h(Text, { key: i, style: [styles.tableHeaderCell, { width: `${c.w}%` }] }, c.label),
             ),
@@ -918,7 +920,7 @@ const DocumentsPage = (data: PatientPayload, styles: Styles) => {
     documentsTable.length === 0
       ? h(Text, { style: styles.emptyText }, strings.noDocuments || "No documents recorded.")
       : h(View, { style: styles.table },
-          h(View, { style: styles.tableHeader, fixed: true },
+          h(View, { style: styles.tableHeader },
             ...cols.map((c, i) =>
               h(Text, { key: i, style: [styles.tableHeaderCell, { width: `${c.w}%` }] }, c.label),
             ),
