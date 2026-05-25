@@ -486,7 +486,7 @@ export async function generatePatientSummaryV2(input: PatientSummaryInput): Prom
       date: r.date,
     }));
 
-  // M3: deduped imaging studies.
+  // M3: deduped imaging studies (with refined flagging).
   const dedupedImaging = dedupeImaging(translated.imagingResults, input.imagingOverrides || []);
   const imagingTable = dedupedImaging
     .sort((a, b) => (b.date || "").localeCompare(a.date || ""))
@@ -496,14 +496,25 @@ export async function generatePatientSummaryV2(input: PatientSummaryInput): Prom
       date: i.date,
       facility: i.facility,
       finding: i.finding,
-      status: i.status,
+      status: isTrulyFlaggedImaging(i) ? "flagged" : "normal",
+    }));
+
+  // Documents archive — deduplicated by date+facility+type+name.
+  const documentsTable = dedupeDocuments(translated.documents || [])
+    .sort((a, b) => (b.date || "").localeCompare(a.date || ""))
+    .map((d) => ({
+      name: d.name,
+      type: d.type,
+      date: d.date,
+      facility: d.facility,
+      country: d.country,
     }));
 
   const langMeta = SUPPORTED_LANGUAGES.find((l) => l.code === language);
   const isRtl = !!langMeta?.rtl;
 
-  // M2: serialise visits for the edge function (snake-case-light, but keep camelCase for payload).
-  const visitsPayload = (input.visits || []).map((v) => ({
+  // Serialise visits, then dedupe before sending.
+  const visitsPayload = dedupeVisits((input.visits || []).map((v) => ({
     visitDate: v.visitDate,
     facilityName: v.facilityName,
     facilityCountry: v.facilityCountry,
@@ -513,7 +524,7 @@ export async function generatePatientSummaryV2(input: PatientSummaryInput): Prom
     diagnosis: v.diagnosis,
     medicationsPrescribed: v.medicationsPrescribed || [],
     followUpRecommendations: v.followUpRecommendations || [],
-  }));
+  })));
 
   const baseStrings = getStrings(language);
   const finalPayload = {
