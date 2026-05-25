@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { FileDown, FileText, Filter, CheckSquare, Loader2, Languages, Calendar, Sparkles, Lock } from "lucide-react";
+import { FileDown, FileText, Filter, CheckSquare, Loader2, Languages, Calendar, Sparkles, Lock, ExternalLink } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useVaultStore } from "@/store/vaultStore";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
