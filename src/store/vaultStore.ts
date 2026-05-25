@@ -95,6 +95,31 @@ export interface ImagingLinkOverride {
   imaging_id_b: string;
 }
 
+const normalizeMedicationPart = (value?: string) =>
+  (value || "").trim().toLowerCase().replace(/\s+/g, " ");
+
+const medicationKey = (med: Pick<Medication, "name" | "dose">) =>
+  `${normalizeMedicationPart(med.name)}|${normalizeMedicationPart(med.dose)}`;
+
+const dedupeMedications = <T extends Medication>(medications: T[]) => {
+  const seen = new Set<string>();
+  const unique: T[] = [];
+  const duplicateIds: string[] = [];
+
+  for (const med of medications) {
+    const key = medicationKey(med);
+    if (key.startsWith("|")) continue;
+    if (seen.has(key)) {
+      duplicateIds.push(med.id);
+      continue;
+    }
+    seen.add(key);
+    unique.push(med);
+  }
+
+  return { unique, duplicateIds };
+};
+
 interface VaultState {
   bloodResults: BloodResult[];
   imagingResults: ImagingResult[];
@@ -148,6 +173,18 @@ export const useVaultStore = create<VaultState>()((set, get) => ({
       supabase.from("imaging_link_overrides" as any).select("*").eq("user_id", userId),
     ]);
 
+    const mappedMedications = (meds.data || []).map((r: any) => ({
+      id: r.id, name: r.name, dose: r.dose || "", frequency: r.frequency || "",
+      prescriber: r.prescriber || "", facility: r.facility || "", date: r.date || "", active: r.active,
+      source: r.source || "ai",
+    }));
+    const { unique: uniqueMedications, duplicateIds: duplicateMedicationIds } = dedupeMedications(mappedMedications);
+    if (duplicateMedicationIds.length > 0) {
+      supabase.from("medications").delete().in("id", duplicateMedicationIds).then(({ error }) => {
+        if (error) console.error("Unable to clean up duplicate medications", error);
+      });
+    }
+
     set({
       bloodResults: (blood.data || []).map((r: any) => ({
         id: r.id, marker: r.marker, value: Number(r.value), unit: r.unit, range: r.range || "",
@@ -159,11 +196,7 @@ export const useVaultStore = create<VaultState>()((set, get) => ({
         finding: r.finding || "", findingOriginal: r.finding_original || "",
         status: r.status as "normal" | "flagged", originalLang: r.original_lang || "",
       })),
-      medications: (meds.data || []).map((r: any) => ({
-        id: r.id, name: r.name, dose: r.dose || "", frequency: r.frequency || "",
-        prescriber: r.prescriber || "", facility: r.facility || "", date: r.date || "", active: r.active,
-        source: r.source || "ai",
-      })),
+      medications: uniqueMedications,
       documents: (docs.data || []).map((r: any) => ({
         id: r.id, name: r.name, type: r.type || "", date: r.date || "", facility: r.facility || "",
         country: r.country || "", pages: r.pages || 1, extracted: r.extracted || false,
