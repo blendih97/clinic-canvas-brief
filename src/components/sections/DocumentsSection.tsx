@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FileText, CheckCircle, Send, Clock, Eye, Inbox, X, Loader2, Search, Pin, Sparkles } from "lucide-react";
+import { FileText, CheckCircle, Send, Clock, Eye, Inbox, X, Loader2, Search, Pin, Sparkles, Trash2 } from "lucide-react";
 import { useVaultStore } from "@/store/vaultStore";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -32,6 +32,7 @@ const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void 
   const visits = useVaultStore((s) => s.visits);
   const addVisits = useVaultStore((s) => s.addVisits);
   const updateDocument = useVaultStore((s) => s.updateDocument);
+  const removeDocument = useVaultStore((s) => s.removeDocument);
   const { user, profile } = useAuth();
   const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
   const [showViewer, setShowViewer] = useState(false);
@@ -40,6 +41,7 @@ const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void 
   const [loadingRequests, setLoadingRequests] = useState(false);
   const [search, setSearch] = useState("");
   const [reExtractingId, setReExtractingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (tab === "requests" && user) loadRequests();
@@ -133,6 +135,21 @@ const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void 
   };
 
   const documentVisitCount = (docId: string) => visits.filter((v) => v.documentId === docId).length;
+
+  const handleDelete = async (e: React.MouseEvent, doc: Document) => {
+    e.stopPropagation();
+    if (!user) return;
+    if (!window.confirm(`Are you sure you want to delete "${doc.name}"? This cannot be undone.`)) return;
+    setDeletingId(doc.id);
+    try {
+      await removeDocument(doc.id, doc.filePath);
+      toast.success("Document deleted");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete document");
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   const handleRowClick = (doc: Document) => { setSelectedDoc(doc); setShowViewer(true); };
 
