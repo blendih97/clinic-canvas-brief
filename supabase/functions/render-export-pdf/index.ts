@@ -285,18 +285,25 @@ function buildStyles(language: string) {
       textAlign: startAlign as any,
     },
     // Visit History
+    // Page title (big, with gold underline)
     pageTitle: {
-      fontFamily: display,
-      fontSize: 24,
-      fontWeight: 600,
+      fontFamily: body,
+      fontSize: 20,
+      fontWeight: 700,
       color: COLORS.ink,
       marginBottom: 4,
       textAlign: startAlign as any,
     },
+    pageTitleRule: {
+      height: 1.5,
+      backgroundColor: COLORS.gold,
+      width: 36,
+      marginBottom: 8,
+    },
     pageSubtitle: {
-      fontSize: 10,
+      fontSize: 9.5,
       color: COLORS.muted,
-      marginBottom: 18,
+      marginBottom: 14,
       textAlign: startAlign as any,
     },
     visitCard: {
