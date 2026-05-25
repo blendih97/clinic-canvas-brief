@@ -810,47 +810,47 @@ const BloodResultsPage = (data: PatientPayload, styles: Styles) => {
     { label: strings.bloodColDate, w: 14 },
   ];
 
+  const rowEls = bloodTable.map((r, i) => {
+    const isLast = i === bloodTable.length - 1;
+    const rowStyle = [
+      styles.tableRow,
+      i % 2 === 1 ? styles.tableRowZebra : null,
+      isLast ? styles.tableRowLast : null,
+    ];
+    const valueText = `${r.value}${r.unit ? ` ${r.unit}` : ""}`;
+    const isFlagged = r.status === "flagged" || r.status === "critical";
+    const valueStyle = [styles.tableCell, { width: "18%" },
+      isFlagged ? styles.tableCellDanger : styles.tableCellSuccess];
+    const glyphStyle = [styles.statusGlyph,
+      isFlagged ? styles.statusGlyphDanger : styles.statusGlyphSuccess];
+    const labelStyle = [styles.statusLabel,
+      isFlagged ? styles.statusLabelDanger : styles.statusLabelSuccess];
+    return h(View, { key: i, style: rowStyle, wrap: false },
+      h(Text, { style: [styles.tableCell, { width: "28%" }] }, r.marker),
+      h(Text, { style: valueStyle }, valueText),
+      h(Text, { style: [styles.tableCell, { width: "22%" }] }, r.range || "—"),
+      h(View, { style: [styles.statusPill, { width: "18%" }] },
+        h(Text, { style: glyphStyle }, isFlagged ? "!" : "+"),
+        h(Text, { style: labelStyle }, bloodStatusLabel(r.status, strings)),
+      ),
+      h(Text, { style: [styles.tableCell, { width: "14%" }] }, r.date || "—"),
+    );
+  });
+
   return h(Page, { size: "A4", style: styles.page },
     h(Header, { title: strings.headerTitle || "Health Record", styles }),
-    h(View, { style: styles.pageTitleBlock },
-      h(Text, { style: styles.pageTitle }, strings.bloodResultsTitle),
-      h(View, { style: styles.pageTitleRule }),
-      h(Text, { style: styles.pageSubtitle }, strings.bloodResultsSubtitle),
-    ),
+    h(Text, { style: styles.pageTitle }, strings.bloodResultsTitle),
+    h(View, { style: styles.pageTitleRule }),
+    h(Text, { style: [styles.pageSubtitle, { marginBottom: 10 }] }, strings.bloodResultsSubtitle),
     bloodTable.length === 0
       ? h(Text, { style: styles.emptyText }, strings.noBloodResults)
-      : h(View, { style: styles.table },
+      : h(View, { wrap: true },
           h(View, { style: styles.tableHeader },
             ...cols.map((c, i) =>
               h(Text, { key: i, style: [styles.tableHeaderCell, { width: `${c.w}%` }] }, c.label),
             ),
           ),
-          ...bloodTable.map((r, i) => {
-            const isLast = i === bloodTable.length - 1;
-            const rowStyle = [
-              styles.tableRow,
-              i % 2 === 1 ? styles.tableRowZebra : null,
-              isLast ? styles.tableRowLast : null,
-            ];
-            const valueText = `${r.value}${r.unit ? ` ${r.unit}` : ""}`;
-            const isFlagged = r.status === "flagged" || r.status === "critical";
-            const valueStyle = [styles.tableCell, { width: "18%" },
-              isFlagged ? styles.tableCellDanger : styles.tableCellSuccess];
-            const glyphStyle = [styles.statusGlyph,
-              isFlagged ? styles.statusGlyphDanger : styles.statusGlyphSuccess];
-            const labelStyle = [styles.statusLabel,
-              isFlagged ? styles.statusLabelDanger : styles.statusLabelSuccess];
-            return h(View, { key: i, style: rowStyle, wrap: false },
-              h(Text, { style: [styles.tableCell, { width: "28%" }] }, r.marker),
-              h(Text, { style: valueStyle }, valueText),
-              h(Text, { style: [styles.tableCell, { width: "22%" }] }, r.range || "—"),
-              h(View, { style: [styles.statusPill, { width: "18%" }] },
-                h(Text, { style: glyphStyle }, isFlagged ? "!" : "+"),
-                h(Text, { style: labelStyle }, bloodStatusLabel(r.status, strings)),
-              ),
-              h(Text, { style: [styles.tableCell, { width: "14%" }] }, r.date || "—"),
-            );
-          }),
+          ...rowEls,
         ),
     h(Footer, { styles }),
   );
