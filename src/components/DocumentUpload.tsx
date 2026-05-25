@@ -82,10 +82,19 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
 
   useEffect(() => {
     if (phase !== "processing") return;
-    if (stepIndex >= processingSteps.length) return;
+    // Advance through steps but pause on the last one until the API actually returns.
+    if (stepIndex >= processingSteps.length - 1) return;
     const t = setTimeout(() => setStepIndex((i) => i + 1), 1200);
     return () => clearTimeout(t);
   }, [phase, stepIndex]);
+
+  // Auto-close once the document is fully saved.
+  useEffect(() => {
+    if (phase !== "done") return;
+    const t = setTimeout(() => handleClose(), 1400);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase]);
 
   const reset = () => {
     setPhase("input");
@@ -149,6 +158,7 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
       if (fnError) throw new Error(fnError.message || "Analysis failed");
 
       setResult(data);
+      setStepIndex(processingSteps.length); // mark all ticks complete
       setPhase("confirm");
     } catch (e: any) {
       setError(e.message || "Something went wrong");
@@ -191,11 +201,15 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
     // Upload original file to storage and get file_path
     let filePath: string | undefined;
     if (file) {
-      const storagePath = `${uid}/${Date.now()}-${file.name}`;
+      const safeName = file.name.replace(/[^\w.\-]+/g, "_");
+      const storagePath = `${uid}/${Date.now()}-${safeName}`;
       const { error: uploadErr } = await supabase.storage
         .from("medical-documents")
-        .upload(storagePath, file, { upsert: true });
-      if (!uploadErr) {
+        .upload(storagePath, file, { upsert: true, contentType: file.type || "application/octet-stream" });
+      if (uploadErr) {
+        console.error("Original file upload failed:", uploadErr);
+        setError(`Could not store original file: ${uploadErr.message}`);
+      } else {
         filePath = storagePath;
       }
     }
@@ -390,6 +404,12 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
                   </span>
                 </div>
               ))}
+              {stepIndex >= processingSteps.length && (
+                <div className="flex items-center gap-3 pt-2 border-t border-border/60 mt-2">
+                  <CheckCircle className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-medium text-foreground">Complete</span>
+                </div>
+              )}
             </div>
           )}
 
