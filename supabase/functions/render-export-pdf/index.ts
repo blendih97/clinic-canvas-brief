@@ -634,6 +634,7 @@ const PatientSummaryPage = (data: PatientPayload, styles: Styles) => {
     h(Header, { title: strings.headerTitle || "Health Record", styles }),
     h(Text, { style: styles.patientName }, patient.fullName),
     meta ? h(Text, { style: styles.patientMeta }, meta) : null,
+    h(View, { style: styles.coverRule }),
     h(Text, { style: styles.ataGlance }, strings.atAGlance),
     h(View, { style: styles.twoCol },
       h(View, { style: styles.col },
