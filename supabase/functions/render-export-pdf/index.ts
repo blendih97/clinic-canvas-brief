@@ -678,11 +678,12 @@ const VisitHistoryPage = (data: PatientPayload, styles: Styles) => {
 
 // ---------- M3: Medications, Blood Results, Imaging ----------
 
-// B&W-friendly status glyphs — convey state without relying on colour.
+// B&W-friendly status glyphs — ASCII-safe (geometric Unicode shapes aren't
+// in the Latin font subset and crash textkit with "unitsPerEm undefined").
 function bloodStatusGlyph(status: string): string {
-  if (status === "critical") return "●";
-  if (status === "flagged") return "◐";
-  return "○";
+  if (status === "critical") return "!!";
+  if (status === "flagged") return "!";
+  return "·";
 }
 
 function bloodStatusLabel(status: string, s: PatientPayload["strings"]): string {
@@ -692,7 +693,7 @@ function bloodStatusLabel(status: string, s: PatientPayload["strings"]): string 
 }
 
 function imagingStatusGlyph(status: string): string {
-  return status === "flagged" ? "◐" : "○";
+  return status === "flagged" ? "!" : "·";
 }
 
 function imagingStatusLabel(status: string, s: PatientPayload["strings"]): string {
