@@ -82,10 +82,19 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
 
   useEffect(() => {
     if (phase !== "processing") return;
-    if (stepIndex >= processingSteps.length) return;
+    // Advance through steps but pause on the last one until the API actually returns.
+    if (stepIndex >= processingSteps.length - 1) return;
     const t = setTimeout(() => setStepIndex((i) => i + 1), 1200);
     return () => clearTimeout(t);
   }, [phase, stepIndex]);
+
+  // Auto-close once the document is fully saved.
+  useEffect(() => {
+    if (phase !== "done") return;
+    const t = setTimeout(() => handleClose(), 1400);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase]);
 
   const reset = () => {
     setPhase("input");
