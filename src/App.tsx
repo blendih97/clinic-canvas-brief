@@ -68,9 +68,9 @@ const HomeRoute = () => {
 
 const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading: authLoading } = useAuth();
-  const { isAdmin, loading: adminLoading } = useAdminAccess();
+  const { status, loading: adminLoading, refreshAdminAccess } = useAdminAccess();
 
-  if (authLoading || adminLoading) {
+  if (authLoading || adminLoading || status === "unknown") {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-3">
         <h1 className="font-heading text-2xl font-light tracking-[0.15em] gold-gradient-text">RinVita</h1>
@@ -79,7 +79,37 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  if (!user || !isAdmin) return <Navigate to="/app" replace />;
+  if (!user) return <Navigate to="/auth" replace />;
+
+  if (status === "error") {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4 px-6 text-center">
+        <h1 className="font-heading text-2xl font-light tracking-[0.15em] gold-gradient-text">RinVita</h1>
+        <p className="text-sm text-muted-foreground max-w-md">
+          We couldn't verify your admin access right now. This is usually a temporary connection issue.
+        </p>
+        <button
+          onClick={() => void refreshAdminAccess()}
+          className="rounded-md border border-border px-4 py-2 text-sm hover:bg-muted"
+        >
+          Try again
+        </button>
+      </div>
+    );
+  }
+
+  if (status !== "admin") {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4 px-6 text-center">
+        <h1 className="font-heading text-2xl font-light tracking-[0.15em] gold-gradient-text">RinVita</h1>
+        <p className="text-sm text-muted-foreground max-w-md">
+          The account you're signed in as doesn't have admin access. Sign out and sign back in with an admin account.
+        </p>
+        <Navigate to="/app" replace />
+      </div>
+    );
+  }
+
   return <>{children}</>;
 };
 
