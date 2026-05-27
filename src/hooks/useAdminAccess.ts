@@ -8,7 +8,7 @@ type AdminStatus = "unknown" | "admin" | "not_admin" | "error";
 export function useAdminAccess() {
   const { user, loading: authLoading } = useAuth();
   const [status, setStatus] = useState<AdminStatus>("unknown");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const requestIdRef = useRef(0);
 
   const refreshAdminAccess = useCallback(async () => {
@@ -17,6 +17,11 @@ export function useAdminAccess() {
 
     if (!currentUser) {
       setStatus("not_admin");
+      setLoading(false);
+      return;
+    }
+
+    if (authLoading) {
       setLoading(false);
       return;
     }
@@ -33,16 +38,19 @@ export function useAdminAccess() {
     } finally {
       if (reqId === requestIdRef.current) setLoading(false);
     }
-  }, [user]);
+  }, [authLoading, user]);
 
   useEffect(() => {
     // Reset to unknown when the signed-in user changes so we never show
     // a stale admin/not-admin result from a previous session.
     requestIdRef.current += 1;
     setStatus("unknown");
-    setLoading(true);
 
-    if (authLoading) return;
+    if (authLoading) {
+      setLoading(false);
+      return;
+    }
+
     void refreshAdminAccess();
   }, [authLoading, user?.id, refreshAdminAccess]);
 
