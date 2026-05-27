@@ -38,7 +38,7 @@ export function useAdminAccess() {
     } finally {
       if (reqId === requestIdRef.current) setLoading(false);
     }
-  }, [user]);
+  }, [authLoading, user]);
 
   useEffect(() => {
     // Reset to unknown when the signed-in user changes so we never show
