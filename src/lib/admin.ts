@@ -68,11 +68,27 @@ export interface AdminSettingsRecord {
 
 const rpc = supabase.rpc.bind(supabase) as (...args: any[]) => Promise<any>;
 
-export async function checkAdminAccess(userId: string): Promise<boolean> {
-  const { data, error } = await rpc("has_role", {
-    _user_id: userId,
-    _role: "admin",
+const withTimeout = async <T,>(promise: Promise<T>, label: string, timeoutMs = 8000): Promise<T> => {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timeoutId = setTimeout(() => reject(new Error(`${label} timed out`)), timeoutMs);
   });
+
+  try {
+    return await Promise.race([promise, timeout]);
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
+  }
+};
+
+export async function checkAdminAccess(userId: string): Promise<boolean> {
+  const { data, error } = await withTimeout(
+    rpc("has_role", {
+      _user_id: userId,
+      _role: "admin",
+    }),
+    "Admin access check",
+  );
 
   if (error) {
     throw error;
