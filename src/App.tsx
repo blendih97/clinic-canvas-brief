@@ -103,9 +103,14 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
       <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4 px-6 text-center">
         <h1 className="font-heading text-2xl font-light tracking-[0.15em] gold-gradient-text">RinVita</h1>
         <p className="text-sm text-muted-foreground max-w-md">
-          The account you're signed in as doesn't have admin access. Sign out and sign back in with an admin account.
+          The account you're signed in as ({user.email}) doesn't have admin access. Sign out and sign back in with an admin account.
         </p>
-        <Navigate to="/app" replace />
+        <button
+          onClick={() => void refreshAdminAccess()}
+          className="rounded-md border border-border px-4 py-2 text-sm hover:bg-muted"
+        >
+          Check again
+        </button>
       </div>
     );
   }

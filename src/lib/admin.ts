@@ -75,7 +75,7 @@ export async function checkAdminAccess(userId: string): Promise<boolean> {
   });
 
   if (error) {
-    return false;
+    throw error;
   }
 
   return Boolean(data);
