@@ -41,6 +41,19 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const withAuthTimeout = async <T,>(promise: Promise<T>, label: string, timeoutMs = 8000): Promise<T> => {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timeoutId = setTimeout(() => reject(new Error(`${label} timed out`)), timeoutMs);
+  });
+
+  try {
+    return await Promise.race([promise, timeout]);
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
+  }
+};
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -61,14 +74,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [user, fetchProfile]);
 
   const refreshSession = useCallback(async () => {
-    const { data, error } = await supabase.auth.refreshSession();
+    const { data, error } = await withAuthTimeout(supabase.auth.refreshSession(), "Session refresh");
     if (error) throw error;
     setSession(data.session ?? null);
     setUser(data.session?.user ?? null);
   }, []);
 
   useEffect(() => {
+    let mounted = true;
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (!mounted) return;
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
@@ -80,7 +96,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
     });
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    withAuthTimeout(supabase.auth.getSession(), "Initial session check").then(({ data: { session } }) => {
+      if (!mounted) return;
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
@@ -88,9 +105,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         fetchProfile(session.user.id);
       }
       setLoading(false);
+    }).catch(() => {
+      if (!mounted) return;
+      setSession(null);
+      setUser(null);
+      setProfile(null);
+      setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, [fetchProfile, touchLastActive]);
 
   const signUp = async (email: string, password: string, metadata?: Record<string, string>) => {
