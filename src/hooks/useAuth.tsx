@@ -120,8 +120,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [fetchProfile, touchLastActive]);
 
   const signUp = async (email: string, password: string, metadata?: Record<string, string>) => {
+    const normalizedEmail = email.trim().toLowerCase();
     const { error, data } = await supabase.auth.signUp({
-      email,
+      email: normalizedEmail,
       password,
       options: { data: metadata },
     });
@@ -129,7 +130,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const normalizedEmail = email.trim().toLowerCase();
+    const { error } = await withAuthTimeout(
+      supabase.auth.signInWithPassword({ email: normalizedEmail, password }),
+      "Sign in"
+    );
     return { error: error ? new Error(error.message) : null };
   };
 

@@ -37,11 +37,12 @@ const AuthPage = () => {
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    const normalizedEmail = email.trim().toLowerCase();
     setLoading(true);
-    const { error } = await signIn(email, password);
+    const { error } = await signIn(normalizedEmail, password);
     setLoading(false);
     if (error) {
-      toast.error(t("auth.invalidCredentials"));
+      toast.error(error.message || t("auth.invalidCredentials"));
     } else {
       navigate("/app");
     }
@@ -59,8 +60,9 @@ const AuthPage = () => {
     }
 
     setLoading(true);
+    const normalizedEmail = email.trim().toLowerCase();
     const consentTime = new Date().toISOString();
-    const { error, session } = await signUp(email, password, {
+    const { error, session } = await signUp(normalizedEmail, password, {
       full_name: fullName.trim(),
       terms_consent_at: consentTime,
       preferred_ui_language: locale,
@@ -86,10 +88,10 @@ const AuthPage = () => {
         body: {
           templateName: "new-signup-admin",
           recipientEmail: "hello@rinvita.co.uk",
-          idempotencyKey: `new-signup-${email}-${consentTime}`,
+          idempotencyKey: `new-signup-${normalizedEmail}-${consentTime}`,
           templateData: {
             fullName: fullName.trim(),
-            email,
+            email: normalizedEmail,
             country: "—",
             plan: "free",
             signedUpAt: consentTime,
