@@ -111,30 +111,30 @@ function Hero() {
         <div style={{ animation: "marketing-fade-up 0.9s cubic-bezier(.16,1,.3,1) both" }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "5px 12px", background: marketingColors.goldSoft, border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 2, marginBottom: isMobile ? 28 : 44 }}>
             <div style={{ width: 5, height: 5, borderRadius: "50%", background: marketingColors.gold, animation: "marketing-pulse 2s infinite" }} />
-            <span style={{ fontSize: isMobile ? 9 : 11, letterSpacing: "0.14em", color: marketingColors.gold, fontWeight: 500 }}>EARLY ACCESS — FREE UNTIL 1 JUNE 2026</span>
+            <span style={{ fontSize: isMobile ? 9 : 11, letterSpacing: "0.14em", color: marketingColors.gold, fontWeight: 500 }}>FREE FOREVER — 3 DOCUMENTS INCLUDED</span>
           </div>
           <h1 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 40 : isTablet ? 52 : "clamp(44px,5vw,68px)", fontWeight: 300, lineHeight: 1.1, color: marketingColors.ink, marginBottom: isMobile ? 18 : 24, letterSpacing: "-0.02em" }}>
             All your medical records.
             <br />
-            <em style={{ fontStyle: "italic", color: marketingColors.gold }}>Any language. In 30 seconds.</em>
+            <em style={{ fontStyle: "italic", color: marketingColors.gold }}>Organised. Searchable. In any language.</em>
           </h1>
           <p style={{ fontSize: isMobile ? 16 : 17, lineHeight: 1.7, color: marketingColors.mutedText, maxWidth: 480, marginBottom: isMobile ? 22 : 28, fontWeight: 300 }}>
-            Upload medical records from any hospital, any language, any year — and hand your next doctor a complete, translated health picture in seconds.
+            Upload lab results, scans, prescriptions and letters from any provider — and we'll extract the key information, track your trends, and translate anything into your language. Free for your first 3 documents.
           </p>
           <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 12, alignItems: isMobile ? "stretch" : "center" }}>
             <Link to="/auth?mode=signup" style={{ padding: isMobile ? "18px 24px" : "16px 34px", background: marketingColors.gold, borderRadius: 2, color: "hsl(var(--primary-foreground))", fontSize: isMobile ? 15 : 14, fontWeight: 600, letterSpacing: "0.06em", textDecoration: "none", textAlign: "center", boxShadow: "0 6px 28px hsl(var(--primary) / 0.4)" }}>
-              Get Early Access — Free
+              Start your free vault
             </Link>
-            <Link to="/demo" style={{ padding: isMobile ? "15px 24px" : "15px 28px", background: "transparent", border: `1px solid hsl(var(--foreground) / 0.18)`, borderRadius: 2, color: marketingColors.mutedText, fontSize: 14, textDecoration: "none", textAlign: "center" }}>
-              See how it works →
+            <Link to="/translate" style={{ padding: isMobile ? "15px 24px" : "15px 28px", background: "transparent", border: `1px solid ${marketingColors.gold}`, borderRadius: 2, color: marketingColors.gold, fontSize: 14, textDecoration: "none", textAlign: "center", fontWeight: 500 }}>
+              Try the free translator →
             </Link>
           </div>
           <div style={{ marginTop: 10, fontSize: 12, color: marketingColors.softText, textAlign: isMobile ? "center" : "left" }}>
-            No credit card required · Cancel anytime
+            No credit card required · Free up to 3 documents · Cancel anytime
           </div>
           <div style={{ display: "inline-flex", flexWrap: "wrap", alignItems: "center", gap: 8, marginTop: isMobile ? 18 : 22, fontSize: 11.5, color: marketingColors.softText, letterSpacing: "0.04em" }}>
             <span style={{ width: 5, height: 5, borderRadius: "50%", background: marketingColors.gold }} />
-            <span>Free until 1 June 2026</span>
+            <span>50+ languages</span>
             <span style={{ color: marketingColors.faintText }}>·</span>
             <span>ICO registered</span>
             <span style={{ color: marketingColors.faintText }}>·</span>
@@ -351,18 +351,19 @@ function Pricing() {
   const paddingX = isMobile ? 20 : isTablet ? 32 : 56;
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">("annual");
 
-  const earlyAccess = {
-    name: "Free Early Access",
-    badge: "AVAILABLE NOW",
+  const freePlan = {
+    name: "Free",
+    badge: "FREE FOREVER",
     price: "Free",
-    period: "until 1 June 2026",
-    desc: "Full access to RinVita, no payment, no card. Sign up with just an email.",
+    period: "up to 3 documents",
+    desc: "Try the full experience with your first 3 documents — no card, no time limit.",
     features: [
-      "Full access to RinVita through 1 June 2026",
-      "No payment required, no card needed",
-      "25% lifetime discount when paid pricing begins",
+      "3 documents included, free forever",
+      "Full AI translation and structured summaries",
+      "Travelling abroad? Translation in 50+ languages",
+      "Preview clinician share links and PDF exports",
     ],
-    cta: "Get Early Access",
+    cta: "Start your free vault",
     available: true,
   };
 
@@ -416,7 +417,7 @@ function Pricing() {
           <span className="marketing-section-label">Pricing</span>
           <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 32 : "clamp(34px,3.8vw,52px)", fontWeight: 300, color: marketingColors.ink, marginBottom: 16 }}>Simple pricing. Pay only for what you need.</h2>
           <p style={{ fontSize: isMobile ? 14 : 16, color: marketingColors.mutedText, maxWidth: 560, margin: "0 auto", lineHeight: 1.7, fontWeight: 300 }}>
-            RinVita is free during Early Access through 1 June 2026. Sign up now with just an email — plus lock in a 25% lifetime discount when paid pricing begins.
+            Free forever for your first 3 documents. Upgrade only when you need unlimited uploads, full sharing and PDF export.
           </p>
         </div>
 
@@ -475,9 +476,9 @@ function Pricing() {
           </button>
         </div>
 
-        {/* Future paid plans */}
+        {/* Paid plans */}
         <div style={{ textAlign: "center", marginBottom: 24 }}>
-          <span style={{ fontSize: 11, letterSpacing: "0.16em", color: marketingColors.softText, fontWeight: 500, textTransform: "uppercase" }}>Paid plans — available from 1 June 2026</span>
+          <span style={{ fontSize: 11, letterSpacing: "0.16em", color: marketingColors.softText, fontWeight: 500, textTransform: "uppercase" }}>Upgrade when you need more</span>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2,1fr)", gap: isMobile ? 20 : 24, alignItems: "stretch" }}>
           {futurePlans.map((plan) => {
@@ -509,7 +510,7 @@ function Pricing() {
                     SAVE 25%
                   </div>
                 )}
-                <div style={{ position: "absolute", top: 14, right: 14, fontSize: 9, letterSpacing: "0.1em", color: marketingColors.softText, fontWeight: 500, padding: "3px 8px", background: "hsl(var(--foreground) / 0.05)", borderRadius: 1 }}>FROM 1 JUN 2026</div>
+                <div style={{ position: "absolute", top: 14, right: 14, fontSize: 9, letterSpacing: "0.1em", color: marketingColors.softText, fontWeight: 500, padding: "3px 8px", background: "hsl(var(--foreground) / 0.05)", borderRadius: 1 }}>COMING SOON</div>
                 <div style={{ fontFamily: "Cormorant Garamond", fontSize: 11, color: "hsl(var(--primary) / 0.7)", letterSpacing: "0.1em", marginBottom: 12, marginTop: plan.highlight ? 4 : 0 }}>{plan.name.toUpperCase()}</div>
 
                 {/* Try free badge above price */}
@@ -561,29 +562,28 @@ function Pricing() {
                     cursor: "not-allowed",
                   }}
                 >
-                  Available 1 June 2026
+                  Coming soon — notify me
                 </button>
               </div>
             );
           })}
         </div>
 
-        {/* What's included in Early Access */}
+        {/* Free plan callout */}
         <div style={{ marginTop: isMobile ? 56 : 72, padding: isMobile ? "32px 24px" : "40px 44px", background: marketingColors.cream2, border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 2 }}>
-          <h3 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 24 : 28, fontWeight: 400, color: marketingColors.ink, marginBottom: 20 }}>What's included in Early Access?</h3>
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2,1fr)", gap: isMobile ? 16 : 20 }}>
-            {[
-              "Full access to all features — uploads, translation, share briefs, family management",
-              "No payment required during Early Access — sign up with just an email",
-              "25% lifetime discount on paid pricing when it begins on 1 June 2026",
-              "Direct line to the founding team — your input shapes the product",
-            ].map((item) => (
+          <h3 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 24 : 28, fontWeight: 400, color: marketingColors.ink, marginBottom: 6 }}>Start free — no card required</h3>
+          <p style={{ fontSize: 14, color: marketingColors.mutedText, marginBottom: 20, lineHeight: 1.7 }}>Your first 3 documents are on us, forever. Everything below is included:</p>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2,1fr)", gap: isMobile ? 16 : 20, marginBottom: 24 }}>
+            {freePlan.features.map((item) => (
               <div key={item} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
                 <span style={{ color: marketingColors.gold, fontSize: 14, marginTop: 2 }}>◆</span>
                 <span style={{ fontSize: 14, color: "hsl(var(--foreground) / 0.78)", fontWeight: 300, lineHeight: 1.7 }}>{item}</span>
               </div>
             ))}
           </div>
+          <Link to="/auth?mode=signup" style={{ display: "inline-block", padding: "13px 28px", background: marketingColors.gold, color: "hsl(var(--primary-foreground))", textDecoration: "none", borderRadius: 2, fontSize: 13, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+            {freePlan.cta}
+          </Link>
         </div>
       </div>
     </section>
@@ -660,10 +660,10 @@ function MobileStickyCTA() {
       <div style={{ height: 92 }} aria-hidden />
       <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 180, padding: "12px 16px calc(12px + env(safe-area-inset-bottom))", background: "hsl(var(--background) / 0.97)", backdropFilter: "blur(20px)", borderTop: `1px solid ${marketingColors.goldBorder}` }}>
         <Link to="/auth?mode=signup" style={{ display: "block", width: "100%", padding: "16px", background: marketingColors.gold, borderRadius: 2, color: "hsl(var(--primary-foreground))", fontSize: 15, fontWeight: 600, letterSpacing: "0.06em", textAlign: "center", textDecoration: "none", boxShadow: "0 6px 24px hsl(var(--primary) / 0.35)" }}>
-          Get Early Access — Free
+          Start your free vault
         </Link>
         <div style={{ marginTop: 6, fontSize: 11, color: marketingColors.softText, textAlign: "center" }}>
-          No credit card required · Cancel anytime
+          Free up to 3 documents · No credit card
         </div>
       </div>
     </>
