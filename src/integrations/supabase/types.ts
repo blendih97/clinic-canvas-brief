@@ -169,6 +169,36 @@ export type Database = {
         }
         Relationships: []
       }
+      b2b_enquiries: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string | null
+          name: string
+          practice_name: string | null
+          practice_type: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message?: string | null
+          name: string
+          practice_name?: string | null
+          practice_type?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string | null
+          name?: string
+          practice_name?: string | null
+          practice_type?: string | null
+        }
+        Relationships: []
+      }
       blood_results: {
         Row: {
           created_at: string
@@ -949,6 +979,30 @@ export type Database = {
           id?: string
           metadata?: Json | null
           reason?: string
+        }
+        Relationships: []
+      }
+      translate_tool_leads: {
+        Row: {
+          consent_at: string | null
+          created_at: string
+          email: string
+          id: string
+          source: string | null
+        }
+        Insert: {
+          consent_at?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          source?: string | null
+        }
+        Update: {
+          consent_at?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          source?: string | null
         }
         Relationships: []
       }
