@@ -313,7 +313,7 @@ function DemoVideo() {
           <span className="marketing-section-label">Demo</span>
           <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 32 : "clamp(34px,3.8vw,52px)", fontWeight: 300, color: marketingColors.ink, marginBottom: 14 }}>See RinVita in action.</h2>
           <p style={{ fontSize: isMobile ? 14 : 16, color: marketingColors.mutedText, maxWidth: 560, margin: "0 auto", lineHeight: 1.7, fontWeight: 300 }}>
-            Watch a foreign record become a translated timeline, medication list and clinician-ready summary in under a minute.
+            Watch a foreign record become a translated timeline, medication list and clinician-ready summary.
           </p>
         </div>
         <div style={{ position: "relative", borderRadius: 4, overflow: "hidden", border: `1px solid ${marketingColors.goldBorder}`, background: "hsl(var(--foreground) / 0.02)", boxShadow: "0 24px 80px hsl(var(--foreground) / 0.08)" }}>
