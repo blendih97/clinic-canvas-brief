@@ -824,8 +824,8 @@ const MarketingLandingPage = () => {
   return (
     <div className="marketing-page" style={{ background: marketingColors.cream, color: marketingColors.ink }}>
       <SEO
-        title="RinVita — Your health history. Everywhere you go."
-        description="Upload medical documents in any language, AI extracts and translates them, share securely with any clinician worldwide. Encrypted, EU-hosted, ICO registered."
+        title="RinVita — The medical passport for international families"
+        description="Upload records from any country, automatically translate and organise them, and share a clinician-ready summary with doctors anywhere in the world."
         path="/"
       />
       <MarketingStyles />
@@ -833,12 +833,15 @@ const MarketingLandingPage = () => {
       <Hero />
       <HowItWorks />
       <WhyRinVita />
+      <UseCases />
       <Features />
+      <DemoVideo />
       <ClinicalSafety />
+      <SocialProof />
       <Pricing />
+      <ForClinicsCallout />
       <FAQ />
       <Testimonial />
-      <ForClinicsCallout />
       <MarketingFooter />
       <MobileStickyCTA />
     </div>
