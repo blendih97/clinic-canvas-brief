@@ -785,17 +785,17 @@ function Testimonial() {
 function ForClinicsCallout() {
   const { isMobile } = useMarketingBreakpoint();
   return (
-    <section style={{ padding: `${isMobile ? 56 : 80}px ${isMobile ? 20 : 56}px`, background: marketingColors.cream2 }}>
-      <div style={{ maxWidth: 880, margin: "0 auto", textAlign: "center", padding: isMobile ? "32px 24px" : "48px 56px", background: marketingColors.surface, border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 4 }}>
-        <span className="marketing-section-label">For clinics & practices</span>
-        <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 26 : 34, fontWeight: 300, color: marketingColors.ink, marginBottom: 14 }}>
-          Offer RinVita to your patients
+    <section style={{ padding: `${isMobile ? 56 : 96}px ${isMobile ? 20 : 56}px`, background: marketingColors.cream2 }}>
+      <div style={{ maxWidth: 960, margin: "0 auto", textAlign: "center", padding: isMobile ? "36px 24px" : "56px 64px", background: marketingColors.surface, border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 4 }}>
+        <span className="marketing-section-label">For private healthcare providers</span>
+        <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 28 : 38, fontWeight: 300, color: marketingColors.ink, marginBottom: 16 }}>
+          For private healthcare providers.
         </h2>
-        <p style={{ fontSize: 15, color: marketingColors.mutedText, maxWidth: 560, margin: "0 auto 24px", lineHeight: 1.7, fontWeight: 300 }}>
-          Private GPs, travel clinics and specialists — give your patients a secure, multilingual records vault that keeps them coming back to you.
+        <p style={{ fontSize: isMobile ? 14.5 : 16, color: marketingColors.mutedText, maxWidth: 620, margin: "0 auto 28px", lineHeight: 1.75, fontWeight: 300 }}>
+          RinVita helps international patient teams, concierge medicine providers and clinicians access clearer medical information — reducing administrative burden and improving continuity of care.
         </p>
-        <Link to="/for-clinics" style={{ display: "inline-block", padding: "13px 28px", background: marketingColors.gold, color: "hsl(var(--primary-foreground))", textDecoration: "none", borderRadius: 2, fontSize: 13, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase" }}>
-          Learn more →
+        <Link to="/for-clinics" style={{ display: "inline-block", padding: "14px 32px", background: marketingColors.gold, color: "hsl(var(--primary-foreground))", textDecoration: "none", borderRadius: 2, fontSize: 13, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+          Book a Demo
         </Link>
       </div>
     </section>
