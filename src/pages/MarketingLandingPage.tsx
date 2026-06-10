@@ -317,15 +317,14 @@ function DemoVideo() {
           </p>
         </div>
         <div style={{ position: "relative", borderRadius: 4, overflow: "hidden", border: `1px solid ${marketingColors.goldBorder}`, background: "hsl(var(--foreground) / 0.02)", boxShadow: "0 24px 80px hsl(var(--foreground) / 0.08)" }}>
-          <div style={{ aspectRatio: "16 / 9", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", background: `linear-gradient(135deg, ${marketingColors.cream2}, ${marketingColors.cream})` }}>
-            <div style={{ position: "absolute", inset: 0, opacity: 0.4, backgroundImage: `linear-gradient(hsl(var(--primary) / 0.06) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary) / 0.06) 1px, transparent 1px)`, backgroundSize: "44px 44px" }} />
-            <button aria-label="Play demo" style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: isMobile ? 72 : 96, height: isMobile ? 72 : 96, borderRadius: "50%", background: marketingColors.gold, border: "none", cursor: "pointer", boxShadow: "0 18px 48px hsl(var(--primary) / 0.4)" }}>
-              <span style={{ fontSize: isMobile ? 24 : 32, color: "hsl(var(--primary-foreground))", marginLeft: 4 }}>▶</span>
-            </button>
-            <div style={{ position: "absolute", bottom: 18, left: 0, right: 0, textAlign: "center", fontSize: 11, letterSpacing: "0.18em", color: marketingColors.softText, textTransform: "uppercase" }}>
-              60-second product walkthrough
-            </div>
-          </div>
+          <video
+            src="/video/rinvita-demo.mp4"
+            controls
+            playsInline
+            preload="metadata"
+            poster=""
+            style={{ width: "100%", display: "block", aspectRatio: "16 / 9", background: marketingColors.cream2 }}
+          />
         </div>
         <div style={{ marginTop: 28, display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(5,1fr)", gap: 10 }}>
           {[
