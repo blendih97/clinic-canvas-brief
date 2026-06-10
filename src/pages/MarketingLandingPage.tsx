@@ -455,10 +455,10 @@ function ClinicalSafety() {
     <section id="security" style={{ padding: `${isMobile ? 72 : 120}px ${paddingX}px`, background: marketingColors.cream }}>
       <div ref={ref} className="marketing-reveal" style={{ maxWidth: 1180, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: isMobile ? 48 : 72 }}>
-          <span className="marketing-section-label">Trust & Safety</span>
-          <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 32 : "clamp(34px,3.8vw,52px)", fontWeight: 300, color: marketingColors.ink, marginBottom: 16 }}>Built for clinical safety</h2>
+          <span className="marketing-section-label">Security & trust</span>
+          <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 32 : "clamp(34px,3.8vw,52px)", fontWeight: 300, color: marketingColors.ink, marginBottom: 16 }}>Your health information belongs to you.</h2>
           <p style={{ fontSize: isMobile ? 14 : 16, color: marketingColors.mutedText, maxWidth: 600, margin: "0 auto", lineHeight: 1.7, fontWeight: 300 }}>
-            We treat your health data the way we'd want our own family's records treated. Here's exactly how.
+            Designed for sensitive medical information — GDPR compliant, advanced encryption, private by default. You control who can access your records.
           </p>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr 1fr" : "repeat(3,1fr)", gap: 16 }}>
