@@ -322,7 +322,7 @@ function DemoVideo() {
             controls
             playsInline
             preload="metadata"
-            poster=""
+            poster="/image/rinvita-demo-poster.jpg"
             style={{ width: "100%", display: "block", aspectRatio: "16 / 9", background: marketingColors.cream2 }}
           />
         </div>
