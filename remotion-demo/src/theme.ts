@@ -1,0 +1,16 @@
+export const COLORS = {
+  cream: "#F8F9FA",
+  cream2: "#EEF0F2",
+  ink: "#2A3242",
+  softText: "#6B7280",
+  faintText: "#9CA3AF",
+  surface: "#FFFFFF",
+  surfaceBorder: "#E5E7EB",
+  gold: "#B8952A",
+  goldSoft: "#B8952A1f",
+  goldFaint: "#B8952A14",
+  goldBorder: "#B8952A3d",
+  goldGlow: "#B8952A33",
+  success: "#3B8C5E",
+  successSoft: "#3B8C5E1a",
+};
