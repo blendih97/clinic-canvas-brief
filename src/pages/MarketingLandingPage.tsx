@@ -822,11 +822,9 @@ const MarketingLandingPage = () => {
       <Features />
       <DemoVideo />
       <ClinicalSafety />
-      <SocialProof />
       <Pricing />
       <ForClinicsCallout />
       <FAQ />
-      <Testimonial />
       <MarketingFooter />
       <MobileStickyCTA />
     </div>
