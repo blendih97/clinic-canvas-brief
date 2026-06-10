@@ -326,20 +326,6 @@ function DemoVideo() {
             style={{ width: "100%", display: "block", aspectRatio: "16 / 9", background: marketingColors.cream2 }}
           />
         </div>
-        <div style={{ marginTop: 28, display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(5,1fr)", gap: 10 }}>
-          {[
-            "Upload a foreign record",
-            "Automatic translation",
-            "Timeline creation",
-            "Medication list",
-            "Secure share",
-          ].map((label, i) => (
-            <div key={label} style={{ padding: "12px 14px", border: `1px solid ${marketingColors.goldBorder}`, background: marketingColors.surface, borderRadius: 2, textAlign: "center" }}>
-              <div style={{ fontFamily: "Cormorant Garamond", fontSize: 12, color: marketingColors.gold, letterSpacing: "0.08em" }}>0:{(i * 12).toString().padStart(2, "0")}</div>
-              <div style={{ fontSize: 12, color: marketingColors.mutedText, marginTop: 4, fontWeight: 300 }}>{label}</div>
-            </div>
-          ))}
-        </div>
       </div>
     </section>
   );
