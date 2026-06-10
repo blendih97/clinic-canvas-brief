@@ -111,34 +111,36 @@ function Hero() {
         <div style={{ animation: "marketing-fade-up 0.9s cubic-bezier(.16,1,.3,1) both" }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "5px 12px", background: "hsl(var(--primary) / 0.06)", border: `1px solid hsl(var(--primary) / 0.15)`, borderRadius: 2, marginBottom: isMobile ? 28 : 44 }}>
             <div style={{ width: 5, height: 5, borderRadius: "50%", background: "hsl(var(--primary))", animation: "marketing-pulse 2s infinite" }} />
-            <span style={{ fontSize: isMobile ? 9 : 11, letterSpacing: "0.14em", color: "hsl(var(--primary))", fontWeight: 500 }}>3 FREE DOCUMENTS · NO CREDIT CARD</span>
+            <span style={{ fontSize: isMobile ? 9 : 11, letterSpacing: "0.14em", color: "hsl(var(--primary))", fontWeight: 500 }}>THE MEDICAL PASSPORT FOR INTERNATIONAL FAMILIES</span>
           </div>
           <h1 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 40 : isTablet ? 52 : "clamp(44px,5vw,68px)", fontWeight: 300, lineHeight: 1.1, color: marketingColors.ink, marginBottom: isMobile ? 18 : 24, letterSpacing: "-0.02em" }}>
-            All your medical records.
+            Your medical history, finally in one place.
             <br />
-            <em style={{ fontStyle: "italic", color: marketingColors.gold }}>Organised. Searchable. In any language.</em>
+            <em style={{ fontStyle: "italic", color: marketingColors.gold }}>In every language.</em>
           </h1>
-          <p style={{ fontSize: isMobile ? 16 : 17, lineHeight: 1.7, color: marketingColors.mutedText, maxWidth: 480, marginBottom: isMobile ? 22 : 28, fontWeight: 300 }}>
-            Upload lab results, scans, prescriptions and letters from any provider — and we'll extract the key information, track your trends, and translate anything into your language. Free for your first 3 documents.
+          <p style={{ fontSize: isMobile ? 16 : 17, lineHeight: 1.7, color: marketingColors.mutedText, maxWidth: 520, marginBottom: isMobile ? 22 : 28, fontWeight: 300 }}>
+            Upload records from any country, automatically translate and organise them, and share a clinician-ready summary with doctors anywhere in the world.
           </p>
           <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 12, alignItems: isMobile ? "stretch" : "center" }}>
             <Link to="/auth?mode=signup" style={{ padding: isMobile ? "18px 24px" : "16px 34px", background: marketingColors.gold, borderRadius: 2, color: "hsl(var(--primary-foreground))", fontSize: isMobile ? 15 : 14, fontWeight: 600, letterSpacing: "0.06em", textDecoration: "none", textAlign: "center", boxShadow: "0 6px 28px hsl(var(--primary) / 0.4)" }}>
-              Start your free vault trial
+              Get Early Access
             </Link>
-            <Link to="/translate" style={{ padding: isMobile ? "15px 24px" : "15px 28px", background: "transparent", border: `1px solid ${marketingColors.gold}`, borderRadius: 2, color: marketingColors.gold, fontSize: 14, textDecoration: "none", textAlign: "center", fontWeight: 500 }}>
-              Try the free translator →
-            </Link>
+            <a href="#demo" style={{ padding: isMobile ? "15px 24px" : "15px 28px", background: "transparent", border: `1px solid ${marketingColors.gold}`, borderRadius: 2, color: marketingColors.gold, fontSize: 14, textDecoration: "none", textAlign: "center", fontWeight: 500 }}>
+              Watch 60-Second Demo →
+            </a>
           </div>
-          <div style={{ marginTop: 10, fontSize: 12, color: marketingColors.softText, textAlign: isMobile ? "center" : "left" }}>
-            No credit card required · Free up to 3 documents · Cancel anytime
-          </div>
-          <div style={{ display: "inline-flex", flexWrap: "wrap", alignItems: "center", gap: 8, marginTop: isMobile ? 18 : 22, fontSize: 11.5, color: marketingColors.softText, letterSpacing: "0.04em" }}>
-            <span style={{ width: 5, height: 5, borderRadius: "50%", background: marketingColors.gold }} />
-            <span>50+ languages</span>
-            <span style={{ color: marketingColors.faintText }}>·</span>
-            <span>ICO registered</span>
-            <span style={{ color: marketingColors.faintText }}>·</span>
-            <span>Encrypted, EU-hosted</span>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: isMobile ? "8px 16px" : 20, marginTop: isMobile ? 22 : 28, fontSize: 12, color: marketingColors.mutedText, letterSpacing: "0.02em" }}>
+            {[
+              "GDPR compliant",
+              "End-to-end encrypted",
+              "You control access",
+              "Built for international healthcare",
+            ].map((item) => (
+              <span key={item} style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                <span style={{ color: marketingColors.gold, fontSize: 13 }}>✓</span>
+                {item}
+              </span>
+            ))}
           </div>
           {isMobile && (
             <div style={{ marginTop: 28, display: "flex", justifyContent: "center" }}>
