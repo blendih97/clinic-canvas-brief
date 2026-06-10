@@ -199,20 +199,26 @@ function HowItWorks() {
   const steps = [
     {
       n: "01",
-      title: "Send us your records",
-      desc: "Photograph, scan, or upload any medical document — prescriptions, lab results, imaging reports, discharge letters, vaccination cards. From any hospital, any country, any decade.",
+      title: "Upload",
+      desc: "Patients upload PDFs, scans, photographs and medical records from any country or provider — no formatting required.",
       icon: "↥",
     },
     {
       n: "02",
-      title: "We organise everything",
-      desc: "RinVita reads Arabic, Mandarin, Turkish, French, Russian and 50+ more languages — then translates, structures, and files your entire medical history into a clear digital vault.",
+      title: "Translate",
+      desc: "Records are automatically translated and structured across 50+ languages, from Arabic to Mandarin.",
       icon: "◎",
     },
     {
       n: "03",
-      title: "Share in 30 seconds",
-      desc: "Generate a secure, time-limited link for any clinician, anywhere. They see a complete, translated summary in seconds. No accounts, no software, no waiting.",
+      title: "Understand",
+      desc: "Generate clinician-ready summaries, medication lists and a clear timeline of every diagnosis, test and treatment.",
+      icon: "✦",
+    },
+    {
+      n: "04",
+      title: "Share",
+      desc: "Securely share a structured summary with any doctor, anywhere in the world — with time-limited, revocable access.",
       icon: "↗",
     },
   ];
@@ -222,15 +228,15 @@ function HowItWorks() {
       <div ref={ref} className="marketing-reveal" style={{ maxWidth: 1280, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: isMobile ? 48 : 80 }}>
           <span className="marketing-section-label">How it works</span>
-          <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 34 : "clamp(34px,3.8vw,52px)", fontWeight: 300, color: marketingColors.ink }}>Three steps to total clarity</h2>
+          <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 34 : "clamp(34px,3.8vw,52px)", fontWeight: 300, color: marketingColors.ink }}>From scattered records to a clear medical passport</h2>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3,1fr)", gap: isMobile ? 2 : 0 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr 1fr" : "repeat(4,1fr)", gap: isMobile ? 2 : 0 }}>
           {steps.map((step, index) => (
-            <div key={step.n} style={{ padding: isMobile ? "32px 24px" : "48px 44px", background: marketingColors.surface, border: `1px solid ${marketingColors.goldBorder}`, borderLeft: !isMobile && index > 0 ? "none" : `1px solid ${marketingColors.goldBorder}` }}>
+            <div key={step.n} style={{ padding: isMobile ? "32px 24px" : "44px 32px", background: marketingColors.surface, border: `1px solid ${marketingColors.goldBorder}`, borderLeft: !isMobile && index > 0 ? "none" : `1px solid ${marketingColors.goldBorder}` }}>
               <div style={{ width: 48, height: 48, borderRadius: "50%", border: `1px solid ${marketingColors.goldBorder}`, background: marketingColors.goldSoft, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 20, color: marketingColors.gold, fontSize: 22 }}>{step.icon}</div>
               <div style={{ fontFamily: "Cormorant Garamond", fontSize: 11, color: "hsl(var(--primary) / 0.7)", letterSpacing: "0.1em", marginBottom: 8 }}>STEP {step.n}</div>
               <h3 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 22 : 26, fontWeight: 400, color: marketingColors.ink, marginBottom: 12, lineHeight: 1.2 }}>{step.title}</h3>
-              <p style={{ fontSize: 14, lineHeight: 1.8, color: marketingColors.mutedText, fontWeight: 300 }}>{step.desc}</p>
+              <p style={{ fontSize: 14, lineHeight: 1.75, color: marketingColors.mutedText, fontWeight: 300 }}>{step.desc}</p>
             </div>
           ))}
         </div>
@@ -245,12 +251,134 @@ function WhyRinVita() {
 
   return (
     <section style={{ padding: `${isMobile ? 72 : 100}px ${isMobile ? 20 : 56}px`, background: marketingColors.cream }}>
-      <div ref={ref} className="marketing-reveal" style={{ maxWidth: 620, margin: "0 auto", textAlign: "center" }}>
-        <span className="marketing-section-label">Why RinVita</span>
-        <p style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 18 : "clamp(19px,2.2vw,26px)", fontWeight: 300, lineHeight: 1.85, color: "hsl(var(--foreground) / 0.8)", fontStyle: "italic", marginBottom: 36 }}>
-          “We built RinVita for the people we kept seeing in international patient corridors: families arriving with a shoebox of records in three languages, trying to explain a parent's medications to a doctor who couldn't read them. There wasn't a tool for this. So we made one.”
+      <div ref={ref} className="marketing-reveal" style={{ maxWidth: 720, margin: "0 auto", textAlign: "center" }}>
+        <span className="marketing-section-label">Why RinVita exists</span>
+        <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 30 : "clamp(32px,3.4vw,46px)", fontWeight: 300, color: marketingColors.ink, marginBottom: 24, lineHeight: 1.2 }}>
+          Built by people working in international healthcare.
+        </h2>
+        <p style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 18 : 22, fontWeight: 300, lineHeight: 1.7, color: "hsl(var(--foreground) / 0.78)", fontStyle: "italic", marginBottom: 20 }}>
+          We saw first-hand how difficult it can be for families and patients to manage records across different countries, hospitals and languages.
+        </p>
+        <p style={{ fontSize: isMobile ? 15 : 16, lineHeight: 1.8, color: marketingColors.mutedText, fontWeight: 300, marginBottom: 32 }}>
+          RinVita was created to make medical information understandable, portable and ready whenever it matters most.
         </p>
         <div style={{ width: 48, height: 1, background: marketingColors.goldStrong, margin: "0 auto" }} />
+      </div>
+    </section>
+  );
+}
+
+function UseCases() {
+  const ref = useReveal<HTMLDivElement>();
+  const { isMobile, isTablet } = useMarketingBreakpoint();
+  const paddingX = isMobile ? 20 : isTablet ? 32 : 56;
+
+  const cases = [
+    { tag: "Families", title: "International Families", desc: "Keep your family's medical history together, no matter where life takes you." },
+    { tag: "Mobility", title: "Expats & Relocations", desc: "Move countries without losing important medical information." },
+    { tag: "Specialists", title: "Second Opinions", desc: "Share structured records with specialists quickly and easily." },
+    { tag: "Concierge", title: "Private & Concierge Healthcare", desc: "Give clinicians a clear picture without chasing documents across multiple languages and providers." },
+  ];
+
+  return (
+    <section style={{ padding: `${isMobile ? 72 : 120}px ${paddingX}px`, background: marketingColors.cream2 }}>
+      <div ref={ref} className="marketing-reveal" style={{ maxWidth: 1180, margin: "0 auto" }}>
+        <div style={{ textAlign: "center", marginBottom: isMobile ? 48 : 72 }}>
+          <span className="marketing-section-label">Who it's for</span>
+          <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 32 : "clamp(34px,3.8vw,52px)", fontWeight: 300, color: marketingColors.ink }}>For lives that don't stay in one place</h2>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr 1fr" : "repeat(2,1fr)", gap: 16 }}>
+          {cases.map((c) => (
+            <div key={c.title} style={{ padding: isMobile ? "28px 24px" : "36px 32px", background: marketingColors.surface, border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 2 }}>
+              <div style={{ display: "inline-block", fontSize: 10, letterSpacing: "0.12em", color: marketingColors.gold, fontWeight: 500, padding: "3px 10px", border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 1, marginBottom: 14, textTransform: "uppercase" }}>{c.tag}</div>
+              <h3 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 24 : 28, fontWeight: 400, color: marketingColors.ink, marginBottom: 10, lineHeight: 1.2 }}>{c.title}</h3>
+              <p style={{ fontSize: 14.5, lineHeight: 1.75, color: marketingColors.mutedText, fontWeight: 300 }}>{c.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function DemoVideo() {
+  const ref = useReveal<HTMLDivElement>();
+  const { isMobile, isTablet } = useMarketingBreakpoint();
+  const paddingX = isMobile ? 20 : isTablet ? 32 : 56;
+
+  return (
+    <section id="demo" style={{ padding: `${isMobile ? 72 : 120}px ${paddingX}px`, background: marketingColors.cream }}>
+      <div ref={ref} className="marketing-reveal" style={{ maxWidth: 1080, margin: "0 auto" }}>
+        <div style={{ textAlign: "center", marginBottom: isMobile ? 36 : 48 }}>
+          <span className="marketing-section-label">Demo</span>
+          <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 32 : "clamp(34px,3.8vw,52px)", fontWeight: 300, color: marketingColors.ink, marginBottom: 14 }}>See RinVita in action.</h2>
+          <p style={{ fontSize: isMobile ? 14 : 16, color: marketingColors.mutedText, maxWidth: 560, margin: "0 auto", lineHeight: 1.7, fontWeight: 300 }}>
+            Watch a foreign record become a translated timeline, medication list and clinician-ready summary in under a minute.
+          </p>
+        </div>
+        <div style={{ position: "relative", borderRadius: 4, overflow: "hidden", border: `1px solid ${marketingColors.goldBorder}`, background: "hsl(var(--foreground) / 0.02)", boxShadow: "0 24px 80px hsl(var(--foreground) / 0.08)" }}>
+          <div style={{ aspectRatio: "16 / 9", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", background: `linear-gradient(135deg, ${marketingColors.cream2}, ${marketingColors.cream})` }}>
+            <div style={{ position: "absolute", inset: 0, opacity: 0.4, backgroundImage: `linear-gradient(hsl(var(--primary) / 0.06) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary) / 0.06) 1px, transparent 1px)`, backgroundSize: "44px 44px" }} />
+            <button aria-label="Play demo" style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: isMobile ? 72 : 96, height: isMobile ? 72 : 96, borderRadius: "50%", background: marketingColors.gold, border: "none", cursor: "pointer", boxShadow: "0 18px 48px hsl(var(--primary) / 0.4)" }}>
+              <span style={{ fontSize: isMobile ? 24 : 32, color: "hsl(var(--primary-foreground))", marginLeft: 4 }}>▶</span>
+            </button>
+            <div style={{ position: "absolute", bottom: 18, left: 0, right: 0, textAlign: "center", fontSize: 11, letterSpacing: "0.18em", color: marketingColors.softText, textTransform: "uppercase" }}>
+              60-second product walkthrough
+            </div>
+          </div>
+        </div>
+        <div style={{ marginTop: 28, display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(5,1fr)", gap: 10 }}>
+          {[
+            "Upload a foreign record",
+            "Automatic translation",
+            "Timeline creation",
+            "Medication list",
+            "Secure share",
+          ].map((label, i) => (
+            <div key={label} style={{ padding: "12px 14px", border: `1px solid ${marketingColors.goldBorder}`, background: marketingColors.surface, borderRadius: 2, textAlign: "center" }}>
+              <div style={{ fontFamily: "Cormorant Garamond", fontSize: 12, color: marketingColors.gold, letterSpacing: "0.08em" }}>0:{(i * 12).toString().padStart(2, "0")}</div>
+              <div style={{ fontSize: 12, color: marketingColors.mutedText, marginTop: 4, fontWeight: 300 }}>{label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function SocialProof() {
+  const ref = useReveal<HTMLDivElement>();
+  const { isMobile, isTablet } = useMarketingBreakpoint();
+  const paddingX = isMobile ? 20 : isTablet ? 32 : 56;
+
+  return (
+    <section style={{ padding: `${isMobile ? 72 : 100}px ${paddingX}px`, background: marketingColors.cream2 }}>
+      <div ref={ref} className="marketing-reveal" style={{ maxWidth: 1180, margin: "0 auto" }}>
+        <div style={{ textAlign: "center", marginBottom: isMobile ? 36 : 56 }}>
+          <span className="marketing-section-label">Social proof</span>
+          <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 28 : "clamp(30px,3.2vw,42px)", fontWeight: 300, color: marketingColors.ink }}>
+            Trusted by international patients and healthcare professionals.
+          </h2>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2,1fr)" : "repeat(5,1fr)", gap: 12, marginBottom: isMobile ? 36 : 48 }}>
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} style={{ height: 64, border: `1px dashed ${marketingColors.goldBorder}`, borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center", background: marketingColors.surface }}>
+              <span style={{ fontSize: 10, letterSpacing: "0.16em", color: marketingColors.faintText, textTransform: "uppercase" }}>Partner logo</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3,1fr)", gap: 16 }}>
+          {[1, 2, 3].map((i) => (
+            <div key={i} style={{ padding: "28px 24px", background: marketingColors.surface, border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 2, minHeight: 180 }}>
+              <div style={{ fontFamily: "Cormorant Garamond", fontSize: 28, color: marketingColors.gold, lineHeight: 1, marginBottom: 8 }}>“</div>
+              <p style={{ fontFamily: "Cormorant Garamond", fontSize: 16, fontStyle: "italic", color: "hsl(var(--foreground) / 0.55)", lineHeight: 1.6, marginBottom: 16 }}>
+                Patient and clinician testimonials will appear here as our early access cohort grows.
+              </p>
+              <div style={{ width: 24, height: 1, background: marketingColors.goldBorder, marginBottom: 10 }} />
+              <div style={{ fontSize: 11, color: marketingColors.faintText, letterSpacing: "0.06em", textTransform: "uppercase" }}>Coming soon</div>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
