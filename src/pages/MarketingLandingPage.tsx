@@ -126,7 +126,7 @@ function Hero() {
               Get Early Access
             </Link>
             <a href="#demo" style={{ padding: isMobile ? "15px 24px" : "15px 28px", background: "transparent", border: `1px solid ${marketingColors.gold}`, borderRadius: 2, color: marketingColors.gold, fontSize: 14, textDecoration: "none", textAlign: "center", fontWeight: 500 }}>
-              Watch 60-Second Demo →
+              Watch the Demo →
             </a>
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: isMobile ? "8px 16px" : 20, marginTop: isMobile ? 22 : 28, fontSize: 12, color: marketingColors.mutedText, letterSpacing: "0.02em" }}>
@@ -313,7 +313,7 @@ function DemoVideo() {
           <span className="marketing-section-label">Demo</span>
           <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 32 : "clamp(34px,3.8vw,52px)", fontWeight: 300, color: marketingColors.ink, marginBottom: 14 }}>See RinVita in action.</h2>
           <p style={{ fontSize: isMobile ? 14 : 16, color: marketingColors.mutedText, maxWidth: 560, margin: "0 auto", lineHeight: 1.7, fontWeight: 300 }}>
-            Watch a foreign record become a translated timeline, medication list and clinician-ready summary in under a minute.
+            Watch a foreign record become a translated timeline, medication list and clinician-ready summary.
           </p>
         </div>
         <div style={{ position: "relative", borderRadius: 4, overflow: "hidden", border: `1px solid ${marketingColors.goldBorder}`, background: "hsl(var(--foreground) / 0.02)", boxShadow: "0 24px 80px hsl(var(--foreground) / 0.08)" }}>
@@ -325,20 +325,6 @@ function DemoVideo() {
             poster=""
             style={{ width: "100%", display: "block", aspectRatio: "16 / 9", background: marketingColors.cream2 }}
           />
-        </div>
-        <div style={{ marginTop: 28, display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(5,1fr)", gap: 10 }}>
-          {[
-            "Upload a foreign record",
-            "Automatic translation",
-            "Timeline creation",
-            "Medication list",
-            "Secure share",
-          ].map((label, i) => (
-            <div key={label} style={{ padding: "12px 14px", border: `1px solid ${marketingColors.goldBorder}`, background: marketingColors.surface, borderRadius: 2, textAlign: "center" }}>
-              <div style={{ fontFamily: "Cormorant Garamond", fontSize: 12, color: marketingColors.gold, letterSpacing: "0.08em" }}>0:{(i * 12).toString().padStart(2, "0")}</div>
-              <div style={{ fontSize: 12, color: marketingColors.mutedText, marginTop: 4, fontWeight: 300 }}>{label}</div>
-            </div>
-          ))}
         </div>
       </div>
     </section>
@@ -836,11 +822,9 @@ const MarketingLandingPage = () => {
       <Features />
       <DemoVideo />
       <ClinicalSafety />
-      <SocialProof />
       <Pricing />
       <ForClinicsCallout />
       <FAQ />
-      <Testimonial />
       <MarketingFooter />
       <MobileStickyCTA />
     </div>
