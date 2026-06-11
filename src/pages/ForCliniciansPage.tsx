@@ -159,10 +159,10 @@ const ForCliniciansPage = () => {
           <div style={{ textAlign: "center", marginBottom: 36 }}>
             <span className="marketing-section-label">Get in touch</span>
             <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 30 : 40, fontWeight: 300, color: marketingColors.ink, marginBottom: 12 }}>
-              Let's talk for 15 minutes
+              Enquire now
             </h2>
             <p style={{ fontSize: 15, color: marketingColors.mutedText, lineHeight: 1.7, fontWeight: 300 }}>
-              Tell us a little about your practice and we'll get back to you within one working day.
+              Tell us a little about your practice and we'll reach out within one working day.
             </p>
           </div>
 
