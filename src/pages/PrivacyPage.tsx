@@ -33,10 +33,34 @@ const PrivacyPage = () => {
     paddingLeft: 20,
     marginBottom: 16,
   };
+  const tableStyle: React.CSSProperties = {
+    width: "100%",
+    borderCollapse: "collapse",
+    margin: "12px 0 20px",
+    fontSize: 14,
+    color: marketingColors.mutedText,
+    fontWeight: 300,
+  };
+  const thStyle: React.CSSProperties = {
+    textAlign: "left",
+    padding: "10px 12px",
+    background: marketingColors.goldSoft,
+    border: `1px solid ${marketingColors.goldBorder}`,
+    fontFamily: "Cormorant Garamond",
+    fontWeight: 500,
+    color: marketingColors.ink,
+    fontSize: 14.5,
+  };
+  const tdStyle: React.CSSProperties = {
+    padding: "10px 12px",
+    border: `1px solid ${marketingColors.goldBorder}`,
+    verticalAlign: "top",
+    lineHeight: 1.7,
+  };
 
   return (
     <div className="marketing-page" style={{ background: marketingColors.cream, color: marketingColors.ink }}>
-      <SEO title="Privacy Policy — RinVita" description="How RinVita collects, processes, and protects your personal and medical data. UK GDPR, ICO registered, EU-hosted." path="/privacy" />
+      <SEO title="Privacy Policy — RinVita" description="How Rinvita Ltd collects, processes, and protects your personal and special category (medical) data. UK GDPR, ICO registered." path="/privacy" />
       <MarketingStyles />
       <MarketingNav currentPage="home" />
       <section style={{ padding: `${isMobile ? 100 : 140}px ${paddingX}px ${isMobile ? 56 : 80}px`, background: marketingColors.cream }}>
@@ -46,215 +70,266 @@ const PrivacyPage = () => {
             Privacy Policy
           </h1>
           <p style={{ fontSize: 13, color: marketingColors.softText, letterSpacing: "0.04em", marginBottom: 28 }}>
-            RinVita — last updated 8 May 2026
+            Rinvita Ltd — policy version: 28 May 2026
           </p>
 
-          {/* Interim notice callout */}
-          <div style={{
-            background: marketingColors.goldSoft,
-            border: `1px solid ${marketingColors.goldBorder}`,
-            borderLeft: `3px solid ${marketingColors.gold}`,
-            padding: "18px 22px",
-            borderRadius: 6,
-            marginBottom: 36,
-          }}>
-            <p style={{
-              fontFamily: "Cormorant Garamond",
-              fontStyle: "italic",
-              fontSize: isMobile ? 15 : 17,
-              lineHeight: 1.6,
-              color: marketingColors.gold,
-              margin: 0,
-              fontWeight: 500,
-            }}>
-              This Privacy Policy is currently being reviewed and updated by our solicitor. The version below is our current draft. An updated version will be published shortly. For any questions in the meantime, please contact <a href="mailto:hello@rinvita.co.uk" style={{ color: marketingColors.gold, textDecoration: "underline" }}>hello@rinvita.co.uk</a>.
-            </p>
-          </div>
-
-          <h2 style={headingStyle}>Summary</h2>
-          <h3 style={subHeadingStyle}>Data we collect automatically</h3>
-          <p style={bodyStyle}>We automatically collect data from you, for example when you visit RinVita.</p>
-          <ul style={listStyle}><li>Usage Data</li><li>Trackers</li></ul>
-
-          <h3 style={subHeadingStyle}>Trusted third parties help us to process it</h3>
-          <ul style={listStyle}><li>Stripe, Inc.</li><li>Supabase, Inc.</li></ul>
-
-          <h3 style={subHeadingStyle}>How we use them</h3>
-          <ul style={listStyle}>
-            <li>Hosting and backend infrastructure</li>
-            <li>Registration and authentication</li>
-            <li>Access to third-party accounts</li>
-            <li>Manage your privacy preferences</li>
-          </ul>
-
-          <h3 style={subHeadingStyle}>Data you give to us</h3>
-          <p style={bodyStyle}>We collect the data you give to us, for example when you create an account on RinVita.</p>
-          <ul style={listStyle}>
-            <li>Account log-in</li><li>First name</li><li>Last name</li><li>Email address</li><li>Payment info</li>
-          </ul>
-
-          <h2 style={headingStyle}>Owner and Data Controller</h2>
+          <h2 style={headingStyle}>1. Introduction</h2>
           <p style={bodyStyle}>
-            RinVita Ltd<br />
-            Unit A435<br />
-            4-6 Greatorex Street<br />
-            London, E1 5NF<br />
-            United Kingdom
+            This Privacy Policy is provided by Rinvita Ltd, a company registered in England and Wales under company number 17163153 with registered office Unit A435, 4–6 Greatorex Street, London, England, E1 5NF ("we", "our" or "us") for use of our products and services including our platform (the "Services").
           </p>
           <p style={bodyStyle}>
+            We take your privacy very seriously. Please read this privacy policy carefully as it contains important information on how and why we collect, store, use and share any information relating to you (your <strong>personal data</strong>).
+          </p>
+          <p style={bodyStyle}>
+            It also explains your rights in relation to your personal data and how to contact us or the relevant regulator in the event you have a complaint. Our collection, storage, use and sharing of your personal data is regulated by law, including under the UK General Data Protection Regulation (<strong>UK GDPR</strong>).
+          </p>
+          <p style={bodyStyle}>
+            We are the controller of personal data obtained via the Services, meaning we are the organisation legally responsible for deciding how and for what purposes it is used.
+          </p>
+
+          <h2 style={headingStyle}>2. What this policy applies to</h2>
+          <p style={bodyStyle}>This privacy policy relates to your use of the Services only.</p>
+          <p style={bodyStyle}>
+            The Services may link to or rely on other apps, websites, APIs or services owned and operated by us or by certain trusted third parties to enable us to provide you with Services. These other apps, websites, APIs or services may also gather information about you in accordance with their own separate privacy policies. For privacy information relating to these other apps, websites or services, please consult their privacy policies as appropriate. For more information see the section "Who we share your personal data with" below.
+          </p>
+
+          <h2 style={headingStyle}>3. Personal data we collect about you</h2>
+          <p style={bodyStyle}>
+            The personal data we collect about you depends on the particular activities carried out through the Services. We will collect and use the following personal data about you:
+          </p>
+          <table style={tableStyle}>
+            <thead>
+              <tr><th style={thStyle}>Category of data</th><th style={thStyle}>In more detail</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style={tdStyle}>Identity and account data you input into the Services. Registration is mandatory in order to use the Services.</td>
+                <td style={tdStyle}>
+                  <ul style={{ margin: 0, paddingLeft: 18 }}>
+                    <li>Your name and email address</li>
+                    <li>Your phone number</li>
+                    <li>Credit card and payment information</li>
+                    <li>Your account details, such as username and password</li>
+                  </ul>
+                </td>
+              </tr>
+              <tr>
+                <td style={tdStyle}>Data collected when you use specific functions in the Services</td>
+                <td style={tdStyle}>Data you store online with us using the Services including your usage history or preferences (while such data may not always be personal data as defined at law in all cases, we will assume it is and treat it in accordance with this policy as if it were).</td>
+              </tr>
+              <tr>
+                <td style={tdStyle}>Other data the Services collect automatically when you use them</td>
+                <td style={tdStyle}>Your activities on, and use of, the Services which reveal your preferences, interests or manner of use of the Services and the times of use. Your device type, IMEI numbers, MAC address of networks, other unique device identification, device operating system, mobile network information, app version number, storage usage, data usage, time zone settings.</td>
+              </tr>
+            </tbody>
+          </table>
+          <p style={bodyStyle}>If you do not provide personal data we ask for where it is required, it may prevent us from providing services and/or the Services to you.</p>
+          <p style={bodyStyle}>We collect and use this personal data for the purposes described in the section "How and why we use your personal data" below.</p>
+
+          <h2 style={headingStyle}>4. Personal information of minors</h2>
+          <p style={bodyStyle}>
+            If we collect personal data from individuals under the age of 18 directly, we will assess their capacity to consent on a case-by-case basis. As a general principle, an individual under the age of 18 may have the capacity to consent if they demonstrate sufficient maturity to understand the nature and consequences of what is being proposed. Where it is determined that the individual does not have such capacity, we will seek verifiable consent from a parent or guardian.
+          </p>
+          <p style={bodyStyle}>
+            If it is not practicable to assess capacity on a case-by-case basis, we will generally assume that individuals aged 13 and above have the capacity to provide consent, unless there are reasonable grounds to believe otherwise. Parents or guardians may contact us using the details set out below to review, manage, or request deletion of their child's personal information.
+          </p>
+
+          <h2 style={headingStyle}>5. Special category personal data or sensitive data</h2>
+          <p style={bodyStyle}>
+            Certain personal data we collect is treated as a "special category" to which additional protections apply under data protection law. This is also known as "Sensitive Data". Where we process such Sensitive Data, we will also ensure we are permitted to do so under data protection laws, and any such data will be collected on the basis of your explicit consent. Sensitive Data we collect about you, where you choose to give it to us, may include:
+          </p>
+          <ul style={listStyle}>
+            <li>Medical history and medical information, including past surgeries, past treatments</li>
+            <li>Existing conditions: allergies, chronic pains, chronic illnesses, ongoing treatments such as current medications consumed</li>
+            <li>Records and details of prescriptions given and/or refused</li>
+            <li>Past consultations; dates, the doctor providing treatment and the concern</li>
+            <li>Weight, height, age</li>
+            <li>Your gender and sex — if you choose to give this to us</li>
+            <li>Lifestyle details</li>
+            <li>Past and present use of cannabis (if any)</li>
+            <li>History of drug consumption, medical or recreational</li>
+          </ul>
+          <p style={bodyStyle}>If you do not provide personal data we ask for where it is asked, it may prevent us from providing the Services.</p>
+          <p style={bodyStyle}>We collect and use this personal data for the purposes described in the section "How and why we use your personal data" below.</p>
+
+          <h2 style={headingStyle}>6. How your personal data is collected</h2>
+          <p style={bodyStyle}>We collect personal data from you:</p>
+          <ul style={listStyle}>
+            <li>directly, when you enter or send us information, such as when you register with us, contact us (including via email), send us feedback, purchase or request services via our Services, post material to our platform and complete patient surveys; and</li>
+            <li>indirectly, such as your browsing activity while using the Services.</li>
+          </ul>
+          <p style={bodyStyle}>At this point in time, we may collect personal information about you using cookies or similar technologies. Detailed information regarding our use of cookies and similar technologies is made available in the relevant cookies policy.</p>
+
+          <h2 style={headingStyle}>7. How and why we use your personal data</h2>
+          <p style={bodyStyle}>Under data protection law, we can only use your personal data if we have a proper reason, e.g.:</p>
+          <ul style={listStyle}>
+            <li>where you have given consent;</li>
+            <li>to comply with our legal and regulatory obligations;</li>
+            <li>for the performance of a contract with you or to take steps at your request before entering into a contract; or</li>
+            <li>for our legitimate interests or those of a third party.</li>
+          </ul>
+          <p style={bodyStyle}>
+            A legitimate interest is when we have a business or commercial reason to use your information, so long as this is not overridden by your own rights and interests. We will carry out an assessment when relying on legitimate interests, to balance our interests against your own. You can obtain details of this assessment by contacting us (see "How to contact us" below).
+          </p>
+          <p style={bodyStyle}>The table below explains what we use your personal data for and why.</p>
+          <table style={tableStyle}>
+            <thead>
+              <tr><th style={thStyle}>What we use your personal data for</th><th style={thStyle}>Our reasons</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style={tdStyle}>Create and manage your account and patient file with us</td>
+                <td style={tdStyle}>For our legitimate interests, i.e. to be as efficient as we can so we can deliver the best service to you. To perform our contract with you or to take steps at your request before entering into a contract.</td>
+              </tr>
+              <tr>
+                <td style={tdStyle}>Providing services and/or the functionalities of the Services to you</td>
+                <td style={tdStyle}>To perform our contract with you or to take steps at your request before entering into a contract.</td>
+              </tr>
+              <tr>
+                <td style={tdStyle}>Conducting checks to identify you and verify your identity or to help prevent and detect fraud against you or us</td>
+                <td style={tdStyle}>To comply with our legal and regulatory obligations. For our legitimate interests, i.e. to minimise fraud that could be damaging for you and/or us.</td>
+              </tr>
+              <tr>
+                <td style={tdStyle}>To enforce legal rights or defend or undertake legal proceedings</td>
+                <td style={tdStyle}>Depending on the circumstances: to comply with our legal and regulatory obligations; in other cases, for our legitimate interests or those of a third party, i.e. to protect our business, interests and rights or those of others.</td>
+              </tr>
+              <tr>
+                <td style={tdStyle}>Communications with you not related to marketing, including about changes to our terms or policies or changes to the Services or other important notices</td>
+                <td style={tdStyle}>Depending on the circumstances: to comply with our legal and regulatory obligations; in other cases, for our legitimate interests or those of a third party, i.e. to provide the best service to you.</td>
+              </tr>
+              <tr>
+                <td style={tdStyle}>Protect the security of systems and data</td>
+                <td style={tdStyle}>To comply with our legal and regulatory obligations. We may also use your personal data to ensure the security of systems and data to a standard that goes beyond our legal obligations, and in those cases our reasons are for our legitimate interests or those of a third party, i.e. to protect systems and data and to prevent and detect criminal activity that could be damaging for you and/or us.</td>
+              </tr>
+              <tr>
+                <td style={tdStyle}>Operational reasons, such as improving efficiency, training, and quality control or to provide support to you</td>
+                <td style={tdStyle}>For our legitimate interests or those of a third party, i.e. to be as efficient as we can so we can deliver the best service to you.</td>
+              </tr>
+              <tr>
+                <td style={tdStyle}>Statistical analysis to help us manage our business, e.g. in relation to our performance, customer base, platform and functionalities and offerings or other efficiency measures</td>
+                <td style={tdStyle}>For our legitimate interests or those of a third party, i.e. to be as efficient as we can so we can deliver the best service to you and improve and develop our platform.</td>
+              </tr>
+              <tr>
+                <td style={tdStyle}>Updating and enhancing patient records</td>
+                <td style={tdStyle}>Depending on the circumstances: to perform our contract with you or to take steps at your request before entering into a contract; to comply with our legal and regulatory obligations; or, where neither of the above apply, for our legitimate interests or those of a third party, e.g. making sure that we can keep in touch with our customers about their accounts and new products or functionalities related to the Services and our services.</td>
+              </tr>
+              <tr>
+                <td style={tdStyle}>Disclosures and other activities necessary to comply with legal and regulatory obligations that apply to our business</td>
+                <td style={tdStyle}>To comply with our legal and regulatory obligations.</td>
+              </tr>
+              <tr>
+                <td style={tdStyle}>The audit of our accounts and business</td>
+                <td style={tdStyle}>For our legitimate interests, i.e. to maintain any accreditations so we can demonstrate we operate at the highest standards.</td>
+              </tr>
+              <tr>
+                <td style={tdStyle}>To share your personal data with members of our group and third parties in connection with a significant corporate transaction or restructuring, including a merger, acquisition, asset sale, initial public offering or in the event of our insolvency. In such cases information will be anonymised where possible and only shared where necessary.</td>
+                <td style={tdStyle}>Depending on the circumstances: to comply with our legal and regulatory obligations; in other cases, for our legitimate interests or those of a third party, i.e. to protect, realise or grow the value in our business and assets.</td>
+              </tr>
+            </tbody>
+          </table>
+          <p style={bodyStyle}>See "Who we share your personal data with" for further information on the steps we will take to protect your personal data where we need to share it with others.</p>
+
+          <h2 style={headingStyle}>8. Who we share your personal data with</h2>
+          <p style={bodyStyle}>We routinely share personal data with service providers we use to help us run our business or provide the services or functionalities in the Services, including:</p>
+          <ul style={listStyle}>
+            <li>third parties we use to help deliver our services to you, e.g. third party service providers (such as website developers or payment providers, or providers of security infrastructure);</li>
+            <li>other third parties we use to help us run our business, e.g. platform hosts and platform analytics providers; and</li>
+            <li>freelance doctors and other medical staff or contractors assisting us in providing their services to you.</li>
+          </ul>
+          <p style={bodyStyle}>The third party processors we currently use are set out in the table below:</p>
+          <table style={tableStyle}>
+            <thead>
+              <tr><th style={thStyle}>Processor</th><th style={thStyle}>Purpose</th><th style={thStyle}>Terms</th></tr>
+            </thead>
+            <tbody>
+              <tr><td style={tdStyle}>Supabase</td><td style={tdStyle}>Database hosting and backend infrastructure</td><td style={tdStyle}><a href="https://supabase.com/privacy" style={{ color: marketingColors.gold }}>supabase.com/privacy</a></td></tr>
+              <tr><td style={tdStyle}>Anthropic</td><td style={tdStyle}>AI processing</td><td style={tdStyle}><a href="https://www.anthropic.com/legal/privacy" style={{ color: marketingColors.gold }}>anthropic.com/legal/privacy</a></td></tr>
+              <tr><td style={tdStyle}>Resend</td><td style={tdStyle}>Transactional email delivery</td><td style={tdStyle}><a href="https://resend.com/privacy" style={{ color: marketingColors.gold }}>resend.com/privacy</a></td></tr>
+              <tr><td style={tdStyle}>Stripe</td><td style={tdStyle}>Payment processing</td><td style={tdStyle}><a href="https://stripe.com/gb/privacy" style={{ color: marketingColors.gold }}>stripe.com/gb/privacy</a></td></tr>
+              <tr><td style={tdStyle}>Google (OAuth)</td><td style={tdStyle}>Authentication services</td><td style={tdStyle}><a href="https://policies.google.com/privacy" style={{ color: marketingColors.gold }}>policies.google.com/privacy</a></td></tr>
+            </tbody>
+          </table>
+          <p style={bodyStyle}>We only allow those organisations/individuals/service providers to handle your personal data if we are satisfied they take appropriate measures to protect your personal data. We also impose contractual obligations on service providers to ensure they can only use your personal data to provide services to us and to you.</p>
+          <p style={bodyStyle}>We or the third parties mentioned above may occasionally also need to share your personal data with:</p>
+          <ul style={listStyle}>
+            <li>external auditors, e.g. in relation to the audit of our accounts and our company — the recipient of the information will be bound by confidentiality obligations;</li>
+            <li>professional advisors (such as lawyers and other advisors) — the recipient of the information will be bound by confidentiality obligations;</li>
+            <li>law enforcement agencies, courts or tribunals and regulatory bodies to comply with legal and regulatory obligations; and</li>
+            <li>other parties in connection with a significant corporate transaction or restructuring, including a merger, acquisition, asset sale, initial public offering or in the event of our insolvency — usually, information will be anonymised but this may not always be possible; however, the recipient of the information will be bound by confidentiality obligations.</li>
+          </ul>
+          <p style={bodyStyle}>If you would like more information about who we share our data with and why, please contact us (see "How to contact us" below).</p>
+          <p style={bodyStyle}>We will not share your personal data with any other third party.</p>
+
+          <h2 style={headingStyle}>9. How long your personal data will be kept</h2>
+          <p style={bodyStyle}>
+            We will keep your personal data for as long as you have an active account with us and for a period of up to 6 years thereafter to comply with any accounting or legal obligations including in the event of the pursuit or defence of legal claims. Once you have closed your account with us, we will move your personal data to a separate database so that only key stakeholders in our business on a "need to know basis" have access to such data.
+          </p>
+          <p style={bodyStyle}>Following the end of the aforementioned retention period, we will delete or anonymise your personal data.</p>
+
+          <h2 style={headingStyle}>10. Transferring your personal data out of the UK</h2>
+          <p style={bodyStyle}>As part of providing the platform and Services, we may share your personal data with third parties based outside of the UK.</p>
+          <p style={bodyStyle}>
+            Under UK data protection laws, we can only transfer your personal data to a country outside the UK where: the UK government has decided the particular country ensures an adequate level of protection of personal data (known as an "adequacy regulation") further to Article 45 of the UK GDPR; there are appropriate safeguards in place, together with enforceable rights and effective legal remedies for you; or a specific exception applies under relevant data protection law. Accordingly, if we were to start transferring your personal data from the UK to:
+          </p>
+          <ul style={listStyle}>
+            <li>The EEA: we would rely on the adequacy finding granted by the UK to the EU under the Withdrawal Agreement to do so; for any transfers from the EU to the UK, we would rely on the adequacy regulation granted to the UK under the Adequacy Decision.</li>
+            <li>Any country located outside the UK/EEA: we would rely on appropriate safeguards under the UK GDPR, such as by relying on an Adequacy Decision being in place for that country, or entering into an International Data Transfer Agreement.</li>
+          </ul>
+          <p style={bodyStyle}>In the event we could not or choose not to continue to rely on either of those mechanisms at any time we would not transfer your personal data outside the UK unless we could do so on the basis of an alternative mechanism or exception provided by UK data protection law.</p>
+
+          <h2 style={headingStyle}>11. Your rights</h2>
+          <p style={bodyStyle}>
+            You generally have the following rights, which you can usually exercise free of charge. For more information regarding these rights, please visit the <a href="https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/individual-rights/" style={{ color: marketingColors.gold }}>ICO website</a>.
+          </p>
+          <table style={tableStyle}>
+            <thead>
+              <tr><th style={thStyle}>Right</th><th style={thStyle}>What it means</th></tr>
+            </thead>
+            <tbody>
+              <tr><td style={tdStyle}>Access to a copy of your personal data</td><td style={tdStyle}>The right to be provided with a copy of your personal data.</td></tr>
+              <tr><td style={tdStyle}>Correction (also known as rectification)</td><td style={tdStyle}>The right to require us to correct any mistakes in your personal data.</td></tr>
+              <tr><td style={tdStyle}>Erasure (also known as the right to be forgotten)</td><td style={tdStyle}>The right to require us to delete your personal data — in certain situations.</td></tr>
+              <tr><td style={tdStyle}>Restriction of use</td><td style={tdStyle}>The right to require us to restrict use of your personal data in certain circumstances, e.g. if you contest the accuracy of the data.</td></tr>
+              <tr><td style={tdStyle}>Data portability</td><td style={tdStyle}>The right to receive your personal data, which you have provided to us, in a structured, commonly used and machine-readable format and/or transmit that data to a third party — in certain situations.</td></tr>
+              <tr><td style={tdStyle}>Object</td><td style={tdStyle}>The right to object to us processing your personal data (including in relation to direct marketing).</td></tr>
+              <tr><td style={tdStyle}>Withdraw consent</td><td style={tdStyle}>The right to withdraw consent at any time where we are relying on consent to process your personal data.</td></tr>
+            </tbody>
+          </table>
+          <p style={bodyStyle}>For further information on each of those rights, including the circumstances in which they do and do not apply, please contact us (see "How to contact us" below). You may also find it helpful to refer to the guidance from the UK's Information Commissioner on your rights under the UK GDPR.</p>
+          <p style={bodyStyle}>If you would like to exercise any of those rights, please email, call or write to us — see below: "How to contact us". When contacting us please:</p>
+          <ul style={listStyle}>
+            <li>provide enough information to identify yourself (e.g. your full name and username) and any additional identity information we may reasonably request from you; and</li>
+            <li>let us know which right(s) you want to exercise and the information to which your request relates.</li>
+          </ul>
+
+          <h2 style={headingStyle}>12. Keeping your personal data secure</h2>
+          <p style={bodyStyle}>We have appropriate security measures to prevent personal data from being accidentally lost, or used or accessed unlawfully. We limit access to your personal data to those who have a genuine business need to access it.</p>
+          <p style={bodyStyle}>We also have procedures in place to deal with any suspected data security breach. We will notify you and any applicable regulator of a suspected data security breach where we are legally required to do so.</p>
+          <p style={bodyStyle}>
+            If you want detailed information from Get Safe Online on how to protect your information and your computers and devices against fraud, identity theft, viruses and many other online problems, please visit <a href="https://www.getsafeonline.org" style={{ color: marketingColors.gold }}>www.getsafeonline.org</a>. Get Safe Online is supported by HM Government and leading businesses.
+          </p>
+
+          <h2 style={headingStyle}>13. How to complain</h2>
+          <p style={bodyStyle}>Please contact us if you have any queries or concerns about our use of your information (see below "How to contact us"). We hope we will be able to resolve any issues you may have.</p>
+          <p style={bodyStyle}>
+            You also have the right to lodge a complaint with the Information Commissioner. The Information Commissioner can be contacted at <a href="https://ico.org.uk/make-a-complaint" style={{ color: marketingColors.gold }}>ico.org.uk/make-a-complaint</a> or by telephone on 0303 123 1113.
+          </p>
+
+          <h2 style={headingStyle}>14. Changes to this privacy policy</h2>
+          <p style={bodyStyle}>We may change this privacy policy from time to time. When we make significant changes we will take steps to inform you, for example via the Services or by other means, such as email.</p>
+
+          <h2 style={headingStyle}>15. How to contact us</h2>
+          <p style={bodyStyle}>You can contact us by email or telephone if you have any questions about this privacy policy or the information we hold about you, to exercise a right under data protection law or to make a complaint.</p>
+          <p style={bodyStyle}>Our contact details are:</p>
+          <p style={bodyStyle}>
+            Rinvita Ltd<br />
+            Unit A435, 4–6 Greatorex Street<br />
+            London, E1 5NF, United Kingdom<br />
             Company registration number: 17163153<br />
             ICO registration number: ZC123014<br />
-            Owner contact email: <a href="mailto:hello@rinvita.co.uk" style={{ color: marketingColors.gold }}>hello@rinvita.co.uk</a>
+            Email: <a href="mailto:hello@rinvita.co.uk" style={{ color: marketingColors.gold }}>hello@rinvita.co.uk</a><br />
+            Telephone: +44 7957 229692
           </p>
-
-          <h2 style={headingStyle}>Type of Data we collect</h2>
-          <p style={bodyStyle}>Among the types of Personal Data that this Application collects, by itself or through third parties, there are: Usage Data, Trackers, account log-in, first name, last name, email address, payment info.</p>
-          <p style={bodyStyle}>Complete details on each type of Personal Data collected are provided in the dedicated sections of this privacy policy or by specific explanation texts displayed prior to the Data collection. Personal Data may be freely provided by the User, or, in case of Usage Data, collected automatically when using this Application.</p>
-          <p style={bodyStyle}>Unless specified otherwise, all Data requested by this Application is mandatory and failure to provide this Data may make it impossible for this Application to provide its services. In cases where this Application specifically states that some Data is not mandatory, Users are free not to communicate this Data without consequences to the availability or the functioning of the Service.</p>
-          <p style={bodyStyle}>Users are responsible for any third-party Personal Data obtained, published or shared through this Application.</p>
-
-          <h2 style={headingStyle}>Mode and place of processing the Data</h2>
-          <h3 style={subHeadingStyle}>Methods of processing</h3>
-          <p style={bodyStyle}>The Owner takes appropriate security measures to prevent unauthorized access, disclosure, modification, or unauthorized destruction of the Data. The Data processing is carried out using computers and/or IT enabled tools, following organizational procedures and modes strictly related to the purposes indicated. In addition to the Owner, in some cases, the Data may be accessible to certain types of persons in charge, involved with the operation of this Application (administration, sales, marketing, legal, system administration) or external parties (such as third-party technical service providers, mail carriers, hosting providers, IT companies, communications agencies) appointed, if necessary, as Data Processors by the Owner. The updated list of these parties may be requested from the Owner at any time.</p>
-          <h3 style={subHeadingStyle}>Place</h3>
-          <p style={bodyStyle}>The Data is processed at the Owner's operating offices and in any other places where the parties involved in the processing are located. Depending on the User's location, data transfers may involve transferring the User's Data to a country other than their own. To find out more about the place of processing of such transferred Data, Users can check the section containing details about the processing of Personal Data.</p>
-          <h3 style={subHeadingStyle}>Retention time</h3>
-          <p style={bodyStyle}>Unless specified otherwise in this document, Personal Data shall be processed and stored for as long as required by the purpose they have been collected for and may be retained for longer due to applicable legal obligation or based on the Users' consent.</p>
-
-          <h2 style={headingStyle}>The purposes of processing</h2>
-          <p style={bodyStyle}>The Data concerning the User is collected to allow the Owner to provide its Service, comply with its legal obligations, respond to enforcement requests, protect its rights and interests (or those of its Users or third parties), detect any malicious or fraudulent activity, as well as the following:</p>
-          <ul style={listStyle}>
-            <li>Hosting and backend infrastructure</li>
-            <li>Registration and authentication</li>
-            <li>Access to third-party accounts</li>
-          </ul>
-
-          <h2 style={headingStyle}>Detailed information on the processing of Personal Data</h2>
-          <h3 style={subHeadingStyle}>Access to third-party accounts</h3>
-          <p style={bodyStyle}>This type of service allows this Application to access Data from your account on a third-party service and perform actions with it. These services are not activated automatically, but require explicit authorization by the User.</p>
-          <p style={bodyStyle}><strong>Stripe, Inc. — Stripe account access</strong><br />Company: Stripe, Inc.<br />Place of processing: United States<br />Personal Data processed: email address (+5)</p>
-
-          <h3 style={subHeadingStyle}>Hosting and backend infrastructure</h3>
-          <p style={bodyStyle}>This type of service has the purpose of hosting Data and files that enable this Application to run and be distributed or to provide a ready-made infrastructure to run specific features or parts of this Application.</p>
-          <p style={bodyStyle}><strong>Supabase, Inc.</strong><br />Company: Supabase, Inc.<br />Place of processing: Ireland (EU West)<br />Personal Data processed: Trackers (+2)</p>
-
-          <h3 style={subHeadingStyle}>Registration and authentication</h3>
-          <p style={bodyStyle}>By registering or authenticating, Users allow this Application to identify them and give them access to dedicated services.</p>
-          <p style={bodyStyle}><strong>Supabase Auth (Supabase, Inc.)</strong><br />Company: Supabase, Inc.<br />Place of processing: Ireland (EU West)<br />Personal Data processed: account log-in (+2)</p>
-
-          <h2 style={headingStyle}>Cookie Policy</h2>
-          <p style={bodyStyle}>This Application uses Trackers. Essential cookies are required for the service to function (authentication, session). Non-essential cookies (analytics, advertising) are only set after you give explicit consent through the cookie banner. You can update your preferences at any time.</p>
-
-          <h2 style={headingStyle}>Further Information for Users in the European Union</h2>
-          <h3 style={subHeadingStyle}>Legal basis of processing</h3>
-          <p style={bodyStyle}>The Owner may process Personal Data relating to Users if one of the following applies:</p>
-          <ul style={listStyle}>
-            <li>Users have given their consent for one or more specific purposes.</li>
-            <li>Provision of Data is necessary for the performance of an agreement with the User and/or for any pre-contractual obligations thereof.</li>
-            <li>Processing is necessary for compliance with a legal obligation to which the Owner is subject.</li>
-            <li>Processing is related to a task that is carried out in the public interest or in the exercise of official authority vested in the Owner.</li>
-            <li>Processing is necessary for the purposes of the legitimate interests pursued by the Owner or by a third party.</li>
-          </ul>
-          <p style={bodyStyle}>In any case, the Owner will gladly help to clarify the specific legal basis that applies to the processing, and in particular whether the provision of Personal Data is a statutory or contractual requirement, or a requirement necessary to enter into a contract.</p>
-
-          <h3 style={subHeadingStyle}>Further information about retention time</h3>
-          <p style={bodyStyle}>Unless specified otherwise in this document, Personal Data shall be processed and stored for as long as required by the purpose they have been collected for and may be retained for longer due to applicable legal obligation or based on the Users' consent. Therefore:</p>
-          <ul style={listStyle}>
-            <li>Personal Data collected for purposes related to the performance of a contract between the Owner and the User shall be retained until such contract has been fully performed.</li>
-            <li>Personal Data collected for the purposes of the Owner's legitimate interests shall be retained as long as needed to fulfill such purposes.</li>
-            <li>The Owner may be allowed to retain Personal Data for a longer period whenever the User has given consent to such processing, as long as such consent is not withdrawn.</li>
-          </ul>
-          <p style={bodyStyle}>Once the retention period expires, Personal Data shall be deleted. Therefore, the right of access, the right to erasure, the right to rectification and the right to data portability cannot be enforced after expiration of the retention period.</p>
-
-          <h3 style={subHeadingStyle}>The rights of Users based on the General Data Protection Regulation (GDPR)</h3>
-          <p style={bodyStyle}>Users may exercise certain rights regarding their Data processed by the Owner. In particular, Users have the right to do the following, to the extent permitted by law:</p>
-          <ul style={listStyle}>
-            <li><strong>Withdraw their consent at any time.</strong> Users have the right to withdraw consent where they have previously given their consent to the processing of their Personal Data.</li>
-            <li><strong>Object to processing of their Data.</strong> Users have the right to object to the processing of their Data if the processing is carried out on a legal basis other than consent.</li>
-            <li><strong>Access their Data.</strong> Users have the right to learn if Data is being processed by the Owner, obtain disclosure regarding certain aspects of the processing and obtain a copy of the Data undergoing processing.</li>
-            <li><strong>Verify and seek rectification.</strong> Users have the right to verify the accuracy of their Data and ask for it to be updated or corrected.</li>
-            <li><strong>Restrict the processing of their Data.</strong> The Owner will not process their Data for any purpose other than storing it.</li>
-            <li><strong>Have their Personal Data deleted or otherwise removed.</strong> Users have the right to obtain the erasure of their Data from the Owner.</li>
-            <li><strong>Receive their Data and have it transferred to another controller.</strong> Users have the right to receive their Data in a structured, commonly used and machine readable format.</li>
-            <li><strong>Lodge a complaint.</strong> Users have the right to bring a claim before their competent data protection authority.</li>
-          </ul>
-
-          <h3 style={subHeadingStyle}>Details about the right to object to processing</h3>
-          <p style={bodyStyle}>Where Personal Data is processed for a public interest, in the exercise of an official authority vested in the Owner or for the purposes of the legitimate interests pursued by the Owner, Users may object to such processing by providing a ground related to their particular situation to justify the objection.</p>
-          <p style={bodyStyle}>Users must know that, however, should their Personal Data be processed for direct marketing purposes, they can object to that processing at any time, free of charge and without providing any justification.</p>
-
-          <h3 style={subHeadingStyle}>How to exercise these rights</h3>
-          <p style={bodyStyle}>Any requests to exercise User rights can be directed to the Owner through the contact details provided in this document. Such requests are free of charge and will be answered by the Owner as early as possible and always within one month.</p>
-
-          <h2 style={headingStyle}>Further information for Users in Switzerland</h2>
-          <p style={bodyStyle}>This section applies to Users in Switzerland, and, for such Users, supersedes any other possibly divergent or conflicting information contained in the privacy policy.</p>
-          <h3 style={subHeadingStyle}>The rights of Users according to the Swiss Federal Act on Data Protection</h3>
-          <ul style={listStyle}>
-            <li>Right of access to Personal Data</li>
-            <li>Right to object to the processing of their Personal Data</li>
-            <li>Right to receive their Personal Data and have it transferred to another controller (data portability)</li>
-            <li>Right to ask for incorrect Personal Data to be corrected</li>
-          </ul>
-
-          <h2 style={headingStyle}>Further information for Users in the United States</h2>
-          <p style={bodyStyle}>This part of the document integrates with and supplements the information contained in the rest of the privacy policy. The information contained in this section applies to all Users who are residents in the following states: California, Virginia, Colorado, Connecticut, Utah, Texas, Oregon, Nevada, Delaware, Iowa, New Hampshire, New Jersey, Nebraska, Tennessee, Minnesota, Maryland, Indiana, Kentucky, Rhode Island and Montana.</p>
-          <h3 style={subHeadingStyle}>Notice at collection</h3>
-          <ul style={listStyle}>
-            <li>Identifiers: Usage data; Trackers; First name (+2)</li>
-            <li>Internet or other electronic network activity information: Usage data; Trackers (+3)</li>
-            <li>Commercial information: Trackers; Usage data; First name; Last name (+1)</li>
-          </ul>
-          <h3 style={subHeadingStyle}>Your privacy rights under US state laws</h3>
-          <ul style={listStyle}>
-            <li>The right to access Personal Information</li>
-            <li>The right to correct inaccurate Personal Information</li>
-            <li>The right to request the deletion of your Personal Information</li>
-            <li>The right to obtain a copy of your Personal Information</li>
-            <li>The right to opt out from the Sale of your Personal Information</li>
-            <li>The right to non-discrimination</li>
-          </ul>
-          <h3 style={subHeadingStyle}>Additional rights for Users residing in California</h3>
-          <ul style={listStyle}>
-            <li>The right to opt out of the Sharing of your Personal Information for cross-context behavioral advertising</li>
-            <li>The right to request to limit our use or disclosure of your Sensitive Personal Information</li>
-          </ul>
-          <h3 style={subHeadingStyle}>How to exercise your privacy rights under US state laws</h3>
-          <p style={bodyStyle}>To exercise the rights described above, you need to submit your request to us by contacting us via the contact details provided in this document. For us to respond to your request, we must know who you are.</p>
-
-          <h2 style={headingStyle}>Additional information about Data collection and processing</h2>
-          <h3 style={subHeadingStyle}>Legal action</h3>
-          <p style={bodyStyle}>The User's Personal Data may be used for legal purposes by the Owner in Court or in the stages leading to possible legal action arising from improper use of this Application or the related Services.</p>
-          <h3 style={subHeadingStyle}>System logs and maintenance</h3>
-          <p style={bodyStyle}>For operation and maintenance purposes, this Application and any third-party services may collect files that record interaction with this Application (System logs) or use other Personal Data (such as the IP Address) for this purpose.</p>
-          <h3 style={subHeadingStyle}>Changes to this privacy policy</h3>
-          <p style={bodyStyle}>The Owner reserves the right to make changes to this privacy policy at any time by notifying its Users on this page. Should the changes affect processing activities performed on the basis of the User's consent, the Owner shall collect new consent from the User, where required.</p>
-
-          <h2 style={headingStyle}>Definitions and legal references</h2>
-          <h3 style={subHeadingStyle}>Personal Data (or Data) / Personal Information</h3>
-          <p style={bodyStyle}>Any information that directly, indirectly, or in connection with other information — including a personal identification number — allows for the identification or identifiability of a natural person.</p>
-          <h3 style={subHeadingStyle}>Sensitive Personal Information</h3>
-          <p style={bodyStyle}>Sensitive Personal Information means any Personal Information that is not publicly available and reveals information considered sensitive according to the applicable privacy law.</p>
-          <h3 style={subHeadingStyle}>Usage Data</h3>
-          <p style={bodyStyle}>Information collected automatically through this Application (or third-party services), which can include: IP addresses, URI addresses, the time of the request, features of the browser and the operating system utilized by the User, and other parameters about the device and User's IT environment.</p>
-          <h3 style={subHeadingStyle}>User</h3>
-          <p style={bodyStyle}>The individual using this Application who, unless otherwise specified, coincides with the Data Subject.</p>
-          <h3 style={subHeadingStyle}>Data Subject</h3>
-          <p style={bodyStyle}>The natural person to whom the Personal Data refers.</p>
-          <h3 style={subHeadingStyle}>Data Processor (or Processor)</h3>
-          <p style={bodyStyle}>The natural or legal person, public authority, agency or other body which processes Personal Data on behalf of the Controller.</p>
-          <h3 style={subHeadingStyle}>Data Controller (or Owner)</h3>
-          <p style={bodyStyle}>The natural or legal person which, alone or jointly with others, determines the purposes and means of the processing of Personal Data. The Data Controller, unless otherwise specified, is the Owner of this Application.</p>
-          <h3 style={subHeadingStyle}>Cookie</h3>
-          <p style={bodyStyle}>Cookies are Trackers consisting of small sets of data stored in the User's browser.</p>
-          <h3 style={subHeadingStyle}>Tracker</h3>
-          <p style={bodyStyle}>Tracker indicates any technology (e.g. Cookies, unique identifiers, web beacons, embedded scripts, e-tags and fingerprinting) that enables the tracking of Users.</p>
-
-          <div style={{ borderTop: `1px solid hsl(var(--foreground) / 0.1)`, paddingTop: 24, marginTop: 40, fontSize: 13, color: marketingColors.softText, lineHeight: 1.7 }}>
-            RinVita Ltd · Unit A435, 4-6 Greatorex Street, London E1 5NF, United Kingdom<br />
-            Company registration number: 17163153 · ICO registration number: ZC123014<br />
-            Owner contact email: <a href="mailto:hello@rinvita.co.uk" style={{ color: marketingColors.gold }}>hello@rinvita.co.uk</a><br />
-            <span style={{ fontStyle: "italic" }}>Last updated: 8 May 2026 (interim version, pending solicitor review)</span>
-          </div>
         </div>
       </section>
       <MarketingFooter />
