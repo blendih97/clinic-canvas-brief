@@ -106,7 +106,7 @@ const ForCliniciansPage = () => {
               RinVita is a secure, multilingual patient records vault you can offer alongside your existing systems. Patients keep their lab results, scans, prescriptions and letters in one organised place — and bring them back to you, ready for the next visit.
             </p>
             <a href="#enquire" style={{ display: "inline-block", padding: "14px 28px", background: marketingColors.gold, color: "hsl(var(--primary-foreground))", textDecoration: "none", borderRadius: 2, fontSize: 14, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", boxShadow: "0 6px 24px hsl(var(--primary) / 0.35)" }}>
-              Book a 15-min call
+              Enquire now
             </a>
             <p style={{ fontSize: 12, color: marketingColors.softText, marginTop: 12 }}>
               No commitment · We'll show you exactly how it works in your practice
@@ -159,10 +159,10 @@ const ForCliniciansPage = () => {
           <div style={{ textAlign: "center", marginBottom: 36 }}>
             <span className="marketing-section-label">Get in touch</span>
             <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 30 : 40, fontWeight: 300, color: marketingColors.ink, marginBottom: 12 }}>
-              Let's talk for 15 minutes
+              Enquire now
             </h2>
             <p style={{ fontSize: 15, color: marketingColors.mutedText, lineHeight: 1.7, fontWeight: 300 }}>
-              Tell us a little about your practice and we'll get back to you within one working day.
+              Tell us a little about your practice and we'll reach out within one working day.
             </p>
           </div>
 
