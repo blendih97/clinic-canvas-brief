@@ -18,7 +18,8 @@ const PATIENT_VALUE: Record<string, string> = {
   "500+": "500+",
 };
 
-const ONE_PAGER_URL = "/RinVita_ClinicOnePager.pdf";
+import onePagerAsset from "@/assets/RinVita_ClinicOnePager.pdf.asset.json";
+const ONE_PAGER_URL = onePagerAsset.url;
 
 const ClinicsPartnersPage = () => {
   const { isMobile, isTablet } = useMarketingBreakpoint();
