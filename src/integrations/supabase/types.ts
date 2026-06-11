@@ -241,6 +241,42 @@ export type Database = {
         }
         Relationships: []
       }
+      clinic_enquiries: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string | null
+          name: string
+          organisation: string | null
+          patients_per_month: string | null
+          role: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message?: string | null
+          name: string
+          organisation?: string | null
+          patients_per_month?: string | null
+          role?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string | null
+          name?: string
+          organisation?: string | null
+          patients_per_month?: string | null
+          role?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
       countries: {
         Row: {
           code: string
