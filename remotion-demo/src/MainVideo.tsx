@@ -5,6 +5,7 @@ import { loadFont as loadDM } from "@remotion/google-fonts/DMSans";
 import { Intro } from "./scenes/Intro";
 import { Upload } from "./scenes/Upload";
 import { Translate } from "./scenes/Translate";
+import { BloodResults } from "./scenes/BloodResults";
 import { Timeline } from "./scenes/Timeline";
 import { Medications } from "./scenes/Medications";
 import { Share } from "./scenes/Share";
@@ -21,13 +22,14 @@ export const HEIGHT = 1080;
 
 // Scene durations (frames @ 30fps)
 const SCENES = [
-  { name: "intro", dur: 120 },        // 0:00 – 0:04   intro
-  { name: "upload", dur: 240 },       // 0:04 – 0:12   upload
-  { name: "translate", dur: 270 },    // 0:12 – 0:21   translate
-  { name: "timeline", dur: 270 },     // 0:21 – 0:30   timeline
-  { name: "medications", dur: 270 },  // 0:30 – 0:39   medications
-  { name: "share", dur: 270 },        // 0:39 – 0:48   share
-  { name: "outro", dur: 180 },        // 0:48 – 0:54   outro (~54s total)
+  { name: "intro", dur: 120 },
+  { name: "upload", dur: 240 },
+  { name: "translate", dur: 240 },
+  { name: "bloodresults", dur: 300 },
+  { name: "timeline", dur: 240 },
+  { name: "medications", dur: 240 },
+  { name: "share", dur: 240 },
+  { name: "outro", dur: 180 },
 ];
 
 const offsets: number[] = [];
@@ -105,6 +107,7 @@ export const MainVideo: React.FC = () => {
           {s.name === "intro" && <Intro />}
           {s.name === "upload" && <Upload />}
           {s.name === "translate" && <Translate />}
+          {s.name === "bloodresults" && <BloodResults />}
           {s.name === "timeline" && <Timeline />}
           {s.name === "medications" && <Medications />}
           {s.name === "share" && <Share />}

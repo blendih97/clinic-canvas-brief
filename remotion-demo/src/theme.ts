@@ -13,4 +13,8 @@ export const COLORS = {
   goldGlow: "#B8952A33",
   success: "#3B8C5E",
   successSoft: "#3B8C5E1a",
+  warn: "#C98A2A",
+  warnSoft: "#C98A2A1a",
+  danger: "#B0413E",
+  dangerSoft: "#B0413E1a",
 };
