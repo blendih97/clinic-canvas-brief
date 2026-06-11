@@ -146,7 +146,7 @@ export function MarketingNav({ currentPage }: MarketingNavProps) {
   }, []);
 
   const links = [
-    { label: "Free translator", href: "/translate" },
+    { label: "Translate a document", href: "/translate" },
     { label: "For clinics", href: "/for-clinics" },
     { label: "How it works", href: currentPage === "home" ? "#how-it-works" : "/#how-it-works" },
     { label: "Pricing", href: currentPage === "home" ? "#pricing" : "/#pricing" },
@@ -340,7 +340,7 @@ export function MarketingFooter() {
     { label: "How it works", href: "/#how-it-works" },
     { label: "Features", href: "/#features" },
     { label: "Pricing", href: "/#pricing" },
-    { label: "Free translator", href: "/translate" },
+    { label: "Translate a document", href: "/translate" },
     { label: "For clinics", href: "/for-clinics" },
     { label: "See how it works", href: "/demo" },
   ];
