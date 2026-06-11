@@ -21,3 +21,7 @@ project_id = "gnxctlydesugjdwbavdx"
     verify_jwt = false
   [functions.create-portal-session]
     verify_jwt = false
+  [functions.submit-clinic-enquiry]
+    verify_jwt = false
+  [functions.submit-b2b-enquiry]
+    verify_jwt = false
