@@ -126,6 +126,11 @@ const MetaPixelTracker = () => {
   usePageTracking();
   useEffect(() => { initMetaPixel(); }, []);
   useEffect(() => { trackPageView(); }, [location.pathname]);
+  // Persist UTM params across the session so downstream events (form submit,
+  // funnel steps) can be attributed to the campaign that brought the visitor in.
+  useEffect(() => {
+    import("@/lib/analytics").then((m) => m.captureUtmParams()).catch(() => {});
+  }, [location.pathname, location.search]);
   return null;
 };
 

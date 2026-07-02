@@ -59,6 +59,12 @@ const AuthPage = () => {
       return;
     }
 
+    // Funnel: trial signup started (fires once per submit attempt)
+    try {
+      const a = await import("@/lib/analytics");
+      a.trackEvent("trial_signup_started");
+    } catch {}
+
     setLoading(true);
     const normalizedEmail = email.trim().toLowerCase();
     const consentTime = new Date().toISOString();
@@ -75,11 +81,13 @@ const AuthPage = () => {
       return;
     }
 
-    // Meta Pixel: standard Lead + CompleteRegistration
+    // Meta Pixel: standard Lead + CompleteRegistration + funnel event
     try {
       const m = await import("@/lib/metaPixel");
       m.trackLead();
       m.trackCompleteRegistration({ content_name: "signup_completed" });
+      const a = await import("@/lib/analytics");
+      a.trackEvent("trial_signup_completed");
     } catch {}
 
     // Fire-and-forget admin notification
