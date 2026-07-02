@@ -470,6 +470,7 @@ function Pricing() {
   const { isMobile, isTablet } = useMarketingBreakpoint();
   const paddingX = isMobile ? 20 : isTablet ? 32 : 56;
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">("monthly");
+  const [trustOpen, setTrustOpen] = useState<string | null>(null);
 
   // Fire pricing_viewed once when the section mounts
   useEffect(() => {
@@ -732,25 +733,73 @@ function Pricing() {
           </Link>
         </div>
 
-        {/* Credibility strip (replaces empty testimonial placeholders) */}
+        {/* Credibility strip — expandable details */}
         <div style={{ marginTop: isMobile ? 48 : 64, textAlign: "center" }}>
           <div style={{ fontSize: 10.5, letterSpacing: "0.18em", color: marketingColors.softText, fontWeight: 600, textTransform: "uppercase", marginBottom: 16 }}>
             Trusted by design
           </div>
-          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", alignItems: "center", gap: isMobile ? "10px 14px" : "12px 22px", fontSize: 12.5, color: marketingColors.mutedText }}>
-            {[
-              "ICO ZC123014",
-              "UK GDPR",
-              "AES-256 encryption",
-              "EU-hosted (Ireland)",
-              "Built by people working in international healthcare",
-            ].map((item, i) => (
-              <span key={item} style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
-                <span style={{ color: marketingColors.gold }}>✦</span>
-                <span>{item}</span>
-                {i < 4 && !isMobile && <span style={{ color: marketingColors.goldBorder, marginLeft: 12 }}>·</span>}
-              </span>
-            ))}
+          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", alignItems: "center", gap: isMobile ? "10px 14px" : "12px 22px", fontSize: 12.5 }}>
+            {([
+              ["ICO ZC123014", "Registered with the UK Information Commissioner's Office as a data controller under registration ZC123014."],
+              ["UK GDPR", "Compliant with the UK General Data Protection Regulation. Article 9 lawful basis applied for special-category health data."],
+              ["AES-256 encryption", "All documents encrypted in transit (TLS 1.3) and at rest (AES-256). Keys managed by our EU cloud provider."],
+              ["EU-hosted (Ireland)", "Infrastructure is hosted in the European Union (Dublin, Ireland). Data does not leave the EU/UK region."],
+              ["Built by people working in international healthcare", "Founded by a team with direct experience in international patient care — the product solves problems we've watched families face."],
+            ] as [string, string][]).map(([label, detail], i, arr) => {
+              const isOpen = trustOpen === label;
+              return (
+                <span key={label} style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+                  <button
+                    type="button"
+                    onClick={() => setTrustOpen(isOpen ? null : label)}
+                    aria-expanded={isOpen}
+                    style={{
+                      display: "inline-flex", alignItems: "center", gap: 8,
+                      background: "transparent", border: "none", padding: 0, cursor: "pointer",
+                      fontSize: 12.5, color: marketingColors.mutedText, fontFamily: "inherit",
+                      borderBottom: `1px dashed ${isOpen ? marketingColors.gold : "transparent"}`,
+                    }}
+                  >
+                    <span style={{ color: marketingColors.gold }}>✦</span>
+                    <span>{label}</span>
+                  </button>
+                  {i < arr.length - 1 && !isMobile && <span style={{ color: marketingColors.goldBorder, marginLeft: 12 }}>·</span>}
+                </span>
+              );
+            })}
+          </div>
+          <div
+            style={{
+              maxWidth: 640,
+              margin: "0 auto",
+              overflow: "hidden",
+              maxHeight: trustOpen ? 140 : 0,
+              transition: "max-height 0.35s cubic-bezier(.16,1,.3,1), margin-top 0.35s ease",
+              marginTop: trustOpen ? 18 : 0,
+            }}
+          >
+            {trustOpen && (
+              <div
+                style={{
+                  padding: "14px 20px",
+                  background: marketingColors.surface,
+                  border: `1px solid ${marketingColors.goldBorder}`,
+                  borderRadius: 2,
+                  fontSize: 13,
+                  lineHeight: 1.65,
+                  color: marketingColors.mutedText,
+                  textAlign: "left",
+                }}
+              >
+                {[
+                  ["ICO ZC123014", "Registered with the UK Information Commissioner's Office as a data controller under registration ZC123014."],
+                  ["UK GDPR", "Compliant with the UK General Data Protection Regulation. Article 9 lawful basis applied for special-category health data."],
+                  ["AES-256 encryption", "All documents encrypted in transit (TLS 1.3) and at rest (AES-256). Keys managed by our EU cloud provider."],
+                  ["EU-hosted (Ireland)", "Infrastructure is hosted in the European Union (Dublin, Ireland). Data does not leave the EU/UK region."],
+                  ["Built by people working in international healthcare", "Founded by a team with direct experience in international patient care — the product solves problems we've watched families face."],
+                ].find(([l]) => l === trustOpen)?.[1]}
+              </div>
+            )}
           </div>
         </div>
       </div>
