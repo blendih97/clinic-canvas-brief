@@ -311,7 +311,7 @@ function DemoArea() {
         <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 36 : "clamp(38px,4.5vw,60px)", fontWeight: 300, color: marketingColors.ink, marginBottom: 16 }}>That's RinVita.</h2>
         <p style={{ fontSize: isMobile ? 15 : 17, lineHeight: 1.8, color: marketingColors.mutedText, maxWidth: 480, margin: "0 auto 48px", fontWeight: 300 }}>The whole journey, from shoebox to shareable health record. In under 60 seconds.</p>
         <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 14, justifyContent: "center", alignItems: "center" }}>
-          <Link to="/auth?mode=signup" style={{ padding: "16px 36px", background: marketingColors.gold, borderRadius: 2, color: "hsl(var(--primary-foreground))", fontSize: 14, fontWeight: 600, letterSpacing: "0.07em", textDecoration: "none", boxShadow: "0 4px 24px hsl(var(--primary) / 0.35)" }}>Start your free vault</Link>
+          <Link to="/auth?mode=signup" style={{ padding: "16px 36px", background: marketingColors.gold, borderRadius: 2, color: "hsl(var(--primary-foreground))", fontSize: 14, fontWeight: 600, letterSpacing: "0.07em", textDecoration: "none", boxShadow: "0 4px 24px hsl(var(--primary) / 0.35)" }}>Start Free Trial</Link>
           <button onClick={() => { setStep(0); setDone(false); }} style={{ background: "transparent", border: `1px solid hsl(var(--foreground) / 0.18)`, borderRadius: 2, padding: "15px 24px", color: marketingColors.mutedText, fontSize: 14, cursor: "pointer" }}>↺ Replay demo</button>
         </div>
         <div style={{ marginTop: 32 }}>
@@ -387,9 +387,9 @@ function DemoHero() {
 
 const EarlyAccessBanner = () => (
   <div style={{ marginTop: 68, padding: "10px 20px", background: marketingColors.goldSoft, borderBottom: `1px solid ${marketingColors.goldBorder}`, textAlign: "center", fontSize: 13, color: marketingColors.ink }}>
-    <span style={{ color: marketingColors.gold, fontWeight: 600, letterSpacing: "0.08em", fontSize: 11, marginRight: 10 }}>FREE FOREVER</span>
-    RinVita is free for your first 3 documents — no card required.{" "}
-    <Link to="/auth?mode=signup" style={{ color: marketingColors.gold, fontWeight: 600, textDecoration: "underline", marginLeft: 4 }}>Sign up free →</Link>
+    <span style={{ color: marketingColors.gold, fontWeight: 600, letterSpacing: "0.08em", fontSize: 11, marginRight: 10 }}>FREE TRIAL</span>
+    14-day free trial · 3 documents · No card required.{" "}
+    <Link to="/auth?mode=signup" style={{ color: marketingColors.gold, fontWeight: 600, textDecoration: "underline", marginLeft: 4 }}>Start free trial →</Link>
   </div>
 );
 

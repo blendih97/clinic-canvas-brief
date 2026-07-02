@@ -360,10 +360,10 @@ function SocialProof() {
             <div key={i} style={{ padding: "28px 24px", background: marketingColors.surface, border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 2, minHeight: 180 }}>
               <div style={{ fontFamily: "Cormorant Garamond", fontSize: 28, color: marketingColors.gold, lineHeight: 1, marginBottom: 8 }}>“</div>
               <p style={{ fontFamily: "Cormorant Garamond", fontSize: 16, fontStyle: "italic", color: "hsl(var(--foreground) / 0.55)", lineHeight: 1.6, marginBottom: 16 }}>
-                Patient and clinician testimonials will appear here as our early access cohort grows.
+                Patient and clinician testimonials will appear here soon.
               </p>
               <div style={{ width: 24, height: 1, background: marketingColors.goldBorder, marginBottom: 10 }} />
-              <div style={{ fontSize: 11, color: marketingColors.faintText, letterSpacing: "0.06em", textTransform: "uppercase" }}>Coming soon</div>
+              <div style={{ fontSize: 11, color: marketingColors.faintText, letterSpacing: "0.06em", textTransform: "uppercase" }}>&nbsp;</div>
             </div>
           ))}
         </div>

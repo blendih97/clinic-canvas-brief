@@ -283,10 +283,10 @@ const TranslateToolPage = () => {
               <div style={{ marginTop: 32, padding: 24, background: marketingColors.goldSoft, border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 2, textAlign: "center" }}>
                 <h3 style={{ fontFamily: "Cormorant Garamond", fontSize: 22, fontWeight: 400, color: marketingColors.ink, marginBottom: 8 }}>Save this and more</h3>
                 <p style={{ fontSize: 14, color: marketingColors.mutedText, lineHeight: 1.7, marginBottom: 16 }}>
-                  Keep every record in one secure vault. Free for your first 3 documents.
+                  Keep every record in one secure vault. 14-day free trial · 3 documents · No card required.
                 </p>
                 <Link to="/auth?mode=signup" style={{ display: "inline-block", padding: "12px 28px", background: marketingColors.gold, color: "hsl(var(--primary-foreground))", textDecoration: "none", borderRadius: 2, fontSize: 13, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase" }}>
-                  Create your free vault
+                  Start Free Trial
                 </Link>
               </div>
             </div>
