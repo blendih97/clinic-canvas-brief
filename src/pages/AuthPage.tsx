@@ -50,7 +50,7 @@ const AuthPage = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!fullName.trim() || !email || !password) {
+    if (!email || !password) {
       toast.error(t("auth.completeAccountFields"));
       return;
     }
@@ -68,8 +68,9 @@ const AuthPage = () => {
     setLoading(true);
     const normalizedEmail = email.trim().toLowerCase();
     const consentTime = new Date().toISOString();
+    const derivedName = fullName.trim() || normalizedEmail.split("@")[0];
     const { error, session } = await signUp(normalizedEmail, password, {
-      full_name: fullName.trim(),
+      full_name: derivedName,
       terms_consent_at: consentTime,
       preferred_ui_language: locale,
       preferred_translation_language: locale,
@@ -237,8 +238,8 @@ const AuthPage = () => {
                 <form onSubmit={handleSignUp} className="space-y-4">
                   <p className="text-[11px] text-muted-foreground">Takes about 30 seconds.</p>
                   <div>
-                    <label className="text-xs font-medium text-foreground">Full name</label>
-                    <input type="text" required value={fullName} onChange={(e) => setFullName(e.target.value)}
+                    <label className="text-xs font-medium text-foreground">Name <span className="text-muted-foreground font-normal">(optional)</span></label>
+                    <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)}
                       autoComplete="name" autoCapitalize="words"
                       className="w-full mt-1 px-3 py-2.5 bg-background border border-border rounded-lg text-base text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
                   </div>
