@@ -470,18 +470,18 @@ function Pricing() {
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">("monthly");
 
   const freePlan = {
-    name: "Free",
-    badge: "FREE FOREVER",
+    name: "Free trial",
+    badge: "14 DAYS · NO CARD",
     price: "Free",
-    period: "up to 3 documents",
-    desc: "Try the full experience with your first 3 documents — no card, no time limit.",
+    period: "14 days · 3 documents",
+    desc: "Try the full experience free for 14 days — up to 3 documents, no card required.",
     features: [
-      "3 documents included, free forever",
+      "Try free — 3 documents, 14 days",
       "Full AI translation and structured summaries",
       "Travelling abroad? Translation in 50+ languages",
       "Preview clinician share links and PDF exports",
     ],
-    cta: "Start your free vault",
+    cta: "Start Free Trial",
     available: true,
   };
 
@@ -535,7 +535,7 @@ function Pricing() {
           <span className="marketing-section-label">Pricing</span>
           <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 32 : "clamp(34px,3.8vw,52px)", fontWeight: 300, color: marketingColors.ink, marginBottom: 16 }}>Simple pricing. Pay only for what you need.</h2>
           <p style={{ fontSize: isMobile ? 14 : 16, color: marketingColors.mutedText, maxWidth: 560, margin: "0 auto", lineHeight: 1.7, fontWeight: 300 }}>
-            Free forever for your first 3 documents. Upgrade only when you need unlimited uploads, full sharing and PDF export.
+            Try free for 14 days with 3 documents — no card required. Upgrade when you need unlimited uploads, full sharing and PDF export.
           </p>
         </div>
 
@@ -692,7 +692,7 @@ function Pricing() {
         {/* Free plan callout */}
         <div style={{ marginTop: isMobile ? 56 : 72, padding: isMobile ? "32px 24px" : "40px 44px", background: marketingColors.cream2, border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 2 }}>
           <h3 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 24 : 28, fontWeight: 400, color: marketingColors.ink, marginBottom: 6 }}>Start free — no card required</h3>
-          <p style={{ fontSize: 14, color: marketingColors.mutedText, marginBottom: 20, lineHeight: 1.7 }}>Your first 3 documents are on us, forever. Everything below is included:</p>
+          <p style={{ fontSize: 14, color: marketingColors.mutedText, marginBottom: 20, lineHeight: 1.7 }}>14-day free trial · 3 documents · No card required. Everything below is included:</p>
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2,1fr)", gap: isMobile ? 16 : 20, marginBottom: 24 }}>
             {freePlan.features.map((item) => (
               <div key={item} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
