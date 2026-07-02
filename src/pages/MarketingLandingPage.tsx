@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import SEO from "@/components/SEO";
 import InstantDemo from "@/components/marketing/InstantDemo";
+import SampleHealthPassport from "@/components/marketing/SampleHealthPassport";
 import {
   LogoMark,
   MarketingFooter,
@@ -764,7 +765,10 @@ function FAQ() {
   const [open, setOpen] = useState<number | null>(null);
 
   const items = [
-    ["Is my medical data safe?", "Yes. Your data is encrypted, stored in Europe, and you control who sees your records."],
+    ["Is my medical data safe?", "Yes. Documents are encrypted in transit and at rest with AES-256, stored on EU infrastructure in Ireland, and you control who sees them. RinVita is UK GDPR compliant and ICO-registered (ZC123014)."],
+    ["Who can see my records?", "Only you, and anyone you explicitly share a Health Passport link with. Our staff cannot browse your documents. Share links are time-limited and revocable at any time."],
+    ["Can I delete my data?", "Yes — at any time, from Settings. Account deletion removes your documents, extracted data and share links within 30 days."],
+    ["Do you train AI on my records?", "No. Your documents are never used to train third-party models. AI processing runs on isolated infrastructure and outputs are stored only in your vault."],
     ["What languages does RinVita support?", "50+ languages including Arabic, Mandarin, Spanish, French, Turkish, Russian, Polish, Hindi, Portuguese and more."],
     ["Will a doctor actually use the output?", "Yes. RinVita generates a clear, structured summary clinicians can scan in seconds, with originals alongside."],
     ["Can I manage records for my parents or children?", "Yes. The Family plan lets you manage up to six separate health profiles under one account."],
@@ -895,6 +899,7 @@ const MarketingLandingPage = () => {
       <UseCases />
       <Features />
       <DemoVideo />
+      <SampleHealthPassport />
       <ClinicalSafety />
       <Pricing />
       <ForClinicsCallout />
