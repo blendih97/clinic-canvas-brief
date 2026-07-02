@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import SEO from "@/components/SEO";
+import InstantDemo from "@/components/marketing/InstantDemo";
 import {
   LogoMark,
   MarketingFooter,
@@ -469,6 +470,13 @@ function Pricing() {
   const paddingX = isMobile ? 20 : isTablet ? 32 : 56;
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">("monthly");
 
+  // Fire pricing_viewed once when the section mounts
+  useEffect(() => {
+    let cancelled = false;
+    import("@/lib/analytics").then((a) => { if (!cancelled) a.trackEvent("pricing_viewed"); }).catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
+
   const freePlan = {
     name: "Free trial",
     badge: "14 DAYS · NO CARD",
@@ -537,6 +545,23 @@ function Pricing() {
           <p style={{ fontSize: isMobile ? 14 : 16, color: marketingColors.mutedText, maxWidth: 560, margin: "0 auto", lineHeight: 1.7, fontWeight: 300 }}>
             Try free for 14 days with 3 documents — no card required. Upgrade when you need unlimited uploads, full sharing and PDF export.
           </p>
+        </div>
+
+        {/* Founding member banner */}
+        <div style={{
+          maxWidth: 780, margin: `0 auto ${isMobile ? 32 : 40}px`,
+          padding: isMobile ? "14px 18px" : "16px 24px",
+          background: marketingColors.surface,
+          border: `1px solid ${marketingColors.gold}`,
+          borderRadius: 2,
+          display: "flex", alignItems: "center", justifyContent: "center", gap: 12,
+          textAlign: "center", flexWrap: "wrap",
+        }}>
+          <span style={{ fontSize: 10.5, letterSpacing: "0.16em", color: marketingColors.gold, fontWeight: 700, textTransform: "uppercase" }}>Founding member pricing</span>
+          <span style={{ color: marketingColors.goldBorder }}>·</span>
+          <span style={{ fontSize: isMobile ? 13 : 14, color: marketingColors.ink, fontWeight: 400 }}>
+            The first 100 subscribers lock this rate <em style={{ fontFamily: "Cormorant Garamond", fontStyle: "italic", color: marketingColors.gold }}>for life</em>.
+          </span>
         </div>
 
         {/* Monthly / Annual Toggle */}
@@ -705,6 +730,28 @@ function Pricing() {
             {freePlan.cta}
           </Link>
         </div>
+
+        {/* Credibility strip (replaces empty testimonial placeholders) */}
+        <div style={{ marginTop: isMobile ? 48 : 64, textAlign: "center" }}>
+          <div style={{ fontSize: 10.5, letterSpacing: "0.18em", color: marketingColors.softText, fontWeight: 600, textTransform: "uppercase", marginBottom: 16 }}>
+            Trusted by design
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", alignItems: "center", gap: isMobile ? "10px 14px" : "12px 22px", fontSize: 12.5, color: marketingColors.mutedText }}>
+            {[
+              "ICO ZC123014",
+              "UK GDPR",
+              "AES-256 encryption",
+              "EU-hosted (Ireland)",
+              "Built by people working in international healthcare",
+            ].map((item, i) => (
+              <span key={item} style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+                <span style={{ color: marketingColors.gold }}>✦</span>
+                <span>{item}</span>
+                {i < 4 && !isMobile && <span style={{ color: marketingColors.goldBorder, marginLeft: 12 }}>·</span>}
+              </span>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -810,6 +857,27 @@ function MobileStickyCTA() {
   );
 }
 
+function TryItLive() {
+  const { isMobile, isTablet } = useMarketingBreakpoint();
+  const paddingX = isMobile ? 20 : isTablet ? 32 : 56;
+  return (
+    <section id="try-live" style={{ padding: `${isMobile ? 72 : 100}px ${paddingX}px`, background: marketingColors.cream2 }}>
+      <div style={{ maxWidth: 820, margin: "0 auto" }}>
+        <div style={{ textAlign: "center", marginBottom: isMobile ? 32 : 44 }}>
+          <span className="marketing-section-label">Try it live</span>
+          <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 30 : "clamp(32px,3.6vw,46px)", fontWeight: 300, color: marketingColors.ink, marginBottom: 14, lineHeight: 1.15 }}>
+            See it work — with a real sample record.
+          </h2>
+          <p style={{ fontSize: isMobile ? 14.5 : 16, color: marketingColors.mutedText, lineHeight: 1.7, fontWeight: 300, maxWidth: 620, margin: "0 auto" }}>
+            Pick a foreign medical document, watch RinVita translate and structure it in about 10 seconds. No account. No upload.
+          </p>
+        </div>
+        <InstantDemo variant="homepage" />
+      </div>
+    </section>
+  );
+}
+
 const MarketingLandingPage = () => {
   return (
     <div className="marketing-page" style={{ background: marketingColors.cream, color: marketingColors.ink }}>
@@ -821,6 +889,7 @@ const MarketingLandingPage = () => {
       <MarketingStyles />
       <MarketingNav currentPage="home" />
       <Hero />
+      <TryItLive />
       <HowItWorks />
       <WhyRinVita />
       <UseCases />

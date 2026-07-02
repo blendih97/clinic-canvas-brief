@@ -252,6 +252,9 @@ export type Database = {
           patients_per_month: string | null
           role: string | null
           status: string
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
         }
         Insert: {
           created_at?: string
@@ -263,6 +266,9 @@ export type Database = {
           patients_per_month?: string | null
           role?: string | null
           status?: string
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
         }
         Update: {
           created_at?: string
@@ -274,6 +280,9 @@ export type Database = {
           patients_per_month?: string | null
           role?: string | null
           status?: string
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
         }
         Relationships: []
       }

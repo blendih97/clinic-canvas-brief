@@ -57,6 +57,9 @@ Deno.serve(async (req: Request) => {
   const patients_per_month = PATIENT_BANDS.has(patients_per_month_raw) ? patients_per_month_raw : null;
   const message = String(body?.message || "").trim().slice(0, 4000) || null;
   const honeypot = String(body?.website || "").trim();
+  const utm_source = String(body?.utm_source || "").trim().slice(0, 100) || null;
+  const utm_medium = String(body?.utm_medium || "").trim().slice(0, 100) || null;
+  const utm_campaign = String(body?.utm_campaign || "").trim().slice(0, 100) || null;
 
   // Honeypot — bots fill this hidden field
   if (honeypot) {
@@ -73,6 +76,7 @@ Deno.serve(async (req: Request) => {
     const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
     const { error } = await admin.from("clinic_enquiries").insert({
       name, email, organisation, role, patients_per_month, message,
+      utm_source, utm_medium, utm_campaign,
     });
     if (error) throw error;
 

@@ -55,6 +55,9 @@ export function MarketingStyles() {
         from { width: 0%; }
         to { width: 100%; }
       }
+      @keyframes rv-spin {
+        to { transform: rotate(360deg); }
+      }
       .marketing-reveal {
         opacity: 0;
         transform: translateY(18px);
