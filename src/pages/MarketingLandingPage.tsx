@@ -730,6 +730,28 @@ function Pricing() {
             {freePlan.cta}
           </Link>
         </div>
+
+        {/* Credibility strip (replaces empty testimonial placeholders) */}
+        <div style={{ marginTop: isMobile ? 48 : 64, textAlign: "center" }}>
+          <div style={{ fontSize: 10.5, letterSpacing: "0.18em", color: marketingColors.softText, fontWeight: 600, textTransform: "uppercase", marginBottom: 16 }}>
+            Trusted by design
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", alignItems: "center", gap: isMobile ? "10px 14px" : "12px 22px", fontSize: 12.5, color: marketingColors.mutedText }}>
+            {[
+              "ICO ZC123014",
+              "UK GDPR",
+              "AES-256 encryption",
+              "EU-hosted (Ireland)",
+              "Built by people working in international healthcare",
+            ].map((item, i) => (
+              <span key={item} style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+                <span style={{ color: marketingColors.gold }}>✦</span>
+                <span>{item}</span>
+                {i < 4 && !isMobile && <span style={{ color: marketingColors.goldBorder, marginLeft: 12 }}>·</span>}
+              </span>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );
