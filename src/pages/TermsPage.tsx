@@ -23,7 +23,7 @@ const TermsPage = () => {
 
   return (
     <div className="marketing-page" style={{ background: marketingColors.cream, color: marketingColors.ink }}>
-      <SEO title="Terms of Service — RinVita" description="Interim Terms of Service governing use of RinVita during Early Access. Full terms from our solicitor coming shortly." path="/terms" />
+      <SEO title="Terms of Service — RinVita" description="Terms of Service governing use of RinVita." path="/terms" />
       <MarketingStyles />
       <MarketingNav currentPage="home" />
       <section style={{ padding: `${isMobile ? 100 : 140}px ${paddingX}px ${isMobile ? 56 : 80}px`, background: marketingColors.cream }}>
@@ -53,7 +53,7 @@ const TermsPage = () => {
               margin: 0,
               fontWeight: 500,
             }}>
-              Our Terms of Service are being finalised by our solicitor and will be published shortly. The interim Terms below apply during our Early Access period. For any questions, please contact <a href="mailto:hello@rinvita.co.uk" style={{ color: marketingColors.gold, textDecoration: "underline" }}>hello@rinvita.co.uk</a>.
+              For any questions about these Terms, please contact <a href="mailto:hello@rinvita.co.uk" style={{ color: marketingColors.gold, textDecoration: "underline" }}>hello@rinvita.co.uk</a>.
             </p>
           </div>
 
@@ -91,10 +91,10 @@ const TermsPage = () => {
           </div>
 
           <h2 style={headingStyle}>1. About these Terms</h2>
-          <p style={bodyStyle}>These interim Terms of Service ("Terms") govern your use of the RinVita web application and related services (the "Service") provided by RinVita Ltd, a company registered in England and Wales (company number 17163153), with registered office at Unit A435, 4-6 Greatorex Street, London E1 5NF, United Kingdom ("RinVita", "we", "us"). By creating an account or otherwise using the Service, you agree to be bound by these Terms.</p>
+          <p style={bodyStyle}>These Terms of Service ("Terms") govern your use of the RinVita web application and related services (the "Service") provided by RinVita Ltd, a company registered in England and Wales (company number 17163153), with registered office at Unit A435, 4-6 Greatorex Street, London E1 5NF, United Kingdom ("RinVita", "we", "us"). By creating an account or otherwise using the Service, you agree to be bound by these Terms.</p>
 
-          <h2 style={headingStyle}>2. Early Access</h2>
-          <p style={bodyStyle}>The Service is currently offered in Early Access. Features may change, be added, or be removed without notice. Free access is provided until 1 June 2026; paid pricing thereafter will be communicated in advance, with any promised discounts honoured. Early Access is provided on an "as is" basis and you should not rely on the Service as a sole record of medical information.</p>
+          <h2 style={headingStyle}>2. The Service</h2>
+          <p style={bodyStyle}>RinVita is a personal medical-records workspace. Features may change, be added, or be removed as the product evolves; we will give reasonable notice of material changes. The Service is provided on an "as is" basis and you should not rely on it as your sole record of medical information — always keep the original documents.</p>
 
           <h2 style={headingStyle}>3. Your account</h2>
           <p style={bodyStyle}>You are responsible for keeping your login credentials confidential and for all activity that occurs under your account. You must be at least 18 years old to create an account. Information you provide during signup must be accurate and kept up to date. You must notify us immediately at <a href="mailto:hello@rinvita.co.uk" style={{ color: marketingColors.gold }}>hello@rinvita.co.uk</a> if you suspect unauthorised access.</p>
@@ -119,13 +119,13 @@ const TermsPage = () => {
           <p style={bodyStyle}>The Service, including its software, design, branding, and the RinVita name and logo, is owned by RinVita Ltd or its licensors and is protected by intellectual property laws. These Terms do not transfer any of those rights to you.</p>
 
           <h2 style={headingStyle}>8. Limitation of liability</h2>
-          <p style={bodyStyle}>To the fullest extent permitted by law, and given the Early Access nature of the Service, RinVita's total liability to you for any claim arising out of or in connection with these Terms or the Service is limited to the greater of (a) the fees you have paid us in the twelve months preceding the claim, or (b) £50. We are not liable for indirect, incidental, special, consequential, or punitive damages, or for loss of data, profit, revenue, or goodwill. Nothing in these Terms limits liability that cannot be limited by law (including liability for death or personal injury caused by negligence, or for fraud).</p>
+          <p style={bodyStyle}>To the fullest extent permitted by law, RinVita's total liability to you for any claim arising out of or in connection with these Terms or the Service is limited to the greater of (a) the fees you have paid us in the twelve months preceding the claim, or (b) £50. We are not liable for indirect, incidental, special, consequential, or punitive damages, or for loss of data, profit, revenue, or goodwill. Nothing in these Terms limits liability that cannot be limited by law (including liability for death or personal injury caused by negligence, or for fraud).</p>
 
           <h2 style={headingStyle}>9. Termination</h2>
           <p style={bodyStyle}>You may delete your account at any time from Settings; this irreversibly removes your records from the Service. We may suspend or terminate your account if you breach these Terms, if required by law, or if we discontinue the Service, in which case we will give reasonable notice where possible.</p>
 
           <h2 style={headingStyle}>10. Changes to these Terms</h2>
-          <p style={bodyStyle}>We will publish updated Terms on this page once finalised by our solicitor. Material changes will be notified by email or in-app where required. Continued use of the Service after changes take effect constitutes acceptance.</p>
+          <p style={bodyStyle}>We may update these Terms from time to time. Material changes will be notified by email or in-app where required. Continued use of the Service after changes take effect constitutes acceptance.</p>
 
           <h2 style={headingStyle}>11. Governing law</h2>
           <p style={bodyStyle}>These Terms are governed by the laws of England and Wales. The courts of England and Wales have exclusive jurisdiction over any dispute arising out of or in connection with these Terms or the Service, except that consumers may bring proceedings in the courts of their country of residence where this right cannot be excluded.</p>

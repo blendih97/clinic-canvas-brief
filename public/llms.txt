@@ -10,7 +10,7 @@ RinVita Ltd is a UK company (registered in England and Wales, number 17163153), 
 - [Interactive demo](/demo): Walkthrough of the upload, translation, and share-brief flow.
 - [Security & Trust](/security): Encryption, EU data residency, GDPR, audit logging, and user rights.
 - [Privacy Policy](/privacy): How RinVita collects, processes, and protects personal and health data.
-- [Terms of Service](/terms): Interim terms governing use of the service during Early Access.
+- [Terms of Service](/terms): Terms governing use of the RinVita service.
 - [Sign in / Sign up](/auth): Account access.
 
 ## Optional

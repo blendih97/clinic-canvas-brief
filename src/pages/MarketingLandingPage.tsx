@@ -53,7 +53,7 @@ function AppMockup({ scale = 1 }: { scale?: number }) {
         {/* Content area */}
         <div style={{ position: "absolute", top: 86, left: 0, right: 0, bottom: 56, background: marketingColors.cream, overflowY: "auto", padding: "12px 14px 18px" }}>
           <div style={{ background: marketingColors.cream2, border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 5, padding: "6px 8px", display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-            <span style={{ fontSize: 8, color: marketingColors.mutedText }}>Free plan — 2 of 3 documents used</span>
+            <span style={{ fontSize: 8, color: marketingColors.mutedText }}>Free trial — 2 of 3 documents · 9 days left</span>
             <div style={{ background: marketingColors.gold, color: "hsl(var(--primary-foreground))", fontSize: 7, fontWeight: 600, padding: "2px 6px", borderRadius: 3 }}>Upgrade</div>
           </div>
           <div style={{ fontFamily: "Cormorant Garamond", fontSize: 18, color: marketingColors.ink, marginBottom: 2 }}>Your Health Overview</div>
@@ -122,12 +122,15 @@ function Hero() {
             Upload records from any country, automatically translate and organise them, and share a clinician-ready summary with doctors anywhere in the world.
           </p>
           <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 12, alignItems: isMobile ? "stretch" : "center" }}>
-            <Link to="/auth?mode=signup" style={{ padding: isMobile ? "18px 24px" : "16px 34px", background: marketingColors.gold, borderRadius: 2, color: "hsl(var(--primary-foreground))", fontSize: isMobile ? 15 : 14, fontWeight: 600, letterSpacing: "0.06em", textDecoration: "none", textAlign: "center", boxShadow: "0 6px 28px hsl(var(--primary) / 0.4)" }}>
-              Get Early Access
+            <Link to="/auth?mode=signup" style={{ padding: isMobile ? "18px 24px" : "16px 34px", background: marketingColors.gold, borderRadius: 2, color: "hsl(var(--primary-foreground))", fontSize: isMobile ? 14 : 14, fontWeight: 600, letterSpacing: "0.06em", textDecoration: "none", textAlign: "center", boxShadow: "0 6px 28px hsl(var(--primary) / 0.4)" }}>
+              Start Free Trial — No Card Required
             </Link>
             <a href="#demo" style={{ padding: isMobile ? "15px 24px" : "15px 28px", background: "transparent", border: `1px solid ${marketingColors.gold}`, borderRadius: 2, color: marketingColors.gold, fontSize: 14, textDecoration: "none", textAlign: "center", fontWeight: 500 }}>
               Watch the Demo →
             </a>
+          </div>
+          <div style={{ marginTop: 12, fontSize: 12.5, color: marketingColors.softText, letterSpacing: "0.01em", fontWeight: 400 }}>
+            14-day free trial · 3 documents · No card required
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: isMobile ? "8px 16px" : 20, marginTop: isMobile ? 22 : 28, fontSize: 12, color: marketingColors.mutedText, letterSpacing: "0.02em" }}>
             {[
@@ -357,10 +360,10 @@ function SocialProof() {
             <div key={i} style={{ padding: "28px 24px", background: marketingColors.surface, border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 2, minHeight: 180 }}>
               <div style={{ fontFamily: "Cormorant Garamond", fontSize: 28, color: marketingColors.gold, lineHeight: 1, marginBottom: 8 }}>“</div>
               <p style={{ fontFamily: "Cormorant Garamond", fontSize: 16, fontStyle: "italic", color: "hsl(var(--foreground) / 0.55)", lineHeight: 1.6, marginBottom: 16 }}>
-                Patient and clinician testimonials will appear here as our early access cohort grows.
+                Patient and clinician testimonials will appear here soon.
               </p>
               <div style={{ width: 24, height: 1, background: marketingColors.goldBorder, marginBottom: 10 }} />
-              <div style={{ fontSize: 11, color: marketingColors.faintText, letterSpacing: "0.06em", textTransform: "uppercase" }}>Coming soon</div>
+              <div style={{ fontSize: 11, color: marketingColors.faintText, letterSpacing: "0.06em", textTransform: "uppercase" }}>&nbsp;</div>
             </div>
           ))}
         </div>
@@ -464,21 +467,21 @@ function Pricing() {
   const ref = useReveal<HTMLDivElement>();
   const { isMobile, isTablet } = useMarketingBreakpoint();
   const paddingX = isMobile ? 20 : isTablet ? 32 : 56;
-  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">("annual");
+  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">("monthly");
 
   const freePlan = {
-    name: "Free",
-    badge: "FREE FOREVER",
+    name: "Free trial",
+    badge: "14 DAYS · NO CARD",
     price: "Free",
-    period: "up to 3 documents",
-    desc: "Try the full experience with your first 3 documents — no card, no time limit.",
+    period: "14 days · 3 documents",
+    desc: "Try the full experience free for 14 days — up to 3 documents, no card required.",
     features: [
-      "3 documents included, free forever",
+      "Try free — 3 documents, 14 days",
       "Full AI translation and structured summaries",
       "Travelling abroad? Translation in 50+ languages",
       "Preview clinician share links and PDF exports",
     ],
-    cta: "Start your free vault",
+    cta: "Start Free Trial",
     available: true,
   };
 
@@ -532,7 +535,7 @@ function Pricing() {
           <span className="marketing-section-label">Pricing</span>
           <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 32 : "clamp(34px,3.8vw,52px)", fontWeight: 300, color: marketingColors.ink, marginBottom: 16 }}>Simple pricing. Pay only for what you need.</h2>
           <p style={{ fontSize: isMobile ? 14 : 16, color: marketingColors.mutedText, maxWidth: 560, margin: "0 auto", lineHeight: 1.7, fontWeight: 300 }}>
-            Free forever for your first 3 documents. Upgrade only when you need unlimited uploads, full sharing and PDF export.
+            Try free for 14 days with 3 documents — no card required. Upgrade when you need unlimited uploads, full sharing and PDF export.
           </p>
         </div>
 
@@ -625,12 +628,11 @@ function Pricing() {
                     SAVE 25%
                   </div>
                 )}
-                <div style={{ position: "absolute", top: 14, right: 14, fontSize: 9, letterSpacing: "0.1em", color: marketingColors.softText, fontWeight: 500, padding: "3px 8px", background: "hsl(var(--foreground) / 0.05)", borderRadius: 1 }}>COMING SOON</div>
                 <div style={{ fontFamily: "Cormorant Garamond", fontSize: 11, color: "hsl(var(--primary) / 0.7)", letterSpacing: "0.1em", marginBottom: 12, marginTop: plan.highlight ? 4 : 0 }}>{plan.name.toUpperCase()}</div>
 
                 {/* Try free badge above price */}
                 <div style={{ display: "inline-flex", alignSelf: "flex-start", alignItems: "center", gap: 6, padding: "5px 10px", background: "hsl(var(--primary) / 0.08)", border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 999, fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", color: marketingColors.gold, textTransform: "uppercase", marginBottom: 12 }}>
-                  ✦ Try free — 3 documents
+                  ✦ Try free — 3 documents, 14 days
                 </div>
 
                 <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginBottom: 2 }}>
@@ -660,25 +662,28 @@ function Pricing() {
                     </div>
                   ))}
                 </div>
-                <button
-                  disabled
+                <Link
+                  to="/auth?mode=signup"
                   style={{
                     marginTop: 24,
                     padding: "13px 20px",
                     width: "100%",
-                    background: "hsl(var(--foreground) / 0.06)",
-                    color: marketingColors.softText,
-                    border: `1px solid ${marketingColors.goldBorder}`,
+                    background: marketingColors.gold,
+                    color: "hsl(var(--primary-foreground))",
+                    border: `1px solid ${marketingColors.gold}`,
                     borderRadius: 2,
                     fontSize: 13,
                     fontWeight: 600,
                     letterSpacing: "0.06em",
                     textTransform: "uppercase",
-                    cursor: "not-allowed",
+                    textDecoration: "none",
+                    textAlign: "center",
+                    display: "block",
+                    boxShadow: "0 4px 18px hsl(var(--primary) / 0.28)",
                   }}
                 >
-                  Coming soon — notify me
-                </button>
+                  Start Free Trial
+                </Link>
               </div>
             );
           })}
@@ -687,7 +692,7 @@ function Pricing() {
         {/* Free plan callout */}
         <div style={{ marginTop: isMobile ? 56 : 72, padding: isMobile ? "32px 24px" : "40px 44px", background: marketingColors.cream2, border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 2 }}>
           <h3 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 24 : 28, fontWeight: 400, color: marketingColors.ink, marginBottom: 6 }}>Start free — no card required</h3>
-          <p style={{ fontSize: 14, color: marketingColors.mutedText, marginBottom: 20, lineHeight: 1.7 }}>Your first 3 documents are on us, forever. Everything below is included:</p>
+          <p style={{ fontSize: 14, color: marketingColors.mutedText, marginBottom: 20, lineHeight: 1.7 }}>14-day free trial · 3 documents · No card required. Everything below is included:</p>
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2,1fr)", gap: isMobile ? 16 : 20, marginBottom: 24 }}>
             {freePlan.features.map((item) => (
               <div key={item} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
@@ -795,10 +800,10 @@ function MobileStickyCTA() {
       <div style={{ height: 92 }} aria-hidden />
       <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 180, padding: "12px 16px calc(12px + env(safe-area-inset-bottom))", background: "hsl(var(--background) / 0.97)", backdropFilter: "blur(20px)", borderTop: `1px solid ${marketingColors.goldBorder}` }}>
         <Link to="/auth?mode=signup" style={{ display: "block", width: "100%", padding: "16px", background: marketingColors.gold, borderRadius: 2, color: "hsl(var(--primary-foreground))", fontSize: 15, fontWeight: 600, letterSpacing: "0.06em", textAlign: "center", textDecoration: "none", boxShadow: "0 6px 24px hsl(var(--primary) / 0.35)" }}>
-          Start your free vault
+          Start Free Trial
         </Link>
         <div style={{ marginTop: 6, fontSize: 11, color: marketingColors.softText, textAlign: "center" }}>
-          Free up to 3 documents · No credit card
+          14-day free trial · 3 documents · No card required
         </div>
       </div>
     </>
