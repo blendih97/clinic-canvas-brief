@@ -811,6 +811,27 @@ function MobileStickyCTA() {
   );
 }
 
+function TryItLive() {
+  const { isMobile, isTablet } = useMarketingBreakpoint();
+  const paddingX = isMobile ? 20 : isTablet ? 32 : 56;
+  return (
+    <section id="try-live" style={{ padding: `${isMobile ? 72 : 100}px ${paddingX}px`, background: marketingColors.cream2 }}>
+      <div style={{ maxWidth: 820, margin: "0 auto" }}>
+        <div style={{ textAlign: "center", marginBottom: isMobile ? 32 : 44 }}>
+          <span className="marketing-section-label">Try it live</span>
+          <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 30 : "clamp(32px,3.6vw,46px)", fontWeight: 300, color: marketingColors.ink, marginBottom: 14, lineHeight: 1.15 }}>
+            See it work — with a real sample record.
+          </h2>
+          <p style={{ fontSize: isMobile ? 14.5 : 16, color: marketingColors.mutedText, lineHeight: 1.7, fontWeight: 300, maxWidth: 620, margin: "0 auto" }}>
+            Pick a foreign medical document, watch RinVita translate and structure it in about 10 seconds. No account. No upload.
+          </p>
+        </div>
+        <InstantDemo variant="homepage" />
+      </div>
+    </section>
+  );
+}
+
 const MarketingLandingPage = () => {
   return (
     <div className="marketing-page" style={{ background: marketingColors.cream, color: marketingColors.ink }}>
@@ -822,6 +843,7 @@ const MarketingLandingPage = () => {
       <MarketingStyles />
       <MarketingNav currentPage="home" />
       <Hero />
+      <TryItLive />
       <HowItWorks />
       <WhyRinVita />
       <UseCases />
