@@ -33,6 +33,8 @@ import TermsPage from "./pages/TermsPage.tsx";
 import UnsubscribePage from "./pages/UnsubscribePage.tsx";
 import SecurityPage from "./pages/SecurityPage.tsx";
 import CheckoutReturn from "./pages/CheckoutReturn.tsx";
+import OAuthConsent from "./pages/OAuthConsent.tsx";
+
 import CookieConsent from "./components/CookieConsent";
 import { PaymentTestModeBanner } from "./components/PaymentTestModeBanner";
 
@@ -175,6 +177,8 @@ const App = () => (
               <Route path="/unsubscribe" element={<UnsubscribePage />} />
               <Route path="/security" element={<SecurityPage />} />
               <Route path="/checkout/return" element={<CheckoutReturn />} />
+              <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
+
               <Route path="*" element={<NotFound />} />
             </Routes>
             <CookieConsent />
