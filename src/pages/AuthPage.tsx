@@ -124,10 +124,11 @@ const AuthPage = () => {
     resetSignupFlow();
 
     if (session) {
-      navigate("/app");
+      goAfterAuth();
     } else {
       navigate("/check-email");
     }
+
   };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
@@ -147,15 +148,16 @@ const AuthPage = () => {
 
   const handleGoogleSignIn = async () => {
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: `${window.location.origin}/app`,
+      redirect_uri: `${window.location.origin}${afterAuth}`,
     });
     if (result.error) {
       toast.error(t("auth.googleFailed"));
       return;
     }
     if (result.redirected) return;
-    navigate("/app");
+    goAfterAuth();
   };
+
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
