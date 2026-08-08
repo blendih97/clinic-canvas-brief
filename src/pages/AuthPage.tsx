@@ -29,6 +29,17 @@ const AuthPage = () => {
     }
   }, [searchParams]);
 
+  // Preserve a same-origin relative return path (e.g. the OAuth consent URL)
+  // so sign-in/sign-up sends the user back where they came from.
+  const rawNext = searchParams.get("next");
+  const nextPath = rawNext && /^\/(?!\/)/.test(rawNext) ? rawNext : null;
+  const afterAuth = nextPath ?? "/app";
+
+  const goAfterAuth = () => {
+    if (nextPath) window.location.href = nextPath;
+    else navigate("/app");
+  };
+
   const resetSignupFlow = () => {
     setEmail("");
     setPassword("");
@@ -44,9 +55,10 @@ const AuthPage = () => {
     if (error) {
       toast.error(error.message || t("auth.invalidCredentials"));
     } else {
-      navigate("/app");
+      goAfterAuth();
     }
   };
+
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
