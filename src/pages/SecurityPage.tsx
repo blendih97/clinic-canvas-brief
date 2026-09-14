@@ -15,8 +15,8 @@ const SecurityPage = () => {
       body: "All primary infrastructure runs on EU regions (Ireland). Your records do not leave the EU/UK perimeter except when you explicitly generate a share link for a clinician outside that region.",
     },
     {
-      title: "UK GDPR & ICO registration",
-      body: "RinVita Ltd is registered with the UK Information Commissioner's Office (ICO Registration ZC123014). Health records are processed under Article 9(2)(h) — provision of health care — with explicit consent collected at signup.",
+      title: "Data protection & ICO registration",
+      body: "RinVita Ltd is registered with the UK Information Commissioner's Office (ICO Registration ZC123014). Registration is a legal requirement for data controllers, not a certification or an audit. The service is designed with UK GDPR principles in mind: health data is processed on the basis of your explicit consent, collected at signup, and the legal basis and condition for processing special category data are kept under ongoing review.",
     },
     {
       title: "Source documents always preserved",
@@ -34,7 +34,7 @@ const SecurityPage = () => {
 
   return (
     <div className="marketing-page" style={{ background: marketingColors.cream, color: marketingColors.ink }}>
-      <SEO title="Security & Trust — RinVita" description="AES-256 encryption, EU data residency, UK GDPR, ICO registered, full audit logging. How RinVita protects your medical data." path="/security" />
+      <SEO title="Security & Trust — RinVita" description="AES-256 encryption at rest, TLS 1.3 in transit, EU data residency, ICO registered, full audit logging. How RinVita protects your medical data." path="/security" />
       <MarketingStyles />
       <MarketingNav currentPage="home" />
       <section style={{ padding: `${isMobile ? 100 : 140}px ${paddingX}px ${isMobile ? 56 : 80}px`, background: marketingColors.cream }}>
