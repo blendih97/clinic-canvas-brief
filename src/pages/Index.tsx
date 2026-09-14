@@ -20,7 +20,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useVaultStore } from "@/store/vaultStore";
 import { supabase } from "@/integrations/supabase/client";
-import { canUploadDocument, hasAccess, type Feature, FREE_DOC_LIMIT } from "@/lib/planAccess";
+import { canUploadDocument, countQuotaDocuments, hasAccess, type Feature, FREE_DOC_LIMIT } from "@/lib/planAccess";
 import { useSubscription } from "@/hooks/useSubscription";
 import { trackEvent } from "@/lib/analytics";
 
@@ -40,7 +40,7 @@ const Index = () => {
   const { loadUserData, documents } = useVaultStore();
 
   const { isActive, planTier } = useSubscription();
-  const canUpload = canUploadDocument(profile, documents.length, isActive);
+  const canUpload = canUploadDocument(profile, countQuotaDocuments(documents as any), isActive);
   const freeDocsUsed = Math.min(documents.length, FREE_DOC_LIMIT);
   const showFreeBanner = !isActive && !viewingMember;
 
