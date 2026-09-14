@@ -81,7 +81,7 @@ Deno.serve(async (req: Request) => {
     });
   } catch (err) {
     console.error("b2b enquiry insert failed", err);
-    return new Response(JSON.stringify({ error: "Something went wrong. Please email hello@rinvita.co.uk directly." }), {
+    return new Response(JSON.stringify({ error: "Something went wrong. Please email hello@rinvita.com directly." }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

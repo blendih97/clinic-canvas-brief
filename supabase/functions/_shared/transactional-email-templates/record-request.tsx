@@ -72,7 +72,7 @@ const RecordRequestEmail = ({
           </Text>
 
           <Text style={small}>
-            If you have any questions please contact support@rinvita.co.uk.
+            If you have any questions please contact hello@rinvita.com.
           </Text>
 
           <Section style={footer}>

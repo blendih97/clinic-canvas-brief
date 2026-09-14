@@ -327,7 +327,7 @@ const PrivacyPage = () => {
             London, E1 5NF, United Kingdom<br />
             Company registration number: 17163153<br />
             ICO registration number: ZC123014<br />
-            Email: <a href="mailto:hello@rinvita.co.uk" style={{ color: marketingColors.gold }}>hello@rinvita.co.uk</a><br />
+            Email: <a href="mailto:hello@rinvita.com" style={{ color: marketingColors.gold }}>hello@rinvita.com</a><br />
             Telephone: +44 7957 229692
           </p>
         </div>

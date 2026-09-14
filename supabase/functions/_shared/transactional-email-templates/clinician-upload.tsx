@@ -56,7 +56,7 @@ const ClinicianUploadEmail = ({
 
         <Text style={small}>
           If you didn't expect this upload, please contact the clinician directly
-          or get in touch with us at hello@rinvita.co.uk.
+          or get in touch with us at hello@rinvita.com.
         </Text>
 
         <Section style={footer}>
