@@ -55,7 +55,7 @@ function AppMockup({ scale = 1 }: { scale?: number }) {
         {/* Content area */}
         <div style={{ position: "absolute", top: 86, left: 0, right: 0, bottom: 56, background: marketingColors.cream, overflowY: "auto", padding: "12px 14px 18px" }}>
           <div style={{ background: marketingColors.cream2, border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 5, padding: "6px 8px", display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-            <span style={{ fontSize: 8, color: marketingColors.mutedText }}>Free trial — 2 of 3 documents · 9 days left</span>
+            <span style={{ fontSize: 8, color: marketingColors.mutedText }}>Free plan — 2 of 3 documents used</span>
             <div style={{ background: marketingColors.gold, color: "hsl(var(--primary-foreground))", fontSize: 7, fontWeight: 600, padding: "2px 6px", borderRadius: 3 }}>Upgrade</div>
           </div>
           <div style={{ fontFamily: "Cormorant Garamond", fontSize: 18, color: marketingColors.ink, marginBottom: 2 }}>Your Health Overview</div>
@@ -125,19 +125,19 @@ function Hero() {
           </p>
           <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 12, alignItems: isMobile ? "stretch" : "center" }}>
             <Link to="/auth?mode=signup" style={{ padding: isMobile ? "18px 24px" : "16px 34px", background: marketingColors.gold, borderRadius: 2, color: "hsl(var(--primary-foreground))", fontSize: isMobile ? 14 : 14, fontWeight: 600, letterSpacing: "0.06em", textDecoration: "none", textAlign: "center", boxShadow: "0 6px 28px hsl(var(--primary) / 0.4)" }}>
-              Start Free Trial — No Card Required
+              Start Free — No Card Required
             </Link>
             <a href="#demo" style={{ padding: isMobile ? "15px 24px" : "15px 28px", background: "transparent", border: `1px solid ${marketingColors.gold}`, borderRadius: 2, color: marketingColors.gold, fontSize: 14, textDecoration: "none", textAlign: "center", fontWeight: 500 }}>
               Watch the Demo →
             </a>
           </div>
           <div style={{ marginTop: 12, fontSize: 12.5, color: marketingColors.softText, letterSpacing: "0.01em", fontWeight: 400 }}>
-            14-day free trial · 3 documents · No card required
+            Free plan · 3 documents · No card required
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: isMobile ? "8px 16px" : 20, marginTop: isMobile ? 22 : 28, fontSize: 12, color: marketingColors.mutedText, letterSpacing: "0.02em" }}>
             {[
-              "GDPR compliant",
-              "End-to-end encrypted",
+              "Designed with UK GDPR principles in mind",
+              "Encrypted at rest and in transit",
               "You control access",
               "Built for international healthcare",
             ].map((item) => (
@@ -171,7 +171,7 @@ function Hero() {
           <div style={{ marginTop: isMobile ? 40 : 64, paddingTop: isMobile ? 28 : 40, borderTop: `1px solid hsl(var(--foreground) / 0.1)`, display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4,1fr)", gap: isMobile ? "20px 16px" : 24 }}>
             {[
               ["50+", "languages", "From Arabic to Mandarin"],
-              ["256-bit", "encryption", "Bank-level security"],
+              ["256-bit", "encryption", "At rest and in transit"],
               ["EU data", "hosting", "Stored in Ireland"],
               ["UK", "registered", "ICO ZC123014"],
             ].map(([value, unit, sub]) => (
