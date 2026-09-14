@@ -17,6 +17,7 @@ import MarketingLandingPage from "./pages/MarketingLandingPage.tsx";
 import ProductDemoPage from "./pages/ProductDemoPage.tsx";
 import TranslateToolPage from "./pages/TranslateToolPage.tsx";
 import ForCliniciansPage from "./pages/ForCliniciansPage.tsx";
+import ForConciergesPage from "./pages/ForConciergesPage.tsx";
 import ClinicsPartnersPage from "./pages/ClinicsPartnersPage.tsx";
 import AdminLayout from "./components/admin/AdminLayout.tsx";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage.tsx";
@@ -153,6 +154,8 @@ const App = () => (
               <Route path="/demo" element={<ProductDemoPage />} />
               <Route path="/translate" element={<TranslateToolPage />} />
               <Route path="/for-clinics" element={<ForCliniciansPage />} />
+              <Route path="/for-concierges" element={<ForConciergesPage />} />
+              <Route path="/for-partners" element={<Navigate to="/for-clinics" replace />} />
               <Route path="/clinics" element={<ClinicsPartnersPage />} />
               <Route path="/partners" element={<ClinicsPartnersPage />} />
               <Route path="/app" element={<ProtectedRoute><Index /></ProtectedRoute>} />

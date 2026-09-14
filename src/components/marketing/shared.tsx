@@ -422,6 +422,7 @@ export function MarketingFooter() {
     { label: "Pricing", href: "/#pricing" },
     { label: "Translate a document", href: "/translate" },
     { label: "For clinics", href: "/for-clinics" },
+    { label: "For concierges", href: "/for-concierges" },
     { label: "See how it works", href: "/demo" },
   ];
 
