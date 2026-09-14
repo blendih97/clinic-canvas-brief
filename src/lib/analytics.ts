@@ -68,7 +68,10 @@ export type FunnelEvent =
   | "pilot_cta_clicked"
   | "b2b_form_started"
   | "b2b_form_submitted"
-  | "b2b_form_failed";
+  | "b2b_form_failed"
+  // Referral/share hooks. Channel and placement ONLY — the share payload never
+  // contains health data, document names or personal identifiers.
+  | "share_cta_clicked";
 
 /**
  * Fire a named funnel event. Attaches persisted UTM params. Also mirrors to
