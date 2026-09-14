@@ -2,18 +2,34 @@ import { useSearchParams, Link } from "react-router-dom";
 import { useEffect } from "react";
 import { CheckCircle } from "lucide-react";
 import { trackPurchase } from "@/lib/metaPixel";
+import { trackEvent } from "@/lib/analytics";
+import { supabase } from "@/integrations/supabase/client";
+import { getStripeEnvironment } from "@/lib/stripe";
 
 export default function CheckoutReturn() {
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get("session_id");
 
   useEffect(() => {
-    if (sessionId) {
-      // Meta Pixel: Purchase. Value/currency are placeholder behavioural data;
-      // no health information is included. Replace with real values when the
-      // checkout return endpoint surfaces the session amount.
-      trackPurchase({ value: 0, currency: "GBP" });
-    }
+    if (!sessionId) return;
+    let cancelled = false;
+    // Resolve the real amount from the verified Stripe session server-side.
+    // Billing values only — no health information is ever sent to analytics.
+    (async () => {
+      try {
+        const { data } = await supabase.functions.invoke("get-checkout-result", {
+          body: { sessionId, environment: getStripeEnvironment() },
+        });
+        if (cancelled || !data || data.error) return;
+        const value = typeof data.value === "number" ? data.value : 0;
+        const currency = data.currency || "GBP";
+        trackPurchase({ value, currency });
+        trackEvent("purchase_completed", { value, currency, plan: data.plan ?? null });
+      } catch {
+        // analytics must never block the confirmation screen
+      }
+    })();
+    return () => { cancelled = true; };
   }, [sessionId]);
 
 

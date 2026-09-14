@@ -1,5 +1,7 @@
 // Public, no-auth endpoint to capture B2B enquiries from /for-clinics.
+// Shares one pipeline with submit-clinic-enquiry: same table, same admin email.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { saveEnquiryAndNotify } from "../_shared/enquiries.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -47,8 +49,8 @@ Deno.serve(async (req: Request) => {
 
   const name = String(body?.name || "").trim().slice(0, 200);
   const email = String(body?.email || "").trim().toLowerCase().slice(0, 200);
-  const practice_name = String(body?.practice_name || "").trim().slice(0, 200) || null;
-  const practice_type = String(body?.practice_type || "").trim().slice(0, 100) || null;
+  const organisation = String(body?.practice_name || body?.organisation || "").trim().slice(0, 200) || null;
+  const role = String(body?.practice_type || body?.role || "").trim().slice(0, 200) || null;
   const message = String(body?.message || "").trim().slice(0, 4000) || null;
   const honeypot = String(body?.website || "").trim();
 
@@ -65,17 +67,21 @@ Deno.serve(async (req: Request) => {
 
   try {
     const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-    const { error } = await admin.from("b2b_enquiries").insert({
-      name, email, practice_name, practice_type, message,
+    const result = await saveEnquiryAndNotify(admin, {
+      name, email, organisation, role, message,
+      utm_source: String(body?.utm_source || "").trim().slice(0, 100) || null,
+      utm_medium: String(body?.utm_medium || "").trim().slice(0, 100) || null,
+      utm_campaign: String(body?.utm_campaign || "").trim().slice(0, 100) || null,
+      origin: "for-clinics",
     });
-    if (error) throw error;
+    if (!result.saved) throw new Error(result.error || "insert failed");
 
-    return new Response(JSON.stringify({ ok: true }), {
+    return new Response(JSON.stringify({ ok: true, notified: result.notified }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
     console.error("b2b enquiry insert failed", err);
-    return new Response(JSON.stringify({ error: "Something went wrong. Please email info@rinvita.co.uk directly." }), {
+    return new Response(JSON.stringify({ error: "Something went wrong. Please email hello@rinvita.co.uk directly." }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

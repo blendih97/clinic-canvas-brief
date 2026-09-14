@@ -5,6 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { SUPPORTED_LANGUAGES, getLanguageName } from "@/lib/supportedLanguages";
 import UploadConsentModal from "@/components/UploadConsentModal";
+import { FREE_LIMIT_CODE } from "@/lib/planAccess";
+import { trackEvent } from "@/lib/analytics";
 
 const uploadConsentKey = (uid: string) => `rinvita.uploadConsent.${uid}`;
 
@@ -60,7 +62,7 @@ const processingSteps = [
   "Validating extraction…",
 ];
 
-const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
+const DocumentUpload = ({ open, onClose, onLimitReached }: { open: boolean; onClose: () => void; onLimitReached?: () => void }) => {
   const [phase, setPhase] = useState<Phase>("input");
   const [file, setFile] = useState<File | null>(null);
   const [pastedText, setPastedText] = useState("");
@@ -121,6 +123,28 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
       reader.readAsDataURL(f);
     });
 
+  /**
+   * Record an auditable failed document so the vault (and admin views) never
+   * silently lose an upload attempt. Safe error text only — no file contents.
+   */
+  const saveFailedDocument = useCallback(async (reason: string, filePath?: string) => {
+    if (!user) return;
+    try {
+      await supabase.from("documents").insert({
+        user_id: user.id,
+        name: file?.name || "Untitled document",
+        processing_status: "failed",
+        processing_error: reason.slice(0, 500),
+        extracted: false,
+        file_path: filePath ?? null,
+        file_url: filePath ?? null,
+        processing_started_at: new Date().toISOString(),
+      } as any);
+    } catch (err) {
+      console.error("Could not record failed document:", err);
+    }
+  }, [user, file]);
+
   const handleSubmit = useCallback(async () => {
     setPhase("processing");
     setStepIndex(0);
@@ -128,6 +152,7 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
 
     try {
       let payload: any = {};
+
 
       if (file) {
         const base64 = await readFileAsBase64(file);
@@ -155,16 +180,40 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
         body: { ...payload, targetLanguage },
       });
 
-      if (fnError) throw new Error(fnError.message || "Analysis failed");
+      if (fnError) {
+        // Read the structured response so the free-plan limit opens the
+        // upgrade modal instead of showing a generic failure.
+        let code: string | undefined;
+        let serverMessage: string | undefined;
+        try {
+          const body = await (fnError as any)?.context?.json?.();
+          code = body?.code;
+          serverMessage = body?.error;
+        } catch { /* fall through to generic handling */ }
+
+        if (code === FREE_LIMIT_CODE) {
+          trackEvent("free_limit_reached", { source: "upload" });
+          trackEvent("paywall_shown", { feature: "unlimited_uploads" });
+          setPhase("input");
+          handleClose();
+          onLimitReached?.();
+          return;
+        }
+        throw new Error(serverMessage || fnError.message || "Analysis failed");
+      }
 
       setResult(data);
       setStepIndex(processingSteps.length); // mark all ticks complete
       setPhase("confirm");
     } catch (e: any) {
-      setError(e.message || "Something went wrong");
+      const reason = e?.message || "Something went wrong";
+      await saveFailedDocument(reason);
+      trackEvent("document_upload_failed", { stage: "analysis" });
+      setError(reason);
       setPhase("input");
     }
-  }, [file, pastedText, targetLanguage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [file, pastedText, targetLanguage, saveFailedDocument, onLimitReached]);
 
   const attemptSubmit = useCallback(() => {
     if (!file && !pastedText.trim()) {
@@ -223,7 +272,8 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
     let createdDocumentId: string | undefined;
     if (result.documentMeta) {
       createdDocumentId = crypto.randomUUID();
-      store.addDocuments([
+      try {
+        await store.addDocuments([
         {
           id: createdDocumentId,
           name: result.documentMeta.name || file?.name || "Document",
@@ -241,7 +291,24 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
           originalLanguageCode: result.fullText?.original_language_code || undefined,
           translatedLanguageCode: result.fullText?.translated_language_code || targetLanguage,
         },
-      ], uid);
+        ], uid);
+      } catch (err: any) {
+        // The database re-checks the free limit at insert time, closing the
+        // race window when two uploads finish at once.
+        const message = String(err?.message || err);
+        if (message.includes("free_document_limit_reached")) {
+          trackEvent("free_limit_reached", { source: "save" });
+          trackEvent("paywall_shown", { feature: "unlimited_uploads" });
+          handleClose();
+          onLimitReached?.();
+          return;
+        }
+        await saveFailedDocument(message, filePath);
+        trackEvent("document_upload_failed", { stage: "save" });
+        setError("We could not save this document. Please try again.");
+        setPhase("input");
+        return;
+      }
     }
 
     if (result.visits?.length) {
@@ -263,6 +330,7 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
       if (visitRows.length > 0) await store.addVisits(visitRows, uid);
     }
 
+    trackEvent("document_upload_completed", { has_file: !!file });
     setPhase("done");
   };
 
@@ -270,7 +338,18 @@ const DocumentUpload = ({ open, onClose }: { open: boolean; onClose: () => void 
     e.preventDefault();
     setDragOver(false);
     const dropped = e.dataTransfer.files[0];
-    if (dropped) setFile(dropped);
+    if (!dropped) return;
+    const allowed = dropped.type === "application/pdf" || dropped.type.startsWith("image/") || dropped.type.startsWith("text/");
+    if (!allowed) {
+      setError("Please use a PDF, image or text file.");
+      return;
+    }
+    if (dropped.size > 20 * 1024 * 1024) {
+      setError("That file is larger than 20 MB. Please upload a smaller file.");
+      return;
+    }
+    setError(null);
+    setFile(dropped);
   }, []);
 
   if (!open) return null;

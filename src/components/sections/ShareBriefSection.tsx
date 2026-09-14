@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Clock, Eye, Lock, Copy, CheckCircle, Shield, ArrowRight, ArrowLeft, Languages, Calendar } from "lucide-react";
 import { dedupeMedications, useVaultStore } from "@/store/vaultStore";
 import { useAuth } from "@/hooks/useAuth";
+import { useSubscription } from "@/hooks/useSubscription";
 import { hasAccess } from "@/lib/planAccess";
 import { supabase } from "@/integrations/supabase/client";
 import { SUPPORTED_LANGUAGES, getLanguageName } from "@/lib/supportedLanguages";
@@ -23,11 +24,15 @@ const ShareBriefSection = () => {
   const [countdown, setCountdown] = useState(0);
   const [shareLink, setShareLink] = useState("");
   const [generating, setGenerating] = useState(false);
+  const [shareToken, setShareToken] = useState("");
+  const [revoked, setRevoked] = useState(false);
+  const [revoking, setRevoking] = useState(false);
 
   const { bloodResults, medications, allergies, imagingResults, documents, alerts } = useVaultStore();
   const uniqueMedications = dedupeMedications(medications).unique;
   const { profile } = useAuth();
-  const locked = !hasAccess(profile, "share_brief");
+  const { isActive, planTier } = useSubscription();
+  const locked = !hasAccess(profile, "share_brief", { isActive, planTier });
 
   // Mirrored from ExportSection
   const [language, setLanguage] = useState<string>(profile?.preferred_ui_language || "en");
@@ -53,6 +58,14 @@ const ShareBriefSection = () => {
     const m = Math.floor((s % 3600) / 60);
     const sec = s % 60;
     return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
+  };
+
+  const handleRevoke = async () => {
+    if (!shareToken) return;
+    setRevoking(true);
+    const { data, error } = await supabase.rpc("revoke_shared_brief" as any, { _token: shareToken });
+    setRevoking(false);
+    if (!error && data) setRevoked(true);
   };
 
   const handleCopy = () => {
@@ -142,6 +155,8 @@ const ShareBriefSection = () => {
     }
 
     setShareLink(`${window.location.origin}/share/${token}`);
+    setShareToken(token);
+    setRevoked(false);
     setCountdown(selectedExpiry.seconds);
     setGenerated(true);
     setGenerating(false);
@@ -374,12 +389,29 @@ const ShareBriefSection = () => {
             </div>
             <h3 className="font-heading text-xl text-foreground mb-1">Encrypted Link Ready</h3>
             <p className="text-xs text-muted-foreground mb-4">AES-256 encrypted · {getLanguageName(language)} · Tokenised share link</p>
-            <div className="flex items-center gap-2 bg-muted rounded-lg border border-border p-3 mb-4">
-              <code className="flex-1 text-xs text-foreground/70 truncate">{shareLink}</code>
-              <button onClick={handleCopy} className="px-3 py-1.5 bg-primary text-primary-foreground rounded-lg text-xs font-medium flex items-center gap-1 hover:bg-primary/90">
+            <div className="flex items-center gap-2 bg-muted rounded-lg border border-border p-3 mb-3">
+              <code className={`flex-1 text-xs truncate ${revoked ? "text-muted-foreground line-through" : "text-foreground/70"}`}>{shareLink}</code>
+              <button
+                onClick={handleCopy}
+                disabled={revoked}
+                className="px-3 py-1.5 bg-primary text-primary-foreground rounded-lg text-xs font-medium flex items-center gap-1 hover:bg-primary/90 disabled:opacity-50"
+              >
                 {copied ? <CheckCircle className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                 {copied ? "Copied" : "Copy"}
               </button>
+            </div>
+            <div className="mb-4">
+              {revoked ? (
+                <p className="text-xs text-muted-foreground">This link has been revoked and no longer opens.</p>
+              ) : (
+                <button
+                  onClick={handleRevoke}
+                  disabled={revoking}
+                  className="text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground disabled:opacity-50"
+                >
+                  {revoking ? "Revoking…" : "Revoke this link now"}
+                </button>
+              )}
             </div>
             <div className="p-4 bg-muted rounded-lg mb-4">
               <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Expires in</p>
@@ -393,7 +425,7 @@ const ShareBriefSection = () => {
               </div>
             </div>
           </div>
-          <button onClick={() => { setStep(1); setGenerated(false); setCountdown(0); setShareLink(""); }} className="flex items-center gap-2 px-5 py-2.5 bg-muted text-foreground rounded-lg text-sm">Create Another Brief</button>
+          <button onClick={() => { setStep(1); setGenerated(false); setCountdown(0); setShareLink(""); setShareToken(""); setRevoked(false); }} className="flex items-center gap-2 px-5 py-2.5 bg-muted text-foreground rounded-lg text-sm">Create Another Brief</button>
         </div>
       )}
     </div>

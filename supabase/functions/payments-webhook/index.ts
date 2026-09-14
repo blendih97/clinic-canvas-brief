@@ -1,10 +1,27 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { type StripeEnv, createStripeClient, getWebhookSecret } from "../_shared/stripe.ts";
+import { resolveWebhookEnv } from "../_shared/stripeEnv.ts";
 
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
 );
+
+/** Auditable record of anything the webhook could not match to a user. */
+async function recordUnmatchedEvent(
+  environment: StripeEnv,
+  reason: string,
+  details: Record<string, unknown>,
+) {
+  try {
+    await supabase.from("platform_events").insert({
+      event_type: "stripe_webhook_unmatched",
+      details_json: { environment, reason, ...details },
+    });
+  } catch (err) {
+    console.error("Failed to record unmatched webhook event:", err);
+  }
+}
 
 async function upsertSubscriptionFromStripe(
   stripe: ReturnType<typeof createStripeClient>,
@@ -16,9 +33,15 @@ async function upsertSubscriptionFromStripe(
           .then((c: any) => c.metadata?.userId).catch(() => null));
 
   if (!userId) {
-    console.warn("Subscription has no userId metadata, skipping:", subscription.id);
+    console.warn("Subscription has no userId metadata:", subscription.id);
+    await recordUnmatchedEvent(environment, "missing_user_id", {
+      stripe_subscription_id: subscription.id,
+      stripe_customer_id: subscription.customer ?? null,
+      status: subscription.status ?? null,
+    });
     return;
   }
+
 
   const item = subscription.items?.data?.[0];
   const stripePrice = item?.price;
@@ -43,13 +66,34 @@ async function upsertSubscriptionFromStripe(
     .from("subscriptions")
     .upsert(row, { onConflict: "stripe_subscription_id,environment" });
 
-  if (error) console.error("Failed to upsert subscription:", error);
+  if (error) {
+    console.error("Failed to upsert subscription:", error);
+    await recordUnmatchedEvent(environment, "subscription_upsert_failed", {
+      stripe_subscription_id: subscription.id,
+      user_id: userId,
+      message: error.message,
+    });
+  }
 }
 
 Deno.serve(async (req) => {
   const url = new URL(req.url);
-  const envParam = url.searchParams.get("env");
-  const environment: StripeEnv = envParam === "live" ? "live" : "sandbox";
+  const environment = resolveWebhookEnv(url.searchParams.get("env"));
+
+  // Never default to sandbox: a live event processed as sandbox would leave a
+  // paying customer looking unpaid.
+  if (!environment) {
+    console.error("Webhook rejected: missing or invalid env parameter");
+    try {
+      await supabase.from("platform_events").insert({
+        event_type: "stripe_webhook_unmatched",
+        details_json: { reason: "invalid_env", env: url.searchParams.get("env") },
+      });
+    } catch (_e) { /* auditing must never break the response */ }
+    return new Response(JSON.stringify({ error: "invalid_env" }), {
+      status: 400, headers: { "Content-Type": "application/json" },
+    });
+  }
 
   const signature = req.headers.get("stripe-signature");
   const rawBody = await req.text();

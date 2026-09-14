@@ -27,7 +27,7 @@ Deno.serve(async (req) => {
 
     const { data, error } = await supabase
       .from("media_shares")
-      .select("token, file_path, expires_at, created_at")
+      .select("token, file_path, expires_at, revoked_at, created_at")
       .eq("token", token)
       .maybeSingle();
 
@@ -39,6 +39,11 @@ Deno.serve(async (req) => {
     }
     if (!data) {
       return new Response(JSON.stringify({ share: null }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (data.revoked_at) {
+      return new Response(JSON.stringify({ share: null, revoked: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }

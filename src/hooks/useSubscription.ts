@@ -24,11 +24,12 @@ export function useSubscription() {
   const { user } = useAuth();
   const [subscription, setSubscription] = useState<SubscriptionRow | null>(null);
   const [hasPaidAccess, setHasPaidAccess] = useState(false);
+  const [planTier, setPlanTier] = useState<"free" | "standard" | "family">("free");
   const [loading, setLoading] = useState(true);
 
   const fetch = useCallback(async () => {
-    if (!user) { setSubscription(null); setHasPaidAccess(false); setLoading(false); return; }
-    const [{ data: sub }, { data: paid }] = await Promise.all([
+    if (!user) { setSubscription(null); setHasPaidAccess(false); setPlanTier("free"); setLoading(false); return; }
+    const [{ data: sub }, { data: paid }, { data: tier }] = await Promise.all([
       supabase
         .from("subscriptions" as any)
         .select("*")
@@ -38,9 +39,11 @@ export function useSubscription() {
         .limit(1)
         .maybeSingle(),
       supabase.rpc("user_has_paid_access" as any, { _user_id: user.id }),
+      supabase.rpc("user_plan_tier" as any, { _user_id: user.id }),
     ]);
     setSubscription((sub as unknown as SubscriptionRow | null) ?? null);
     setHasPaidAccess(!!paid);
+    setPlanTier((tier as any) === "family" ? "family" : (tier as any) === "standard" ? "standard" : "free");
     setLoading(false);
   }, [user]);
 
@@ -67,5 +70,9 @@ export function useSubscription() {
   // owner with an active subscription (resolved server-side via RPC).
   const isActive = directActive || hasPaidAccess;
 
-  return { subscription, loading, isActive, refresh: fetch };
+  // Effective tier used for feature gating. Never derived from profiles.plan.
+  const tier: "free" | "standard" | "family" =
+    planTier !== "free" ? planTier : (isActive ? "standard" : "free");
+
+  return { subscription, loading, isActive, planTier: tier, refresh: fetch };
 }

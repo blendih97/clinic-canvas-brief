@@ -303,7 +303,7 @@ export const useVaultStore = create<VaultState>()((set, get) => ({
   addDocuments: async (docs, userId) => {
     const rows = docs.map((d) => ({
       user_id: userId, name: d.name, type: d.type, date: d.date, facility: d.facility,
-      country: d.country, pages: d.pages, extracted: d.extracted, file_url: d.fileUrl,
+      country: d.country, pages: d.pages, extracted: d.extracted ?? true, file_url: d.fileUrl,
       file_path: d.filePath,
       summary: d.summary ?? null,
       ai_note: d.aiNote,
@@ -311,8 +311,13 @@ export const useVaultStore = create<VaultState>()((set, get) => ({
       content_translated: d.contentTranslated ?? null,
       original_language_code: d.originalLanguageCode ?? null,
       translated_language_code: d.translatedLanguageCode ?? null,
+      // A saved document has completed analysis — never leave it "pending".
+      processing_status: "completed",
+      processed_at: new Date().toISOString(),
+      processing_error: null,
     }));
-    const { data } = await supabase.from("documents").insert(rows).select();
+    const { data, error } = await supabase.from("documents").insert(rows as any).select();
+    if (error) throw error;
     if (data) {
       const mapped = data.map((r: any) => ({
         id: r.id, name: r.name, type: r.type || "", date: r.date || "", facility: r.facility || "",

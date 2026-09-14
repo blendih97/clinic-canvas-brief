@@ -1,3 +1,5 @@
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -144,6 +146,43 @@ Deno.serve(async (req: Request) => {
     return new Response(
       JSON.stringify({ error: "ANTHROPIC_API_KEY not configured" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+
+  // Authenticate and enforce the free document quota BEFORE any expensive
+  // AI call. The database trigger enforces it again at insert time, which
+  // closes the race window if two uploads run concurrently.
+  const authHeader = req.headers.get("Authorization") || "";
+  const jwt = authHeader.replace("Bearer ", "").trim();
+  if (!jwt) {
+    return new Response(
+      JSON.stringify({ error: "Not authenticated", code: "unauthenticated" }),
+      { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+
+  const admin = createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+  );
+
+  const { data: userData, error: userError } = await admin.auth.getUser(jwt);
+  const userId = userData?.user?.id;
+  if (userError || !userId) {
+    return new Response(
+      JSON.stringify({ error: "Not authenticated", code: "unauthenticated" }),
+      { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+
+  const { data: canUpload } = await admin.rpc("user_can_upload_document", { _user_id: userId });
+  if (canUpload === false) {
+    return new Response(
+      JSON.stringify({
+        error: "You have used all 3 documents on the free plan.",
+        code: "free_document_limit_reached",
+      }),
+      { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 

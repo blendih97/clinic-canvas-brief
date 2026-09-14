@@ -3,6 +3,7 @@ import { Users, Plus, Trash2, Eye, Loader2, Mail, Lock } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useSubscription } from "@/hooks/useSubscription";
 import { hasAccess } from "@/lib/planAccess";
 
 interface FamilyMember {
@@ -16,12 +17,13 @@ interface FamilyMember {
 
 const FamilySection = ({ onViewMember }: { onViewMember: (memberId: string, memberName: string) => void }) => {
   const { user, profile } = useAuth();
+  const { isActive, planTier } = useSubscription();
   const [members, setMembers] = useState<FamilyMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviting, setInviting] = useState(false);
 
-  const isFamilyPlan = hasAccess(profile, "family_invite");
+  const isFamilyPlan = hasAccess(profile, "family_invite", { isActive, planTier });
 
   useEffect(() => {
     if (user && isFamilyPlan) loadMembers();

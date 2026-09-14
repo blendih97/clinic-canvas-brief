@@ -22,6 +22,7 @@ import { useVaultStore } from "@/store/vaultStore";
 import { supabase } from "@/integrations/supabase/client";
 import { canUploadDocument, hasAccess, type Feature, FREE_DOC_LIMIT } from "@/lib/planAccess";
 import { useSubscription } from "@/hooks/useSubscription";
+import { trackEvent } from "@/lib/analytics";
 
 type Section = "overview" | "blood" | "imaging" | "media" | "medications" | "documents" | "share" | "billing" | "export" | "family";
 
@@ -38,7 +39,7 @@ const Index = () => {
   const { user, profile } = useAuth();
   const { loadUserData, documents } = useVaultStore();
 
-  const { isActive } = useSubscription();
+  const { isActive, planTier } = useSubscription();
   const canUpload = canUploadDocument(profile, documents.length, isActive);
   const freeDocsUsed = Math.min(documents.length, FREE_DOC_LIMIT);
   const showFreeBanner = !isActive && !viewingMember;
@@ -60,15 +61,18 @@ const Index = () => {
     if (!canUpload) {
       setUpgradeFeature("unlimited_uploads");
       setUpgradeMessage(`You've used all ${FREE_DOC_LIMIT} free uploads. Upgrade to Standard for unlimited documents, PDF download, and sharing.`);
+      trackEvent("free_limit_reached", { documents: documents.length });
+      trackEvent("paywall_shown", { feature: "unlimited_uploads" });
       return;
     }
     setUploadOpen(true);
   };
 
   const requestRecordsAccess = () => {
-    if (!hasAccess(profile, "request_records")) {
+    if (!hasAccess(profile, "request_records", { isActive, planTier })) {
       setUpgradeFeature("request_records");
       setUpgradeMessage(undefined);
+      trackEvent("paywall_shown", { feature: "request_records" });
       return;
     }
     setRequestOpen(true);
@@ -288,7 +292,14 @@ const Index = () => {
           <AppFooterDisclaimer />
         </main>
       </div>
-      <DocumentUpload open={uploadOpen} onClose={() => setUploadOpen(false)} />
+      <DocumentUpload
+        open={uploadOpen}
+        onClose={() => setUploadOpen(false)}
+        onLimitReached={() => {
+          setUpgradeFeature("unlimited_uploads");
+          setUpgradeMessage(`You've used all ${FREE_DOC_LIMIT} free documents. Upgrade for unlimited uploads, PDF download, and sharing.`);
+        }}
+      />
       <RequestRecordsModal open={requestOpen} onClose={() => setRequestOpen(false)} />
       <UpgradeModal open={!!upgradeFeature} onClose={() => { setUpgradeFeature(null); setUpgradeMessage(undefined); }} feature={upgradeFeature} customMessage={upgradeMessage} />
     </>

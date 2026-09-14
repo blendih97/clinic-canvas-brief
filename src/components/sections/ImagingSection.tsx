@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { ScanLine, Languages, AlertTriangle, CheckCircle, ChevronDown, ChevronUp, Send, Link2Off, Link } from "lucide-react";
 import { useVaultStore } from "@/store/vaultStore";
 import { useAuth } from "@/hooks/useAuth";
+import { useSubscription } from "@/hooks/useSubscription";
 import { hasAccess } from "@/lib/planAccess";
 import { getImagingInsight } from "@/lib/insights";
 import { dedupeImaging } from "@/lib/visitDedupe";
@@ -48,6 +49,7 @@ const ImagingSection = () => {
   const unlinkImaging = useVaultStore((s) => s.unlinkImaging);
   const relinkImaging = useVaultStore((s) => s.relinkImaging);
   const { profile, user } = useAuth();
+  const { isActive, planTier } = useSubscription();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showAnatomy, setShowAnatomy] = useState(false);
   const [requestImagingOpen, setRequestImagingOpen] = useState(false);
@@ -77,7 +79,7 @@ const ImagingSection = () => {
   };
 
   const handleRequestImaging = () => {
-    if (!hasAccess(profile, "request_imaging")) {
+    if (!hasAccess(profile, "request_imaging", { isActive, planTier })) {
       window.dispatchEvent(new CustomEvent("show-upgrade", { detail: { feature: "request_imaging" } }));
       return;
     }

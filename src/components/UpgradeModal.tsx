@@ -3,6 +3,7 @@ import { X, Lock, Check, Crown } from "lucide-react";
 import { Feature, getPriceId, PLAN_PRICES, type BillingPeriod } from "@/lib/planAccess";
 import { useAuth } from "@/hooks/useAuth";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
+import { trackEvent } from "@/lib/analytics";
 
 interface Props {
   open: boolean;
@@ -40,6 +41,7 @@ const UpgradeModal = ({ open, onClose, feature, customMessage }: Props) => {
       content_name: `${plan}_${period}`,
       currency: "GBP",
     })).catch(() => {});
+    trackEvent("checkout_started", { plan, period, feature });
     onClose();
     openCheckout({
       priceId: getPriceId(plan, period),

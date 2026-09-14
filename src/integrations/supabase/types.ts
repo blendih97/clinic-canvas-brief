@@ -607,6 +607,7 @@ export type Database = {
           expires_at: string
           file_path: string
           id: string
+          revoked_at: string | null
           token: string
           user_id: string
         }
@@ -615,6 +616,7 @@ export type Database = {
           expires_at?: string
           file_path: string
           id?: string
+          revoked_at?: string | null
           token: string
           user_id: string
         }
@@ -623,6 +625,7 @@ export type Database = {
           expires_at?: string
           file_path?: string
           id?: string
+          revoked_at?: string | null
           token?: string
           user_id?: string
         }
@@ -928,6 +931,7 @@ export type Database = {
           id: string
           imaging_results: Json | null
           medications: Json | null
+          revoked_at: string | null
           scope: string | null
           token: string
           user_id: string | null
@@ -940,6 +944,7 @@ export type Database = {
           id?: string
           imaging_results?: Json | null
           medications?: Json | null
+          revoked_at?: string | null
           scope?: string | null
           token: string
           user_id?: string | null
@@ -952,6 +957,7 @@ export type Database = {
           id?: string
           imaging_results?: Json | null
           medications?: Json | null
+          revoked_at?: string | null
           scope?: string | null
           token?: string
           user_id?: string | null
@@ -1332,11 +1338,20 @@ export type Database = {
           read_ct: number
         }[]
       }
+      revoke_media_share: { Args: { _token: string }; Returns: boolean }
+      revoke_shared_brief: { Args: { _token: string }; Returns: boolean }
       store_admin_recovery_codes: {
         Args: { _codes: string[] }
         Returns: number
       }
+      user_can_upload_document: { Args: { _user_id: string }; Returns: boolean }
       user_has_paid_access: { Args: { _user_id: string }; Returns: boolean }
+      user_has_paid_access_env: {
+        Args: { _environment: string; _user_id: string }
+        Returns: boolean
+      }
+      user_plan_tier: { Args: { _user_id: string }; Returns: string }
+      user_plan_tier_owner: { Args: { _owner_id: string }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "user"
