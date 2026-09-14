@@ -26,7 +26,28 @@ function checkRateLimit(ip: string): boolean {
   return true;
 }
 
-const PATIENT_BANDS = new Set(["<50", "50-200", "200-500", "500+"]);
+const PATIENT_BANDS = new Set([
+  "<50", "50-200", "200-500", "500+",
+  "1-10", "11-30", "31-75", "76-150", "150+",
+]);
+
+const ORGANISATION_TYPES = new Set([
+  "Medical concierge",
+  "Private clinic",
+  "International patient department",
+  "Executive health",
+  "Family office",
+  "Other",
+]);
+
+const NEXT_STEPS = new Set([
+  "Apply for a founding pilot",
+  "Intro call",
+  "See the patient experience",
+  "Send information by email",
+]);
+
+const SOURCE_PAGES = new Set(["for-clinics", "for-concierges", "clinics", "partners"]);
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
