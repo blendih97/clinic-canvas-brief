@@ -659,7 +659,7 @@ function Pricing() {
 
                 {/* Try free badge above price */}
                 <div style={{ display: "inline-flex", alignSelf: "flex-start", alignItems: "center", gap: 6, padding: "5px 10px", background: "hsl(var(--primary) / 0.08)", border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 999, fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", color: marketingColors.gold, textTransform: "uppercase", marginBottom: 12 }}>
-                  ✦ Try free — 3 documents, 14 days
+                  ✦ Start free — 3 documents, no card
                 </div>
 
                 <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginBottom: 2 }}>
@@ -709,7 +709,7 @@ function Pricing() {
                     boxShadow: "0 4px 18px hsl(var(--primary) / 0.28)",
                   }}
                 >
-                  Start Free Trial
+                  Start free
                 </Link>
               </div>
             );
@@ -719,7 +719,7 @@ function Pricing() {
         {/* Free plan callout */}
         <div style={{ marginTop: isMobile ? 56 : 72, padding: isMobile ? "32px 24px" : "40px 44px", background: marketingColors.cream2, border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 2 }}>
           <h3 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 24 : 28, fontWeight: 400, color: marketingColors.ink, marginBottom: 6 }}>Start free — no card required</h3>
-          <p style={{ fontSize: 14, color: marketingColors.mutedText, marginBottom: 20, lineHeight: 1.7 }}>14-day free trial · 3 documents · No card required. Everything below is included:</p>
+          <p style={{ fontSize: 14, color: marketingColors.mutedText, marginBottom: 20, lineHeight: 1.7 }}>Free plan · 3 documents · No card required. Everything below is included:</p>
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2,1fr)", gap: isMobile ? 16 : 20, marginBottom: 24 }}>
             {freePlan.features.map((item) => (
               <div key={item} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
@@ -741,7 +741,7 @@ function Pricing() {
           <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", alignItems: "center", gap: isMobile ? "10px 14px" : "12px 22px", fontSize: 12.5 }}>
             {([
               ["ICO ZC123014", "Registered with the UK Information Commissioner's Office as a data controller under registration ZC123014."],
-              ["UK GDPR", "Compliant with the UK General Data Protection Regulation. Article 9 lawful basis applied for special-category health data."],
+              ["UK GDPR principles", "Designed with UK GDPR principles in mind. Health data is processed with your explicit consent, and our legal basis is kept under review."],
               ["AES-256 encryption", "All documents encrypted in transit (TLS 1.3) and at rest (AES-256). Keys managed by our EU cloud provider."],
               ["EU-hosted (Ireland)", "Infrastructure is hosted in the European Union (Dublin, Ireland). Data does not leave the EU/UK region."],
               ["Built by people working in international healthcare", "Founded by a team with direct experience in international patient care — the product solves problems we've watched families face."],
@@ -793,7 +793,7 @@ function Pricing() {
               >
                 {[
                   ["ICO ZC123014", "Registered with the UK Information Commissioner's Office as a data controller under registration ZC123014."],
-                  ["UK GDPR", "Compliant with the UK General Data Protection Regulation. Article 9 lawful basis applied for special-category health data."],
+                  ["UK GDPR principles", "Designed with UK GDPR principles in mind. Health data is processed with your explicit consent, and our legal basis is kept under review."],
                   ["AES-256 encryption", "All documents encrypted in transit (TLS 1.3) and at rest (AES-256). Keys managed by our EU cloud provider."],
                   ["EU-hosted (Ireland)", "Infrastructure is hosted in the European Union (Dublin, Ireland). Data does not leave the EU/UK region."],
                   ["Built by people working in international healthcare", "Founded by a team with direct experience in international patient care — the product solves problems we've watched families face."],
@@ -814,12 +814,12 @@ function FAQ() {
   const [open, setOpen] = useState<number | null>(null);
 
   const items = [
-    ["Is my medical data safe?", "Yes. Documents are encrypted in transit and at rest with AES-256, stored on EU infrastructure in Ireland, and you control who sees them. RinVita is UK GDPR compliant and ICO-registered (ZC123014)."],
+    ["Is my medical data safe?", "Documents are encrypted in transit (TLS 1.3) and at rest (AES-256), stored on EU infrastructure in Ireland, and access is scoped to your account. RinVita Ltd is ICO registered (ZC123014) and the service is designed with UK GDPR principles in mind."],
     ["Who can see my records?", "Only you, and anyone you explicitly share a Health Passport link with. Our staff cannot browse your documents. Share links are time-limited and revocable at any time."],
     ["Can I delete my data?", "Yes — at any time, from Settings. Account deletion removes your documents, extracted data and share links within 30 days."],
     ["Do you train AI on my records?", "No. Your documents are never used to train third-party models. AI processing runs on isolated infrastructure and outputs are stored only in your vault."],
     ["What languages does RinVita support?", "50+ languages including Arabic, Mandarin, Spanish, French, Turkish, Russian, Polish, Hindi, Portuguese and more."],
-    ["Will a doctor actually use the output?", "Yes. RinVita generates a clear, structured summary clinicians can scan in seconds, with originals alongside."],
+    ["Will a doctor actually use the output?", "RinVita is designed to help clinicians review a structured summary quickly, with source documents available alongside it. Whether a clinician uses it is ultimately their decision."],
     ["Can I manage records for my parents or children?", "Yes. The Family plan lets you manage up to six separate health profiles under one account."],
   ];
 
@@ -856,16 +856,28 @@ function Testimonial() {
     <section style={{ padding: `${isMobile ? 72 : 100}px ${isMobile ? 20 : 56}px`, background: marketingColors.cream }}>
       <div ref={ref} className="marketing-reveal" style={{ maxWidth: 720, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: 32 }}>
-          <span className="marketing-section-label">From our members</span>
+          <span className="marketing-section-label">What you can rely on</span>
         </div>
-        <div style={{ padding: isMobile ? "32px 24px" : "48px 56px", background: marketingColors.surface, border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 2, textAlign: "center", boxShadow: "0 8px 32px hsl(var(--foreground) / 0.04)" }}>
-          <div style={{ fontFamily: "Cormorant Garamond", fontSize: 40, color: marketingColors.gold, lineHeight: 1, marginBottom: 12 }}>“</div>
-          <p style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 20 : 24, fontWeight: 300, fontStyle: "italic", lineHeight: 1.55, color: marketingColors.ink, marginBottom: 24 }}>
-            Since moving from Dubai to London, keeping track of my medical records across two countries was a nightmare. RinVita changed that completely.
+        <div style={{ padding: isMobile ? "28px 22px" : "40px 48px", background: marketingColors.surface, border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 2, boxShadow: "0 8px 32px hsl(var(--foreground) / 0.04)" }}>
+          <p style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 20 : 23, fontWeight: 300, lineHeight: 1.5, color: marketingColors.ink, marginBottom: 24, textAlign: "center" }}>
+            RinVita is a new product. Instead of testimonials we haven't earned yet, here is exactly what it does today.
           </p>
-          <div style={{ width: 32, height: 1, background: marketingColors.goldStrong, margin: "0 auto 16px" }} />
-          <div style={{ fontSize: 13, fontWeight: 600, color: marketingColors.ink, letterSpacing: "0.04em" }}>Sarah K.</div>
-          <div style={{ fontSize: 12, color: marketingColors.softText, marginTop: 4 }}>London (previously Dubai)</div>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 16 : 20 }}>
+            {[
+              ["Records from any country", "Upload documents in any language and keep the original alongside the structured version."],
+              ["Traceable extraction", "Multilingual AI extraction with every result traceable back to the original record."],
+              ["Encrypted and EU-hosted", "Encrypted at rest and in transit, hosted on EU infrastructure in Ireland."],
+              ["Sharing you can revoke", "User-scoped access controls and time-limited share links you can withdraw at any time."],
+            ].map(([title, body]) => (
+              <div key={title} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                <span style={{ color: marketingColors.gold, fontSize: 14, marginTop: 3 }}>◆</span>
+                <div>
+                  <div style={{ fontSize: 13.5, fontWeight: 600, color: marketingColors.ink, marginBottom: 4 }}>{title}</div>
+                  <div style={{ fontSize: 13, color: marketingColors.mutedText, lineHeight: 1.7, fontWeight: 300 }}>{body}</div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -900,10 +912,10 @@ function MobileStickyCTA() {
       <div style={{ height: 92 }} aria-hidden />
       <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 180, padding: "12px 16px calc(12px + env(safe-area-inset-bottom))", background: "hsl(var(--background) / 0.97)", backdropFilter: "blur(20px)", borderTop: `1px solid ${marketingColors.goldBorder}` }}>
         <Link to="/auth?mode=signup" style={{ display: "block", width: "100%", padding: "16px", background: marketingColors.gold, borderRadius: 2, color: "hsl(var(--primary-foreground))", fontSize: 15, fontWeight: 600, letterSpacing: "0.06em", textAlign: "center", textDecoration: "none", boxShadow: "0 6px 24px hsl(var(--primary) / 0.35)" }}>
-          Start Free Trial
+          Start free
         </Link>
         <div style={{ marginTop: 6, fontSize: 11, color: marketingColors.softText, textAlign: "center" }}>
-          14-day free trial · 3 documents · No card required
+          Free plan · 3 documents · No card required
         </div>
       </div>
     </>
