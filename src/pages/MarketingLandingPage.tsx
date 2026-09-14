@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import SEO from "@/components/SEO";
 import InstantDemo from "@/components/marketing/InstantDemo";
 import SampleHealthPassport from "@/components/marketing/SampleHealthPassport";
+import ShareRinVita from "@/components/marketing/ShareRinVita";
 import {
   LogoMark,
   MarketingFooter,
