@@ -5,13 +5,16 @@ import { trackPurchase } from "@/lib/metaPixel";
 import { trackEvent } from "@/lib/analytics";
 import { supabase } from "@/integrations/supabase/client";
 import { getStripeEnvironment } from "@/lib/stripe";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function CheckoutReturn() {
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get("session_id");
+  const { user } = useAuth();
 
   useEffect(() => {
-    if (!sessionId) return;
+    // The lookup is owner-scoped and needs a signed-in session.
+    if (!sessionId || !user) return;
     let cancelled = false;
     // Resolve the real amount from the verified Stripe session server-side.
     // Billing values only — no health information is ever sent to analytics.
@@ -30,7 +33,7 @@ export default function CheckoutReturn() {
       }
     })();
     return () => { cancelled = true; };
-  }, [sessionId]);
+  }, [sessionId, user]);
 
 
   return (
