@@ -150,9 +150,13 @@ export function MarketingNav({ currentPage }: MarketingNavProps) {
 
   const links = [
     { label: "Translate a document", href: "/translate" },
-    { label: "For clinics", href: "/for-clinics" },
     { label: "How it works", href: currentPage === "home" ? "#how-it-works" : "/#how-it-works" },
     { label: "Pricing", href: currentPage === "home" ? "#pricing" : "/#pricing" },
+  ];
+
+  const partnerLinks = [
+    { label: "For clinics", href: "/for-clinics" },
+    { label: "For concierges", href: "/for-concierges" },
   ];
 
   return (
