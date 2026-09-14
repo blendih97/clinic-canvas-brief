@@ -363,6 +363,27 @@ export function MarketingNav({ currentPage }: MarketingNavProps) {
               {link.label}
             </a>
           ))}
+          <div style={{ padding: "16px 24px 6px", fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: marketingColors.gold }}>
+            For partners
+          </div>
+          {partnerLinks.map((link) => (
+            <Link
+              key={link.href}
+              to={link.href}
+              onClick={() => setMenuOpen(false)}
+              style={{
+                display: "block",
+                padding: "12px 24px",
+                fontSize: 18,
+                fontFamily: "Cormorant Garamond",
+                color: marketingColors.ink,
+                textDecoration: "none",
+                borderBottom: `1px solid hsl(var(--foreground) / 0.06)`,
+              }}
+            >
+              {link.label}
+            </Link>
+          ))}
           <div style={{ padding: "16px 24px 0" }}>
             <Link
               to="/auth"
