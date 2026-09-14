@@ -38,10 +38,21 @@ const ClinicEnquiryAdminEmail = ({
           <Text style={row}><strong>Name:</strong> {name || '—'}</Text>
           <Text style={row}><strong>Email:</strong> {email || '—'}</Text>
           <Text style={row}><strong>Organisation:</strong> {organisation || '—'}</Text>
-          <Text style={row}><strong>Role:</strong> {role || '—'}</Text>
+          <Text style={row}><strong>Website:</strong> {website || '—'}</Text>
+          <Text style={row}><strong>Country:</strong> {country || '—'}</Text>
+          <Text style={row}><strong>Organisation type:</strong> {organisationType || role || '—'}</Text>
           <Text style={row}><strong>International patients / month:</strong> {patientsPerMonth || '—'}</Text>
+          <Text style={row}><strong>Languages / countries handled:</strong> {languagesHandled || '—'}</Text>
+          <Text style={row}><strong>Preferred next step:</strong> {preferredNextStep || '—'}</Text>
+          <Text style={row}><strong>Page:</strong> {sourcePage || '—'}</Text>
           <Text style={row}><strong>When:</strong> {submittedAt || new Date().toISOString()}</Text>
         </Section>
+        {currentProblem && (
+          <Section style={card}>
+            <Text style={{ ...row, fontWeight: 'bold', marginBottom: 8 }}>Record-sharing problem</Text>
+            <Text style={{ ...row, whiteSpace: 'pre-wrap' }}>{currentProblem}</Text>
+          </Section>
+        )}
         {message && (
           <Section style={card}>
             <Text style={{ ...row, fontWeight: 'bold', marginBottom: 8 }}>Message</Text>
