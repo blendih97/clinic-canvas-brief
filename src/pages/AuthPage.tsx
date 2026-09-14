@@ -108,7 +108,7 @@ const AuthPage = () => {
       void supabase.functions.invoke("send-transactional-email", {
         body: {
           templateName: "new-signup-admin",
-          recipientEmail: "hello@rinvita.com",
+          recipientEmail: "info@rinvita.co.uk",
           idempotencyKey: `new-signup-${normalizedEmail}-${consentTime}`,
           templateData: {
             fullName: fullName.trim(),

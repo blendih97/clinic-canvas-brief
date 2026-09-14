@@ -69,7 +69,7 @@ export const template = {
   component: ClinicEnquiryAdminEmail,
   subject: (d: Record<string, any>) =>
     `New clinic enquiry${d?.organisation ? `: ${d.organisation}` : d?.name ? `: ${d.name}` : ''}`,
-  to: 'hello@rinvita.com',
+  to: 'info@rinvita.co.uk',
   displayName: 'Clinic enquiry (admin notification)',
   previewData: {
     name: 'Dr Aisha Patel',

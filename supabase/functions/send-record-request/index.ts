@@ -72,7 +72,7 @@ Deno.serve(async (req) => {
 
   <p style="font-size: 13px; color: #666;">This link expires in 30 days. All files are transmitted securely and encrypted.</p>
 
-  <p style="font-size: 13px; color: #666;">If you have any questions please contact <a href="mailto:hello@rinvita.com" style="color: #b8860b;">hello@rinvita.com</a></p>
+  <p style="font-size: 13px; color: #666;">If you have any questions please contact <a href="mailto:info@rinvita.co.uk" style="color: #b8860b;">info@rinvita.co.uk</a></p>
 
   <div style="border-top: 1px solid #eee; margin-top: 30px; padding-top: 15px;">
     <p style="font-family: Georgia, serif; font-size: 14px; color: #b8860b; letter-spacing: 0.1em; margin: 0;">RinVita</p>

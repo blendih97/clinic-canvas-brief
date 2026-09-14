@@ -74,7 +74,7 @@ const ClinicsPartnersPage = () => {
       setSubmitted(true);
       trackEvent("clinic_form_submitted", { has_message: !!message.trim() });
     } catch (err: any) {
-      setError(err?.message || "Something went wrong. Please email hello@rinvita.com directly.");
+      setError(err?.message || "Something went wrong. Please email info@rinvita.co.uk directly.");
     } finally {
       setLoading(false);
     }
@@ -286,7 +286,7 @@ const ClinicsPartnersPage = () => {
                   {loading ? "Sending…" : "Send enquiry"}
                 </button>
                 <p style={{ fontSize: 11, color: marketingColors.softText, textAlign: "center", lineHeight: 1.6 }}>
-                  Or email us directly at <a href="mailto:hello@rinvita.com" style={{ color: marketingColors.gold }}>hello@rinvita.com</a>
+                  Or email us directly at <a href="mailto:info@rinvita.co.uk" style={{ color: marketingColors.gold }}>info@rinvita.co.uk</a>
                 </p>
               </form>
             )}

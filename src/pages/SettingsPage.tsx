@@ -242,7 +242,7 @@ const SettingsPage = () => {
               <span className="flex-1">{t("settings.processors")}</span>
               <ChevronRight className="w-4 h-4 text-muted-foreground" />
             </button>
-            <a href="mailto:hello@rinvita.com" className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
+            <a href="mailto:info@rinvita.co.uk" className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
               <Info className="w-4 h-4" /> {t("settings.contactSupport")}
             </a>
           </div>
