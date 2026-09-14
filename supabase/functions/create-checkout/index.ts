@@ -59,6 +59,10 @@ Deno.serve(async (req) => {
     const stripePrice = prices.data[0];
     const isRecurring = stripePrice.type === "recurring";
 
+    // Subscriptions MUST carry userId — without it the webhook cannot match the
+    // payment to an account and the customer stays locked out of paid features.
+    if (isRecurring && !userId) throw new Error("Missing userId for subscription checkout");
+
     const customerId = (customerEmail || userId)
       ? await resolveOrCreateCustomer(stripe, { email: customerEmail, userId })
       : undefined;

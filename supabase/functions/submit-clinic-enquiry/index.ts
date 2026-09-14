@@ -2,6 +2,7 @@
 // Inserts into public.clinic_enquiries and triggers an admin notification email
 // to hello@rinvita.co.uk via the shared transactional-email infrastructure.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { saveEnquiryAndNotify } from "../_shared/enquiries.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -74,34 +75,15 @@ Deno.serve(async (req: Request) => {
 
   try {
     const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-    const { error } = await admin.from("clinic_enquiries").insert({
-      name, email, organisation, role, patients_per_month, message,
+    const result = await saveEnquiryAndNotify(admin, {
+      name, email, organisation, role,
+      patients_per_month, message,
       utm_source, utm_medium, utm_campaign,
+      origin: "clinics",
     });
-    if (error) throw error;
+    if (!result.saved) throw new Error(result.error || "insert failed");
 
-    // Fire-and-forget admin email notification. Don't fail the request if email fails.
-    try {
-      await admin.functions.invoke("send-transactional-email", {
-        body: {
-          templateName: "clinic-enquiry-admin",
-          recipientEmail: "hello@rinvita.co.uk",
-          templateData: {
-            name,
-            email,
-            organisation,
-            role,
-            patientsPerMonth: patients_per_month,
-            message,
-            submittedAt: new Date().toISOString(),
-          },
-        },
-      });
-    } catch (emailErr) {
-      console.error("clinic enquiry email notification failed", emailErr);
-    }
-
-    return new Response(JSON.stringify({ ok: true }), {
+    return new Response(JSON.stringify({ ok: true, notified: result.notified }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {

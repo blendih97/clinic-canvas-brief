@@ -53,7 +53,15 @@ export type FunnelEvent =
   | "clinic_form_submitted"
   | "clinic_walkthrough_clicked"
   | "clinic_onepager_downloaded"
-  | "pricing_viewed";
+  | "pricing_viewed"
+  // Product funnel. These carry NO health data, file names or file contents —
+  // counts, plan identifiers and error codes only.
+  | "document_upload_completed"
+  | "document_upload_failed"
+  | "free_limit_reached"
+  | "paywall_shown"
+  | "checkout_started"
+  | "purchase_completed";
 
 /**
  * Fire a named funnel event. Attaches persisted UTM params. Also mirrors to

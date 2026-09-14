@@ -1,3 +1,5 @@
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -6,6 +8,31 @@ const corsHeaders = {
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
+  }
+
+  // Requesting records is a paid action — verify server-side, not just in the UI.
+  const jwt = (req.headers.get("Authorization") || "").replace("Bearer ", "").trim();
+  if (!jwt) {
+    return new Response(JSON.stringify({ error: "Not authenticated", code: "unauthenticated" }), {
+      status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  const admin = createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+  );
+  const { data: userData } = await admin.auth.getUser(jwt);
+  const requesterId = userData?.user?.id;
+  if (!requesterId) {
+    return new Response(JSON.stringify({ error: "Not authenticated", code: "unauthenticated" }), {
+      status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  const { data: paid } = await admin.rpc("user_has_paid_access", { _user_id: requesterId });
+  if (!paid) {
+    return new Response(JSON.stringify({ error: "Upgrade required", code: "upgrade_required" }), {
+      status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 
   try {

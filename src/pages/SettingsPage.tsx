@@ -4,6 +4,7 @@ import { useVaultStore } from "@/store/vaultStore";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ArrowLeft, Lock, Download, Shield, Info, Trash2, ChevronRight, Building2, BellRing } from "lucide-react";
+import { useSubscription } from "@/hooks/useSubscription";
 import { useNavigate } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ import {
 
 const SettingsPage = () => {
   const { user, profile, signOut } = useAuth();
+  const { planTier } = useSubscription();
   const { t, isRTL } = useLocale();
   const navigate = useNavigate();
   const store = useVaultStore();
@@ -98,7 +100,9 @@ const SettingsPage = () => {
     navigate("/auth", { replace: true });
   };
 
-  const plan = profile?.plan || "free";
+  // Plan shown here must come from the live subscription, never profiles.plan
+  // (which can be stale after a cancellation or a failed payment).
+  const plan = planTier;
 
   return (
     <div className="min-h-screen bg-background">

@@ -27,7 +27,7 @@ Deno.serve(async (req) => {
 
     const { data, error } = await supabase
       .from("shared_briefs")
-      .select("token, scope, expires_at, blood_results, medications, allergies, imaging_results, created_at")
+      .select("token, scope, expires_at, revoked_at, blood_results, medications, allergies, imaging_results, created_at")
       .eq("token", token)
       .maybeSingle();
 
@@ -39,6 +39,12 @@ Deno.serve(async (req) => {
     }
     if (!data) {
       return new Response(JSON.stringify({ brief: null }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (data.revoked_at) {
+      return new Response(JSON.stringify({ brief: null, revoked: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }

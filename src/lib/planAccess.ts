@@ -70,12 +70,28 @@ const FEATURE_REQUIREMENTS: Record<Feature, Plan[]> = {
   unlimited_uploads: ["standard", "family"],
 };
 
-// UI-level access (lets free users see and preview features so they understand
-// the value). The real paywall lives at the action layer — e.g. PDF download
-// checks the live subscription via useSubscription().
-export function hasAccess(_profile: Profile | null, _feature: Feature): boolean {
-  return true;
+/** Live access state, resolved from the real subscription (see useSubscription). */
+export interface AccessState {
+  isActive?: boolean;
+  planTier?: Plan;
 }
+
+/**
+ * Real feature gating. Resolved from the live subscription — never from
+ * `profiles.plan`, which can be stale. Free users may still *see* educational
+ * previews of a feature; the paid action itself must check this.
+ */
+export function hasAccess(
+  _profile: Profile | null,
+  feature: Feature,
+  access: AccessState = {},
+): boolean {
+  const tier: Plan = access.planTier ?? (access.isActive ? "standard" : "free");
+  return (FEATURE_REQUIREMENTS[feature] as readonly Plan[]).includes(tier);
+}
+
+/** Structured code returned by the server when a free account hits the limit. */
+export const FREE_LIMIT_CODE = "free_document_limit_reached";
 
 export function getRequiredPlanLabel(feature: Feature): string {
   const required = FEATURE_REQUIREMENTS[feature][0];
