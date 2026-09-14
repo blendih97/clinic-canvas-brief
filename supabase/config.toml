@@ -25,3 +25,5 @@ project_id = "gnxctlydesugjdwbavdx"
     verify_jwt = false
   [functions.submit-b2b-enquiry]
     verify_jwt = false
+  [functions.get-checkout-result]
+    verify_jwt = false
