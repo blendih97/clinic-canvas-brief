@@ -1184,17 +1184,19 @@ const MarketingLandingPage = () => {
       <MarketingNav currentPage="home" />
       <Hero />
       <PartnerStrip />
+      <ThreeSteps />
       <TryItLive />
-      <HowItWorks />
+      <WhoItsFor />
       <WhyRinVita />
-      <UseCases />
       <Features />
       <DemoVideo />
       <SampleHealthPassport />
+      <TrustMechanisms />
       <ClinicalSafety />
       <Pricing />
       <ForClinicsCallout />
       <FAQ />
+      <HomeShare />
       <MarketingFooter />
       <MobileStickyCTA />
     </div>
