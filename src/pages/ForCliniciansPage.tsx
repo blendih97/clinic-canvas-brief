@@ -78,7 +78,7 @@ const ForCliniciansPage = () => {
     {
       icon: "🔒",
       title: "Patient-owned, clinic-aligned",
-      body: "Patients control their data; you stay clinically aligned. UK GDPR compliant, EU-hosted, ICO registered. Audit trail on every share.",
+      body: "Patients control their data; you stay clinically aligned. EU-hosted, ICO registered (ZC123014), and designed with UK GDPR principles in mind. Audit trail on every share.",
     },
   ];
 
@@ -86,7 +86,7 @@ const ForCliniciansPage = () => {
     <div className="marketing-page" style={{ background: marketingColors.cream, color: marketingColors.ink, minHeight: "100vh" }}>
       <SEO
         title="RinVita for Clinics & Private Practices — Patient Records Vault"
-        description="Offer your patients a secure, multilingual medical records vault. Reduce admin, improve retention, and make referrals effortless. UK GDPR compliant."
+        description="Offer your patients a secure, multilingual medical records vault. Reduce admin, improve retention, and make referrals effortless. EU-hosted and designed with UK GDPR principles in mind."
         path="/for-clinics"
       />
       <MarketingStyles />

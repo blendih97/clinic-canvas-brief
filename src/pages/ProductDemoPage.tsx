@@ -29,7 +29,7 @@ const stepContent = [
   },
   {
     heading: "Step 3 — Every word translated",
-    body: "The original Arabic document is preserved forever. Alongside it, a clinical-grade English translation — ready for any UK doctor. Switch between languages anytime.",
+    body: "The original Arabic document is preserved forever. Alongside it, a faithful English translation — ready for any UK doctor. Switch between languages anytime.",
   },
   {
     heading: "Step 4 — Your complete history",
@@ -119,7 +119,7 @@ function PhoneStepTranslate() {
       </div>
       {lang === "en" ? (
         <div style={{ background: marketingColors.surface, border: `1px solid ${marketingColors.successBorder}`, borderRadius: 6, padding: 10, animation: "marketing-fade-in 0.3s ease" }}>
-          <div style={{ fontSize: 7.5, color: marketingColors.success, marginBottom: 6, fontWeight: 500, letterSpacing: "0.05em" }}>✓ CLINICAL-GRADE ENGLISH TRANSLATION</div>
+          <div style={{ fontSize: 7.5, color: marketingColors.success, marginBottom: 6, fontWeight: 500, letterSpacing: "0.05em" }}>✓ ENGLISH TRANSLATION · SOURCE PRESERVED</div>
           <div style={{ fontSize: 9, fontWeight: 600, color: marketingColors.ink, marginBottom: 6 }}>MRI Report — Left Knee</div>
           <div style={{ fontSize: 8.5, lineHeight: 1.8, color: "hsl(var(--foreground) / 0.7)" }}>
             <strong>Patient:</strong> Layla Hassan, F, 38
@@ -311,7 +311,7 @@ function DemoArea() {
         <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 36 : "clamp(38px,4.5vw,60px)", fontWeight: 300, color: marketingColors.ink, marginBottom: 16 }}>That's RinVita.</h2>
         <p style={{ fontSize: isMobile ? 15 : 17, lineHeight: 1.8, color: marketingColors.mutedText, maxWidth: 480, margin: "0 auto 48px", fontWeight: 300 }}>The whole journey, from shoebox to shareable health record. In under 60 seconds.</p>
         <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 14, justifyContent: "center", alignItems: "center" }}>
-          <Link to="/auth?mode=signup" style={{ padding: "16px 36px", background: marketingColors.gold, borderRadius: 2, color: "hsl(var(--primary-foreground))", fontSize: 14, fontWeight: 600, letterSpacing: "0.07em", textDecoration: "none", boxShadow: "0 4px 24px hsl(var(--primary) / 0.35)" }}>Start Free Trial</Link>
+          <Link to="/auth?mode=signup" style={{ padding: "16px 36px", background: marketingColors.gold, borderRadius: 2, color: "hsl(var(--primary-foreground))", fontSize: 14, fontWeight: 600, letterSpacing: "0.07em", textDecoration: "none", boxShadow: "0 4px 24px hsl(var(--primary) / 0.35)" }}>Start free</Link>
           <button onClick={() => { setStep(0); setDone(false); }} style={{ background: "transparent", border: `1px solid hsl(var(--foreground) / 0.18)`, borderRadius: 2, padding: "15px 24px", color: marketingColors.mutedText, fontSize: 14, cursor: "pointer" }}>↺ Replay demo</button>
         </div>
         <div style={{ marginTop: 32 }}>
@@ -387,9 +387,9 @@ function DemoHero() {
 
 const EarlyAccessBanner = () => (
   <div style={{ marginTop: 68, padding: "10px 20px", background: marketingColors.goldSoft, borderBottom: `1px solid ${marketingColors.goldBorder}`, textAlign: "center", fontSize: 13, color: marketingColors.ink }}>
-    <span style={{ color: marketingColors.gold, fontWeight: 600, letterSpacing: "0.08em", fontSize: 11, marginRight: 10 }}>FREE TRIAL</span>
-    14-day free trial · 3 documents · No card required.{" "}
-    <Link to="/auth?mode=signup" style={{ color: marketingColors.gold, fontWeight: 600, textDecoration: "underline", marginLeft: 4 }}>Start free trial →</Link>
+    <span style={{ color: marketingColors.gold, fontWeight: 600, letterSpacing: "0.08em", fontSize: 11, marginRight: 10 }}>FREE PLAN</span>
+    Free plan · 3 documents · No card required.{" "}
+    <Link to="/auth?mode=signup" style={{ color: marketingColors.gold, fontWeight: 600, textDecoration: "underline", marginLeft: 4 }}>Start free →</Link>
   </div>
 );
 

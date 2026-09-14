@@ -94,7 +94,7 @@ const ClinicsPartnersPage = () => {
     {
       icon: "🔒",
       title: "Clinically secure",
-      body: "ICO registered (ZC123014), UK GDPR compliant, AES-256 encrypted, EU hosted in Ireland.",
+      body: "ICO registered (ZC123014). AES-256 encryption at rest, TLS 1.3 in transit, EU hosted in Ireland, and designed with UK GDPR principles in mind.",
     },
   ];
 

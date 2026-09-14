@@ -385,7 +385,7 @@ function Revealed({
               textAlign: "center",
             }}
           >
-            Now try it with your own document → Start Free Trial
+            Now try it with your own document → Start free
           </Link>
         )}
         <button
