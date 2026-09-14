@@ -141,6 +141,7 @@ export function MarketingNav({ currentPage }: MarketingNavProps) {
   const { isMobile } = useMarketingBreakpoint();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [partnersOpen, setPartnersOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -150,9 +151,13 @@ export function MarketingNav({ currentPage }: MarketingNavProps) {
 
   const links = [
     { label: "Translate a document", href: "/translate" },
-    { label: "For clinics", href: "/for-clinics" },
     { label: "How it works", href: currentPage === "home" ? "#how-it-works" : "/#how-it-works" },
     { label: "Pricing", href: currentPage === "home" ? "#pricing" : "/#pricing" },
+  ];
+
+  const partnerLinks = [
+    { label: "For clinics", href: "/for-clinics" },
+    { label: "For concierges", href: "/for-concierges" },
   ];
 
   return (
@@ -207,6 +212,57 @@ export function MarketingNav({ currentPage }: MarketingNavProps) {
                 {link.label}
               </a>
             ))}
+            <div
+              style={{ position: "relative" }}
+              onMouseEnter={() => setPartnersOpen(true)}
+              onMouseLeave={() => setPartnersOpen(false)}
+            >
+              <button
+                type="button"
+                aria-haspopup="true"
+                aria-expanded={partnersOpen}
+                onClick={() => setPartnersOpen((open) => !open)}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  padding: 0,
+                  cursor: "pointer",
+                  fontSize: 14,
+                  fontFamily: "inherit",
+                  color: partnersOpen ? marketingColors.ink : marketingColors.mutedText,
+                }}
+              >
+                For partners ▾
+              </button>
+              {partnersOpen && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "100%",
+                    left: -16,
+                    marginTop: 10,
+                    minWidth: 200,
+                    background: "hsl(var(--background) / 0.98)",
+                    backdropFilter: "blur(20px)",
+                    border: `1px solid ${marketingColors.goldBorder}`,
+                    borderRadius: 2,
+                    padding: "6px 0",
+                    animation: "marketing-slide-down 0.2s ease",
+                  }}
+                >
+                  {partnerLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      to={link.href}
+                      onClick={() => setPartnersOpen(false)}
+                      style={{ display: "block", padding: "10px 18px", fontSize: 14, color: marketingColors.mutedText, textDecoration: "none" }}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
             <Link
               to="/auth"
               style={{
@@ -307,6 +363,27 @@ export function MarketingNav({ currentPage }: MarketingNavProps) {
               {link.label}
             </a>
           ))}
+          <div style={{ padding: "16px 24px 6px", fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: marketingColors.gold }}>
+            For partners
+          </div>
+          {partnerLinks.map((link) => (
+            <Link
+              key={link.href}
+              to={link.href}
+              onClick={() => setMenuOpen(false)}
+              style={{
+                display: "block",
+                padding: "12px 24px",
+                fontSize: 18,
+                fontFamily: "Cormorant Garamond",
+                color: marketingColors.ink,
+                textDecoration: "none",
+                borderBottom: `1px solid hsl(var(--foreground) / 0.06)`,
+              }}
+            >
+              {link.label}
+            </Link>
+          ))}
           <div style={{ padding: "16px 24px 0" }}>
             <Link
               to="/auth"
@@ -345,6 +422,7 @@ export function MarketingFooter() {
     { label: "Pricing", href: "/#pricing" },
     { label: "Translate a document", href: "/translate" },
     { label: "For clinics", href: "/for-clinics" },
+    { label: "For concierges", href: "/for-concierges" },
     { label: "See how it works", href: "/demo" },
   ];
 

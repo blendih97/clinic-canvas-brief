@@ -1,4 +1,4 @@
-// Single enquiry pipeline shared by /for-clinics, /clinics and /partners.
+// Single enquiry pipeline shared by /for-clinics, /for-concierges, /clinics and /partners.
 // Persistence first, notification second: a failed notification must never
 // lose the lead, but it must be auditable so admins can follow up.
 
@@ -6,9 +6,17 @@ export interface EnquiryInput {
   name: string;
   email: string;
   organisation?: string | null;
+  website?: string | null;
+  country?: string | null;
+  organisation_type?: string | null;
   role?: string | null;
   patients_per_month?: string | null;
+  languages_handled?: string | null;
+  current_problem?: string | null;
+  preferred_next_step?: string | null;
   message?: string | null;
+  consent_at?: string | null;
+  source_page?: string | null;
   utm_source?: string | null;
   utm_medium?: string | null;
   utm_campaign?: string | null;
@@ -37,9 +45,17 @@ export async function saveEnquiryAndNotify(
     name: input.name,
     email: input.email,
     organisation: input.organisation ?? null,
+    website: input.website ?? null,
+    country: input.country ?? null,
+    organisation_type: input.organisation_type ?? null,
     role: input.role ?? null,
     patients_per_month: input.patients_per_month ?? null,
+    languages_handled: input.languages_handled ?? null,
+    current_problem: input.current_problem ?? null,
+    preferred_next_step: input.preferred_next_step ?? null,
     message: input.message ?? null,
+    consent_at: input.consent_at ?? null,
+    source_page: input.source_page ?? input.origin ?? null,
     utm_source: input.utm_source ?? null,
     utm_medium: input.utm_medium ?? null,
     utm_campaign: input.utm_campaign ?? null,
@@ -57,8 +73,15 @@ export async function saveEnquiryAndNotify(
           name: input.name,
           email: input.email,
           organisation: input.organisation ?? null,
+          website: input.website ?? null,
+          country: input.country ?? null,
+          organisationType: input.organisation_type ?? null,
           role: input.role ?? null,
           patientsPerMonth: input.patients_per_month ?? null,
+          languagesHandled: input.languages_handled ?? null,
+          currentProblem: input.current_problem ?? null,
+          preferredNextStep: input.preferred_next_step ?? null,
+          sourcePage: input.source_page ?? input.origin ?? null,
           message: input.message ?? null,
           submittedAt: new Date().toISOString(),
         },
@@ -73,7 +96,7 @@ export async function saveEnquiryAndNotify(
         event_type: "enquiry_notification_failed",
         details_json: {
           email: input.email,
-          origin: input.origin ?? "unknown",
+          origin: input.origin ?? input.source_page ?? "unknown",
           error: String(emailErr),
         },
       });

@@ -26,7 +26,28 @@ function checkRateLimit(ip: string): boolean {
   return true;
 }
 
-const PATIENT_BANDS = new Set(["<50", "50-200", "200-500", "500+"]);
+const PATIENT_BANDS = new Set([
+  "<50", "50-200", "200-500", "500+",
+  "1-10", "11-30", "31-75", "76-150", "150+",
+]);
+
+const ORGANISATION_TYPES = new Set([
+  "Medical concierge",
+  "Private clinic",
+  "International patient department",
+  "Executive health",
+  "Family office",
+  "Other",
+]);
+
+const NEXT_STEPS = new Set([
+  "Apply for a founding pilot",
+  "Intro call",
+  "See the patient experience",
+  "Send information by email",
+]);
+
+const SOURCE_PAGES = new Set(["for-clinics", "for-concierges", "clinics", "partners"]);
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -62,6 +83,20 @@ Deno.serve(async (req: Request) => {
   const utm_medium = String(body?.utm_medium || "").trim().slice(0, 100) || null;
   const utm_campaign = String(body?.utm_campaign || "").trim().slice(0, 100) || null;
 
+  // Partner pilot application fields (/for-clinics, /for-concierges)
+  const website_url = String(body?.website_url || "").trim().slice(0, 300) || null;
+  const country = String(body?.country || "").trim().slice(0, 120) || null;
+  const organisation_type_raw = String(body?.organisation_type || "").trim();
+  const organisation_type = ORGANISATION_TYPES.has(organisation_type_raw) ? organisation_type_raw : null;
+  const languages_handled = String(body?.languages_handled || "").trim().slice(0, 300) || null;
+  const current_problem = String(body?.current_problem || "").trim().slice(0, 4000) || null;
+  const preferred_next_step_raw = String(body?.preferred_next_step || "").trim();
+  const preferred_next_step = NEXT_STEPS.has(preferred_next_step_raw) ? preferred_next_step_raw : null;
+  const source_page_raw = String(body?.source_page || "").trim();
+  const source_page = SOURCE_PAGES.has(source_page_raw) ? source_page_raw : "clinics";
+  const consent_at = body?.consent === true ? new Date().toISOString() : null;
+
+
   // Honeypot — bots fill this hidden field
   if (honeypot) {
     return new Response(JSON.stringify({ ok: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -77,9 +112,11 @@ Deno.serve(async (req: Request) => {
     const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
     const result = await saveEnquiryAndNotify(admin, {
       name, email, organisation, role,
-      patients_per_month, message,
+      website: website_url, country, organisation_type,
+      patients_per_month, languages_handled, current_problem,
+      preferred_next_step, message, consent_at, source_page,
       utm_source, utm_medium, utm_campaign,
-      origin: "clinics",
+      origin: source_page,
     });
     if (!result.saved) throw new Error(result.error || "insert failed");
 
