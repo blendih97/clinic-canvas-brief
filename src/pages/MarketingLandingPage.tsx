@@ -943,6 +943,61 @@ function TryItLive() {
   );
 }
 
+function PartnerStrip() {
+  const { isMobile, isTablet } = useMarketingBreakpoint();
+  const paddingX = isMobile ? 20 : isTablet ? 32 : 56;
+
+  return (
+    <section
+      aria-label="For clinics and medical concierges"
+      style={{
+        padding: `${isMobile ? 20 : 22}px ${paddingX}px`,
+        background: marketingColors.cream2,
+        borderTop: `1px solid ${marketingColors.goldBorder}`,
+        borderBottom: `1px solid ${marketingColors.goldBorder}`,
+      }}
+    >
+      <div
+        style={{
+          maxWidth: 1180,
+          margin: "0 auto",
+          display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          alignItems: isMobile ? "flex-start" : "center",
+          justifyContent: "space-between",
+          gap: isMobile ? 12 : 24,
+        }}
+      >
+        <div>
+          <div style={{ fontSize: 10, letterSpacing: "0.18em", textTransform: "uppercase", color: marketingColors.gold, marginBottom: 6 }}>
+            For clinics and medical concierges
+          </div>
+          <div style={{ fontSize: isMobile ? 14 : 15, color: marketingColors.mutedText, lineHeight: 1.6, fontWeight: 300 }}>
+            Offer a patient-owned medical passport to internationally mobile patients — no EHR integration required.
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <Link to="/for-clinics" style={partnerStripLink}>For clinics</Link>
+          <Link to="/for-concierges" style={partnerStripLink}>For concierges</Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const partnerStripLink: React.CSSProperties = {
+  padding: "9px 18px",
+  border: `1px solid ${marketingColors.goldBorder}`,
+  borderRadius: 2,
+  color: marketingColors.gold,
+  fontSize: 12.5,
+  fontWeight: 600,
+  letterSpacing: "0.06em",
+  textTransform: "uppercase",
+  textDecoration: "none",
+  whiteSpace: "nowrap",
+};
+
 const MarketingLandingPage = () => {
   return (
     <div className="marketing-page" style={{ background: marketingColors.cream, color: marketingColors.ink }}>
