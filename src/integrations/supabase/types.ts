@@ -1221,6 +1221,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      assert_self_scope: { Args: { _user_id: string }; Returns: boolean }
       consume_admin_recovery_code: { Args: { _code: string }; Returns: boolean }
       delete_email: {
         Args: { message_id: number; queue_name: string }
