@@ -3,10 +3,10 @@
 // supabase function: mcp
 // Bundled from src/lib/mcp/index.ts by @lovable.dev/mcp-js.
 // src/lib/mcp/index.ts
-import { auth, defineMcp } from "npm:@lovable.dev/mcp-js@0.26.1";
+import { auth, defineMcp } from "npm:@lovable.dev/mcp-js@0.26.3";
 
 // src/lib/mcp/tools/list-documents.ts
-import { defineTool } from "npm:@lovable.dev/mcp-js@0.26.1";
+import { defineTool } from "npm:@lovable.dev/mcp-js@0.26.3";
 import { z } from "npm:zod@^3.25.76";
 
 // src/lib/mcp/supabase.ts
@@ -86,7 +86,7 @@ var list_documents_default = defineTool({
 });
 
 // src/lib/mcp/tools/get-document.ts
-import { defineTool as defineTool2 } from "npm:@lovable.dev/mcp-js@0.26.1";
+import { defineTool as defineTool2 } from "npm:@lovable.dev/mcp-js@0.26.3";
 import { z as z2 } from "npm:zod@^3.25.76";
 var get_document_default = defineTool2({
   name: "get_document",
@@ -113,7 +113,7 @@ var get_document_default = defineTool2({
 });
 
 // src/lib/mcp/tools/list-medications.ts
-import { defineTool as defineTool3 } from "npm:@lovable.dev/mcp-js@0.26.1";
+import { defineTool as defineTool3 } from "npm:@lovable.dev/mcp-js@0.26.3";
 import { z as z3 } from "npm:zod@^3.25.76";
 var list_medications_default = defineTool3({
   name: "list_medications",
@@ -139,7 +139,7 @@ var list_medications_default = defineTool3({
 });
 
 // src/lib/mcp/tools/list-blood-results.ts
-import { defineTool as defineTool4 } from "npm:@lovable.dev/mcp-js@0.26.1";
+import { defineTool as defineTool4 } from "npm:@lovable.dev/mcp-js@0.26.3";
 import { z as z4 } from "npm:zod@^3.25.76";
 var list_blood_results_default = defineTool4({
   name: "list_blood_results",
@@ -168,7 +168,7 @@ var list_blood_results_default = defineTool4({
 });
 
 // src/lib/mcp/tools/list-allergies.ts
-import { defineTool as defineTool5 } from "npm:@lovable.dev/mcp-js@0.26.1";
+import { defineTool as defineTool5 } from "npm:@lovable.dev/mcp-js@0.26.3";
 var list_allergies_default = defineTool5({
   name: "list_allergies",
   title: "List allergies",
@@ -189,7 +189,7 @@ var list_allergies_default = defineTool5({
 });
 
 // src/lib/mcp/tools/list-visits.ts
-import { defineTool as defineTool6 } from "npm:@lovable.dev/mcp-js@0.26.1";
+import { defineTool as defineTool6 } from "npm:@lovable.dev/mcp-js@0.26.3";
 import { z as z5 } from "npm:zod@^3.25.76";
 var list_visits_default = defineTool6({
   name: "list_visits",
@@ -215,7 +215,7 @@ var list_visits_default = defineTool6({
 });
 
 // src/lib/mcp/tools/get-health-summary.ts
-import { defineTool as defineTool7 } from "npm:@lovable.dev/mcp-js@0.26.1";
+import { defineTool as defineTool7 } from "npm:@lovable.dev/mcp-js@0.26.3";
 var get_health_summary_default = defineTool7({
   name: "get_health_summary",
   title: "Get health summary",
@@ -273,5 +273,5 @@ var mcp_default = defineMcp({
 });
 
 // lovable-mcp-supabase-entry.ts
-import { createSupabaseHandler } from "npm:@lovable.dev/mcp-js@0.26.1/stacks/supabase";
+import { createSupabaseHandler } from "npm:@lovable.dev/mcp-js@0.26.3/stacks/supabase";
 Deno.serve(createSupabaseHandler(mcp_default, { functionName: "mcp" }));
