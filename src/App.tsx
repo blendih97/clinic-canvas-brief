@@ -15,6 +15,7 @@ import AuthPage from "./pages/AuthPage.tsx";
 import CheckEmailPage from "./pages/CheckEmailPage.tsx";
 import MarketingLandingPage from "./pages/MarketingLandingPage.tsx";
 import ProductDemoPage from "./pages/ProductDemoPage.tsx";
+import PartnerDemoPage from "./pages/PartnerDemoPage.tsx";
 import TranslateToolPage from "./pages/TranslateToolPage.tsx";
 import ForCliniciansPage from "./pages/ForCliniciansPage.tsx";
 import ForConciergesPage from "./pages/ForConciergesPage.tsx";
@@ -156,6 +157,7 @@ const App = () => (
               <Route path="/check-email" element={<CheckEmailPage />} />
               <Route path="/" element={<HomeRoute />} />
               <Route path="/demo" element={<ProductDemoPage />} />
+              <Route path="/partner-demo" element={<PartnerDemoPage />} />
               <Route path="/medical-passport" element={<MedicalPassportPage />} />
               <Route path="/medical-records-for-expats" element={<ExpatMedicalRecordsPage />} />
               <Route path="/organise-medical-records-for-family" element={<FamilyMedicalRecordsPage />} />

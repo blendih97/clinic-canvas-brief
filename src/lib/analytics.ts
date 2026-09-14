@@ -8,6 +8,7 @@ export type UtmParams = {
   utm_source?: string;
   utm_medium?: string;
   utm_campaign?: string;
+  utm_content?: string;
 };
 
 /** Persist any UTM params from the current URL to sessionStorage. Idempotent. */
@@ -16,7 +17,7 @@ export function captureUtmParams(): UtmParams {
   try {
     const url = new URL(window.location.href);
     const captured: UtmParams = {};
-    for (const key of ["utm_source", "utm_medium", "utm_campaign"] as const) {
+    for (const key of ["utm_source", "utm_medium", "utm_campaign", "utm_content"] as const) {
       const v = url.searchParams.get(key);
       if (v) captured[key] = v.slice(0, 100);
     }
@@ -69,6 +70,11 @@ export type FunnelEvent =
   | "b2b_form_started"
   | "b2b_form_submitted"
   | "b2b_form_failed"
+  // Outbound partner campaign page (/partner-demo). Campaign attribution only —
+  // never a name, email address or any medical content.
+  | "partner_demo_view"
+  | "sample_passport_click"
+  | "pilot_email_click"
   // Referral/share hooks. Channel and placement ONLY — the share payload never
   // contains health data, document names or personal identifiers.
   | "share_cta_clicked";
