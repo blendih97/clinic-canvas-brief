@@ -86,9 +86,14 @@ describe("partner demo analytics", () => {
       utm_campaign: "clinics-q3",
       utm_content: "variant-a",
     });
-    const payload = JSON.stringify(fbq.mock.calls[0][2]);
-    expect(payload).not.toMatch(/name|email|@|diagnos|medication|document/i);
-    expect(payload).toContain("clinics-q3");
+    const payload = fbq.mock.calls[0][2] as Record<string, unknown>;
+    expect(Object.keys(payload).sort()).toEqual([
+      "utm_campaign",
+      "utm_content",
+      "utm_medium",
+      "utm_source",
+    ]);
+    expect(payload.utm_campaign).toBe("clinics-q3");
   });
 });
 
