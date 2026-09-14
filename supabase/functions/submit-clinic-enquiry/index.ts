@@ -112,9 +112,11 @@ Deno.serve(async (req: Request) => {
     const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
     const result = await saveEnquiryAndNotify(admin, {
       name, email, organisation, role,
-      patients_per_month, message,
+      website: website_url, country, organisation_type,
+      patients_per_month, languages_handled, current_problem,
+      preferred_next_step, message, consent_at, source_page,
       utm_source, utm_medium, utm_campaign,
-      origin: "clinics",
+      origin: source_page,
     });
     if (!result.saved) throw new Error(result.error || "insert failed");
 
