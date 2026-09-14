@@ -6,8 +6,8 @@ const config: PartnerPageConfig = {
   seoDescription:
     "For medical concierge and executive health providers: less record-chasing, translated records, and continuity across countries — with sharing always controlled by your client.",
   eyebrow: "For medical concierges & executive health",
-  headline: "Help international patients",
-  headlineAccent: "arrive prepared.",
+  headline: "Your clients' medical history,",
+  headlineAccent: "wherever they are treated.",
   intro:
     "Internationally mobile families collect care in several countries and carry almost none of it with them. RinVita gives each client a patient-owned medical passport you can offer as part of your service — records organised, translated, and shared by the client in a clinician-ready view, wherever they are treated next. It is not an EHR and not a diagnostic tool.",
   problems: [
