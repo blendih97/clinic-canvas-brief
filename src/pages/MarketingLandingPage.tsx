@@ -954,6 +954,7 @@ const MarketingLandingPage = () => {
       <MarketingStyles />
       <MarketingNav currentPage="home" />
       <Hero />
+      <PartnerStrip />
       <TryItLive />
       <HowItWorks />
       <WhyRinVita />
