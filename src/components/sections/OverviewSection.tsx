@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FileText, Upload, Share2, AlertTriangle, Pill, CheckCircle, Send, Search, Pin } from "lucide-react";
 import { dedupeMedications, useVaultStore } from "@/store/vaultStore";
+import ShareRinVita from "@/components/marketing/ShareRinVita";
 
 type Section = "overview" | "blood" | "imaging" | "media" | "medications" | "documents" | "share" | "billing" | "export" | "family";
 
@@ -221,6 +222,8 @@ const OverviewSection = ({ onNavigate, onUpload, onRequestRecords }: OverviewPro
           </div>
         </div>
       )}
+
+      <ShareRinVita placement="dashboard_overview" compact />
     </div>
   );
 };
