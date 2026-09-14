@@ -10,14 +10,22 @@ interface ClinicEnquiryAdminProps {
   name?: string
   email?: string
   organisation?: string
+  website?: string
+  country?: string
+  organisationType?: string
   role?: string
   patientsPerMonth?: string
+  languagesHandled?: string
+  currentProblem?: string
+  preferredNextStep?: string
+  sourcePage?: string
   message?: string
   submittedAt?: string
 }
 
 const ClinicEnquiryAdminEmail = ({
-  name, email, organisation, role, patientsPerMonth, message, submittedAt,
+  name, email, organisation, website, country, organisationType, role, patientsPerMonth,
+  languagesHandled, currentProblem, preferredNextStep, sourcePage, message, submittedAt,
 }: ClinicEnquiryAdminProps) => (
   <Html lang="en" dir="ltr">
     <Head />
