@@ -1,6 +1,6 @@
 // Public, no-auth endpoint to capture clinic / partnership enquiries from /clinics.
 // Inserts into public.clinic_enquiries and triggers an admin notification email
-// to hello@rinvita.co.uk via the shared transactional-email infrastructure.
+// to hello@rinvita.com via the shared transactional-email infrastructure.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { saveEnquiryAndNotify } from "../_shared/enquiries.ts";
 
@@ -125,7 +125,7 @@ Deno.serve(async (req: Request) => {
     });
   } catch (err) {
     console.error("clinic enquiry insert failed", err);
-    return new Response(JSON.stringify({ error: "Something went wrong. Please email hello@rinvita.co.uk directly." }), {
+    return new Response(JSON.stringify({ error: "Something went wrong. Please email hello@rinvita.com directly." }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

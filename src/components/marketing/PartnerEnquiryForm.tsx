@@ -103,7 +103,7 @@ export default function PartnerEnquiryForm({ sourcePage }: Props) {
       trackEvent("b2b_form_submitted", { page: sourcePage, organisation_type: organisationType });
     } catch (err: any) {
       trackEvent("b2b_form_failed", { page: sourcePage, organisation_type: organisationType });
-      setError(err?.message || "Something went wrong. Please email hello@rinvita.co.uk directly.");
+      setError(err?.message || "Something went wrong. Please email hello@rinvita.com directly.");
     } finally {
       setLoading(false);
     }
@@ -152,7 +152,7 @@ export default function PartnerEnquiryForm({ sourcePage }: Props) {
             View the patient experience
           </a>
           <a
-            href="mailto:hello@rinvita.co.uk"
+            href="mailto:hello@rinvita.com"
             style={{
               padding: "12px 22px",
               border: `1px solid ${marketingColors.goldBorder}`,
@@ -309,7 +309,7 @@ export default function PartnerEnquiryForm({ sourcePage }: Props) {
           {loading ? "Sending…" : "Apply for a founding pilot"}
         </button>
         <p style={{ fontSize: 11, color: marketingColors.softText, textAlign: "center", marginTop: 10, lineHeight: 1.6 }}>
-          Or email <a href="mailto:hello@rinvita.co.uk" style={{ color: marketingColors.gold }}>hello@rinvita.co.uk</a>.
+          Or email <a href="mailto:hello@rinvita.com" style={{ color: marketingColors.gold }}>hello@rinvita.com</a>.
           Commercial terms are agreed with you before any pilot begins.
         </p>
       </div>

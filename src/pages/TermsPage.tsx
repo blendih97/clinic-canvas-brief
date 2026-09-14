@@ -53,7 +53,7 @@ const TermsPage = () => {
               margin: 0,
               fontWeight: 500,
             }}>
-              For any questions about these Terms, please contact <a href="mailto:hello@rinvita.co.uk" style={{ color: marketingColors.gold, textDecoration: "underline" }}>hello@rinvita.co.uk</a>.
+              For any questions about these Terms, please contact <a href="mailto:hello@rinvita.com" style={{ color: marketingColors.gold, textDecoration: "underline" }}>hello@rinvita.com</a>.
             </p>
           </div>
 
@@ -97,7 +97,7 @@ const TermsPage = () => {
           <p style={bodyStyle}>RinVita is a personal medical-records workspace. Features may change, be added, or be removed as the product evolves; we will give reasonable notice of material changes. The Service is provided on an "as is" basis and you should not rely on it as your sole record of medical information — always keep the original documents.</p>
 
           <h2 style={headingStyle}>3. Your account</h2>
-          <p style={bodyStyle}>You are responsible for keeping your login credentials confidential and for all activity that occurs under your account. You must be at least 18 years old to create an account. Information you provide during signup must be accurate and kept up to date. You must notify us immediately at <a href="mailto:hello@rinvita.co.uk" style={{ color: marketingColors.gold }}>hello@rinvita.co.uk</a> if you suspect unauthorised access.</p>
+          <p style={bodyStyle}>You are responsible for keeping your login credentials confidential and for all activity that occurs under your account. You must be at least 18 years old to create an account. Information you provide during signup must be accurate and kept up to date. You must notify us immediately at <a href="mailto:hello@rinvita.com" style={{ color: marketingColors.gold }}>hello@rinvita.com</a> if you suspect unauthorised access.</p>
 
           <h2 style={headingStyle}>4. Acceptable use</h2>
           <p style={bodyStyle}>You agree not to:</p>
@@ -131,7 +131,7 @@ const TermsPage = () => {
           <p style={bodyStyle}>These Terms are governed by the laws of England and Wales. The courts of England and Wales have exclusive jurisdiction over any dispute arising out of or in connection with these Terms or the Service, except that consumers may bring proceedings in the courts of their country of residence where this right cannot be excluded.</p>
 
           <h2 style={headingStyle}>12. Contact us</h2>
-          <p style={bodyStyle}>Questions about these Terms? Email <a href="mailto:hello@rinvita.co.uk" style={{ color: marketingColors.gold }}>hello@rinvita.co.uk</a>.</p>
+          <p style={bodyStyle}>Questions about these Terms? Email <a href="mailto:hello@rinvita.com" style={{ color: marketingColors.gold }}>hello@rinvita.com</a>.</p>
 
           <div style={{ borderTop: `1px solid hsl(var(--foreground) / 0.1)`, paddingTop: 24, marginTop: 40, fontSize: 13, color: marketingColors.softText, lineHeight: 1.7 }}>
             RinVita Ltd · Unit A435, 4-6 Greatorex Street, London E1 5NF, United Kingdom<br />

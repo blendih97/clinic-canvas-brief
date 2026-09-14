@@ -29,7 +29,7 @@ export interface EnquiryResult {
   error?: string;
 }
 
-const ADMIN_RECIPIENT = "hello@rinvita.co.uk";
+const ADMIN_RECIPIENT = "hello@rinvita.com";
 
 /** Minimal structural type — keeps this module importable outside Deno. */
 export interface EnquiryClient {
