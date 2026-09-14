@@ -141,6 +141,7 @@ export function MarketingNav({ currentPage }: MarketingNavProps) {
   const { isMobile } = useMarketingBreakpoint();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [partnersOpen, setPartnersOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
