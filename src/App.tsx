@@ -19,6 +19,10 @@ import TranslateToolPage from "./pages/TranslateToolPage.tsx";
 import ForCliniciansPage from "./pages/ForCliniciansPage.tsx";
 import ForConciergesPage from "./pages/ForConciergesPage.tsx";
 import ClinicsPartnersPage from "./pages/ClinicsPartnersPage.tsx";
+import MedicalPassportPage from "./pages/MedicalPassportPage.tsx";
+import ExpatMedicalRecordsPage from "./pages/ExpatMedicalRecordsPage.tsx";
+import FamilyMedicalRecordsPage from "./pages/FamilyMedicalRecordsPage.tsx";
+import OverseasTreatmentRecordsPage from "./pages/OverseasTreatmentRecordsPage.tsx";
 import AdminLayout from "./components/admin/AdminLayout.tsx";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage.tsx";
 import AdminPlaceholderPage from "./pages/admin/AdminPlaceholderPage.tsx";
@@ -152,6 +156,10 @@ const App = () => (
               <Route path="/check-email" element={<CheckEmailPage />} />
               <Route path="/" element={<HomeRoute />} />
               <Route path="/demo" element={<ProductDemoPage />} />
+              <Route path="/medical-passport" element={<MedicalPassportPage />} />
+              <Route path="/medical-records-for-expats" element={<ExpatMedicalRecordsPage />} />
+              <Route path="/organise-medical-records-for-family" element={<FamilyMedicalRecordsPage />} />
+              <Route path="/medical-records-for-overseas-treatment" element={<OverseasTreatmentRecordsPage />} />
               <Route path="/translate" element={<TranslateToolPage />} />
               <Route path="/for-clinics" element={<ForCliniciansPage />} />
               <Route path="/for-concierges" element={<ForConciergesPage />} />

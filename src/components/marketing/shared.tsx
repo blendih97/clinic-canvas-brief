@@ -150,6 +150,7 @@ export function MarketingNav({ currentPage }: MarketingNavProps) {
   }, []);
 
   const links = [
+    { label: "Medical passport", href: "/medical-passport" },
     { label: "Translate a document", href: "/translate" },
     { label: "How it works", href: currentPage === "home" ? "#how-it-works" : "/#how-it-works" },
     { label: "Pricing", href: currentPage === "home" ? "#pricing" : "/#pricing" },
@@ -426,6 +427,13 @@ export function MarketingFooter() {
     { label: "See how it works", href: "/demo" },
   ];
 
+  const guideLinks = [
+    { label: "What is a medical passport?", href: "/medical-passport" },
+    { label: "Medical records for expats", href: "/medical-records-for-expats" },
+    { label: "Organise family medical records", href: "/organise-medical-records-for-family" },
+    { label: "Records for overseas treatment", href: "/medical-records-for-overseas-treatment" },
+  ];
+
   const legalLinks = [
     { label: "Security & Trust", href: "/security" },
     { label: "Privacy Policy", href: "/privacy" },
@@ -469,7 +477,17 @@ export function MarketingFooter() {
             </div>
           </div>
 
-          <div style={{ display: "flex", gap: isMobile ? 40 : 80 }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: isMobile ? 32 : 72 }}>
+            <div>
+              <div style={{ fontSize: 11, letterSpacing: "0.1em", color: marketingColors.gold, marginBottom: 16, fontWeight: 500 }}>GUIDES</div>
+              {guideLinks.map((link) => (
+                <div key={link.label} style={{ marginBottom: 10 }}>
+                  <Link to={link.href} style={{ fontSize: 14, color: marketingColors.mutedText, textDecoration: "none" }}>
+                    {link.label}
+                  </Link>
+                </div>
+              ))}
+            </div>
             <div>
               <div style={{ fontSize: 11, letterSpacing: "0.1em", color: marketingColors.gold, marginBottom: 16, fontWeight: 500 }}>PRODUCT</div>
               {productLinks.map((link) => (

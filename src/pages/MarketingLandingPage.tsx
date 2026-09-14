@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import SEO from "@/components/SEO";
 import InstantDemo from "@/components/marketing/InstantDemo";
 import SampleHealthPassport from "@/components/marketing/SampleHealthPassport";
+import ShareRinVita from "@/components/marketing/ShareRinVita";
 import {
   LogoMark,
   MarketingFooter,
@@ -124,15 +125,21 @@ function Hero() {
             Upload records from any country, automatically translate and organise them, and share a clinician-ready summary with doctors anywhere in the world.
           </p>
           <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 12, alignItems: isMobile ? "stretch" : "center" }}>
-            <Link to="/auth?mode=signup" style={{ padding: isMobile ? "18px 24px" : "16px 34px", background: marketingColors.gold, borderRadius: 2, color: "hsl(var(--primary-foreground))", fontSize: isMobile ? 14 : 14, fontWeight: 600, letterSpacing: "0.06em", textDecoration: "none", textAlign: "center", boxShadow: "0 6px 28px hsl(var(--primary) / 0.4)" }}>
-              Start Free — No Card Required
+            <Link to="/auth?mode=signup" style={{ padding: isMobile ? "18px 24px" : "17px 36px", background: marketingColors.gold, borderRadius: 2, color: "hsl(var(--primary-foreground))", fontSize: isMobile ? 15 : 15.5, fontWeight: 600, letterSpacing: "0.05em", textDecoration: "none", textAlign: "center", boxShadow: "0 6px 28px hsl(var(--primary) / 0.4)" }}>
+              Create your medical passport
             </Link>
-            <a href="#demo" style={{ padding: isMobile ? "15px 24px" : "15px 28px", background: "transparent", border: `1px solid ${marketingColors.gold}`, borderRadius: 2, color: marketingColors.gold, fontSize: 14, textDecoration: "none", textAlign: "center", fontWeight: 500 }}>
-              Watch the Demo →
-            </a>
+            <Link to="/demo" style={{ padding: isMobile ? "15px 24px" : "15px 28px", background: "transparent", border: `1px solid ${marketingColors.gold}`, borderRadius: 2, color: marketingColors.gold, fontSize: 14, textDecoration: "none", textAlign: "center", fontWeight: 500 }}>
+              See an example →
+            </Link>
           </div>
           <div style={{ marginTop: 12, fontSize: 12.5, color: marketingColors.softText, letterSpacing: "0.01em", fontWeight: 400 }}>
-            Free plan · 3 documents · No card required
+            Free plan · 3 documents · no card required. Paid plans start at £39/month.
+          </div>
+          <div style={{ marginTop: 8, fontSize: 12.5, color: marketingColors.softText }}>
+            A clinic or medical concierge?{" "}
+            <Link to="/for-clinics" style={{ color: marketingColors.gold, textDecoration: "none", fontWeight: 500 }}>
+              See partner options →
+            </Link>
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: isMobile ? "8px 16px" : 20, marginTop: isMobile ? 22 : 28, fontSize: 12, color: marketingColors.mutedText, letterSpacing: "0.02em" }}>
             {[
@@ -998,6 +1005,173 @@ const partnerStripLink: React.CSSProperties = {
   whiteSpace: "nowrap",
 };
 
+function WhoItsFor() {
+  const ref = useReveal<HTMLDivElement>();
+  const { isMobile, isTablet } = useMarketingBreakpoint();
+  const paddingX = isMobile ? 20 : isTablet ? 32 : 56;
+
+  const audiences = [
+    {
+      icon: "✈",
+      title: "Expats and people relocating",
+      body: "Your history stays in the country you left. Bring it with you, translated, before you register with a new doctor.",
+      href: "/medical-records-for-expats",
+      linkLabel: "Medical records for expats",
+    },
+    {
+      icon: "⌂",
+      title: "International families",
+      body: "Records made in several countries and languages, held in one account with a separate profile for each person.",
+      href: "/organise-medical-records-for-family",
+      linkLabel: "Organise family records",
+    },
+    {
+      icon: "♡",
+      title: "Caring for parents abroad",
+      body: "Hold a parent's medications, results and letters even when the appointments happen without you — with their agreement.",
+      href: "/organise-medical-records-for-family",
+      linkLabel: "Caring from another country",
+    },
+    {
+      icon: "⊙",
+      title: "Second opinions overseas",
+      body: "Send one structured, revocable link instead of a folder of photographs when a reviewing clinician asks for your history.",
+      href: "/medical-records-for-overseas-treatment",
+      linkLabel: "Preparing a second opinion",
+    },
+    {
+      icon: "◈",
+      title: "Travellers with a chronic condition",
+      body: "Keep your current medications, allergies and recent results ready in case you need care away from your usual team.",
+      href: "/medical-passport",
+      linkLabel: "What a medical passport holds",
+    },
+    {
+      icon: "✦",
+      title: "Treatment planned abroad",
+      body: "Assemble everything the receiving team asks for in advance, translated, so the consultation is not delayed.",
+      href: "/medical-records-for-overseas-treatment",
+      linkLabel: "Records for treatment abroad",
+    },
+  ];
+
+  return (
+    <section style={{ padding: `${isMobile ? 72 : 104}px ${paddingX}px`, background: marketingColors.cream }}>
+      <div ref={ref} className="marketing-reveal" style={{ maxWidth: 1180, margin: "0 auto" }}>
+        <div style={{ textAlign: "center", marginBottom: isMobile ? 40 : 60 }}>
+          <span className="marketing-section-label">Who it's for</span>
+          <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 32 : "clamp(32px,3.6vw,46px)", fontWeight: 300 }}>
+            Built for people whose care crosses borders
+          </h2>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2,1fr)" : "repeat(3,1fr)", gap: 16 }}>
+          {audiences.map((a) => (
+            <div key={a.title} style={{ padding: isMobile ? "24px 20px" : "28px 26px", background: marketingColors.surface, border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 2 }}>
+              <div aria-hidden style={{ width: 42, height: 42, borderRadius: "50%", border: `1px solid ${marketingColors.goldBorder}`, background: marketingColors.goldSoft, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 14, color: marketingColors.gold, fontSize: 18 }}>{a.icon}</div>
+              <h3 style={{ fontFamily: "Cormorant Garamond", fontSize: 22, fontWeight: 400, marginBottom: 10, lineHeight: 1.25 }}>{a.title}</h3>
+              <p style={{ fontSize: 13.5, lineHeight: 1.8, color: marketingColors.mutedText, fontWeight: 300, marginBottom: 12 }}>{a.body}</p>
+              <Link to={a.href} style={{ fontSize: 12.5, color: marketingColors.gold, textDecoration: "none", fontWeight: 600, letterSpacing: "0.03em" }}>
+                {a.linkLabel} →
+              </Link>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ThreeSteps() {
+  const ref = useReveal<HTMLDivElement>();
+  const { isMobile, isTablet } = useMarketingBreakpoint();
+  const paddingX = isMobile ? 20 : isTablet ? 32 : 56;
+
+  const steps = [
+    { n: "01", title: "Upload records", body: "PDFs, scans or photographs from any country, provider or year. No formatting, no forms to fill in." },
+    { n: "02", title: "Understand your history", body: "Translated and organised into medications, results, imaging and visits — each entry traceable to its source document." },
+    { n: "03", title: "Share when needed", body: "Give a clinician a structured view through a time-limited link you can revoke at any moment." },
+  ];
+
+  return (
+    <section style={{ padding: `${isMobile ? 72 : 104}px ${paddingX}px`, background: marketingColors.cream2 }}>
+      <div ref={ref} className="marketing-reveal" style={{ maxWidth: 1120, margin: "0 auto" }}>
+        <div style={{ textAlign: "center", marginBottom: isMobile ? 40 : 56 }}>
+          <span className="marketing-section-label">Three steps</span>
+          <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 30 : "clamp(32px,3.6vw,46px)", fontWeight: 300 }}>
+            Upload records → Understand your history → Share when needed
+          </h2>
+        </div>
+        <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3,1fr)", gap: 16 }}>
+          {steps.map((s) => (
+            <li key={s.n} style={{ padding: isMobile ? "24px 20px" : "30px 26px", background: marketingColors.surface, border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 2 }}>
+              <div style={{ fontFamily: "Cormorant Garamond", fontSize: 26, color: marketingColors.gold, marginBottom: 8 }}>{s.n}</div>
+              <h3 style={{ fontFamily: "Cormorant Garamond", fontSize: 22, fontWeight: 400, marginBottom: 10 }}>{s.title}</h3>
+              <p style={{ fontSize: 13.5, lineHeight: 1.8, color: marketingColors.mutedText, fontWeight: 300 }}>{s.body}</p>
+            </li>
+          ))}
+        </ol>
+        <div style={{ textAlign: "center", marginTop: isMobile ? 28 : 40 }}>
+          <Link to="/auth?mode=signup" style={{ display: "inline-block", padding: "14px 30px", background: marketingColors.gold, color: "hsl(var(--primary-foreground))", borderRadius: 2, fontSize: 14, fontWeight: 600, letterSpacing: "0.05em", textDecoration: "none" }}>
+            Create your medical passport
+          </Link>
+          <div style={{ fontSize: 12.5, color: marketingColors.softText, marginTop: 12 }}>
+            Free plan · 3 documents · no card required
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function TrustMechanisms() {
+  const ref = useReveal<HTMLDivElement>();
+  const { isMobile, isTablet } = useMarketingBreakpoint();
+  const paddingX = isMobile ? 20 : isTablet ? 32 : 56;
+
+  const items = [
+    { title: "Every entry traces back to a source document", body: "Nothing stands on its own. Whatever RinVita extracts stays linked to the record it came from, so you or a clinician can open the original." },
+    { title: "Encrypted at rest and in transit", body: "Records are encrypted while stored and while moving between your device and RinVita. We do not describe this as end-to-end encrypted — processing your documents requires us to hold the keys." },
+    { title: "Time-limited sharing, revocable by you", body: "Sharing links expire, and you can revoke one immediately from your account. Nothing is shared unless you choose to share it." },
+    { title: "Organised, never diagnosed", body: "RinVita structures and translates records. It does not diagnose or advise, and AI output should be reviewed against the original documents." },
+  ];
+
+  return (
+    <section style={{ padding: `${isMobile ? 72 : 104}px ${paddingX}px`, background: marketingColors.cream }}>
+      <div ref={ref} className="marketing-reveal" style={{ maxWidth: 1020, margin: "0 auto" }}>
+        <div style={{ textAlign: "center", marginBottom: isMobile ? 36 : 52 }}>
+          <span className="marketing-section-label">What you can rely on</span>
+          <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 30 : "clamp(32px,3.6vw,46px)", fontWeight: 300 }}>Your records stay yours.</h2>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2,1fr)", gap: 16 }}>
+          {items.map((i) => (
+            <div key={i.title} style={{ padding: isMobile ? "24px 20px" : "28px 26px", background: marketingColors.surface, border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 2 }}>
+              <h3 style={{ fontFamily: "Cormorant Garamond", fontSize: 21, fontWeight: 400, marginBottom: 10, lineHeight: 1.3 }}>{i.title}</h3>
+              <p style={{ fontSize: 13.5, lineHeight: 1.8, color: marketingColors.mutedText, fontWeight: 300 }}>{i.body}</p>
+            </div>
+          ))}
+        </div>
+        <div style={{ textAlign: "center", marginTop: 24 }}>
+          <Link to="/security" style={{ fontSize: 13, color: marketingColors.gold, textDecoration: "none", fontWeight: 600 }}>
+            Read the full security page →
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function HomeShare() {
+  const { isMobile, isTablet } = useMarketingBreakpoint();
+  const paddingX = isMobile ? 20 : isTablet ? 32 : 56;
+  return (
+    <section style={{ padding: `${isMobile ? 56 : 80}px ${paddingX}px`, background: marketingColors.cream2 }}>
+      <div style={{ maxWidth: 860, margin: "0 auto" }}>
+        <ShareRinVita placement="home" />
+      </div>
+    </section>
+  );
+}
+
 const MarketingLandingPage = () => {
   return (
     <div className="marketing-page" style={{ background: marketingColors.cream, color: marketingColors.ink }}>
@@ -1010,17 +1184,19 @@ const MarketingLandingPage = () => {
       <MarketingNav currentPage="home" />
       <Hero />
       <PartnerStrip />
+      <ThreeSteps />
       <TryItLive />
-      <HowItWorks />
+      <WhoItsFor />
       <WhyRinVita />
-      <UseCases />
       <Features />
       <DemoVideo />
       <SampleHealthPassport />
+      <TrustMechanisms />
       <ClinicalSafety />
       <Pricing />
       <ForClinicsCallout />
       <FAQ />
+      <HomeShare />
       <MarketingFooter />
       <MobileStickyCTA />
     </div>
