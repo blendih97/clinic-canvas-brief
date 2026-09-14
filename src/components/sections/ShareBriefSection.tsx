@@ -178,7 +178,7 @@ const ShareBriefSection = () => {
           <p className="text-sm text-muted-foreground mb-2 max-w-md mx-auto">
             Share Brief is available on the Standard plan.
           </p>
-          <p className="text-xs text-muted-foreground">Upgrade coming soon.</p>
+          <p className="text-xs text-muted-foreground">Upgrade to create secure, time-limited links you can revoke at any time.</p>
         </div>
       </div>
     );
