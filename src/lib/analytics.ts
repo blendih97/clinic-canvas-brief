@@ -61,7 +61,14 @@ export type FunnelEvent =
   | "free_limit_reached"
   | "paywall_shown"
   | "checkout_started"
-  | "purchase_completed";
+  | "purchase_completed"
+  // B2B partner funnel. Page slug and organisation type ONLY — never free-text,
+  // contact details or any medical content.
+  | "b2b_page_view"
+  | "pilot_cta_clicked"
+  | "b2b_form_started"
+  | "b2b_form_submitted"
+  | "b2b_form_failed";
 
 /**
  * Fire a named funnel event. Attaches persisted UTM params. Also mirrors to
