@@ -243,46 +243,70 @@ export type Database = {
       }
       clinic_enquiries: {
         Row: {
+          consent_at: string | null
+          country: string | null
           created_at: string
+          current_problem: string | null
           email: string
           id: string
+          languages_handled: string | null
           message: string | null
           name: string
           organisation: string | null
+          organisation_type: string | null
           patients_per_month: string | null
+          preferred_next_step: string | null
           role: string | null
+          source_page: string | null
           status: string
           utm_campaign: string | null
           utm_medium: string | null
           utm_source: string | null
+          website: string | null
         }
         Insert: {
+          consent_at?: string | null
+          country?: string | null
           created_at?: string
+          current_problem?: string | null
           email: string
           id?: string
+          languages_handled?: string | null
           message?: string | null
           name: string
           organisation?: string | null
+          organisation_type?: string | null
           patients_per_month?: string | null
+          preferred_next_step?: string | null
           role?: string | null
+          source_page?: string | null
           status?: string
           utm_campaign?: string | null
           utm_medium?: string | null
           utm_source?: string | null
+          website?: string | null
         }
         Update: {
+          consent_at?: string | null
+          country?: string | null
           created_at?: string
+          current_problem?: string | null
           email?: string
           id?: string
+          languages_handled?: string | null
           message?: string | null
           name?: string
           organisation?: string | null
+          organisation_type?: string | null
           patients_per_month?: string | null
+          preferred_next_step?: string | null
           role?: string | null
+          source_page?: string | null
           status?: string
           utm_campaign?: string | null
           utm_medium?: string | null
           utm_source?: string | null
+          website?: string | null
         }
         Relationships: []
       }
