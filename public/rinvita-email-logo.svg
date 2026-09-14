@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="48" viewBox="0 0 220 48" role="img" aria-label="RinVita">
+  <title>RinVita</title>
+  <g transform="translate(4, 10)">
+    <polygon points="14,2 26,9 26,19 14,26 2,19 2,9" fill="none" stroke="#B8952A" stroke-width="1.5"/>
+    <polygon points="14,8 20,11.5 20,16.5 14,20 8,16.5 8,11.5" fill="#B8952A" fill-opacity="0.2"/>
+    <circle cx="14" cy="14" r="2.5" fill="#B8952A"/>
+  </g>
+  <text x="40" y="31" font-family="Cormorant Garamond, Garamond, Georgia, 'Times New Roman', serif" font-size="26" font-weight="500" letter-spacing="0.8" fill="#1F2933">RinVita</text>
+</svg>
