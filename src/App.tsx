@@ -15,6 +15,7 @@ import AuthPage from "./pages/AuthPage.tsx";
 import CheckEmailPage from "./pages/CheckEmailPage.tsx";
 import MarketingLandingPage from "./pages/MarketingLandingPage.tsx";
 import ProductDemoPage from "./pages/ProductDemoPage.tsx";
+import PartnerDemoPage from "./pages/PartnerDemoPage.tsx";
 import TranslateToolPage from "./pages/TranslateToolPage.tsx";
 import ForCliniciansPage from "./pages/ForCliniciansPage.tsx";
 import ForConciergesPage from "./pages/ForConciergesPage.tsx";

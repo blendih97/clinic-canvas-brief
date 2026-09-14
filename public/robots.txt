@@ -12,5 +12,6 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /partner-demo
 
 Sitemap: https://rinvita.co.uk/sitemap.xml
