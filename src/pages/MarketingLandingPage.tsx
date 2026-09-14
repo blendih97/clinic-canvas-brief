@@ -380,8 +380,8 @@ function Features() {
   const paddingX = isMobile ? 20 : isTablet ? 32 : 56;
 
   const features = [
-    ["AI-Powered", "Multilingual AI", "Reads and translates medical records in 50+ languages with clinical-grade accuracy."],
-    ["GDPR Compliant", "Secure Sharing", "Generate time-limited, encrypted links for any clinician worldwide and revoke access instantly."],
+    ["AI-Powered", "Multilingual AI", "Multilingual AI extraction across 50+ languages, with every result traceable to the original record."],
+    ["You Stay In Control", "Secure Sharing", "Generate time-limited, encrypted links for any clinician worldwide and revoke access instantly."],
     ["Unified Record", "Complete History", "Blood results, imaging, medications, allergies, and records from every country in one timeline."],
     ["Up to 6 Members", "Family Plan", "Manage records for elderly parents, children, and dependents under one secure account."],
   ];
@@ -431,8 +431,8 @@ function ClinicalSafety() {
     },
     {
       icon: "🇪🇺",
-      title: "EU-hosted, UK-compliant",
-      body: "Built on EU infrastructure (Ireland). UK GDPR compliant. ICO registered (ZC123014). Article 9 lawful basis for special-category health data processing.",
+      title: "EU-hosted, UK-registered",
+      body: "Built on EU infrastructure (Ireland). Designed with UK GDPR principles in mind. RinVita Ltd is ICO registered (ZC123014). Health data is processed with your explicit consent, and our legal basis is kept under review.",
     },
     {
       icon: "🛡",
@@ -448,7 +448,7 @@ function ClinicalSafety() {
           <span className="marketing-section-label">Security & trust</span>
           <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 32 : "clamp(34px,3.8vw,52px)", fontWeight: 300, color: marketingColors.ink, marginBottom: 16 }}>Your health information belongs to you.</h2>
           <p style={{ fontSize: isMobile ? 14 : 16, color: marketingColors.mutedText, maxWidth: 600, margin: "0 auto", lineHeight: 1.7, fontWeight: 300 }}>
-            Designed for sensitive medical information — GDPR compliant, advanced encryption, private by default. You control who can access your records.
+            Designed for sensitive medical information — encrypted at rest and in transit, user-scoped access controls, and revocable, time-limited sharing. You control who can access your records.
           </p>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr 1fr" : "repeat(3,1fr)", gap: 16 }}>
@@ -480,18 +480,18 @@ function Pricing() {
   }, []);
 
   const freePlan = {
-    name: "Free trial",
-    badge: "14 DAYS · NO CARD",
+    name: "Free plan",
+    badge: "3 DOCUMENTS · NO CARD",
     price: "Free",
-    period: "14 days · 3 documents",
-    desc: "Try the full experience free for 14 days — up to 3 documents, no card required.",
+    period: "3 documents",
+    desc: "Start free with up to 3 documents. No card required, no time limit.",
     features: [
-      "Try free — 3 documents, 14 days",
+      "Up to 3 documents, free",
       "Full AI translation and structured summaries",
       "Travelling abroad? Translation in 50+ languages",
       "Preview clinician share links and PDF exports",
     ],
-    cta: "Start Free Trial",
+    cta: "Start free",
     available: true,
   };
 
@@ -545,7 +545,7 @@ function Pricing() {
           <span className="marketing-section-label">Pricing</span>
           <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 32 : "clamp(34px,3.8vw,52px)", fontWeight: 300, color: marketingColors.ink, marginBottom: 16 }}>Simple pricing. Pay only for what you need.</h2>
           <p style={{ fontSize: isMobile ? 14 : 16, color: marketingColors.mutedText, maxWidth: 560, margin: "0 auto", lineHeight: 1.7, fontWeight: 300 }}>
-            Try free for 14 days with 3 documents — no card required. Upgrade when you need unlimited uploads, full sharing and PDF export.
+            Start free with 3 documents — no card required. Upgrade when you need unlimited uploads, full sharing and PDF export.
           </p>
         </div>
 
