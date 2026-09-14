@@ -207,10 +207,10 @@ const AuthPage = () => {
               {mode === "signup" && (
                 <div className="mb-5 rounded-lg border border-primary/20 bg-primary/5 px-3 py-2.5 text-center">
                   <p className="text-xs text-foreground/80 leading-relaxed">
-                    <span className="font-medium text-foreground">Try it free</span> · 3 documents, fully translated · No card required
+                    <span className="font-medium text-foreground">Free plan</span> · 3 documents, fully translated · No card required
                   </p>
                   <div className="mt-2 flex items-center justify-center gap-3 text-[10px] text-muted-foreground">
-                    <span className="inline-flex items-center gap-1"><ShieldCheck className="w-3 h-3 text-primary" /> Bank-level encryption</span>
+                    <span className="inline-flex items-center gap-1"><ShieldCheck className="w-3 h-3 text-primary" /> Encrypted at rest and in transit</span>
                     <span className="inline-flex items-center gap-1"><XCircle className="w-3 h-3 text-primary" /> Cancel anytime</span>
                     <span className="inline-flex items-center gap-1"><CreditCard className="w-3 h-3 text-primary" /> No card</span>
                   </div>
@@ -300,14 +300,17 @@ const AuthPage = () => {
         </div>
 
         {mode === "signup" && (
-          <figure className="mt-5 rounded-lg border border-border/60 bg-card/60 px-4 py-3 text-center">
-            <blockquote className="text-xs italic text-muted-foreground leading-relaxed">
-              "Since moving from Dubai to London, keeping track of my medical records across two countries was a nightmare. RinVita changed that completely."
-            </blockquote>
-            <figcaption className="mt-1.5 text-[10px] tracking-[0.12em] uppercase text-muted-foreground/80">
-              Sarah K. · London (previously Dubai)
-            </figcaption>
-          </figure>
+          <div className="mt-5 rounded-lg border border-border/60 bg-card/60 px-4 py-3">
+            <p className="text-[10px] tracking-[0.12em] uppercase text-muted-foreground/80 text-center mb-2">
+              What your free plan includes
+            </p>
+            <ul className="space-y-1.5 text-xs text-muted-foreground leading-relaxed">
+              <li>• Up to 3 documents, in any language, with the original always kept</li>
+              <li>• Multilingual AI extraction, with every result traceable to the source record</li>
+              <li>• Encrypted at rest and in transit, hosted in the EU (Ireland)</li>
+              <li>• Time-limited share links you can revoke at any time</li>
+            </ul>
+          </div>
         )}
       </div>
     </div>
