@@ -54,16 +54,20 @@ describe("consumer page content", () => {
 
   it("never claims end-to-end encryption or other unverified proof", () => {
     const forbidden = [
-      "end-to-end encrypted",
+      "end-to-end encrypt",
       "clinical-grade",
-      "fully GDPR compliant",
-      "HIPAA certified",
+      "fully gdpr compliant",
+      "hipaa certified",
       "guaranteed",
     ];
     for (const file of files) {
-      const content = read(file).toLowerCase();
+      const lines = read(file).toLowerCase().split("\n");
       for (const phrase of forbidden) {
-        expect(content, `${file} contains "${phrase}"`).not.toContain(phrase.toLowerCase());
+        for (const line of lines) {
+          if (!line.includes(phrase)) continue;
+          // The phrase may only appear inside an explicit disclaimer.
+          expect(line, `${file} claims "${phrase}"`).toMatch(/\b(not|never|do not|does not)\b/);
+        }
       }
     }
   });
