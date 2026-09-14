@@ -83,6 +83,20 @@ Deno.serve(async (req: Request) => {
   const utm_medium = String(body?.utm_medium || "").trim().slice(0, 100) || null;
   const utm_campaign = String(body?.utm_campaign || "").trim().slice(0, 100) || null;
 
+  // Partner pilot application fields (/for-clinics, /for-concierges)
+  const website_url = String(body?.website_url || "").trim().slice(0, 300) || null;
+  const country = String(body?.country || "").trim().slice(0, 120) || null;
+  const organisation_type_raw = String(body?.organisation_type || "").trim();
+  const organisation_type = ORGANISATION_TYPES.has(organisation_type_raw) ? organisation_type_raw : null;
+  const languages_handled = String(body?.languages_handled || "").trim().slice(0, 300) || null;
+  const current_problem = String(body?.current_problem || "").trim().slice(0, 4000) || null;
+  const preferred_next_step_raw = String(body?.preferred_next_step || "").trim();
+  const preferred_next_step = NEXT_STEPS.has(preferred_next_step_raw) ? preferred_next_step_raw : null;
+  const source_page_raw = String(body?.source_page || "").trim();
+  const source_page = SOURCE_PAGES.has(source_page_raw) ? source_page_raw : "clinics";
+  const consent_at = body?.consent === true ? new Date().toISOString() : null;
+
+
   // Honeypot — bots fill this hidden field
   if (honeypot) {
     return new Response(JSON.stringify({ ok: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
