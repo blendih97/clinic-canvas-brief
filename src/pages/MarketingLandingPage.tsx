@@ -124,15 +124,21 @@ function Hero() {
             Upload records from any country, automatically translate and organise them, and share a clinician-ready summary with doctors anywhere in the world.
           </p>
           <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 12, alignItems: isMobile ? "stretch" : "center" }}>
-            <Link to="/auth?mode=signup" style={{ padding: isMobile ? "18px 24px" : "16px 34px", background: marketingColors.gold, borderRadius: 2, color: "hsl(var(--primary-foreground))", fontSize: isMobile ? 14 : 14, fontWeight: 600, letterSpacing: "0.06em", textDecoration: "none", textAlign: "center", boxShadow: "0 6px 28px hsl(var(--primary) / 0.4)" }}>
-              Start Free — No Card Required
+            <Link to="/auth?mode=signup" style={{ padding: isMobile ? "18px 24px" : "17px 36px", background: marketingColors.gold, borderRadius: 2, color: "hsl(var(--primary-foreground))", fontSize: isMobile ? 15 : 15.5, fontWeight: 600, letterSpacing: "0.05em", textDecoration: "none", textAlign: "center", boxShadow: "0 6px 28px hsl(var(--primary) / 0.4)" }}>
+              Create your medical passport
             </Link>
-            <a href="#demo" style={{ padding: isMobile ? "15px 24px" : "15px 28px", background: "transparent", border: `1px solid ${marketingColors.gold}`, borderRadius: 2, color: marketingColors.gold, fontSize: 14, textDecoration: "none", textAlign: "center", fontWeight: 500 }}>
-              Watch the Demo →
-            </a>
+            <Link to="/demo" style={{ padding: isMobile ? "15px 24px" : "15px 28px", background: "transparent", border: `1px solid ${marketingColors.gold}`, borderRadius: 2, color: marketingColors.gold, fontSize: 14, textDecoration: "none", textAlign: "center", fontWeight: 500 }}>
+              See an example →
+            </Link>
           </div>
           <div style={{ marginTop: 12, fontSize: 12.5, color: marketingColors.softText, letterSpacing: "0.01em", fontWeight: 400 }}>
-            Free plan · 3 documents · No card required
+            Free plan · 3 documents · no card required. Paid plans start at £39/month.
+          </div>
+          <div style={{ marginTop: 8, fontSize: 12.5, color: marketingColors.softText }}>
+            A clinic or medical concierge?{" "}
+            <Link to="/for-clinics" style={{ color: marketingColors.gold, textDecoration: "none", fontWeight: 500 }}>
+              See partner options →
+            </Link>
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: isMobile ? "8px 16px" : 20, marginTop: isMobile ? 22 : 28, fontSize: 12, color: marketingColors.mutedText, letterSpacing: "0.02em" }}>
             {[
