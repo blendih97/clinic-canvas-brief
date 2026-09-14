@@ -150,6 +150,7 @@ export function MarketingNav({ currentPage }: MarketingNavProps) {
   }, []);
 
   const links = [
+    { label: "Medical passport", href: "/medical-passport" },
     { label: "Translate a document", href: "/translate" },
     { label: "How it works", href: currentPage === "home" ? "#how-it-works" : "/#how-it-works" },
     { label: "Pricing", href: currentPage === "home" ? "#pricing" : "/#pricing" },
@@ -424,6 +425,13 @@ export function MarketingFooter() {
     { label: "For clinics", href: "/for-clinics" },
     { label: "For concierges", href: "/for-concierges" },
     { label: "See how it works", href: "/demo" },
+  ];
+
+  const guideLinks = [
+    { label: "What is a medical passport?", href: "/medical-passport" },
+    { label: "Medical records for expats", href: "/medical-records-for-expats" },
+    { label: "Organise family medical records", href: "/organise-medical-records-for-family" },
+    { label: "Records for overseas treatment", href: "/medical-records-for-overseas-treatment" },
   ];
 
   const legalLinks = [
