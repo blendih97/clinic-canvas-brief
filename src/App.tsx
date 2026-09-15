@@ -17,6 +17,7 @@ import MarketingLandingPage from "./pages/MarketingLandingPage.tsx";
 import ProductDemoPage from "./pages/ProductDemoPage.tsx";
 import PartnerDemoPage from "./pages/PartnerDemoPage.tsx";
 import TranslateToolPage from "./pages/TranslateToolPage.tsx";
+import TranslateLanguagePage from "./pages/TranslateLanguagePage.tsx";
 import ForCliniciansPage from "./pages/ForCliniciansPage.tsx";
 import ForConciergesPage from "./pages/ForConciergesPage.tsx";
 import ClinicsPartnersPage from "./pages/ClinicsPartnersPage.tsx";
@@ -142,17 +143,9 @@ const MetaPixelTracker = () => {
   return null;
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <LocaleProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <MetaPixelTracker />
-            <PaymentTestModeBanner />
-            <Routes>
+/** Route table shared by the browser app and the build-time prerenderer. */
+export const AppRoutes = () => (
+  <Routes>
               <Route path="/auth" element={<AuthRoute><AuthPage /></AuthRoute>} />
               <Route path="/check-email" element={<CheckEmailPage />} />
               <Route path="/" element={<HomeRoute />} />
@@ -163,6 +156,7 @@ const App = () => (
               <Route path="/organise-medical-records-for-family" element={<FamilyMedicalRecordsPage />} />
               <Route path="/medical-records-for-overseas-treatment" element={<OverseasTreatmentRecordsPage />} />
               <Route path="/translate" element={<TranslateToolPage />} />
+              <Route path="/translate/:slug" element={<TranslateLanguagePage />} />
               <Route path="/for-clinics" element={<ForCliniciansPage />} />
               <Route path="/for-concierges" element={<ForConciergesPage />} />
               <Route path="/for-partners" element={<Navigate to="/for-clinics" replace />} />
@@ -193,7 +187,20 @@ const App = () => (
               <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
 
               <Route path="*" element={<NotFound />} />
-            </Routes>
+  </Routes>
+);
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <AuthProvider>
+      <LocaleProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <MetaPixelTracker />
+            <PaymentTestModeBanner />
+            <AppRoutes />
             <CookieConsent />
           </BrowserRouter>
         </TooltipProvider>

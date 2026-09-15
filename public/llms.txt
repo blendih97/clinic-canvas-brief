@@ -7,11 +7,40 @@ RinVita Ltd is a UK company (registered in England and Wales, number 17163153), 
 ## Pages
 
 - [Home](/): Product overview, how it works, pricing, and FAQ.
+- [Medical passport](/medical-passport): What a patient-owned medical passport contains and how international records are organised and translated.
 - [Interactive demo](/demo): Walkthrough of the upload, translation, and share-brief flow.
 - [Security & Trust](/security): Encryption, EU data residency, data protection, audit logging, and user rights.
 - [Privacy Policy](/privacy): How RinVita collects, processes, and protects personal and health data.
 - [Terms of Service](/terms): Terms governing use of the RinVita service.
 - [Sign in / Sign up](/auth): Account access.
+
+## Guides for patients and families
+
+- [Medical records for expats](/medical-records-for-expats): Keeping a health history together when you live and are treated in more than one country.
+- [Organise medical records for family](/organise-medical-records-for-family): Managing records for children, partners and parents abroad under one account.
+- [Medical records for overseas treatment](/medical-records-for-overseas-treatment): Preparing records and second-opinion packs for treatment in another country.
+
+## Free medical document translator
+
+- [Translate a medical document](/translate): Free AI translation of a medical document plus a plain-English summary, 45+ languages, no account required.
+- [Polish medical records to English](/translate/polish-medical-records-to-english): Translate Polish lab results, wypis discharge summaries and vaccination records, with a Polish medical term glossary.
+- [Romanian medical records to English](/translate/romanian-medical-records-to-english): Translate Romanian analize, bilet de externare and vaccination records, with a Romanian glossary.
+- [Spanish medical records to English](/translate/spanish-medical-records-to-english): Translate Spanish analítica, informe de alta and cartilla de vacunación, with a Spanish glossary.
+- [Portuguese medical records to English](/translate/portuguese-medical-records-to-english): Translate Portuguese and Brazilian hemograma, laudo and sumário de alta, with a Portuguese glossary.
+- [Italian medical records to English](/translate/italian-medical-records-to-english): Translate Italian referto, lettera di dimissione and libretto delle vaccinazioni, with an Italian glossary.
+- [French medical records to English](/translate/french-medical-records-to-english): Translate French bilan sanguin, compte rendu and carnet de santé, with a French glossary.
+- [German medical records to English](/translate/german-medical-records-to-english): Translate German Befund, Arztbrief and Impfpass, with a German glossary.
+- [Dutch medical records to English](/translate/dutch-medical-records-to-english): Translate Dutch uitslag, ontslagbrief and vaccinatiebewijs, with a Dutch glossary.
+- [Greek medical records to English](/translate/greek-medical-records-to-english): Translate Greek γενική αίματος, εξιτήριο and βιβλιάριο υγείας, with a Greek glossary.
+- [Turkish medical records to English](/translate/turkish-medical-records-to-english): Translate Turkish tahlil sonucu, epikriz and aşı kartı, with a Turkish glossary.
+- [Russian medical records to English](/translate/russian-medical-records-to-english): Translate Russian общий анализ крови, выписной эпикриз and vaccination certificates, with a Russian glossary.
+- [Arabic medical records to English](/translate/arabic-medical-records-to-english): Translate Arabic medical reports, discharge reports and vaccination cards, with an Arabic glossary.
+- [Chinese medical records to English](/translate/chinese-medical-records-to-english): Translate Chinese 检验报告, 出院小结 and 预防接种证, with a Mandarin glossary.
+
+## For clinics and partners
+
+- [For clinics](/for-clinics): How clinics and international patient teams help patients arrive prepared.
+- [For concierges](/for-concierges): How medical concierges and family offices support internationally mobile clients.
 
 ## Optional
 
