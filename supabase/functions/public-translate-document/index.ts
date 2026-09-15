@@ -142,6 +142,8 @@ Deno.serve(async (req: Request) => {
     const jsonStr = rawText.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
     const result = JSON.parse(jsonStr);
 
+    await logAttempt(body, targetLang, true, result?.originalLanguage, result?.documentType);
+
     // Persist lead if email + consent provided (best-effort, never block response)
     const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
     if (email && body.consent === true && /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
