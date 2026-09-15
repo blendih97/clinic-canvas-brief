@@ -9,6 +9,12 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/useAuth";
 import { LocaleProvider } from "@/hooks/useLocale";
 import { AppRoutes } from "./App";
+import MarketingLandingPage from "./pages/MarketingLandingPage";
+
+// "/" resolves to the signed-in dashboard redirect in the browser, which
+// renders nothing on the server. Crawlers must get the marketing page.
+const RouteTree = ({ url }: { url: string }) =>
+  url === "/" ? <MarketingLandingPage /> : <AppRoutes />;
 
 export function render(url: string) {
   const helmetContext: { helmet?: HelmetServerState } = {};
