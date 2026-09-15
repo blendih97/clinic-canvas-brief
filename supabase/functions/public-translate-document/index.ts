@@ -52,6 +52,37 @@ Return this exact JSON shape:
   "translatedFullText": "full ${targetLangName} translation of the document"
 }`;
 
+const trim = (v: unknown, max = 120) =>
+  typeof v === "string" && v.trim() ? v.trim().slice(0, max) : null;
+
+/**
+ * Record an anonymous usage row for the free translator. Never stores the
+ * document, the file name, the email address or any personal data.
+ */
+async function logAttempt(
+  body: Record<string, unknown>,
+  targetLang: string,
+  succeeded: boolean,
+  sourceLanguage?: unknown,
+  documentType?: unknown,
+) {
+  try {
+    const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    await admin.from("translate_tool_events").insert({
+      source_language: trim(sourceLanguage, 60),
+      target_language: targetLang.slice(0, 10),
+      document_type: trim(documentType, 60),
+      landing_path: trim(body.landingPath, 160),
+      utm_source: trim(body.utmSource, 100),
+      utm_medium: trim(body.utmMedium, 100),
+      utm_campaign: trim(body.utmCampaign, 100),
+      succeeded,
+    });
+  } catch (e) {
+    console.warn("translate event log failed", e);
+  }
+}
+
 const BodyShape = (v: unknown): v is {
   fileType: "pdf" | "image";
   mediaType?: string;
