@@ -271,16 +271,16 @@ export default function TranslatorTool({ defaultTargetLanguage = "en", landingPa
           {/* Acquisition card — shown as soon as a translation succeeds. */}
           <div style={{ padding: isMobile ? 20 : 24, background: marketingColors.goldSoft, border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 2, marginBottom: 28 }}>
             <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: 24, fontWeight: 400, color: marketingColors.ink, marginBottom: 8 }}>
-              Save this translation to your free medical passport
+              Your translation is ready. Now keep it.
             </h2>
             <p style={{ fontSize: 14, color: marketingColors.mutedText, lineHeight: 1.7, marginBottom: 16 }}>
-              Keep the original and the translation together, add the rest of your history, and share it with a clinician when you need to.
+              Add it to your free RinVita hub so it sits with your other records instead of in your downloads folder.
             </p>
             <Link
               to="/auth?mode=signup&from=translate"
               style={{ display: "inline-block", padding: "12px 28px", background: marketingColors.gold, color: "hsl(var(--primary-foreground))", textDecoration: "none", borderRadius: 2, fontSize: 13, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase" }}
             >
-              Create your free passport
+              Start your medical hub — free
             </Link>
             <p style={{ fontSize: 12, color: marketingColors.softText, marginTop: 12 }}>
               Free plan · 3 documents · no card required.
