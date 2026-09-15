@@ -177,7 +177,7 @@ function Hero() {
           )}
           <div style={{ marginTop: isMobile ? 40 : 64, paddingTop: isMobile ? 28 : 40, borderTop: `1px solid hsl(var(--foreground) / 0.1)`, display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4,1fr)", gap: isMobile ? "20px 16px" : 24 }}>
             {[
-              ["50+", "languages", "From Arabic to Mandarin"],
+              ["45+", "languages", "From Arabic to Mandarin"],
               ["256-bit", "encryption", "At rest and in transit"],
               ["EU data", "hosting", "Stored in Ireland"],
               ["UK", "registered", "ICO ZC123014"],
@@ -218,7 +218,7 @@ function HowItWorks() {
     {
       n: "02",
       title: "Translate",
-      desc: "Records are automatically translated and structured across 50+ languages, from Arabic to Mandarin.",
+      desc: "Records are automatically translated and structured across 45+ languages, from Arabic to Mandarin.",
       icon: "◎",
     },
     {
@@ -387,7 +387,7 @@ function Features() {
   const paddingX = isMobile ? 20 : isTablet ? 32 : 56;
 
   const features = [
-    ["AI-Powered", "Multilingual AI", "Multilingual AI extraction across 50+ languages, with every result traceable to the original record."],
+    ["AI-Powered", "Multilingual AI", "Multilingual AI extraction across 45+ languages, with every result traceable to the original record."],
     ["You Stay In Control", "Secure Sharing", "Generate time-limited, encrypted links for any clinician worldwide and revoke access instantly."],
     ["Unified Record", "Complete History", "Blood results, imaging, medications, allergies, and records from every country in one timeline."],
     ["Up to 6 Members", "Family Plan", "Manage records for elderly parents, children, and dependents under one secure account."],
@@ -495,7 +495,7 @@ function Pricing() {
     features: [
       "Up to 3 documents, free",
       "Full AI translation and structured summaries",
-      "Travelling abroad? Translation in 50+ languages",
+      "Travelling abroad? Translation in 45+ languages",
       "Preview clinician share links and PDF exports",
     ],
     cta: "Start free",
@@ -515,7 +515,7 @@ function Pricing() {
       features: [
         "1 user account",
         "Unlimited document uploads",
-        "Translation in 50+ languages",
+        "Translation in 45+ languages",
         "AI-structured medical summaries",
         "Clinician sharing links (full collaboration)",
         "Priority support",
@@ -535,7 +535,7 @@ function Pricing() {
         "Up to 6 family members",
         "Separate health passport per member",
         "Unlimited document uploads per member",
-        "Translation in 50+ languages",
+        "Translation in 45+ languages",
         "AI-structured medical summaries",
         "Family admin dashboard",
         "Clinician sharing links (full collaboration)",
@@ -825,7 +825,7 @@ function FAQ() {
     ["Who can see my records?", "Only you, and anyone you explicitly share a Health Passport link with. Our staff cannot browse your documents. Share links are time-limited and revocable at any time."],
     ["Can I delete my data?", "Yes — at any time, from Settings. Account deletion removes your documents, extracted data and share links within 30 days."],
     ["Do you train AI on my records?", "No. Your documents are never used to train third-party models. AI processing runs on isolated infrastructure and outputs are stored only in your vault."],
-    ["What languages does RinVita support?", "50+ languages including Arabic, Mandarin, Spanish, French, Turkish, Russian, Polish, Hindi, Portuguese and more."],
+    ["What languages does RinVita support?", "45+ languages including Arabic, Mandarin, Spanish, French, Turkish, Russian, Polish, Hindi, Portuguese and more."],
     ["Will a doctor actually use the output?", "RinVita is designed to help clinicians review a structured summary quickly, with source documents available alongside it. Whether a clinician uses it is ultimately their decision."],
     ["Can I manage records for my parents or children?", "Yes. The Family plan lets you manage up to six separate health profiles under one account."],
   ];
