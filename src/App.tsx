@@ -17,6 +17,7 @@ import MarketingLandingPage from "./pages/MarketingLandingPage.tsx";
 import ProductDemoPage from "./pages/ProductDemoPage.tsx";
 import PartnerDemoPage from "./pages/PartnerDemoPage.tsx";
 import TranslateToolPage from "./pages/TranslateToolPage.tsx";
+import TranslateLanguagePage from "./pages/TranslateLanguagePage.tsx";
 import ForCliniciansPage from "./pages/ForCliniciansPage.tsx";
 import ForConciergesPage from "./pages/ForConciergesPage.tsx";
 import ClinicsPartnersPage from "./pages/ClinicsPartnersPage.tsx";
@@ -163,6 +164,7 @@ const App = () => (
               <Route path="/organise-medical-records-for-family" element={<FamilyMedicalRecordsPage />} />
               <Route path="/medical-records-for-overseas-treatment" element={<OverseasTreatmentRecordsPage />} />
               <Route path="/translate" element={<TranslateToolPage />} />
+              <Route path="/translate/:slug" element={<TranslateLanguagePage />} />
               <Route path="/for-clinics" element={<ForCliniciansPage />} />
               <Route path="/for-concierges" element={<ForConciergesPage />} />
               <Route path="/for-partners" element={<Navigate to="/for-clinics" replace />} />

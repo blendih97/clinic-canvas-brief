@@ -263,8 +263,18 @@ const ShareView = () => {
           </section>
         )}
 
-        <div className="text-center text-xs text-muted-foreground pt-6 border-t border-border">
-          Generated securely by RinVita · This link will expire automatically
+        <div className="text-center text-xs text-muted-foreground pt-6 border-t border-border space-y-2">
+          <p>Generated securely by RinVita · This link will expire automatically</p>
+          <p>
+            This brief was created with RinVita —{" "}
+            <a
+              href="/?utm_source=share_brief&utm_medium=product&utm_campaign=viral"
+              className="text-primary underline underline-offset-2"
+            >
+              keep your own medical history organised and translated
+            </a>
+            .
+          </p>
         </div>
       </main>
     </div>
