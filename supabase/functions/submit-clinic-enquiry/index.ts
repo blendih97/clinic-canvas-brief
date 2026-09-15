@@ -47,7 +47,7 @@ const NEXT_STEPS = new Set([
   "Send information by email",
 ]);
 
-const SOURCE_PAGES = new Set(["for-clinics", "for-concierges", "clinics", "partners"]);
+const SOURCE_PAGES = new Set(["for-clinics", "for-concierges", "for-concierges-pilot", "clinics", "partners"]);
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });

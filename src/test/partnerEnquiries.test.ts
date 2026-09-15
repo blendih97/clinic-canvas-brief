@@ -1,4 +1,6 @@
 import { describe, it, expect } from "vitest";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { saveEnquiryAndNotify, type EnquiryClient } from "../../supabase/functions/_shared/enquiries";
 
 function makeClient(opts: { insertError?: string; emailThrows?: boolean } = {}) {
@@ -40,6 +42,20 @@ const input = {
 };
 
 describe("partner enquiry pipeline", () => {
+  it("supports the concierge pilot demand-test fields and origin", async () => {
+    const page = readFileSync(resolve("src/pages/ForConciergesPage.tsx"), "utf8");
+    const form = readFileSync(resolve("src/components/marketing/ConciergePilotForm.tsx"), "utf8");
+    const handler = readFileSync(resolve("supabase/functions/submit-clinic-enquiry/index.ts"), "utf8");
+
+    expect(page).toContain("Every result you arrange, in your client's hands — organised.");
+    expect(page).toContain("FAQPage");
+    expect(form).toContain('source_page: "for-concierges-pilot"');
+    expect(form).toContain("Main countries your clients receive care in");
+    expect(form).toContain("concierge_pilot_form_submitted");
+    expect(form).toContain("within two working days");
+    expect(handler).toContain('"for-concierges-pilot"');
+  });
+
   it("persists every partner field on the enquiry row", async () => {
     const { client, inserts } = makeClient();
     const result = await saveEnquiryAndNotify(client, input);
