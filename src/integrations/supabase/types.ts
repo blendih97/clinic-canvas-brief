@@ -1057,6 +1057,45 @@ export type Database = {
         }
         Relationships: []
       }
+      translate_tool_events: {
+        Row: {
+          created_at: string
+          document_type: string | null
+          id: string
+          landing_path: string | null
+          source_language: string | null
+          succeeded: boolean
+          target_language: string | null
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
+        }
+        Insert: {
+          created_at?: string
+          document_type?: string | null
+          id?: string
+          landing_path?: string | null
+          source_language?: string | null
+          succeeded?: boolean
+          target_language?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Update: {
+          created_at?: string
+          document_type?: string | null
+          id?: string
+          landing_path?: string | null
+          source_language?: string | null
+          succeeded?: boolean
+          target_language?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Relationships: []
+      }
       translate_tool_leads: {
         Row: {
           consent_at: string | null
