@@ -110,8 +110,8 @@ describe("translator language landing pages", () => {
 });
 
 describe("translator acquisition + measurement", () => {
-  it("shows the save-to-passport card with the signup source", () => {
-    expect(tool).toContain("Save this translation to your free medical passport");
+  it("shows the save-to-hub card with the signup source", () => {
+    expect(tool).toContain("Your translation is ready. Now keep it.");
     expect(tool).toContain("/auth?mode=signup&from=translate");
     expect(tool).toContain("Free plan · 3 documents · no card required.");
   });
