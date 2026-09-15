@@ -187,7 +187,20 @@ export const AppRoutes = () => (
               <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
 
               <Route path="*" element={<NotFound />} />
-            </Routes>
+  </Routes>
+);
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <AuthProvider>
+      <LocaleProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <MetaPixelTracker />
+            <PaymentTestModeBanner />
+            <AppRoutes />
             <CookieConsent />
           </BrowserRouter>
         </TooltipProvider>
