@@ -243,24 +243,29 @@ export function MarketingNav({ currentPage }: MarketingNavProps) {
                     left: -16,
                     paddingTop: 10,
                     minWidth: 200,
-                    background: "hsl(var(--background) / 0.98)",
-                    backdropFilter: "blur(20px)",
-                    border: `1px solid ${marketingColors.goldBorder}`,
-                    borderRadius: 2,
-                    padding: "6px 0",
-                    animation: "marketing-slide-down 0.2s ease",
                   }}
                 >
-                  {partnerLinks.map((link) => (
-                    <Link
-                      key={link.href}
-                      to={link.href}
-                      onClick={() => setPartnersOpen(false)}
-                      style={{ display: "block", padding: "10px 18px", fontSize: 14, color: marketingColors.mutedText, textDecoration: "none" }}
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
+                  <div
+                    style={{
+                      background: "hsl(var(--background) / 0.98)",
+                      backdropFilter: "blur(20px)",
+                      border: `1px solid ${marketingColors.goldBorder}`,
+                      borderRadius: 2,
+                      padding: "6px 0",
+                      animation: "marketing-slide-down 0.2s ease",
+                    }}
+                  >
+                    {partnerLinks.map((link) => (
+                      <Link
+                        key={link.href}
+                        to={link.href}
+                        onClick={() => setPartnersOpen(false)}
+                        style={{ display: "block", padding: "10px 18px", fontSize: 14, color: marketingColors.mutedText, textDecoration: "none" }}
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
