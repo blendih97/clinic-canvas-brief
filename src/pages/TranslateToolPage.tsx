@@ -1,6 +1,11 @@
 import { Link } from "react-router-dom";
 import SEO from "@/components/SEO";
 import TranslatorTool from "@/components/marketing/TranslatorTool";
+import {
+  TranslatorHubCta,
+  TranslatorHubPositioning,
+  TranslatorHubStrip,
+} from "@/components/marketing/TranslatorHubCopy";
 import { TRANSLATE_LANGUAGES, translatePath } from "@/data/translateLanguages";
 import {
   MarketingFooter,
@@ -36,9 +41,12 @@ const TranslateToolPage = () => {
             <p style={{ fontSize: isMobile ? 15 : 17, color: marketingColors.mutedText, maxWidth: 580, margin: "0 auto", lineHeight: 1.7, fontWeight: 300 }}>
               Upload a lab report, prescription or clinical letter. We'll translate it and give you a plain-English summary you can actually understand — in under a minute. No signup. No credit card. 5 free a day.
             </p>
+            <TranslatorHubPositioning />
           </div>
 
           <TranslatorTool landingPath="/translate" isMobile={isMobile} />
+          <TranslatorHubCta isMobile={isMobile} />
+          <TranslatorHubStrip isMobile={isMobile} />
 
           {/* Language landing-page index */}
           <div style={{ marginTop: isMobile ? 48 : 64 }}>

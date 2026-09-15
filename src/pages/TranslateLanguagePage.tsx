@@ -2,6 +2,11 @@ import { useParams, Navigate, Link } from "react-router-dom";
 import SEO from "@/components/SEO";
 import TranslatorTool from "@/components/marketing/TranslatorTool";
 import {
+  TranslatorHubCta,
+  TranslatorHubPositioning,
+  TranslatorHubStrip,
+} from "@/components/marketing/TranslatorHubCopy";
+import {
   MarketingFooter,
   MarketingNav,
   MarketingStyles,
@@ -89,6 +94,7 @@ export default function TranslateLanguagePage() {
             Upload the document here and get an English translation with a plain-English summary in about a minute.
             No account needed.
           </p>
+          <TranslatorHubPositioning />
         </div>
       </section>
 
@@ -97,20 +103,7 @@ export default function TranslateLanguagePage() {
         <div style={{ maxWidth: 880, margin: "0 auto" }}>
           <TranslatorTool defaultTargetLanguage="en" landingPath={path} isMobile={isMobile} />
 
-          <div style={{ marginTop: 28, padding: isMobile ? 22 : 28, background: marketingColors.goldSoft, border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 2, textAlign: "center" }}>
-            <h2 style={{ fontFamily: headingFont, fontSize: isMobile ? 24 : 28, fontWeight: 400, marginBottom: 10 }}>
-              Keep all your records translated in one place
-            </h2>
-            <Link
-              to="/auth?mode=signup"
-              style={{ display: "inline-block", padding: "13px 28px", background: marketingColors.gold, color: "hsl(var(--primary-foreground))", textDecoration: "none", borderRadius: 2, fontSize: 13, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase" }}
-            >
-              Create your medical passport
-            </Link>
-            <p style={{ fontSize: 12.5, color: marketingColors.softText, marginTop: 12 }}>
-              Free plan · 3 documents · no card required.
-            </p>
-          </div>
+          <TranslatorHubCta isMobile={isMobile} />
         </div>
       </section>
 
@@ -148,6 +141,7 @@ export default function TranslateLanguagePage() {
           <p style={{ fontSize: 13, color: marketingColors.softText, marginTop: 14, fontStyle: "italic" }}>
             For orientation only — always confirm with a clinician.
           </p>
+          <TranslatorHubStrip isMobile={isMobile} />
         </div>
       </section>
 

@@ -86,11 +86,32 @@ describe("translator language landing pages", () => {
     expect(translateIndex).toContain("TranslatorTool");
     expect(tool).toContain("public-translate-document");
   });
+
+  it("positions translation as part of the wider RinVita medical hub", () => {
+    const hubCopy = read("src/components/marketing/TranslatorHubCopy.tsx");
+    expect(hubCopy).toContain("Part of RinVita — the private hub for your whole medical history");
+    expect(hubCopy).toContain("Don't let this record get lost again");
+    expect(hubCopy).toContain("Start your medical hub — free");
+    expect(hubCopy).toContain("What your RinVita hub does");
+    expect(hubCopy).toContain("Time-limited sharing with any clinician");
+    expect(translateIndex).toContain("TranslatorHubPositioning");
+    expect(translateIndex).toContain("TranslatorHubCta");
+    expect(translateIndex).toContain("TranslatorHubStrip");
+    expect(langPage).toContain("TranslatorHubPositioning");
+    expect(langPage).toContain("TranslatorHubCta");
+    expect(langPage).toContain("TranslatorHubStrip");
+    expect(tool).toContain("Your translation is ready. Now keep it.");
+  });
+
+  it("describes RinVita as a medical records hub before translation", () => {
+    expect(llms).toContain("RinVita is a private medical records hub for internationally mobile people and families");
+    expect(llms).toContain("AI translation as one feature");
+  });
 });
 
 describe("translator acquisition + measurement", () => {
-  it("shows the save-to-passport card with the signup source", () => {
-    expect(tool).toContain("Save this translation to your free medical passport");
+  it("shows the save-to-hub card with the signup source", () => {
+    expect(tool).toContain("Your translation is ready. Now keep it.");
     expect(tool).toContain("/auth?mode=signup&from=translate");
     expect(tool).toContain("Free plan · 3 documents · no card required.");
   });
