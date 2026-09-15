@@ -143,17 +143,9 @@ const MetaPixelTracker = () => {
   return null;
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <LocaleProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <MetaPixelTracker />
-            <PaymentTestModeBanner />
-            <Routes>
+/** Route table shared by the browser app and the build-time prerenderer. */
+export const AppRoutes = () => (
+  <Routes>
               <Route path="/auth" element={<AuthRoute><AuthPage /></AuthRoute>} />
               <Route path="/check-email" element={<CheckEmailPage />} />
               <Route path="/" element={<HomeRoute />} />
