@@ -241,7 +241,7 @@ export function MarketingNav({ currentPage }: MarketingNavProps) {
                     position: "absolute",
                     top: "100%",
                     left: -16,
-                    marginTop: 10,
+                    paddingTop: 10,
                     minWidth: 200,
                     background: "hsl(var(--background) / 0.98)",
                     backdropFilter: "blur(20px)",
