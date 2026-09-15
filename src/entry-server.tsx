@@ -27,7 +27,7 @@ export function render(url: string) {
           <LocaleProvider>
             <TooltipProvider>
               <StaticRouter location={url}>
-                <AppRoutes />
+                <RouteTree url={url} />
               </StaticRouter>
             </TooltipProvider>
           </LocaleProvider>
