@@ -163,6 +163,7 @@ Deno.serve(async (req: Request) => {
     if (!anthropicRes.ok) {
       const errText = await anthropicRes.text();
       console.error("anthropic error", anthropicRes.status, errText);
+      await logAttempt(body as Record<string, unknown>, targetLang, false);
       return new Response(JSON.stringify({ error: "Translation service is busy. Please try again in a moment." }), {
         status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -193,6 +194,7 @@ Deno.serve(async (req: Request) => {
     });
   } catch (err) {
     console.error("translator error", err);
+    await logAttempt(body as Record<string, unknown>, targetLang, false);
     return new Response(JSON.stringify({ error: "We couldn't read that document. Make sure it's a clear PDF or photo." }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
