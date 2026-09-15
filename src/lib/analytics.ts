@@ -70,6 +70,7 @@ export type FunnelEvent =
   | "b2b_form_started"
   | "b2b_form_submitted"
   | "b2b_form_failed"
+  | "concierge_pilot_form_submitted"
   // Outbound partner campaign page (/partner-demo). Campaign attribution only —
   // never a name, email address or any medical content.
   | "partner_demo_view"
