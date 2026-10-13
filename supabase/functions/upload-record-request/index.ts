@@ -106,6 +106,7 @@ Deno.serve(async (req) => {
             base64,
             fileName: file.name,
             targetLanguage,
+            forUserId: request.user_id,
           },
         });
         if (aiError) throw aiError;

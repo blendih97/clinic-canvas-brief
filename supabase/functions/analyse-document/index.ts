@@ -149,6 +149,16 @@ Deno.serve(async (req: Request) => {
     );
   }
 
+  let body: any;
+  try {
+    body = await req.json();
+  } catch {
+    return new Response(
+      JSON.stringify({ error: "Invalid JSON body" }),
+      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+
   // Authenticate and enforce the free document quota BEFORE any expensive
   // AI call. The database trigger enforces it again at insert time, which
   // closes the race window if two uploads run concurrently.
@@ -166,9 +176,17 @@ Deno.serve(async (req: Request) => {
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   );
 
-  const { data: userData, error: userError } = await admin.auth.getUser(jwt);
-  const userId = userData?.user?.id;
-  if (userError || !userId) {
+  // Server-to-server calls (e.g. upload-record-request) authenticate with the service
+  // role key and must name the patient the document belongs to.
+  const isInternal = jwt === Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  let userId: string | undefined;
+  if (isInternal) {
+    userId = typeof body?.forUserId === "string" ? body.forUserId : undefined;
+  } else {
+    const { data: userData, error: userError } = await admin.auth.getUser(jwt);
+    if (!userError) userId = userData?.user?.id;
+  }
+  if (!userId) {
     return new Response(
       JSON.stringify({ error: "Not authenticated", code: "unauthenticated" }),
       { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -187,7 +205,6 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const body = await req.json();
     const { fileType, mediaType, base64, text, fileName, targetLanguage } = body;
 
     const targetLang = (typeof targetLanguage === "string" && targetLanguage.trim().length > 0

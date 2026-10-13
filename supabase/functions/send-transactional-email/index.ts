@@ -55,6 +55,24 @@ Deno.serve(async (req) => {
     )
   }
 
+  // Caller auth: service role (full access) or a signed-in user (limited templates + rate limit).
+  const callerJwt = (req.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '').trim()
+  const isServiceCaller = !!callerJwt && callerJwt === supabaseServiceKey
+  let callerUserId: string | null = null
+  if (!isServiceCaller) {
+    if (callerJwt) {
+      const authClient = createClient(supabaseUrl, supabaseServiceKey)
+      const { data: u, error: uErr } = await authClient.auth.getUser(callerJwt)
+      if (!uErr && u?.user?.id) callerUserId = u.user.id
+    }
+    if (!callerUserId) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+  }
+
   // Parse request body
   let templateName: string
   let recipientEmail: string
