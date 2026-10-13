@@ -110,13 +110,17 @@ export function getRequiredPlanPrice(feature: Feature, period: BillingPeriod = "
 
 /**
  * Documents that consume free quota. A failed analysis leaves an auditable
- * row behind, and that must never cost the user one of their three free
- * documents — the database trigger applies the same rule.
+ * row behind, and so does a stored original (a file the AI can't analyse,
+ * kept as-is) — neither must ever cost the user one of their three free
+ * documents; the database trigger applies the same rule.
  */
 export function countQuotaDocuments(
   docs: ReadonlyArray<{ processing_status?: string | null; processingStatus?: string | null }>,
 ): number {
-  return docs.filter((d) => (d.processing_status ?? d.processingStatus ?? "completed") !== "failed").length;
+  return docs.filter((d) => {
+    const status = d.processing_status ?? d.processingStatus ?? "completed";
+    return status !== "failed" && status !== "stored";
+  }).length;
 }
 
 // Free users can upload up to FREE_DOC_LIMIT documents. Paid subscribers
