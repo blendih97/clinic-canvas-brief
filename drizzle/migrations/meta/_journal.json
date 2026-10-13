@@ -15,6 +15,13 @@
       "when": 1791917419466,
       "tag": "0001_protect_profile_privileged_fields",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791925369349,
+      "tag": "0002_stored_documents_skip_quota",
+      "breakpoints": true
     }
   ]
 }
