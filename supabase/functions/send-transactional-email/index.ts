@@ -31,9 +31,11 @@ function generateToken(): string {
     .join('')
 }
 
-// Auth note: this function uses verify_jwt = true in config.toml, so Supabase's
-// gateway validates the caller's JWT (anon or service_role) before the request
-// reaches this code. No in-function auth check is needed.
+// Auth: callers must present the service role key (full access) or a signed-in
+// user JWT (limited to the templates the browser sends, rate-limited per user).
+const BROWSER_TEMPLATES = new Set(['new-signup-admin', 'record-request', 'family-invite'])
+const USER_SENDS_PER_HOUR = 20
+const userSends = new Map<string, number[]>()
 
 Deno.serve(async (req) => {
   // Handle CORS preflight
@@ -106,6 +108,25 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
     )
+  }
+
+  if (callerUserId) {
+    if (!BROWSER_TEMPLATES.has(templateName)) {
+      return new Response(JSON.stringify({ error: 'Template not allowed' }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+    const now = Date.now()
+    const recent = (userSends.get(callerUserId) || []).filter((t) => now - t < 3600_000)
+    if (recent.length >= USER_SENDS_PER_HOUR) {
+      return new Response(JSON.stringify({ error: 'Rate limit exceeded' }), {
+        status: 429,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+    recent.push(now)
+    userSends.set(callerUserId, recent)
   }
 
   // 1. Look up template from registry (early — needed to resolve recipient)
