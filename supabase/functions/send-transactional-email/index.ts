@@ -36,6 +36,8 @@ function generateToken(): string {
 const BROWSER_TEMPLATES = new Set(['new-signup-admin', 'record-request', 'family-invite'])
 const USER_SENDS_PER_HOUR = 20
 const userSends = new Map<string, number[]>()
+const ANON_SENDS_PER_HOUR = 10
+const anonSends = new Map<string, number[]>()
 
 Deno.serve(async (req) => {
   // Handle CORS preflight
@@ -67,12 +69,7 @@ Deno.serve(async (req) => {
       const { data: u, error: uErr } = await authClient.auth.getUser(callerJwt)
       if (!uErr && u?.user?.id) callerUserId = u.user.id
     }
-    if (!callerUserId) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
-    }
+    // No valid session: checked after template lookup (fixed-recipient templates only).
   }
 
   // Parse request body
@@ -143,6 +140,27 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
     )
+  }
+
+  // Callers without a valid session may only send fixed-recipient templates.
+  if (!isServiceCaller && !callerUserId) {
+    if (!template.to) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+    const ip = (req.headers.get('x-forwarded-for') || '').split(',')[0].trim() || 'unknown'
+    const now = Date.now()
+    const recent = (anonSends.get(ip) || []).filter((t) => now - t < 3600_000)
+    if (recent.length >= ANON_SENDS_PER_HOUR) {
+      return new Response(JSON.stringify({ error: 'Rate limit exceeded' }), {
+        status: 429,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+    recent.push(now)
+    anonSends.set(ip, recent)
   }
 
   // Resolve effective recipient: template-level `to` takes precedence over

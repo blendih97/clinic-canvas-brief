@@ -12,6 +12,7 @@ import { useAdminAccess } from "@/hooks/useAdminAccess";
 import Index from "./pages/Index.tsx";
 import ShareView from "./pages/ShareView.tsx";
 import AuthPage from "./pages/AuthPage.tsx";
+import ResetPasswordPage from "./pages/ResetPasswordPage.tsx";
 import CheckEmailPage from "./pages/CheckEmailPage.tsx";
 import MarketingLandingPage from "./pages/MarketingLandingPage.tsx";
 import ProductDemoPage from "./pages/ProductDemoPage.tsx";
@@ -186,6 +187,7 @@ export const AppRoutes = () => (
               <Route path="/checkout/return" element={<CheckoutReturn />} />
               <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
 
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
               <Route path="*" element={<NotFound />} />
   </Routes>
 );

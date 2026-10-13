@@ -48,6 +48,7 @@ export const template = {
     plan: 'free',
     signedUpAt: new Date().toISOString(),
   },
+  to: 'info@rinvita.co.uk',
 } satisfies TemplateEntry
 
 const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
