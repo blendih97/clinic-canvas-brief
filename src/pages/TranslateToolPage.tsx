@@ -39,7 +39,7 @@ const TranslateToolPage = () => {
               <em style={{ fontStyle: "italic", color: marketingColors.gold }}>in any language.</em>
             </h1>
             <p style={{ fontSize: isMobile ? 15 : 17, color: marketingColors.mutedText, maxWidth: 580, margin: "0 auto", lineHeight: 1.7, fontWeight: 300 }}>
-              Upload a lab report, prescription or clinical letter. We'll translate it and give you a plain-English summary you can actually understand — in under a minute. No signup. No credit card. 5 free a day.
+              Upload a lab report, prescription or clinical letter. We'll translate it and give you a plain-English summary you can actually understand — in under a minute. Your first document is free, no signup needed.
             </p>
             <TranslatorHubPositioning />
           </div>

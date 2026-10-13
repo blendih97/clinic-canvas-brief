@@ -31,7 +31,7 @@ const DOCUMENT_TYPES = [
 const buildFaq = (lang: TranslateLanguage) => [
   {
     q: `Can I translate ${lang.name} medical records into English for free?`,
-    a: `Yes. Upload a PDF or a clear photo of the document and RinVita produces an English translation and a plain-English summary. The free translator allows five documents a day and does not require an account.`,
+    a: `Yes. Upload a PDF or a clear photo of the document and RinVita produces an English translation and a plain-English summary. Your first document is free, no signup needed.`,
   },
   {
     q: "Is the translation accepted as an official or certified translation?",

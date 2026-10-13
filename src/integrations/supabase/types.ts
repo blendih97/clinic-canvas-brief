@@ -1062,7 +1062,10 @@ export type Database = {
           created_at: string
           document_type: string | null
           id: string
+          ip_hash: string | null
+          is_guest: boolean
           landing_path: string | null
+          session_id: string | null
           source_language: string | null
           succeeded: boolean
           target_language: string | null
@@ -1074,7 +1077,10 @@ export type Database = {
           created_at?: string
           document_type?: string | null
           id?: string
+          ip_hash?: string | null
+          is_guest?: boolean
           landing_path?: string | null
+          session_id?: string | null
           source_language?: string | null
           succeeded?: boolean
           target_language?: string | null
@@ -1086,7 +1092,10 @@ export type Database = {
           created_at?: string
           document_type?: string | null
           id?: string
+          ip_hash?: string | null
+          is_guest?: boolean
           landing_path?: string | null
+          session_id?: string | null
           source_language?: string | null
           succeeded?: boolean
           target_language?: string | null
