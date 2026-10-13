@@ -248,7 +248,7 @@ Deno.serve(async (req: Request) => {
         "x-api-key": ANTHROPIC_API_KEY,
         "anthropic-version": "2023-06-01",
       },
-      body: JSON.stringify({ model: MODEL, max_tokens: 8000, messages: [{ role: "user", content }] }),
+      body: JSON.stringify({ model: MODEL, max_tokens: 16000, messages: [{ role: "user", content }] }),
     });
 
     if (!anthropicRes.ok) {
@@ -258,6 +258,10 @@ Deno.serve(async (req: Request) => {
     }
 
     const data = await anthropicRes.json();
+    if (data.stop_reason === "max_tokens") {
+      await logAttempt(body, targetLang, false, meta);
+      return json({ error: "This document is too long for the free translator. Please split it into smaller files or create a free account.", code: "document_too_long" }, 422);
+    }
     const rawText = (data.content ?? []).find((b: { type: string }) => b.type === "text")?.text || "";
     const result = parseResult(rawText);
 

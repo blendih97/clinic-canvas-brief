@@ -209,7 +209,7 @@ const AdminDashboardPage = () => {
                       <TableCell>{document.original_language || "—"}</TableCell>
                       <TableCell>
                         <span className={`inline-flex rounded-full px-2 py-1 text-xs capitalize ${statusTone[document.processing_status] || "bg-secondary text-secondary-foreground"}`}>
-                          {document.processing_status}
+                          {document.processing_status === "stored" ? "Original stored (not translated)" : document.processing_status}
                         </span>
                       </TableCell>
                       <TableCell>{new Date(document.upload_date).toLocaleDateString()}</TableCell>
