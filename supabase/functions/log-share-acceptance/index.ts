@@ -36,6 +36,18 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
+    const { data: brief } = await supabase
+      .from("shared_briefs")
+      .select("id")
+      .eq("token", token)
+      .maybeSingle();
+    if (!brief) {
+      return new Response(JSON.stringify({ error: "not_found" }), {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { error } = await supabase
       .from("share_brief_acceptances")
       .insert({ token, ip_address: ip, user_agent: userAgent });

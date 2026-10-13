@@ -43,8 +43,10 @@ const ShareView = () => {
 
       if (error || !brief || isExpired) {
         setExpired(true);
+        setAccepted(true);
       } else if (brief.expires_at && new Date(brief.expires_at) < new Date()) {
         setExpired(true);
+        setAccepted(true);
       } else {
         setBrief(brief as SharedBrief);
         setAccepted(true);
