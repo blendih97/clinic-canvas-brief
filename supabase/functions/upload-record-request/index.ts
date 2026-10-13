@@ -145,7 +145,7 @@ Deno.serve(async (req) => {
         content_original: extracted?.fullText?.original_content || null,
         content_translated: extracted?.fullText?.translated_content || null,
         summary: extracted?.summary || null,
-        processing_status: extracted ? "completed" : (extractionError ? "failed" : "pending"),
+        processing_status: extracted ? "completed" : (extractionError ? "failed" : (fileType === "other" ? "stored" : "pending")),
         processing_error: extractionError,
         processed_at: extracted ? new Date().toISOString() : null,
       })

@@ -244,7 +244,7 @@ Deno.serve(async (req: Request) => {
       },
       body: JSON.stringify({
         model: "claude-sonnet-5-5",
-        max_tokens: 8192,
+        max_tokens: 16000,
         messages: [{ role: "user", content }],
       }),
     });
@@ -259,7 +259,16 @@ Deno.serve(async (req: Request) => {
     }
 
     const anthropicData = await anthropicRes.json();
-    const rawText = anthropicData.content?.[0]?.text || "";
+    if (anthropicData.stop_reason === "max_tokens") {
+      return new Response(
+        JSON.stringify({
+          error: "This document is too long to process in one go. Please split it into smaller files of about 5 pages and upload them separately.",
+          code: "document_too_long",
+        }),
+        { status: 422, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    const rawText = (anthropicData.content ?? []).find((b: { type: string }) => b.type === "text")?.text || "";
 
     // Parse the JSON response, stripping any markdown fences
     const jsonStr = rawText.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
