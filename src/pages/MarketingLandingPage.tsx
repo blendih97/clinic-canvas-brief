@@ -1231,7 +1231,7 @@ const MarketingLandingPage = () => {
         path="/"
       />
       <MarketingStyles />
-      <MarketingNav currentPage="home" />
+      <MarketingNav />
       <Hero />
       <PassportContents />
       <PartnerStrip />

@@ -27,7 +27,7 @@ const TranslateToolPage = () => {
         path="/translate"
       />
       <MarketingStyles />
-      <MarketingNav currentPage="home" />
+      <MarketingNav />
 
       <section style={{ padding: `${isMobile ? 100 : 140}px ${paddingX}px ${isMobile ? 48 : 72}px`, background: marketingColors.cream }}>
         <div style={{ maxWidth: 880, margin: "0 auto" }}>

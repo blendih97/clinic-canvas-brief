@@ -99,7 +99,7 @@ export default function ConsumerPage({ config }: { config: ConsumerPageConfig })
         jsonLd={faqSchema}
       />
       <MarketingStyles />
-      <MarketingNav currentPage="home" />
+      <MarketingNav />
 
       {/* Hero */}
       <section style={{ padding: `${isMobile ? 100 : 148}px ${paddingX}px ${isMobile ? 48 : 72}px` }}>

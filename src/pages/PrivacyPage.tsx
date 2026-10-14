@@ -62,7 +62,7 @@ const PrivacyPage = () => {
     <div className="marketing-page" style={{ background: marketingColors.cream, color: marketingColors.ink }}>
       <SEO title="Privacy Policy — RinVita" description="How Rinvita Ltd collects, processes, and protects your personal and special category (medical) data. UK GDPR, ICO registered." path="/privacy" />
       <MarketingStyles />
-      <MarketingNav currentPage="home" />
+      <MarketingNav />
       <section style={{ padding: `${isMobile ? 100 : 140}px ${paddingX}px ${isMobile ? 56 : 80}px`, background: marketingColors.cream }}>
         <div style={{ maxWidth: 820, margin: "0 auto" }}>
           <span className="marketing-section-label">Legal</span>

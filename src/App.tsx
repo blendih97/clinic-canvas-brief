@@ -45,6 +45,8 @@ import OAuthConsent from "./pages/OAuthConsent.tsx";
 
 import CookieConsent from "./components/CookieConsent";
 import { PaymentTestModeBanner } from "./components/PaymentTestModeBanner";
+import ScrollManager from "./components/ScrollManager";
+
 
 const queryClient = new QueryClient();
 
@@ -201,7 +203,9 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <MetaPixelTracker />
+            <ScrollManager />
             <PaymentTestModeBanner />
+
             <AppRoutes />
             <CookieConsent />
           </BrowserRouter>

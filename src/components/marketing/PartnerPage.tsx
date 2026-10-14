@@ -107,7 +107,7 @@ export default function PartnerPage({ config }: { config: PartnerPageConfig }) {
     <div className="marketing-page" style={{ background: marketingColors.cream, color: marketingColors.ink, minHeight: "100vh" }}>
       <SEO title={config.seoTitle} description={config.seoDescription} path={`/${config.slug}`} />
       <MarketingStyles />
-      <MarketingNav currentPage="home" />
+      <MarketingNav />
 
       {/* Hero */}
       <section style={{ padding: `${isMobile ? 100 : 148}px ${paddingX}px ${isMobile ? 52 : 76}px` }}>
