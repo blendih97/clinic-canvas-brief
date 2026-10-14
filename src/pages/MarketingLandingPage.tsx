@@ -4,6 +4,8 @@ import SEO from "@/components/SEO";
 import InstantDemo from "@/components/marketing/InstantDemo";
 import SampleHealthPassport from "@/components/marketing/SampleHealthPassport";
 import ShareRinVita from "@/components/marketing/ShareRinVita";
+import { SAMPLE_DOCS, SAMPLE_PATIENT, type SampleDoc } from "@/data/sampleAmiraK";
+import { Button } from "@/components/ui/button";
 import {
   LogoMark,
   MarketingFooter,
@@ -15,11 +17,13 @@ import {
 } from "@/components/marketing/shared";
 
 function AppMockup({ scale = 1 }: { scale?: number }) {
-  const docs = [
-    { flag: "🇦🇪", name: "تقرير تحليل الدم الشامل", facility: "Mediclinic Dubai Mall" },
-    { flag: "🇫🇷", name: "Compte rendu d'hospitalisation", facility: "Hôpital Lariboisière, Paris" },
-    { flag: "🇹🇷", name: "Kardiyoloji Muayene Raporu", facility: "Acıbadem Hastanesi, İstanbul" },
-    { flag: "🇸🇬", name: "全血细胞计数报告", facility: "Mount Elizabeth Hospital, Singapore" },
+  const lab = SAMPLE_DOCS.find((doc) => doc.id === "singapore-blood");
+  const tiles = [
+    ["Labs", `${lab?.markers?.[0]?.name} · ${lab?.markers?.[0]?.value}`, "Dubai → Singapore"],
+    ["Medications", "2 past prescriptions", "Paris · Mar 2025"],
+    ["Allergies", "Not documented", "Check with patient"],
+    ["Imaging", "Echocardiogram · EF 62%", "Istanbul · Jul 2025"],
+    ["Visits", "4 records across countries", "Nov 2024 – Feb 2026"],
   ];
 
   const width = 300;
@@ -55,31 +59,19 @@ function AppMockup({ scale = 1 }: { scale?: number }) {
 
         {/* Content area */}
         <div style={{ position: "absolute", top: 86, left: 0, right: 0, bottom: 56, background: marketingColors.cream, overflowY: "auto", padding: "12px 14px 18px" }}>
-          <div style={{ background: marketingColors.cream2, border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 5, padding: "6px 8px", display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-            <span style={{ fontSize: 8, color: marketingColors.mutedText }}>Free plan — 2 of 3 documents used</span>
-            <div style={{ background: marketingColors.gold, color: "hsl(var(--primary-foreground))", fontSize: 7, fontWeight: 600, padding: "2px 6px", borderRadius: 3 }}>Upgrade</div>
-          </div>
-          <div style={{ fontFamily: "Cormorant Garamond", fontSize: 18, color: marketingColors.ink, marginBottom: 2 }}>Your Health Overview</div>
-          <div style={{ fontSize: 8, color: marketingColors.softText, marginBottom: 12 }}>4 documents · 4 languages</div>
-          <div style={{ background: marketingColors.surface, border: `1px solid ${marketingColors.surfaceBorder}`, borderRadius: 5, padding: "6px 8px", display: "flex", gap: 5, alignItems: "center", marginBottom: 12 }}>
-            <span style={{ fontSize: 9, color: marketingColors.faintText }}>🔍</span>
-            <span style={{ fontSize: 8, color: marketingColors.faintText }}>Search records, facilities…</span>
-          </div>
-          <div style={{ background: marketingColors.gold, borderRadius: 7, padding: "10px 10px", marginBottom: 10 }}>
-            <div style={{ fontSize: 10, fontWeight: 600, color: "hsl(var(--primary-foreground))" }}>Upload Document</div>
-            <div style={{ fontSize: 7, color: "hsl(var(--primary-foreground) / 0.75)", marginTop: 1 }}>Any language · Any country · Any year</div>
-          </div>
-          <div style={{ fontSize: 8, fontWeight: 600, color: marketingColors.softText, marginBottom: 7, letterSpacing: "0.06em", textTransform: "uppercase" }}>Recent Documents</div>
-          {docs.map((doc) => (
-            <div key={doc.name} style={{ background: marketingColors.surface, border: `1px solid hsl(var(--foreground) / 0.07)`, borderRadius: 5, padding: "6px 8px", display: "flex", alignItems: "center", gap: 6, marginBottom: 5 }}>
-              <span style={{ fontSize: 14 }}>{doc.flag}</span>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 8, fontWeight: 500, color: marketingColors.ink, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{doc.name}</div>
-                <div style={{ fontSize: 7, color: marketingColors.softText, marginTop: 1 }}>{doc.facility}</div>
+          <div style={{ fontFamily: "Cormorant Garamond", fontSize: 25, color: marketingColors.ink, marginBottom: 3 }}>Health overview</div>
+          <div style={{ fontSize: 10, color: marketingColors.softText, marginBottom: 14 }}>{SAMPLE_PATIENT.fullName} · Fictional sample</div>
+          <div className="text-destructive" style={{ borderLeft: "2px solid hsl(var(--destructive))", paddingLeft: 8, marginBottom: 14, fontSize: 10, lineHeight: 1.5 }}>Allergies not documented in these records</div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 8 }}>
+            {tiles.map(([title, value, source]) => (
+              <div key={title} style={{ background: marketingColors.surface, border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 5, padding: "12px 9px", minHeight: 96 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: marketingColors.gold, marginBottom: 7 }}>{title}</div>
+                <div style={{ fontSize: 10, lineHeight: 1.5, color: marketingColors.ink }}>{value}</div>
+                <div style={{ fontSize: 8, lineHeight: 1.5, color: marketingColors.softText, marginTop: 6 }}>{source}</div>
               </div>
-              <div style={{ fontSize: 6, padding: "2px 4px", background: marketingColors.successSoft, border: `1px solid ${marketingColors.successBorder}`, borderRadius: 3, color: marketingColors.success, whiteSpace: "nowrap" }}>✓ Done</div>
-            </div>
-          ))}
+            ))}
+          </div>
+          <div style={{ fontSize: 10, color: marketingColors.gold, marginTop: 16 }}>Original records linked to every entry ↗</div>
         </div>
 
         {/* Bottom nav (matches real mobile app: 5 tabs) */}
@@ -103,12 +95,109 @@ function AppMockup({ scale = 1 }: { scale?: number }) {
   );
 }
 
+const sampleDubai = SAMPLE_DOCS.find((doc) => doc.id === "dubai-labs");
+const sampleParis = SAMPLE_DOCS.find((doc) => doc.id === "paris-discharge");
+const sampleIstanbul = SAMPLE_DOCS.find((doc) => doc.id === "istanbul-cardiology");
+const sampleSingapore = SAMPLE_DOCS.find((doc) => doc.id === "singapore-blood");
+
+function SampleSource({ doc }: { doc?: SampleDoc }) {
+  if (!doc) return null;
+  return <div className="mt-2 text-[11px] leading-relaxed text-muted-foreground">{doc.language} · {doc.dateISO} · {doc.originCity}</div>;
+}
+
+function LabPreview() {
+  return (
+    <div className="space-y-3 text-xs">
+      {sampleDubai?.markers?.slice(0, 3).map((marker) => {
+        const latest = sampleSingapore?.markers?.find((item) => item.name === marker.name);
+        return <div key={marker.name}>
+          <div className="flex flex-wrap justify-between gap-2 font-medium"><span>{marker.name}</span><span><span className="text-destructive">{marker.value} ↓</span> → {latest?.value}</span></div>
+          <div className="mt-1 text-[11px] text-muted-foreground">Reference range: {marker.range}</div>
+        </div>;
+      })}
+      <SampleSource doc={sampleDubai} /><SampleSource doc={sampleSingapore} />
+    </div>
+  );
+}
+
+function MedicationPreview() {
+  return <div className="space-y-3 text-xs">
+    <div className="font-medium">Past prescriptions · 5-day discharge course</div>
+    {sampleParis?.medications?.map((med) => <div key={med.name}><div className="font-medium">{med.name}</div><div className="mt-1 text-muted-foreground">{med.dose} · {med.freq}</div></div>)}
+    <div className="text-muted-foreground">{sampleParis?.facility} · Individual prescriber not stated</div>
+    <SampleSource doc={sampleParis} />
+  </div>;
+}
+
+function ImagingPreview() {
+  return <div className="text-xs leading-relaxed">
+    <div className="font-medium">Echocardiogram · LV ejection fraction</div>
+    <div className="my-2 font-heading text-3xl text-primary">{sampleIstanbul?.markers?.find((marker) => marker.name === "LV Ejection Fraction")?.value}</div>
+    <div>No structural abnormality reported.</div>
+    <div className="mt-2 text-muted-foreground">Source: {sampleIstanbul?.translatedTitle}</div>
+    <SampleSource doc={sampleIstanbul} />
+  </div>;
+}
+
+function PassportContents() {
+  const { isMobile, isTablet } = useMarketingBreakpoint();
+  const cards = [
+    { title: "Lab results, tracked over time", body: "Values, units and reference ranges. Abnormal results flagged, with trends across countries.", preview: <LabPreview /> },
+    { title: "Medications", body: "Current and past medications, dose, frequency, prescriber and country — where recorded.", preview: <MedicationPreview /> },
+    { title: "Allergies and alerts", body: "Shown first, every time. Missing information stays visibly missing.", preview: <div className="text-xs leading-relaxed"><div className="border-l-2 border-destructive pl-3 text-destructive"><strong>Allergies: not documented</strong><div>Confirm with the patient; absence of a record is not confirmation of no allergies.</div></div><div className="mt-4 font-medium">Recorded alert · Dubai</div><div>{sampleDubai?.flags?.[0]?.label}</div><SampleSource doc={sampleDubai} /></div> },
+    { title: "Imaging reports", body: "MRI, CT, X-ray and ultrasound findings, translated, with the original report attached. This sample includes an echocardiogram.", preview: <ImagingPreview /> },
+    { title: "Diagnoses and visit history", body: "Consultations, admissions and discharge summaries, organised as a timeline.", preview: <ol className="space-y-3 border-l border-primary/30 pl-3 text-xs">{SAMPLE_DOCS.map((doc) => <li key={doc.id}><div className="font-medium">{doc.timeline.note}</div><SampleSource doc={doc} /></li>)}</ol> },
+    { title: "Original documents", body: "Every source file kept, side by side with the translation.", preview: <div className="text-xs leading-relaxed"><div className="grid grid-cols-2 gap-3 border-b border-border pb-3"><div><div className="mb-2 text-muted-foreground">Original · French</div><div>{sampleParis?.originalTitle}</div><div className="mt-2">{sampleParis?.originalSnippet[3]}</div></div><div><div className="mb-2 text-muted-foreground">English translation</div><div>{sampleParis?.translatedTitle}</div><div className="mt-2">Uncomplicated acute appendicitis.</div></div></div><SampleSource doc={sampleParis} /></div> },
+  ];
+  return <section id="inside-passport" style={{ padding: `${isMobile ? 64 : 96}px ${isMobile ? 20 : isTablet ? 32 : 56}px`, background: marketingColors.cream2 }}>
+    <div className="mx-auto max-w-6xl">
+      <div className="mb-10 text-center"><span className="marketing-section-label">What RinVita builds</span><h2 className="font-heading text-[34px] font-light leading-tight md:text-[46px]">Inside every RinVita passport</h2><p className="mt-3 text-xs text-muted-foreground">Amira K. · Fictional sample records from Dubai, Paris, Istanbul and Singapore</p></div>
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+        {cards.map((card, index) => <article key={card.title} className="flex min-w-0 flex-col rounded border border-primary/20 bg-card p-6 text-card-foreground">
+          <div className="mb-3 font-heading text-xl text-primary">0{index + 1}</div>
+          <h3 className="font-heading text-[26px] leading-tight">{card.title}</h3>
+          <p className="mb-5 mt-3 text-sm font-light leading-relaxed text-muted-foreground">{card.body}</p>
+          <div className="mt-auto border-t border-primary/20 pt-5">{card.preview}</div>
+        </article>)}
+      </div>
+      <p className="mt-9 text-center text-sm leading-relaxed text-muted-foreground">Translation is where it starts. The structured record is what your doctor actually uses.</p>
+    </div>
+  </section>;
+}
+
+function DoctorBrief() {
+  const { isMobile, isTablet } = useMarketingBreakpoint();
+  return <section id="clinician-brief" style={{ padding: `${isMobile ? 64 : 96}px ${isMobile ? 20 : isTablet ? 32 : 56}px`, background: marketingColors.cream }}>
+    <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-2 lg:gap-16">
+      <div className="min-w-0"><span className="marketing-section-label">For clinical review</span><h2 className="font-heading text-[34px] font-light leading-tight md:text-[46px]">Built for the doctor on the other side</h2>
+        <ul className="my-7 space-y-5 text-sm font-light leading-relaxed text-muted-foreground">{[
+          "One page, clinical order: alerts, medications, labs, imaging, history.",
+          "Every value traceable to its source document and language.",
+          "Secure, expiring link — no login or app needed. Or a PDF.",
+          "Not a diagnostic tool; nothing is interpreted or changed. Review the structured output against the originals.",
+        ].map((point) => <li key={point} className="flex gap-3"><span className="text-primary" aria-hidden>◆</span><span>{point}</span></li>)}</ul>
+        <Button asChild className="h-auto max-w-full whitespace-normal rounded-sm px-6 py-4 text-sm"><a href="#sample-passport">See a sample clinician brief →</a></Button>
+      </div>
+      <article aria-label="Sample clinician brief" className="min-w-0 rounded border border-primary/30 bg-card p-6 text-card-foreground shadow-sm md:p-8">
+        <header className="mb-5 flex flex-wrap items-start justify-between gap-3 border-b border-primary/20 pb-4"><div><div className="font-heading text-3xl text-primary">Clinician brief</div><div className="mt-1 text-sm">{SAMPLE_PATIENT.fullName} · DOB 12 Jun 1990</div></div><span className="text-xs text-muted-foreground">Fictional sample</span></header>
+        <div className="divide-y divide-border text-xs leading-relaxed">
+          <div className="pb-4 text-destructive"><h3 className="mb-1 font-semibold">Allergies & alerts</h3><p>Allergies not documented — confirm with patient.</p><p className="mt-2">{sampleDubai?.flags?.[0]?.label}</p><SampleSource doc={sampleDubai} /></div>
+          <div className="py-4"><h3 className="mb-2 font-semibold">Active medications</h3><p>Current medication list not documented in this sample.</p><p className="mt-2">Past: {sampleParis?.medications?.[0]?.name} · {sampleParis?.medications?.[0]?.dose} · {sampleParis?.medications?.[0]?.freq}</p><SampleSource doc={sampleParis} /></div>
+          <div className="py-4"><h3 className="mb-2 font-semibold">Flagged labs & follow-up</h3><p><span className="text-destructive">Ferritin 9 ng/mL ↓</span> (reference 15 – 150) → 38 ng/mL on follow-up.</p><SampleSource doc={sampleDubai} /><SampleSource doc={sampleSingapore} /></div>
+          <div className="py-4"><h3 className="mb-2 font-semibold">Recent imaging</h3><ImagingPreview /></div>
+          <div className="pt-4"><h3 className="mb-2 font-semibold">Visit history</h3><p>Laparoscopic appendectomy · 21 March 2025</p><SampleSource doc={sampleParis} /></div>
+        </div>
+      </article>
+    </div>
+  </section>;
+}
+
 function Hero() {
   const { isMobile, isTablet } = useMarketingBreakpoint();
   const paddingX = isMobile ? 20 : isTablet ? 32 : 56;
 
   return (
-    <section style={{ minHeight: isMobile ? "auto" : "100vh", display: "flex", alignItems: "center", padding: isMobile ? "88px 20px 56px" : `120px ${paddingX}px 80px`, background: marketingColors.cream, position: "relative", overflow: "hidden" }}>
+    <section style={{ minHeight: "auto", display: "flex", alignItems: "center", padding: isMobile ? "88px 20px 56px" : `120px ${paddingX}px 80px`, background: marketingColors.cream, position: "relative", overflow: "hidden" }}>
       <div style={{ position: "absolute", inset: 0, pointerEvents: "none", backgroundImage: `linear-gradient(hsl(var(--primary) / 0.05) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary) / 0.05) 1px, transparent 1px)`, backgroundSize: "72px 72px", maskImage: "radial-gradient(ellipse 70% 60% at 50% 100%, transparent 40%, black 100%)" }} />
       <div style={{ maxWidth: 1280, margin: "0 auto", width: "100%", display: "grid", gridTemplateColumns: isMobile || isTablet ? "1fr" : "1fr 1fr", gap: isMobile ? 48 : 80, alignItems: "center" }}>
         <div style={{ animation: "marketing-fade-up 0.9s cubic-bezier(.16,1,.3,1) both" }}>
@@ -116,13 +205,12 @@ function Hero() {
             <div style={{ width: 5, height: 5, borderRadius: "50%", background: "hsl(var(--primary))", animation: "marketing-pulse 2s infinite" }} />
             <span style={{ fontSize: isMobile ? 9 : 11, letterSpacing: "0.14em", color: "hsl(var(--primary))", fontWeight: 500 }}>THE MEDICAL PASSPORT FOR INTERNATIONAL FAMILIES</span>
           </div>
-          <h1 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 40 : isTablet ? 52 : "clamp(44px,5vw,68px)", fontWeight: 300, lineHeight: 1.1, color: marketingColors.ink, marginBottom: isMobile ? 18 : 24, letterSpacing: "-0.02em" }}>
-            Your medical history, finally in one place.
-            <br />
-            <em style={{ fontStyle: "italic", color: marketingColors.gold }}>In every language.</em>
+          <h1 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 38 : isTablet ? 48 : 56, fontWeight: 300, lineHeight: 1.1, color: marketingColors.ink, marginBottom: isMobile ? 18 : 24, letterSpacing: 0 }}>
+            Your complete medical history. Structured, translated,{" "}
+            <em style={{ fontStyle: "italic", color: marketingColors.gold }}>ready for any doctor.</em>
           </h1>
           <p style={{ fontSize: isMobile ? 16 : 17, lineHeight: 1.7, color: marketingColors.mutedText, maxWidth: 520, marginBottom: isMobile ? 22 : 28, fontWeight: 300 }}>
-            Upload records from any country, automatically translate and organise them, and share a clinician-ready summary with doctors anywhere in the world.
+            RinVita turns records from any country into one organised medical file — lab results tracked over time, medications, allergies, imaging reports, diagnoses and visits — with the original always one click away.
           </p>
           <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 12, alignItems: isMobile ? "stretch" : "center" }}>
             <Link to="/auth?mode=signup" style={{ padding: isMobile ? "18px 24px" : "17px 36px", background: marketingColors.gold, borderRadius: 2, color: "hsl(var(--primary-foreground))", fontSize: isMobile ? 15 : 15.5, fontWeight: 600, letterSpacing: "0.05em", textDecoration: "none", textAlign: "center", boxShadow: "0 6px 28px hsl(var(--primary) / 0.4)" }}>
@@ -160,7 +248,7 @@ function Hero() {
                 style={{
                   width: "100%",
                   maxWidth: 340,
-                  height: 290,
+                  height: 470,
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "flex-start",
@@ -325,7 +413,7 @@ function DemoVideo() {
           <span className="marketing-section-label">Demo</span>
           <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 32 : "clamp(34px,3.8vw,52px)", fontWeight: 300, color: marketingColors.ink, marginBottom: 14 }}>See RinVita in action.</h2>
           <p style={{ fontSize: isMobile ? 14 : 16, color: marketingColors.mutedText, maxWidth: 560, margin: "0 auto", lineHeight: 1.7, fontWeight: 300 }}>
-            Watch a foreign record become a translated timeline, medication list and clinician-ready summary.
+            See records become a structured medical history: lab trends, medications, visits and a clinician-ready brief.
           </p>
         </div>
         <div style={{ position: "relative", borderRadius: 4, overflow: "hidden", border: `1px solid ${marketingColors.goldBorder}`, background: "hsl(var(--foreground) / 0.02)", boxShadow: "0 24px 80px hsl(var(--foreground) / 0.08)" }}>
@@ -337,44 +425,6 @@ function DemoVideo() {
             poster="/image/rinvita-demo-poster.jpg"
             style={{ width: "100%", display: "block", aspectRatio: "16 / 9", background: marketingColors.cream2 }}
           />
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function SocialProof() {
-  const ref = useReveal<HTMLDivElement>();
-  const { isMobile, isTablet } = useMarketingBreakpoint();
-  const paddingX = isMobile ? 20 : isTablet ? 32 : 56;
-
-  return (
-    <section style={{ padding: `${isMobile ? 72 : 100}px ${paddingX}px`, background: marketingColors.cream2 }}>
-      <div ref={ref} className="marketing-reveal" style={{ maxWidth: 1180, margin: "0 auto" }}>
-        <div style={{ textAlign: "center", marginBottom: isMobile ? 36 : 56 }}>
-          <span className="marketing-section-label">Social proof</span>
-          <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 28 : "clamp(30px,3.2vw,42px)", fontWeight: 300, color: marketingColors.ink }}>
-            Trusted by international patients and healthcare professionals.
-          </h2>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2,1fr)" : "repeat(5,1fr)", gap: 12, marginBottom: isMobile ? 36 : 48 }}>
-          {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} style={{ height: 64, border: `1px dashed ${marketingColors.goldBorder}`, borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center", background: marketingColors.surface }}>
-              <span style={{ fontSize: 10, letterSpacing: "0.16em", color: marketingColors.faintText, textTransform: "uppercase" }}>Partner logo</span>
-            </div>
-          ))}
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3,1fr)", gap: 16 }}>
-          {[1, 2, 3].map((i) => (
-            <div key={i} style={{ padding: "28px 24px", background: marketingColors.surface, border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 2, minHeight: 180 }}>
-              <div style={{ fontFamily: "Cormorant Garamond", fontSize: 28, color: marketingColors.gold, lineHeight: 1, marginBottom: 8 }}>“</div>
-              <p style={{ fontFamily: "Cormorant Garamond", fontSize: 16, fontStyle: "italic", color: "hsl(var(--foreground) / 0.55)", lineHeight: 1.6, marginBottom: 16 }}>
-                Patient and clinician testimonials will appear here soon.
-              </p>
-              <div style={{ width: 24, height: 1, background: marketingColors.goldBorder, marginBottom: 10 }} />
-              <div style={{ fontSize: 11, color: marketingColors.faintText, letterSpacing: "0.06em", textTransform: "uppercase" }}>&nbsp;</div>
-            </div>
-          ))}
         </div>
       </div>
     </section>
@@ -938,10 +988,10 @@ function TryItLive() {
         <div style={{ textAlign: "center", marginBottom: isMobile ? 32 : 44 }}>
           <span className="marketing-section-label">Try it live</span>
           <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 30 : "clamp(32px,3.6vw,46px)", fontWeight: 300, color: marketingColors.ink, marginBottom: 14, lineHeight: 1.15 }}>
-            See it work — with a real sample record.
+            See a structured record take shape.
           </h2>
           <p style={{ fontSize: isMobile ? 14.5 : 16, color: marketingColors.mutedText, lineHeight: 1.7, fontWeight: 300, maxWidth: 620, margin: "0 auto" }}>
-            Pick a foreign medical document, watch RinVita translate and structure it in about 10 seconds. No account. No upload.
+            Explore a fictional record organised into results, medications and visit history, with its original alongside. No account or upload needed.
           </p>
         </div>
         <InstantDemo variant="homepage" />
@@ -1087,18 +1137,18 @@ function ThreeSteps() {
   const paddingX = isMobile ? 20 : isTablet ? 32 : 56;
 
   const steps = [
-    { n: "01", title: "Upload records", body: "PDFs, scans or photographs from any country, provider or year. No formatting, no forms to fill in." },
-    { n: "02", title: "Understand your history", body: "Translated and organised into medications, results, imaging and visits — each entry traceable to its source document." },
-    { n: "03", title: "Share when needed", body: "Give a clinician a structured view through a time-limited link you can revoke at any moment." },
+    { n: "01", title: "Upload in any language", body: "Add PDFs, scans or photographs from any country or provider." },
+    { n: "02", title: "We structure it into your medical record", body: "Labs, medications, allergies, imaging and visits — linked to their original records." },
+    { n: "03", title: "Share a clinician-ready brief", body: "Send an expiring, revocable link or a PDF for your next appointment." },
   ];
 
   return (
     <section style={{ padding: `${isMobile ? 72 : 104}px ${paddingX}px`, background: marketingColors.cream2 }}>
       <div ref={ref} className="marketing-reveal" style={{ maxWidth: 1120, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: isMobile ? 40 : 56 }}>
-          <span className="marketing-section-label">Three steps</span>
+          <span className="marketing-section-label">How it works</span>
           <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 30 : "clamp(32px,3.6vw,46px)", fontWeight: 300 }}>
-            Upload records → Understand your history → Share when needed
+            From any country to one organised medical record
           </h2>
         </div>
         <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3,1fr)", gap: 16 }}>
@@ -1176,15 +1226,17 @@ const MarketingLandingPage = () => {
   return (
     <div className="marketing-page" style={{ background: marketingColors.cream, color: marketingColors.ink }}>
       <SEO
-        title="RinVita — The medical passport for international families"
-        description="Upload records from any country, automatically translate and organise them, and share a clinician-ready summary with doctors anywhere in the world."
+        title="RinVita — Your structured medical record, ready for any doctor"
+        description="One structured medical record from every country: lab trends, medications, allergies, imaging and visit history, with traceable originals and clinician-ready sharing."
         path="/"
       />
       <MarketingStyles />
       <MarketingNav currentPage="home" />
       <Hero />
+      <PassportContents />
       <PartnerStrip />
       <ThreeSteps />
+      <DoctorBrief />
       <TryItLive />
       <WhoItsFor />
       <WhyRinVita />

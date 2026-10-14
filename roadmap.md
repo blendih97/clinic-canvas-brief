@@ -1,5 +1,8 @@
 # Roadmap
 
+- [x] Reposition only the homepage around a structured medical record, using honest sample previews.
+- [x] Verify homepage CTAs, clinician sample PDF, and desktop/390px layout; preserve pricing and other pages.
+
 - [x] Reposition `/translate` and all language translator pages around the RinVita medical hub.
 - [x] Update the post-translation card and `llms.txt` opening.
 - [x] Add focused copy checks and run tests plus the production prerender build.
