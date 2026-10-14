@@ -19,6 +19,9 @@ export type PartnerPageConfig = {
   headline: string;
   headlineAccent: string;
   intro: string;
+  pilotCaption?: string;
+  pilotPoints?: string[];
+  pilotFaqAnswer?: string;
   problems: { title: string; body: string }[];
   benefits: { icon: string; title: string; body: string }[];
 };
@@ -125,6 +128,7 @@ export default function PartnerPage({ config }: { config: PartnerPageConfig }) {
               <button onClick={goToForm} style={primaryCta}>Apply for a founding pilot</button>
               <Link to="/demo" style={secondaryCta}>View the patient experience</Link>
             </div>
+            {config.pilotCaption && <p style={{ fontSize: 13, color: marketingColors.gold, marginTop: 14, lineHeight: 1.6 }}>{config.pilotCaption}</p>}
             <p style={{ fontSize: 12, color: marketingColors.softText, marginTop: 14, lineHeight: 1.6 }}>
               A patient-owned medical passport distributed by trusted healthcare partners. Not an EHR. Not a
               diagnostic tool.
@@ -136,7 +140,7 @@ export default function PartnerPage({ config }: { config: PartnerPageConfig }) {
               Founding Partner Pilot
             </div>
             <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
-              {PILOT_POINTS.map((point) => (
+              {(config.pilotPoints ?? PILOT_POINTS).map((point) => (
                 <li key={point} style={{ display: "flex", gap: 10, marginBottom: 12, alignItems: "flex-start" }}>
                   <span aria-hidden style={{ color: marketingColors.gold, fontSize: 13, marginTop: 3 }}>✦</span>
                   <span style={{ fontSize: 14, lineHeight: 1.6, fontWeight: 300 }}>{point}</span>
@@ -146,6 +150,7 @@ export default function PartnerPage({ config }: { config: PartnerPageConfig }) {
             <button onClick={goToForm} style={{ ...primaryCta, width: "100%", marginTop: 8 }}>
               Apply for a founding pilot
             </button>
+            {config.pilotCaption && <p style={{ fontSize: 13, color: marketingColors.gold, marginTop: 14, lineHeight: 1.6 }}>{config.pilotCaption}</p>}
           </div>
         </div>
       </section>
@@ -227,6 +232,7 @@ export default function PartnerPage({ config }: { config: PartnerPageConfig }) {
             <h2 style={{ fontFamily: headingFont, fontSize: isMobile ? 29 : 40, fontWeight: 300, marginBottom: 12 }}>
               Apply for a founding pilot
             </h2>
+            {config.pilotCaption && <p style={{ fontSize: 14, color: marketingColors.gold, marginBottom: 12, lineHeight: 1.6 }}>{config.pilotCaption}</p>}
             <p style={{ fontSize: 15, color: marketingColors.mutedText, lineHeight: 1.75, fontWeight: 300 }}>
               Tell us how your patients reach you and what happens to their records today. Please don't include any
               patient or medical information in this form.
@@ -260,7 +266,7 @@ export default function PartnerPage({ config }: { config: PartnerPageConfig }) {
                 {item.q}
               </summary>
               <p style={{ marginTop: 12, fontSize: 14, lineHeight: 1.8, color: marketingColors.mutedText, fontWeight: 300 }}>
-                {item.a}
+                {item.q === "What does the founding partner pilot include?" ? (config.pilotFaqAnswer ?? item.a) : item.a}
               </p>
             </details>
           ))}

@@ -1,5 +1,8 @@
 # Roadmap
 
+- [x] Update homepage and clinics copy around storing, reviewing and sharing; preserve design, pricing and backend.
+- [x] Verify requested copy, clinic pilot consistency and desktop/390px layouts.
+
 - [x] Reposition only the homepage around a structured medical record, using honest sample previews.
 - [x] Verify homepage CTAs, clinician sample PDF, and desktop/390px layout; preserve pricing and other pages.
 

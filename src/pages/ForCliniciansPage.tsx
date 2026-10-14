@@ -2,14 +2,24 @@ import PartnerPage, { PartnerPageConfig } from "@/components/marketing/PartnerPa
 
 const config: PartnerPageConfig = {
   slug: "for-clinics",
-  seoTitle: "RinVita for Clinics — Help International Patients Arrive Prepared",
+  seoTitle: "RinVita for Clinics — Patient-controlled medical records for your practice",
   seoDescription:
-    "A patient-owned international medical passport you can offer your patients. Records organised and translated before arrival, shared by the patient in a clinician-ready view. No EHR integration.",
-  eyebrow: "For private clinics & international patient departments",
-  headline: "Help international patients",
-  headlineAccent: "arrive prepared.",
+    "Offer patients a branded medical record to store, review and share reports, results and letters with any doctor by secure link or PDF. No EHR integration.",
+  eyebrow: "For private clinics & practices",
+  headline: "Give your patients their records —",
+  headlineAccent: "in one place they control.",
   intro:
-    "RinVita is a patient-owned international medical passport, distributed by trusted healthcare partners. Patients bring their own history — organised, translated, and shared in a clinician-ready view — so your team spends consultation time on care rather than chasing paperwork. It is not an EHR and not a diagnostic tool.",
+    "RinVita is a branded medical record your practice offers its patients. They store, review and share every report, result and letter with any doctor by secure link or PDF. Fewer resend requests for your team, better-prepared appointments, and a premium extra your patients will value.",
+  pilotCaption: "Free 60-day pilot for 5 of your patients.",
+  pilotPoints: [
+    "Selected clinics only",
+    "Free 60-day pilot",
+    "For 5 of your patients",
+    "No EHR integration required",
+    "Guided setup and co-branded invitation materials",
+    "Success review at the end of the pilot",
+  ],
+  pilotFaqAnswer: "A free 60-day pilot for 5 of your patients, guided setup, co-branded invitation materials, no integration work, and a success review at the end.",
   problems: [
     {
       title: "Records arrive after the patient does",
@@ -27,23 +37,28 @@ const config: PartnerPageConfig = {
   benefits: [
     {
       icon: "◎",
-      title: "A prepared first consultation",
-      body: "Patients invite themselves in before travel and arrive with medications, results, imaging and visit history already structured — with the original documents attached for review.",
+      title: "A premium service your patients keep using",
+      body: "Give patients a medical record they control, ready to store, review and share whenever they need care.",
     },
     {
       icon: "✦",
-      title: "Nothing to integrate",
-      body: "No connection to your EHR or practice management system. A pilot can start with an invitation email, not an IT project.",
+      title: "Fewer requests to resend results and letters",
+      body: "Patients keep their reports, results and letters in one place, ready to review or share without asking your team for another copy.",
     },
     {
       icon: "↗",
-      title: "Continuity after they leave",
-      body: "The record stays with the patient, so onward care abroad and follow-up with your clinic start from the same organised history.",
+      title: "New patients arrive with their history organised",
+      body: "Patients can bring records from their previous providers and share an organised history before their appointment, with originals available for review.",
+    },
+    {
+      icon: "◎",
+      title: "Records from abroad translated automatically",
+      body: "Records are translated automatically where needed, with every original kept alongside for the patient and doctor to check.",
     },
     {
       icon: "🔒",
-      title: "Patient-controlled sharing",
-      body: "Patients decide what to share and with whom. Links are time-limited and revocable, data is encrypted at rest and in transit, and access is scoped to the account holder.",
+      title: "Your branding, our secure infrastructure",
+      body: "Offer a branded patient experience on infrastructure encrypted at rest and in transit. Patients control access to their records; no EHR integration is required.",
     },
   ],
 };
