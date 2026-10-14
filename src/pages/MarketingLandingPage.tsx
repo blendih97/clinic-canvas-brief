@@ -1143,7 +1143,7 @@ function ThreeSteps() {
   ];
 
   return (
-    <section style={{ padding: `${isMobile ? 72 : 104}px ${paddingX}px`, background: marketingColors.cream2 }}>
+    <section id="how-it-works" style={{ padding: `${isMobile ? 72 : 104}px ${paddingX}px`, background: marketingColors.cream2 }}>
       <div ref={ref} className="marketing-reveal" style={{ maxWidth: 1120, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: isMobile ? 40 : 56 }}>
           <span className="marketing-section-label">How it works</span>
