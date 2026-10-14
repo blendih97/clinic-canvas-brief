@@ -1236,12 +1236,12 @@ const MarketingLandingPage = () => {
       <PassportContents />
       <PartnerStrip />
       <ThreeSteps />
+      <DemoVideo />
       <DoctorBrief />
       <TryItLive />
       <WhoItsFor />
       <WhyRinVita />
       <Features />
-      <DemoVideo />
       <SampleHealthPassport />
       <TrustMechanisms />
       <ClinicalSafety />
