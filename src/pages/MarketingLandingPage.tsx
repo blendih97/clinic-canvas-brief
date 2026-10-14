@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { ClipboardList, FolderOpen, Share2 } from "lucide-react";
 import SEO from "@/components/SEO";
 import InstantDemo from "@/components/marketing/InstantDemo";
 import SampleHealthPassport from "@/components/marketing/SampleHealthPassport";
@@ -142,12 +143,12 @@ function ImagingPreview() {
 function PassportContents() {
   const { isMobile, isTablet } = useMarketingBreakpoint();
   const cards = [
+    { title: "Original documents", body: "Every source file stored and ready to review, side by side with its translation where needed.", preview: <div className="text-xs leading-relaxed"><div className="grid grid-cols-2 gap-3 border-b border-border pb-3"><div><div className="mb-2 text-muted-foreground">Original · French</div><div>{sampleParis?.originalTitle}</div><div className="mt-2">{sampleParis?.originalSnippet[3]}</div></div><div><div className="mb-2 text-muted-foreground">English translation</div><div>{sampleParis?.translatedTitle}</div><div className="mt-2">Uncomplicated acute appendicitis.</div></div></div><SampleSource doc={sampleParis} /></div> },
     { title: "Lab results, tracked over time", body: "Values, units and reference ranges. Abnormal results flagged, with trends across countries.", preview: <LabPreview /> },
     { title: "Medications", body: "Current and past medications, dose, frequency, prescriber and country — where recorded.", preview: <MedicationPreview /> },
     { title: "Allergies and alerts", body: "Shown first, every time. Missing information stays visibly missing.", preview: <div className="text-xs leading-relaxed"><div className="border-l-2 border-destructive pl-3 text-destructive"><strong>Allergies: not documented</strong><div>Confirm with the patient; absence of a record is not confirmation of no allergies.</div></div><div className="mt-4 font-medium">Recorded alert · Dubai</div><div>{sampleDubai?.flags?.[0]?.label}</div><SampleSource doc={sampleDubai} /></div> },
-    { title: "Imaging reports", body: "MRI, CT, X-ray and ultrasound findings, translated, with the original report attached. This sample includes an echocardiogram.", preview: <ImagingPreview /> },
+    { title: "Imaging reports", body: "MRI, CT, X-ray and ultrasound reports, with originals attached and translated automatically where needed. This sample includes an echocardiogram.", preview: <ImagingPreview /> },
     { title: "Diagnoses and visit history", body: "Consultations, admissions and discharge summaries, organised as a timeline.", preview: <ol className="space-y-3 border-l border-primary/30 pl-3 text-xs">{SAMPLE_DOCS.map((doc) => <li key={doc.id}><div className="font-medium">{doc.timeline.note}</div><SampleSource doc={doc} /></li>)}</ol> },
-    { title: "Original documents", body: "Every source file kept, side by side with the translation.", preview: <div className="text-xs leading-relaxed"><div className="grid grid-cols-2 gap-3 border-b border-border pb-3"><div><div className="mb-2 text-muted-foreground">Original · French</div><div>{sampleParis?.originalTitle}</div><div className="mt-2">{sampleParis?.originalSnippet[3]}</div></div><div><div className="mb-2 text-muted-foreground">English translation</div><div>{sampleParis?.translatedTitle}</div><div className="mt-2">Uncomplicated acute appendicitis.</div></div></div><SampleSource doc={sampleParis} /></div> },
   ];
   return <section id="inside-passport" style={{ padding: `${isMobile ? 64 : 96}px ${isMobile ? 20 : isTablet ? 32 : 56}px`, background: marketingColors.cream2 }}>
     <div className="mx-auto max-w-6xl">
@@ -160,7 +161,7 @@ function PassportContents() {
           <div className="mt-auto border-t border-primary/20 pt-5">{card.preview}</div>
         </article>)}
       </div>
-      <p className="mt-9 text-center text-sm leading-relaxed text-muted-foreground">Translation is where it starts. The structured record is what your doctor actually uses.</p>
+      <p className="mt-9 text-center text-sm leading-relaxed text-muted-foreground">Everything a doctor needs, organised, and always in your hands.</p>
     </div>
   </section>;
 }
@@ -173,7 +174,7 @@ function DoctorBrief() {
         <ul className="my-7 space-y-5 text-sm font-light leading-relaxed text-muted-foreground">{[
           "One page, clinical order: alerts, medications, labs, imaging, history.",
           "Every value traceable to its source document and language.",
-          "Secure, expiring link — no login or app needed. Or a PDF.",
+          "Secure one-time link or PDF — no app or login needed for the doctor.",
           "Not a diagnostic tool; nothing is interpreted or changed. Review the structured output against the originals.",
         ].map((point) => <li key={point} className="flex gap-3"><span className="text-primary" aria-hidden>◆</span><span>{point}</span></li>)}</ul>
         <Button asChild className="h-auto max-w-full whitespace-normal rounded-sm px-6 py-4 text-sm"><a href="#sample-passport">See a sample clinician brief →</a></Button>
@@ -206,11 +207,11 @@ function Hero() {
             <span style={{ fontSize: isMobile ? 9 : 11, letterSpacing: "0.14em", color: "hsl(var(--primary))", fontWeight: 500 }}>THE MEDICAL PASSPORT FOR INTERNATIONAL FAMILIES</span>
           </div>
           <h1 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 38 : isTablet ? 48 : 56, fontWeight: 300, lineHeight: 1.1, color: marketingColors.ink, marginBottom: isMobile ? 18 : 24, letterSpacing: 0 }}>
-            Your complete medical history. Structured, translated,{" "}
-            <em style={{ fontStyle: "italic", color: marketingColors.gold }}>ready for any doctor.</em>
+            Your medical records. One place.{" "}
+            <em style={{ fontStyle: "italic", color: marketingColors.gold }}>Ready to share with any doctor.</em>
           </h1>
           <p style={{ fontSize: isMobile ? 16 : 17, lineHeight: 1.7, color: marketingColors.mutedText, maxWidth: 520, marginBottom: isMobile ? 22 : 28, fontWeight: 300 }}>
-            RinVita turns records from any country into one organised medical file — lab results tracked over time, medications, allergies, imaging reports, diagnoses and visits — with the original always one click away.
+            Store every report, result and letter from every provider. Review your history any time, and share it with any doctor in seconds by a secure one-time link or a PDF. Records from abroad are translated automatically.
           </p>
           <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 12, alignItems: isMobile ? "stretch" : "center" }}>
             <Link to="/auth?mode=signup" style={{ padding: isMobile ? "18px 24px" : "17px 36px", background: marketingColors.gold, borderRadius: 2, color: "hsl(var(--primary-foreground))", fontSize: isMobile ? 15 : 15.5, fontWeight: 600, letterSpacing: "0.05em", textDecoration: "none", textAlign: "center", boxShadow: "0 6px 28px hsl(var(--primary) / 0.4)" }}>
@@ -220,6 +221,13 @@ function Hero() {
               See an example →
             </Link>
           </div>
+          <ul className="mt-5 space-y-3 text-sm leading-relaxed text-muted-foreground">
+            {[
+              { icon: FolderOpen, text: "Store — every record, every provider, every country" },
+              { icon: ClipboardList, text: "Review — results tracked over time, medications and allergies in one list" },
+              { icon: Share2, text: "Share — one-time secure link or PDF, no app or login for the doctor" },
+            ].map(({ icon: Icon, text }) => <li key={text} className="flex items-start gap-3"><Icon aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-primary" /><span className="min-w-0">{text}</span></li>)}
+          </ul>
           <div style={{ marginTop: 12, fontSize: 12.5, color: marketingColors.softText, letterSpacing: "0.01em", fontWeight: 400 }}>
             Free plan · 3 documents · no card required. Paid plans start at £39/month.
           </div>
@@ -360,7 +368,7 @@ function WhyRinVita() {
           We saw first-hand how difficult it can be for families and patients to manage records across different countries, hospitals and languages.
         </p>
         <p style={{ fontSize: isMobile ? 15 : 16, lineHeight: 1.8, color: marketingColors.mutedText, fontWeight: 300, marginBottom: 32 }}>
-          RinVita was created to make medical information understandable, portable and ready whenever it matters most.
+          RinVita was created to give patients one secure place to store, review and share their records whenever it matters most.
         </p>
         <div style={{ width: 48, height: 1, background: marketingColors.goldStrong, margin: "0 auto" }} />
       </div>
@@ -413,7 +421,7 @@ function DemoVideo() {
           <span className="marketing-section-label">Demo</span>
           <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 32 : "clamp(34px,3.8vw,52px)", fontWeight: 300, color: marketingColors.ink, marginBottom: 14 }}>See RinVita in action.</h2>
           <p style={{ fontSize: isMobile ? 14 : 16, color: marketingColors.mutedText, maxWidth: 560, margin: "0 auto", lineHeight: 1.7, fontWeight: 300 }}>
-            See records become a structured medical history: lab trends, medications, visits and a clinician-ready brief.
+            See how to add your records, review lab trends, medications and visits, and share a clinician-ready brief with any doctor.
           </p>
         </div>
         <div style={{ position: "relative", borderRadius: 4, overflow: "hidden", border: `1px solid ${marketingColors.goldBorder}`, background: "hsl(var(--foreground) / 0.02)", boxShadow: "0 24px 80px hsl(var(--foreground) / 0.08)" }}>
@@ -437,9 +445,9 @@ function Features() {
   const paddingX = isMobile ? 20 : isTablet ? 32 : 56;
 
   const features = [
-    ["AI-Powered", "Multilingual AI", "Multilingual AI extraction across 45+ languages, with every result traceable to the original record."],
-    ["You Stay In Control", "Secure Sharing", "Generate time-limited, encrypted links for any clinician worldwide and revoke access instantly."],
-    ["Unified Record", "Complete History", "Blood results, imaging, medications, allergies, and records from every country in one timeline."],
+    ["One Secure Place", "Store Every Record", "Reports, results and letters from every provider and country, with originals always available."],
+    ["Your History Together", "Review Your Record", "Results tracked over time, medications, allergies, imaging and visits — translated automatically where needed across 45+ languages."],
+    ["You Stay In Control", "Share With Any Doctor", "Share by secure one-time link or PDF, with no app or login needed for the doctor."],
     ["Up to 6 Members", "Family Plan", "Manage records for elderly parents, children, and dependents under one secure account."],
   ];
 
@@ -479,7 +487,7 @@ function ClinicalSafety() {
     {
       icon: "📄",
       title: "Source documents always preserved",
-      body: "Every AI translation and summary keeps the original document one click away. Doctors can verify any detail against the original at any moment. We never replace your records — we organise them.",
+      body: "Every stored record and structured summary keeps the original document one click away, translated automatically where needed. Doctors can verify any detail against the original at any moment. We never replace your records — we organise them.",
     },
     {
       icon: "✦",
@@ -951,7 +959,7 @@ function ForClinicsCallout() {
           For private healthcare providers.
         </h2>
         <p style={{ fontSize: isMobile ? 14.5 : 16, color: marketingColors.mutedText, maxWidth: 620, margin: "0 auto 28px", lineHeight: 1.75, fontWeight: 300 }}>
-          RinVita helps international patient teams, concierge medicine providers and clinicians access clearer medical information — reducing administrative burden and improving continuity of care.
+          Give patients a medical record they control: one place to store, review and share reports, results and letters with any doctor. Fewer resend requests for your team, better-prepared appointments for your patients.
         </p>
         <Link to="/for-clinics" style={{ display: "inline-block", padding: "14px 32px", background: marketingColors.gold, color: "hsl(var(--primary-foreground))", textDecoration: "none", borderRadius: 2, fontSize: 13, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase" }}>
           Book a Demo
@@ -1030,7 +1038,7 @@ function PartnerStrip() {
             For clinics and medical concierges
           </div>
           <div style={{ fontSize: isMobile ? 14 : 15, color: marketingColors.mutedText, lineHeight: 1.6, fontWeight: 300 }}>
-            Offer a patient-owned medical passport to internationally mobile patients — no EHR integration required.
+            Offer patients one place to store, review and share their medical records — no EHR integration required.
           </div>
         </div>
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
@@ -1064,7 +1072,7 @@ function WhoItsFor() {
     {
       icon: "✈",
       title: "Expats and people relocating",
-      body: "Your history stays in the country you left. Bring it with you, translated, before you register with a new doctor.",
+      body: "Keep your history in one place when you move, ready to review and share with a new doctor — translated automatically where needed.",
       href: "/medical-records-for-expats",
       linkLabel: "Medical records for expats",
     },
@@ -1099,7 +1107,7 @@ function WhoItsFor() {
     {
       icon: "✦",
       title: "Treatment planned abroad",
-      body: "Assemble everything the receiving team asks for in advance, translated, so the consultation is not delayed.",
+      body: "Store everything the receiving team asks for, review it before travel and share by secure link or PDF — translated automatically where needed.",
       href: "/medical-records-for-overseas-treatment",
       linkLabel: "Records for treatment abroad",
     },
@@ -1137,9 +1145,9 @@ function ThreeSteps() {
   const paddingX = isMobile ? 20 : isTablet ? 32 : 56;
 
   const steps = [
-    { n: "01", title: "Upload in any language", body: "Add PDFs, scans or photographs from any country or provider." },
-    { n: "02", title: "We structure it into your medical record", body: "Labs, medications, allergies, imaging and visits — linked to their original records." },
-    { n: "03", title: "Share a clinician-ready brief", body: "Send an expiring, revocable link or a PDF for your next appointment." },
+    { n: "01", title: "Add your records", body: "Store reports, results and letters as PDFs, scans or photographs from any country or provider." },
+    { n: "02", title: "We organise them into your medical record", body: "Review labs, medications, allergies, imaging and visits, linked to their originals and translated automatically where needed." },
+    { n: "03", title: "Share with any doctor in one tap", body: "Send a secure one-time link or a PDF — no app or login needed for the doctor." },
   ];
 
   return (
@@ -1148,7 +1156,7 @@ function ThreeSteps() {
         <div style={{ textAlign: "center", marginBottom: isMobile ? 40 : 56 }}>
           <span className="marketing-section-label">How it works</span>
           <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 30 : "clamp(32px,3.6vw,46px)", fontWeight: 300 }}>
-            From any country to one organised medical record
+            Store, review and share in three steps
           </h2>
         </div>
         <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3,1fr)", gap: 16 }}>
@@ -1226,8 +1234,8 @@ const MarketingLandingPage = () => {
   return (
     <div className="marketing-page" style={{ background: marketingColors.cream, color: marketingColors.ink }}>
       <SEO
-        title="RinVita — Your structured medical record, ready for any doctor"
-        description="One structured medical record from every country: lab trends, medications, allergies, imaging and visit history, with traceable originals and clinician-ready sharing."
+        title="RinVita — Store, review and share your medical records with any doctor"
+        description="Store every report, result and letter in one secure place. Review your history and share with any doctor by one-time link or PDF, translated automatically where needed."
         path="/"
       />
       <MarketingStyles />
