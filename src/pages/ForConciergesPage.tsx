@@ -72,7 +72,7 @@ export default function ForConciergesPage() {
     <div className="marketing-page" style={{ background: marketingColors.cream, color: marketingColors.ink, minHeight: "100vh" }}>
       <SEO title="RinVita Partner Programme for Medical Concierges" description="Give every client a private, organised medical hub. Apply for RinVita's founding partner pilot for medical concierges and family offices." path="/for-concierges" jsonLd={faqJsonLd} />
       <MarketingStyles />
-      <MarketingNav currentPage="home" />
+      <MarketingNav />
 
       <main>
         <section style={{ padding: `${isMobile ? 108 : 156}px ${paddingX}px ${isMobile ? 68 : 104}px` }}>

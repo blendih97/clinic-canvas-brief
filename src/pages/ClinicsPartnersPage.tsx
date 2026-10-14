@@ -113,7 +113,7 @@ const ClinicsPartnersPage = () => {
         path="/clinics"
       />
       <MarketingStyles />
-      <MarketingNav currentPage="home" />
+      <MarketingNav />
 
       {/* Hero */}
       <section style={{ padding: `${isMobile ? 110 : 150}px ${paddingX}px ${isMobile ? 48 : 72}px`, background: marketingColors.cream, position: "relative", overflow: "hidden" }}>

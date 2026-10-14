@@ -79,7 +79,7 @@ export default function TranslateLanguagePage() {
         jsonLd={faqSchema}
       />
       <MarketingStyles />
-      <MarketingNav currentPage="home" />
+      <MarketingNav />
 
       {/* Hero */}
       <section style={{ padding: `${isMobile ? 100 : 140}px ${paddingX}px ${isMobile ? 36 : 56}px` }}>

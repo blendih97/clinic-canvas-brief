@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { Link, useLocation } from "react-router-dom";
+
 
 export const marketingColors = {
   cream: "hsl(var(--background))",
@@ -133,12 +134,10 @@ export function LogoMark({ size = 26, color = marketingColors.gold }: { size?: n
   );
 }
 
-type MarketingNavProps = {
-  currentPage: "home" | "demo";
-};
-
-export function MarketingNav({ currentPage }: MarketingNavProps) {
+export function MarketingNav() {
   const { isMobile } = useMarketingBreakpoint();
+  const { pathname } = useLocation();
+  const onHome = pathname === "/";
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [partnersOpen, setPartnersOpen] = useState(false);
@@ -152,9 +151,10 @@ export function MarketingNav({ currentPage }: MarketingNavProps) {
   const links = [
     { label: "Medical passport", href: "/medical-passport" },
     { label: "Translate a document", href: "/translate" },
-    { label: "How it works", href: currentPage === "home" ? "#how-it-works" : "/#how-it-works" },
-    { label: "Pricing", href: currentPage === "home" ? "#pricing" : "/#pricing" },
+    { label: "How it works", href: onHome ? "#how-it-works" : "/#how-it-works" },
+    { label: "Pricing", href: onHome ? "#pricing" : "/#pricing" },
   ];
+
 
   const partnerLinks = [
     { label: "For clinics", href: "/for-clinics" },
@@ -198,21 +198,27 @@ export function MarketingNav({ currentPage }: MarketingNavProps) {
 
         {!isMobile && (
           <div style={{ display: "flex", gap: 40, alignItems: "center" }}>
-            {links.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                style={{ fontSize: 14, color: marketingColors.mutedText, textDecoration: "none", transition: "color 0.2s" }}
-                onMouseEnter={(e) => {
+            {links.map((link) => {
+              const style = { fontSize: 14, color: marketingColors.mutedText, textDecoration: "none", transition: "color 0.2s" };
+              const hover = {
+                onMouseEnter: (e: MouseEvent<HTMLAnchorElement>) => {
                   e.currentTarget.style.color = marketingColors.ink;
-                }}
-                onMouseLeave={(e) => {
+                },
+                onMouseLeave: (e: MouseEvent<HTMLAnchorElement>) => {
                   e.currentTarget.style.color = marketingColors.mutedText;
-                }}
-              >
-                {link.label}
-              </a>
-            ))}
+                },
+              };
+              return link.href.startsWith("/#") ? (
+                <Link key={link.label} to={link.href} style={style} {...hover}>
+                  {link.label}
+                </Link>
+              ) : (
+                <a key={link.label} href={link.href} style={style} {...hover}>
+                  {link.label}
+                </a>
+              );
+            })}
+
             <div
               style={{ position: "relative" }}
               onMouseEnter={() => setPartnersOpen(true)}
@@ -351,24 +357,27 @@ export function MarketingNav({ currentPage }: MarketingNavProps) {
             animation: "marketing-slide-down 0.25s ease",
           }}
         >
-          {links.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              onClick={() => setMenuOpen(false)}
-              style={{
-                display: "block",
-                padding: "14px 24px",
-                fontSize: 18,
-                fontFamily: "Cormorant Garamond",
-                color: marketingColors.ink,
-                textDecoration: "none",
-                borderBottom: `1px solid hsl(var(--foreground) / 0.06)`,
-              }}
-            >
-              {link.label}
-            </a>
-          ))}
+          {links.map((link) => {
+            const style = {
+              display: "block",
+              padding: "14px 24px",
+              fontSize: 18,
+              fontFamily: "Cormorant Garamond",
+              color: marketingColors.ink,
+              textDecoration: "none",
+              borderBottom: `1px solid hsl(var(--foreground) / 0.06)`,
+            };
+            return link.href.startsWith("/#") ? (
+              <Link key={link.label} to={link.href} onClick={() => setMenuOpen(false)} style={style}>
+                {link.label}
+              </Link>
+            ) : (
+              <a key={link.label} href={link.href} onClick={() => setMenuOpen(false)} style={style}>
+                {link.label}
+              </a>
+            );
+          })}
+
           <div style={{ padding: "16px 24px 6px", fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: marketingColors.gold }}>
             For partners
           </div>

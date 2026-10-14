@@ -36,7 +36,7 @@ const SecurityPage = () => {
     <div className="marketing-page" style={{ background: marketingColors.cream, color: marketingColors.ink }}>
       <SEO title="Security & Trust — RinVita" description="AES-256 encryption at rest, TLS 1.3 in transit, EU data residency, ICO registered, full audit logging. How RinVita protects your medical data." path="/security" />
       <MarketingStyles />
-      <MarketingNav currentPage="home" />
+      <MarketingNav />
       <section style={{ padding: `${isMobile ? 100 : 140}px ${paddingX}px ${isMobile ? 56 : 80}px`, background: marketingColors.cream }}>
         <div style={{ maxWidth: 820, margin: "0 auto" }}>
           <span className="marketing-section-label">Security & Trust</span>

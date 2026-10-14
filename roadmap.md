@@ -11,3 +11,5 @@
 - [x] Rebuild only `/for-concierges` as a founding partner demand-test page.
 - [x] Keep the existing enquiry pipeline, add concierge pilot fields and submission tracking.
 - [x] Run tests and the production build, then verify the prerendered concierge HTML.
+- [x] Fix the top-menu "Pricing" and "How it works" links so they reach the homepage sections from every page.
+
