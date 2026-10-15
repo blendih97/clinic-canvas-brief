@@ -452,7 +452,7 @@ export function MarketingFooter() {
     { label: "Security & Trust", href: "/security" },
     { label: "Privacy Policy", href: "/privacy" },
     { label: "Terms of Service", href: "/terms" },
-    { label: "Cookie Policy", href: "/privacy#cookies" },
+    { label: "Contact", href: "mailto:info@rinvita.co.uk" },
   ];
 
   return (
@@ -516,9 +516,15 @@ export function MarketingFooter() {
               <div style={{ fontSize: 11, letterSpacing: "0.1em", color: marketingColors.gold, marginBottom: 16, fontWeight: 500 }}>LEGAL</div>
               {legalLinks.map((link) => (
                 <div key={link.label} style={{ marginBottom: 10 }}>
-                  <Link to={link.href} style={{ fontSize: 14, color: marketingColors.mutedText, textDecoration: "none" }}>
-                    {link.label}
-                  </Link>
+                  {link.href.startsWith("mailto:") ? (
+                    <a href={link.href} style={{ fontSize: 14, color: marketingColors.mutedText, textDecoration: "none" }}>
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link to={link.href} style={{ fontSize: 14, color: marketingColors.mutedText, textDecoration: "none" }}>
+                      {link.label}
+                    </Link>
+                  )}
                 </div>
               ))}
             </div>

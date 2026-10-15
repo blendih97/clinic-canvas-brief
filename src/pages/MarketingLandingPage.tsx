@@ -275,7 +275,7 @@ function Hero() {
             {[
               ["45+", "languages", "From Arabic to Mandarin"],
               ["256-bit", "encryption", "At rest and in transit"],
-              ["EU data", "hosting", "Stored in Ireland"],
+              ["UK GDPR", "providers", "See our Privacy Policy"],
               ["UK", "registered", "ICO ZC123014"],
             ].map(([value, unit, sub]) => (
               <div key={value}>
@@ -495,9 +495,9 @@ function ClinicalSafety() {
       body: "Our AI structures and translates. It doesn't make clinical decisions. Every share brief is reviewed and approved by you before any clinician sees it. AI-generated content is clearly marked.",
     },
     {
-      icon: "🇪🇺",
-      title: "EU-hosted, UK-registered",
-      body: "Built on EU infrastructure (Ireland). Designed with UK GDPR principles in mind. RinVita Ltd is ICO registered (ZC123014). Health data is processed with your explicit consent, and our legal basis is kept under review.",
+      icon: "🛡",
+      title: "UK-registered, encrypted storage",
+      body: "Stored encrypted with UK GDPR-compliant providers — see our Privacy Policy for the full list of processors. RinVita Ltd is ICO registered (ZC123014). Health data is processed with your explicit consent, and our legal basis is kept under review.",
     },
     {
       icon: "🛡",
@@ -807,8 +807,8 @@ function Pricing() {
             {([
               ["ICO ZC123014", "Registered with the UK Information Commissioner's Office as a data controller under registration ZC123014."],
               ["UK GDPR principles", "Designed with UK GDPR principles in mind. Health data is processed with your explicit consent, and our legal basis is kept under review."],
-              ["AES-256 encryption", "All documents encrypted in transit (TLS 1.3) and at rest (AES-256). Keys managed by our EU cloud provider."],
-              ["EU-hosted (Ireland)", "Infrastructure is hosted in the European Union (Dublin, Ireland). Data does not leave the EU/UK region."],
+              ["AES-256 encryption", "All documents encrypted in transit (TLS 1.3) and at rest (AES-256). Keys managed by our cloud provider."],
+              ["Encrypted storage", "Stored encrypted with UK GDPR-compliant providers. See our Privacy Policy for the full list of processors."],
               ["Built by people working in international healthcare", "Founded by a team with direct experience in international patient care — the product solves problems we've watched families face."],
             ] as [string, string][]).map(([label, detail], i, arr) => {
               const isOpen = trustOpen === label;
@@ -859,8 +859,8 @@ function Pricing() {
                 {[
                   ["ICO ZC123014", "Registered with the UK Information Commissioner's Office as a data controller under registration ZC123014."],
                   ["UK GDPR principles", "Designed with UK GDPR principles in mind. Health data is processed with your explicit consent, and our legal basis is kept under review."],
-                  ["AES-256 encryption", "All documents encrypted in transit (TLS 1.3) and at rest (AES-256). Keys managed by our EU cloud provider."],
-                  ["EU-hosted (Ireland)", "Infrastructure is hosted in the European Union (Dublin, Ireland). Data does not leave the EU/UK region."],
+                  ["AES-256 encryption", "All documents encrypted in transit (TLS 1.3) and at rest (AES-256). Keys managed by our cloud provider."],
+                  ["Encrypted storage", "Stored encrypted with UK GDPR-compliant providers. See our Privacy Policy for the full list of processors."],
                   ["Built by people working in international healthcare", "Founded by a team with direct experience in international patient care — the product solves problems we've watched families face."],
                 ].find(([l]) => l === trustOpen)?.[1]}
               </div>
@@ -879,7 +879,7 @@ function FAQ() {
   const [open, setOpen] = useState<number | null>(null);
 
   const items = [
-    ["Is my medical data safe?", "Documents are encrypted in transit (TLS 1.3) and at rest (AES-256), stored on EU infrastructure in Ireland, and access is scoped to your account. RinVita Ltd is ICO registered (ZC123014) and the service is designed with UK GDPR principles in mind."],
+    ["Is my medical data safe?", "Documents are encrypted in transit (TLS 1.3) and at rest (AES-256), stored with UK GDPR-compliant providers (see our Privacy Policy for the full list of processors), and access is scoped to your account. RinVita Ltd is ICO registered (ZC123014)."],
     ["Who can see my records?", "Only you, and anyone you explicitly share a Health Passport link with. Our staff cannot browse your documents. Share links are time-limited and revocable at any time."],
     ["Can I delete my data?", "Yes — at any time, from Settings. Account deletion removes your documents, extracted data and share links within 30 days."],
     ["Do you train AI on my records?", "No. Your documents are never used to train third-party models. AI processing runs on isolated infrastructure and outputs are stored only in your vault."],
@@ -931,7 +931,7 @@ function Testimonial() {
             {[
               ["Records from any country", "Upload documents in any language and keep the original alongside the structured version."],
               ["Traceable extraction", "Multilingual AI extraction with every result traceable back to the original record."],
-              ["Encrypted and EU-hosted", "Encrypted at rest and in transit, hosted on EU infrastructure in Ireland."],
+              ["Encrypted storage", "Encrypted at rest and in transit, stored with UK GDPR-compliant providers."],
               ["Sharing you can revoke", "User-scoped access controls and time-limited share links you can withdraw at any time."],
             ].map(([title, body]) => (
               <div key={title} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
