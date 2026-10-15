@@ -15,6 +15,7 @@ import AuthPage from "./pages/AuthPage.tsx";
 import ResetPasswordPage from "./pages/ResetPasswordPage.tsx";
 import CheckEmailPage from "./pages/CheckEmailPage.tsx";
 import MarketingLandingPage from "./pages/MarketingLandingPage.tsx";
+import PricingPage from "./pages/PricingPage";
 import ProductDemoPage from "./pages/ProductDemoPage.tsx";
 import PartnerDemoPage from "./pages/PartnerDemoPage.tsx";
 import TranslateToolPage from "./pages/TranslateToolPage.tsx";
@@ -153,6 +154,7 @@ export const AppRoutes = () => (
               <Route path="/check-email" element={<CheckEmailPage />} />
               <Route path="/" element={<HomeRoute />} />
               <Route path="/demo" element={<ProductDemoPage />} />
+              <Route path="/pricing" element={<PricingPage />} />
               <Route path="/partner-demo" element={<PartnerDemoPage />} />
               <Route path="/medical-passport" element={<MedicalPassportPage />} />
               <Route path="/medical-records-for-expats" element={<ExpatMedicalRecordsPage />} />

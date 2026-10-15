@@ -35,6 +35,7 @@ const ROUTES = [
   "/for-clinics",
   "/for-concierges",
   "/demo",
+  "/pricing",
   "/security",
   "/privacy",
   "/terms",
