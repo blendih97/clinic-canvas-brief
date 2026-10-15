@@ -57,7 +57,7 @@ const BillingSection = () => {
   const { openCheckout, checkoutElement } = useStripeCheckout();
   const userPlan = profile?.plan || "free";
   
-  const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>("annual");
+  const billingPeriod: BillingPeriod = "annual";
   const [portalLoading, setPortalLoading] = useState(false);
 
   // Determine active plan from Stripe subscription (price_id like "standard_monthly")
@@ -91,24 +91,10 @@ const BillingSection = () => {
     }
   };
 
-  const getPrice = (planId: "free" | "standard" | "family") => {
+  const getPrice = (planId: "free" | "standard" | "family"): { price: string; period: string; sub: string | null; bill?: string; saving?: string } => {
     if (planId === "free") return { price: "Free", period: `${FREE_DOC_LIMIT} documents`, sub: null };
     const p = PLAN_PRICES[planId];
-    if (billingPeriod === "annual") {
-      return {
-        price: p.annualPricePerMonth,
-        period: p.annualPeriod,
-        sub: p.annualPeriodSub,
-        bill: p.annualBill,
-        saving: p.annualSaving,
-      };
-    }
-    return {
-      price: p.monthlyPrice,
-      period: p.monthlyPeriod,
-      sub: null,
-      saving: p.monthlySaving,
-    };
+    return { price: p.price, period: p.period, sub: null };
   };
 
   return (
@@ -126,32 +112,7 @@ const BillingSection = () => {
         </div>
       )}
 
-      {/* Monthly / Annual Toggle */}
-      <div className="flex items-center justify-center gap-3">
-        <button
-          onClick={() => setBillingPeriod("monthly")}
-          className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
-            billingPeriod === "monthly"
-              ? "bg-foreground text-background shadow-md"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          Monthly
-        </button>
-        <button
-          onClick={() => setBillingPeriod("annual")}
-          className={`relative px-5 py-2 rounded-full text-sm font-medium transition-all ${
-            billingPeriod === "annual"
-              ? "bg-primary text-primary-foreground shadow-md"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          Annual
-          <span className="absolute -top-2.5 -right-1 bg-amber-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">
-            SAVE 25%
-          </span>
-        </button>
-      </div>
+      <p className="text-center text-xs text-muted-foreground">Plans are billed annually.</p>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {planCards.map((plan) => {
