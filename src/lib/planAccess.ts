@@ -86,14 +86,10 @@ export function getRequiredPlanLabel(feature: Feature): string {
   return PLAN_PRICES[required].label;
 }
 
-export function getRequiredPlanPrice(feature: Feature, period: BillingPeriod = "monthly"): string {
+export function getRequiredPlanPrice(feature: Feature, _period: BillingPeriod = "annual"): string {
   const required = FEATURE_REQUIREMENTS[feature][0];
   const p = PLAN_PRICES[required];
-  if (required === "free") return `${(p as typeof PLAN_PRICES.free).price}${(p as typeof PLAN_PRICES.free).period}`;
-  if (period === "annual") {
-    return `${(p as typeof PLAN_PRICES.standard).annualPricePerMonth}${(p as typeof PLAN_PRICES.standard).annualPeriod}`;
-  }
-  return `${(p as typeof PLAN_PRICES.standard).monthlyPrice}${(p as typeof PLAN_PRICES.standard).monthlyPeriod}`;
+  return `${p.price}${p.period}`;
 }
 
 /**
