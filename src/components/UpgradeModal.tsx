@@ -27,7 +27,7 @@ const requiresFamily = (f: Feature | null) => f === "family_invite";
 const UpgradeModal = ({ open, onClose, feature, customMessage }: Props) => {
   const { user } = useAuth();
   const { openCheckout, checkoutElement } = useStripeCheckout();
-  const [period, setPeriod] = useState<BillingPeriod>("annual");
+  const period: BillingPeriod = "annual";
 
   if (!open || !feature) return null;
 
@@ -85,34 +85,9 @@ const UpgradeModal = ({ open, onClose, feature, customMessage }: Props) => {
               </p>
             </div>
 
-            {/* Monthly / Annual toggle */}
-            <div className="flex items-center justify-center gap-2">
-              <button
-                onClick={() => setPeriod("monthly")}
-                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all ${
-                  period === "monthly" ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Monthly
-              </button>
-              <button
-                onClick={() => setPeriod("annual")}
-                className={`relative px-4 py-1.5 rounded-full text-xs font-medium transition-all ${
-                  period === "annual" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Annual
-                <span className="absolute -top-2 -right-1 bg-amber-500 text-white text-[8px] font-bold px-1 py-0.5 rounded-full">
-                  -25%
-                </span>
-              </button>
-            </div>
-
             <div className={`grid gap-4 ${plans.length === 1 ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2"}`}>
               {plans.map(({ id, recommended }) => {
                 const p = PLAN_PRICES[id];
-                const price = period === "annual" ? p.annualPricePerMonth : p.monthlyPrice;
-                const sub = period === "annual" ? `${p.annualPeriodSub} (${p.annualBill}/year)` : null;
                 return (
                   <div
                     key={id}
@@ -127,10 +102,10 @@ const UpgradeModal = ({ open, onClose, feature, customMessage }: Props) => {
                     )}
                     <h4 className="font-heading text-lg text-foreground">{p.label}</h4>
                     <div className="mt-1 mb-1">
-                      <span className="font-heading text-3xl text-foreground">{price}</span>
-                      <span className="text-xs text-muted-foreground ml-1">{p.monthlyPeriod}</span>
+                      <span className="font-heading text-3xl text-foreground">{p.price}</span>
+                      <span className="text-xs text-muted-foreground ml-1">{p.period}</span>
                     </div>
-                    {sub && <p className="text-[11px] text-muted-foreground mb-3">{sub}</p>}
+                    <p className="text-[11px] text-muted-foreground mb-3">Billed annually</p>
                     <ul className="space-y-1.5 mb-4 mt-3">
                       {(id === "standard"
                         ? ["Unlimited uploads", "PDF export & sharing", "Request records", "All AI features"]

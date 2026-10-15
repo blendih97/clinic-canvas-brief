@@ -2,40 +2,28 @@
 import type { Profile } from "@/hooks/useAuth";
 
 export type Plan = "free" | "standard" | "family";
-export type BillingPeriod = "monthly" | "annual";
+// Consumer plans are annual-only. Legacy monthly prices remain in Stripe for
+// existing subscribers but are no longer offered.
+export type BillingPeriod = "annual";
 
 export const PLAN_PRICES = {
   free: { label: "Free", price: "Free", period: "3 documents" },
   standard: {
     label: "Standard",
-    monthlyPrice: "£39",
-    annualPricePerMonth: "£29.25",
-    annualBill: "£351",
-    monthlyPeriod: "/month",
-    annualPeriod: "/month",
-    annualPeriodSub: "billed annually",
-    monthlySaving: "You save £117 a year",
-    annualSaving: "You save £117 a year",
-    monthlyPriceId: "standard_monthly",
-    annualPriceId: "standard_annual",
+    price: "£149",
+    period: "/year",
+    priceId: "standard_annual",
   },
   family: {
     label: "Family",
-    monthlyPrice: "£89.99",
-    annualPricePerMonth: "£67.49",
-    annualBill: "£809.88",
-    monthlyPeriod: "/month",
-    annualPeriod: "/month",
-    annualPeriodSub: "billed annually",
-    monthlySaving: "You save £269.88 a year",
-    annualSaving: "You save £269.88 a year",
-    monthlyPriceId: "family_monthly",
-    annualPriceId: "family_annual",
+    price: "£249",
+    period: "/year",
+    priceId: "family_annual",
   },
 } as const;
 
-export function getPriceId(plan: "standard" | "family", period: BillingPeriod): string {
-  return period === "annual" ? PLAN_PRICES[plan].annualPriceId : PLAN_PRICES[plan].monthlyPriceId;
+export function getPriceId(plan: "standard" | "family", _period: BillingPeriod = "annual"): string {
+  return PLAN_PRICES[plan].priceId;
 }
 
 // Free plan: users can upload up to this many documents, see full AI extraction
@@ -98,14 +86,10 @@ export function getRequiredPlanLabel(feature: Feature): string {
   return PLAN_PRICES[required].label;
 }
 
-export function getRequiredPlanPrice(feature: Feature, period: BillingPeriod = "monthly"): string {
+export function getRequiredPlanPrice(feature: Feature, _period: BillingPeriod = "annual"): string {
   const required = FEATURE_REQUIREMENTS[feature][0];
   const p = PLAN_PRICES[required];
-  if (required === "free") return `${(p as typeof PLAN_PRICES.free).price}${(p as typeof PLAN_PRICES.free).period}`;
-  if (period === "annual") {
-    return `${(p as typeof PLAN_PRICES.standard).annualPricePerMonth}${(p as typeof PLAN_PRICES.standard).annualPeriod}`;
-  }
-  return `${(p as typeof PLAN_PRICES.standard).monthlyPrice}${(p as typeof PLAN_PRICES.standard).monthlyPeriod}`;
+  return `${p.price}${p.period}`;
 }
 
 /**
