@@ -36,7 +36,7 @@ const TEAM_BENEFITS = [
 const TRUST_POINTS = [
   "UK company",
   "ICO registered — ZC123014",
-  "EU hosting — Ireland",
+  "Encrypted storage with UK GDPR-compliant providers",
   "Encrypted at rest and in transit",
   "RinVita does not diagnose or give medical advice",
 ];
@@ -45,7 +45,7 @@ const FAQ = [
   { q: "Can our team see client records?", a: "Only if the client grants access. That permission is scoped and time-limited, and the client can revoke it instantly." },
   { q: "Do clients have to pay?", a: "Pilot terms are agreed with each partner — clients can be included as part of your service." },
   { q: "Do you replace our clinical systems?", a: "No. RinVita sits alongside them as the client's own record." },
-  { q: "Where is data stored?", a: "Data is hosted in the EU, in Ireland, and encrypted at rest and in transit." },
+  { q: "Where is data stored?", a: "Stored encrypted with UK GDPR-compliant providers. See our Privacy Policy for the full list of processors." },
 ];
 
 const faqJsonLd = {

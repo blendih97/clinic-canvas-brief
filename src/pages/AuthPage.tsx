@@ -307,7 +307,7 @@ const AuthPage = () => {
             <ul className="space-y-1.5 text-xs text-muted-foreground leading-relaxed">
               <li>• Up to 3 documents, in any language, with the original always kept</li>
               <li>• Multilingual AI extraction, with every result traceable to the source record</li>
-              <li>• Encrypted at rest and in transit, hosted in the EU (Ireland)</li>
+              <li>• Stored encrypted with UK GDPR-compliant providers — see our Privacy Policy for the full list of processors</li>
               <li>• Time-limited share links you can revoke at any time</li>
             </ul>
           </div>
