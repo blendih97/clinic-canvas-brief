@@ -13,7 +13,7 @@ import { captureUtmParams } from "@/lib/analytics";
 
 export const SIGNUP_PATH = "/auth?mode=signup";
 export const SIGNUP_CTA = "Create your medical passport";
-export const SIGNUP_SUPPORT_LINE = "Free plan · 3 documents · no card required. Paid plans start at £39/month.";
+export const SIGNUP_SUPPORT_LINE = "Free plan · 3 documents · no card required. Paid plans from £149/year.";
 
 export type ConsumerPageConfig = {
   slug: string;

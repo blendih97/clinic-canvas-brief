@@ -119,7 +119,7 @@ const BillingSection = () => {
           const isCurrent = activePlanId === plan.id;
           const priceInfo = getPrice(plan.id);
           const isPaid = plan.id !== "free";
-          const isAnnual = billingPeriod === "annual";
+          const isAnnual = false;
 
           return (
             <div

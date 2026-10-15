@@ -152,7 +152,7 @@ export function MarketingNav() {
     { label: "Medical passport", href: "/medical-passport" },
     { label: "Translate a document", href: "/translate" },
     { label: "How it works", href: onHome ? "#how-it-works" : "/#how-it-works" },
-    { label: "Pricing", href: onHome ? "#pricing" : "/#pricing" },
+    { label: "Pricing", href: "/pricing" },
   ];
 
 
@@ -434,7 +434,7 @@ export function MarketingFooter() {
   const productLinks = [
     { label: "How it works", href: "/#how-it-works" },
     { label: "Features", href: "/#features" },
-    { label: "Pricing", href: "/#pricing" },
+    { label: "Pricing", href: "/pricing" },
     { label: "Translate a document", href: "/translate" },
     { label: "For clinics", href: "/for-clinics" },
     { label: "For concierges", href: "/for-concierges" },

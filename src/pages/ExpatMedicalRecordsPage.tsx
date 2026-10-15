@@ -75,7 +75,7 @@ const config: ConsumerPageConfig = {
     },
     {
       q: "What does it cost?",
-      a: "The free plan covers three documents with no card required. Paid plans start at £39 a month and add unlimited uploads, sharing, PDF export and record requests.",
+      a: "The free plan covers three documents with no card required. Paid plans start at £149 a year and add unlimited uploads, sharing, PDF export and record requests.",
     },
     {
       q: "Can I keep records for my partner and children too?",

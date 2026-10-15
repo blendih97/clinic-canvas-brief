@@ -78,7 +78,7 @@ const config: ConsumerPageConfig = {
     },
     {
       q: "Does it cost anything to start?",
-      a: "No. The free plan lets you upload three documents, see them translated and organised, and no card is required. Paid plans start at £39 a month and add unlimited uploads, sharing, PDF export and record requests.",
+      a: "No. The free plan lets you upload three documents, see them translated and organised, and no card is required. Paid plans start at £149 a year and add unlimited uploads, sharing, PDF export and record requests.",
     },
     {
       q: "Which languages are supported?",
