@@ -221,7 +221,7 @@ const dictionary: Record<Locale, TranslationMap> = {
       standardPrice: "£149",
       familyName: "Family",
       familyPrice: "£249",
-      month: "/month",
+      month: "/year",
       upgrade: "Upgrade",
       comingSoon: "Coming Soon"
     },
@@ -572,7 +572,7 @@ const dictionary: Record<Locale, TranslationMap> = {
       standardPrice: "149£",
       familyName: "عائلي",
       familyPrice: "249£",
-      month: "/شهريًا",
+      month: "/سنويًا",
       upgrade: "ترقية",
       comingSoon: "قريبًا"
     },
