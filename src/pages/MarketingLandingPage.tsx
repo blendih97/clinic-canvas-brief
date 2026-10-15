@@ -215,7 +215,7 @@ function Hero() {
           </p>
           <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 12, alignItems: isMobile ? "stretch" : "center" }}>
             <Link to="/auth?mode=signup" style={{ padding: isMobile ? "18px 24px" : "17px 36px", background: marketingColors.gold, borderRadius: 2, color: "hsl(var(--primary-foreground))", fontSize: isMobile ? 15 : 15.5, fontWeight: 600, letterSpacing: "0.05em", textDecoration: "none", textAlign: "center", boxShadow: "0 6px 28px hsl(var(--primary) / 0.4)" }}>
-              Create your medical passport
+              Start free — 3 documents
             </Link>
             <Link to="/demo" style={{ padding: isMobile ? "15px 24px" : "15px 28px", background: "transparent", border: `1px solid ${marketingColors.gold}`, borderRadius: 2, color: marketingColors.gold, fontSize: 14, textDecoration: "none", textAlign: "center", fontWeight: 500 }}>
               See an example →
@@ -229,12 +229,14 @@ function Hero() {
             ].map(({ icon: Icon, text }) => <li key={text} className="flex items-start gap-3"><Icon aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-primary" /><span className="min-w-0">{text}</span></li>)}
           </ul>
           <div style={{ marginTop: 12, fontSize: 12.5, color: marketingColors.softText, letterSpacing: "0.01em", fontWeight: 400 }}>
-            Free plan · 3 documents · no card required. Paid plans start at £39/month.
+            Is your clinic or concierge a RinVita partner? Ask them for free access.
           </div>
-          <div style={{ marginTop: 8, fontSize: 12.5, color: marketingColors.softText }}>
-            A clinic or medical concierge?{" "}
-            <Link to="/for-clinics" style={{ color: marketingColors.gold, textDecoration: "none", fontWeight: 500 }}>
-              See partner options →
+          <div style={{ marginTop: 14, display: "flex", flexWrap: "wrap", alignItems: "center", gap: "10px 18px" }}>
+            <Link to="/for-clinics" style={{ padding: "11px 20px", border: `1px solid ${marketingColors.ink}`, borderRadius: 2, color: marketingColors.ink, fontSize: 13.5, fontWeight: 500, textDecoration: "none" }}>
+              For clinics &amp; concierges →
+            </Link>
+            <Link to="/pricing" style={{ fontSize: 12.5, color: marketingColors.gold, textDecoration: "none", fontWeight: 500 }}>
+              See pricing
             </Link>
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: isMobile ? "8px 16px" : 20, marginTop: isMobile ? 22 : 28, fontSize: 12, color: marketingColors.mutedText, letterSpacing: "0.02em" }}>
@@ -530,11 +532,10 @@ function ClinicalSafety() {
   );
 }
 
-function Pricing() {
+export function Pricing() {
   const ref = useReveal<HTMLDivElement>();
   const { isMobile, isTablet } = useMarketingBreakpoint();
   const paddingX = isMobile ? 20 : isTablet ? 32 : 56;
-  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">("monthly");
   const [trustOpen, setTrustOpen] = useState<string | null>(null);
 
   // Fire pricing_viewed once when the section mounts
@@ -563,11 +564,8 @@ function Pricing() {
   const futurePlans = [
     {
       name: "Standard",
-      monthlyPrice: "£39",
-      annualPricePerMonth: "£29.25",
-      annualBill: "£351",
-      monthlySaving: "You save £117 a year",
-      period: "/month",
+      price: "£149",
+      period: "/year",
       desc: "For individuals managing complex medical history.",
       highlight: null as string | null,
       features: [
@@ -582,11 +580,8 @@ function Pricing() {
     },
     {
       name: "Family",
-      monthlyPrice: "£89.99",
-      annualPricePerMonth: "£67.49",
-      annualBill: "£809.88",
-      monthlySaving: "You save £269.88 a year",
-      period: "/month",
+      price: "£249",
+      period: "/year",
       desc: "One plan for the whole family, across every border.",
       highlight: "Best for families",
       features: [
@@ -608,7 +603,7 @@ function Pricing() {
       <div ref={ref} className="marketing-reveal" style={{ maxWidth: 1100, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: isMobile ? 40 : 56 }}>
           <span className="marketing-section-label">Pricing</span>
-          <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 32 : "clamp(34px,3.8vw,52px)", fontWeight: 300, color: marketingColors.ink, marginBottom: 16 }}>Simple pricing. Pay only for what you need.</h2>
+          <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 32 : "clamp(34px,3.8vw,52px)", fontWeight: 300, color: marketingColors.ink, marginBottom: 16 }}>Simple annual plans for individuals and families.</h2>
           <p style={{ fontSize: isMobile ? 14 : 16, color: marketingColors.mutedText, maxWidth: 560, margin: "0 auto", lineHeight: 1.7, fontWeight: 300 }}>
             Start free with 3 documents — no card required. Upgrade when you need unlimited uploads, full sharing and PDF export.
           </p>
@@ -631,61 +626,6 @@ function Pricing() {
           </span>
         </div>
 
-        {/* Monthly / Annual Toggle */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginBottom: isMobile ? 32 : 40 }}>
-          <button
-            onClick={() => setBillingPeriod("monthly")}
-            style={{
-              padding: "10px 24px",
-              borderRadius: 2,
-              fontSize: 13,
-              fontWeight: 600,
-              letterSpacing: "0.06em",
-              textTransform: "uppercase",
-              cursor: "pointer",
-              border: billingPeriod === "monthly" ? "1px solid hsl(var(--foreground))" : `1px solid ${marketingColors.goldBorder}`,
-              background: billingPeriod === "monthly" ? "hsl(var(--foreground))" : "transparent",
-              color: billingPeriod === "monthly" ? "hsl(var(--background))" : marketingColors.mutedText,
-              transition: "all 0.2s ease",
-            }}
-          >
-            Monthly
-          </button>
-          <button
-            onClick={() => setBillingPeriod("annual")}
-            style={{
-              position: "relative",
-              padding: "10px 24px",
-              borderRadius: 2,
-              fontSize: 13,
-              fontWeight: 600,
-              letterSpacing: "0.06em",
-              textTransform: "uppercase",
-              cursor: "pointer",
-              border: billingPeriod === "annual" ? `1px solid ${marketingColors.gold}` : `1px solid ${marketingColors.goldBorder}`,
-              background: billingPeriod === "annual" ? marketingColors.gold : "transparent",
-              color: billingPeriod === "annual" ? "hsl(var(--primary-foreground))" : marketingColors.mutedText,
-              transition: "all 0.2s ease",
-            }}
-          >
-            Annual
-            <span style={{
-              position: "absolute",
-              top: -10,
-              right: -8,
-              background: "#d97706",
-              color: "#fff",
-              fontSize: 9,
-              fontWeight: 700,
-              padding: "3px 7px",
-              borderRadius: 999,
-              letterSpacing: "0.04em",
-            }}>
-              SAVE 25%
-            </span>
-          </button>
-        </div>
-
         {/* Paid plans */}
         <div style={{ textAlign: "center", marginBottom: 24 }}>
           <span style={{ fontSize: 11, letterSpacing: "0.16em", color: marketingColors.softText, fontWeight: 500, textTransform: "uppercase" }}>Upgrade when you need more</span>
@@ -693,8 +633,7 @@ function Pricing() {
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2,1fr)", gap: isMobile ? 20 : 24, alignItems: "stretch" }}>
           {futurePlans.map((plan) => {
             const isFamily = plan.name === "Family";
-            const isAnnual = billingPeriod === "annual";
-            const displayPrice = isAnnual ? plan.annualPricePerMonth : plan.monthlyPrice;
+            const displayPrice = plan.price;
             return (
               <div
                 key={plan.name}
@@ -715,11 +654,6 @@ function Pricing() {
                     {plan.highlight}
                   </div>
                 )}
-                {isAnnual && (
-                  <div style={{ position: "absolute", top: -12, right: isMobile ? 24 : 36, background: "#d97706", color: "#fff", fontSize: 9, fontWeight: 700, letterSpacing: "0.04em", padding: "4px 10px", borderRadius: 1, textTransform: "uppercase" }}>
-                    SAVE 25%
-                  </div>
-                )}
                 <div style={{ fontFamily: "Cormorant Garamond", fontSize: 11, color: "hsl(var(--primary) / 0.7)", letterSpacing: "0.1em", marginBottom: 12, marginTop: plan.highlight ? 4 : 0 }}>{plan.name.toUpperCase()}</div>
 
                 {/* Try free badge above price */}
@@ -732,17 +666,7 @@ function Pricing() {
                   <span style={{ fontSize: 13, color: marketingColors.softText }}>{plan.period}</span>
                 </div>
 
-                {isAnnual && (
-                  <p style={{ fontSize: 12, color: marketingColors.softText, marginBottom: 8 }}>
-                    billed annually ({plan.annualBill}/year)
-                  </p>
-                )}
 
-                {isAnnual && (
-                  <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 10px", background: "rgba(217, 119, 6, 0.08)", border: "1px solid rgba(217, 119, 6, 0.22)", borderRadius: 2, marginBottom: 12, alignSelf: "flex-start" }}>
-                    <span style={{ color: "#d97706", fontSize: 11, fontWeight: 600 }}>→ {plan.monthlySaving}</span>
-                  </div>
-                )}
 
                 <p style={{ fontSize: 13, color: marketingColors.mutedText, marginTop: 4, marginBottom: 20, lineHeight: 1.6 }}>{plan.desc}</p>
                 <div style={{ height: 1, background: marketingColors.goldBorder, marginBottom: 20 }} />
@@ -1253,7 +1177,6 @@ const MarketingLandingPage = () => {
       <SampleHealthPassport />
       <TrustMechanisms />
       <ClinicalSafety />
-      <Pricing />
       <ForClinicsCallout />
       <FAQ />
       <HomeShare />
