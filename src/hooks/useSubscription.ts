@@ -21,7 +21,7 @@ export interface SubscriptionRow {
 const ACTIVE_STATUSES = new Set(["active", "trialing", "past_due"]);
 
 export function useSubscription() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [subscription, setSubscription] = useState<SubscriptionRow | null>(null);
   const [hasPaidAccess, setHasPaidAccess] = useState(false);
   const [planTier, setPlanTier] = useState<"free" | "standard" | "family">("free");
@@ -45,7 +45,7 @@ export function useSubscription() {
     setHasPaidAccess(!!paid);
     setPlanTier((tier as any) === "family" ? "family" : (tier as any) === "standard" ? "standard" : "free");
     setLoading(false);
-  }, [user]);
+  }, [user, profile?.comped_plan, profile?.comped_until]);
 
   useEffect(() => { fetch(); }, [fetch]);
 

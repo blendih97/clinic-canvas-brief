@@ -3,6 +3,8 @@ import { CheckCircle, Crown, ArrowRight, ExternalLink } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useSponsorship } from "@/hooks/useSponsorship";
+import SponsorshipNotice from "@/components/SponsorshipNotice";
+import { hasComplimentaryAccess } from "@/lib/sponsorship";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { supabase } from "@/integrations/supabase/client";
@@ -54,20 +56,16 @@ const planCards: PlanCard[] = [
 
 const BillingSection = () => {
   const { profile, user } = useAuth();
-  const { subscription, isActive } = useSubscription();
+  const { subscription, isActive, planTier } = useSubscription();
   const sponsorship = useSponsorship();
-  const sponsored = !!sponsorship?.active;
+  const sponsored = hasComplimentaryAccess(profile);
   const { openCheckout, checkoutElement } = useStripeCheckout();
-  const userPlan = profile?.plan || "free";
   
   const billingPeriod: BillingPeriod = "annual";
   const [portalLoading, setPortalLoading] = useState(false);
 
   // Determine active plan from Stripe subscription (price_id like "standard_monthly")
-  const activePlanId: "free" | "standard" | "family" =
-    isActive && subscription?.price_id?.startsWith("family") ? "family"
-    : isActive && subscription?.price_id?.startsWith("standard") ? "standard"
-    : (userPlan as "free" | "standard" | "family");
+  const activePlanId = planTier;
 
   const handleUpgrade = (planId: "standard" | "family") => {
     if (!user) return;
@@ -107,15 +105,7 @@ const BillingSection = () => {
         <p className="text-sm text-muted-foreground mt-2">Manage your RinVita membership</p>
       </div>
 
-      {sponsored && sponsorship && (
-        <div className="bg-primary/10 border border-primary/30 rounded-lg p-4 flex items-center gap-3">
-          {sponsorship.logo_url && <img src={sponsorship.logo_url} alt="" className="h-8 w-auto max-w-[80px] object-contain" />}
-          <p className="text-sm text-foreground">
-            Your plan is provided by <span className="font-medium">{sponsorship.org_name}</span> until{" "}
-            {new Date(sponsorship.comped_until!).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}.
-          </p>
-        </div>
-      )}
+      {sponsored && <SponsorshipNotice />}
 
       {!isActive && !sponsored && (
         <div className="bg-primary/10 border border-primary/30 rounded-lg p-4">
