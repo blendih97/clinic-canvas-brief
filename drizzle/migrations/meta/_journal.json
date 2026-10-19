@@ -57,6 +57,13 @@
       "when": 1792397506667,
       "tag": "0007_allow_sponsorship_date_checks",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1792397568042,
+      "tag": "0008_verify_partner_expiry_boundaries",
+      "breakpoints": true
     }
   ]
 }
