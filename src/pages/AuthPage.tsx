@@ -10,7 +10,7 @@ import { Eye, EyeOff, ShieldCheck, CreditCard, XCircle } from "lucide-react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useLocale } from "@/hooks/useLocale";
 import SEO from "@/components/SEO";
-import { capturePartnerParams, isValidSlug, isValidToken, readPendingPartner, savePendingPartner } from "@/lib/partners";
+import { capturePartnerParams, partnerAuthParams, isValidSlug, isValidToken, readPendingPartner, savePendingPartner } from "@/lib/partners";
 
 interface SignupPartner { name: string; slug: string; logo_url: string | null; type: string }
 
@@ -80,6 +80,12 @@ const AuthPage = () => {
       returnUrl: `${window.location.origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
     });
   }, [user, checkoutPlan, openCheckout]);
+
+  // Already signed in (e.g. opened a staff/partner invite link): skip the form
+  // and continue to the requested page; PartnerClaimer handles the claim.
+  useEffect(() => {
+    if (user && nextPath && !checkoutPlan) navigate(nextPath, { replace: true });
+  }, [user, nextPath, checkoutPlan, navigate]);
 
   const goAfterAuth = () => {
     if (nextPath) window.location.href = nextPath;
@@ -185,7 +191,7 @@ const AuthPage = () => {
         goAfterAuth();
       }
     } else {
-      navigate("/check-email");
+      navigate(`/check-email?${partnerAuthParams(searchParams, { email: normalizedEmail })}`);
     }
 
   };
