@@ -143,7 +143,17 @@ const AuthPage = () => {
     resetSignupFlow();
 
     if (session) {
-      goAfterAuth();
+      if (checkoutPlan) {
+        checkoutOpened.current = true;
+        openCheckout({
+          priceId: getPriceId(checkoutPlan),
+          customerEmail: session.user.email,
+          userId: session.user.id,
+          returnUrl: `${window.location.origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
+        });
+      } else {
+        goAfterAuth();
+      }
     } else {
       navigate("/check-email");
     }
@@ -167,7 +177,7 @@ const AuthPage = () => {
 
   const handleGoogleSignIn = async () => {
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: `${window.location.origin}${afterAuth}`,
+      redirect_uri: `${window.location.origin}${checkoutPlan && !nextPath ? `/auth?plan=${checkoutPlan}` : afterAuth}`,
     });
     if (result.error) {
       toast.error(t("auth.googleFailed"));
