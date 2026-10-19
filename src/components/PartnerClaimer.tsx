@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { capturePartnerParams, claimPartner, clearPendingPartner, readPendingPartner, savePendingPartner } from "@/lib/partners";
@@ -11,6 +11,7 @@ import { capturePartnerParams, claimPartner, clearPendingPartner, readPendingPar
  */
 const PartnerClaimer = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, refreshProfile } = useAuth();
   const running = useRef(false);
 
@@ -34,7 +35,10 @@ const PartnerClaimer = () => {
       running.current = false;
       if (!res) return; // keep pending; retry next load
       clearPendingPartner();
-      if (res.staff_joined) toast.success("You've joined your organisation's partner portal.");
+      if (res.staff_joined) {
+        toast.success("You've joined your organisation's partner portal.");
+        navigate("/partner");
+      }
       if (res.status === "joined") {
         toast.success(`${res.partner} is now sponsoring your RinVita plan.`);
         void refreshProfile();
@@ -44,7 +48,7 @@ const PartnerClaimer = () => {
         toast.message("That partner invitation is no longer active. Your free account is ready.");
       }
     })();
-  }, [user, location.pathname, refreshProfile]);
+  }, [user, location.pathname, refreshProfile, navigate]);
 
   return null;
 };
