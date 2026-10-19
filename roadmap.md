@@ -1,9 +1,9 @@
 # Roadmap
 
-- [ ] Growth Engine: evidence-led prospects, proposed previews and fictional interactive demos.
-- [ ] Growth Engine: saved trial applications, admin approval safeguards and aggregate view tracking.
-- [ ] Growth Engine: admin pipeline, distribution partners, CSV and draft-only outreach.
-- [ ] Growth Engine: seed three sourced demos; run tests and verify public/admin flows.
+- [x] Growth Engine: evidence-led prospects, proposed previews and fictional interactive demos.
+- [x] Growth Engine: saved trial applications, admin approval safeguards and aggregate view tracking.
+- [x] Growth Engine: admin pipeline, distribution partners, CSV and draft-only outreach.
+- [x] Growth Engine: seed three sourced demos; run tests and verify public/admin submission, review, CSV and outreach flows at desktop/390px.
 
 - [x] Refresh profile, plan state and caches immediately after partner claim.
 - [x] Show sponsored/complimentary subscription details without purchase controls.
