@@ -30,11 +30,11 @@ describe("store, review and share messaging", () => {
   it("uses the clinic offer consistently without changing other partner defaults", () => {
     expect(clinics).toContain("Give your patients their records —");
     expect(clinics).toContain("in one place they control.");
-    expect(clinics).toContain("Free 60-day pilot for 5 of your patients.");
+    expect(clinics).toContain("Free 14-day trial — invite as many patients as you like.");
     expect(clinics.match(/title: "/g)).toHaveLength(8);
     expect(partner).toContain("config.pilotPoints ?? PILOT_POINTS");
     expect(partner).toContain("config.pilotFaqAnswer ?? item.a");
-    expect(partner).toContain("Apply for a founding pilot");
+    expect(partner).toContain("Start a 14-day trial");
     expect(partner).toContain("Not an EHR. Not a");
     expect(partner).toContain("diagnostic tool.");
   });

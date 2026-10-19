@@ -43,7 +43,7 @@ const TRUST_POINTS = [
 
 const FAQ = [
   { q: "Can our team see client records?", a: "Only if the client grants access. That permission is scoped and time-limited, and the client can revoke it instantly." },
-  { q: "Do clients have to pay?", a: "Pilot terms are agreed with each partner — clients can be included as part of your service." },
+  { q: "Do clients have to pay?", a: "No. Pricing is agreed before the trial starts. If you continue, your plan begins on day 15; if not, your patients keep their accounts on the free plan." },
   { q: "Do you replace our clinical systems?", a: "No. RinVita sits alongside them as the client's own record." },
   { q: "Where is data stored?", a: "Stored encrypted with UK GDPR-compliant providers. See our Privacy Policy for the full list of processors." },
 ];
@@ -70,7 +70,7 @@ export default function ForConciergesPage() {
 
   return (
     <div className="marketing-page" style={{ background: marketingColors.cream, color: marketingColors.ink, minHeight: "100vh" }}>
-      <SEO title="RinVita Partner Programme for Medical Concierges" description="Give every client a private, organised medical hub. Apply for RinVita's founding partner pilot for medical concierges and family offices." path="/for-concierges" jsonLd={faqJsonLd} />
+      <SEO title="RinVita Partner Programme for Medical Concierges" description="Give every client a private, organised medical hub. Free 14-day trial — invite as many patients as you like." path="/for-concierges" jsonLd={faqJsonLd} />
       <MarketingStyles />
       <MarketingNav />
 
@@ -85,7 +85,7 @@ export default function ForConciergesPage() {
               RinVita gives each of your clients a private medical hub. You send in results and letters; they're organised, translated and ready to share with any doctor, anywhere. Your clients stay in control.
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
-              <Button onClick={goToForm} size="lg" className="h-auto rounded-sm px-7 py-3.5 uppercase" style={{ letterSpacing: "0.06em" }}>Apply for the founding partner pilot</Button>
+              <Button onClick={goToForm} size="lg" className="h-auto rounded-sm px-7 py-3.5 uppercase" style={{ letterSpacing: "0.06em" }}>Start a 14-day trial</Button>
               <Button asChild variant="outline" size="lg" className="h-auto rounded-sm px-7 py-3.5 uppercase" style={{ letterSpacing: "0.06em" }}><Link to="/demo?utm_source=for-concierges">See a sample medical passport</Link></Button>
             </div>
           </div>
@@ -115,10 +115,10 @@ export default function ForConciergesPage() {
         <section id="apply" style={{ padding: `${isMobile ? 68 : 100}px ${paddingX}px`, scrollMarginTop: 80 }}>
           <div style={{ maxWidth: 860, margin: "0 auto" }}>
             <div style={{ textAlign: "center", marginBottom: 34 }}>
-              <span className="marketing-section-label">Founding partner pilot</span>
+              <span className="marketing-section-label">Free 14-day trial</span>
               <h2 style={sectionTitle(isMobile)}>Help shape the partner programme.</h2>
               <p style={{ ...cardBody, maxWidth: 720, margin: "14px auto 0", fontSize: 15 }}>
-                We're onboarding a small number of concierge and family-office partners to shape the programme. Pilots include setup, onboarding for your team and direct input into the partner features.
+                Free 14-day trial — invite as many patients as you like. Setup and onboarding for your team are included. Pricing is agreed before the trial starts. If you continue, your plan begins on day 15; if not, your patients keep their accounts on the free plan.
               </p>
             </div>
             <ConciergePilotForm />

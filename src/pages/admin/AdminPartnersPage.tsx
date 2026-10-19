@@ -10,6 +10,7 @@ interface Org {
 interface Member { id: string; org_id: string; invited_email: string; role: string; status: string; joined_at: string | null }
 interface LinkRow { org_id: string; status: string; patient_user_id: string | null }
 
+const defaultSponsorUntil = () => { const d = new Date(); d.setDate(d.getDate() + 14); return d.toLocaleDateString("en-CA"); };
 const emptyForm = { id: "", name: "", slug: "", type: "clinic", seat_limit: 50, sponsor_until: "", status: "active", sponsored_plan: "standard", logo_url: "" };
 const input = "w-full rounded-md border border-border bg-background px-3 py-2 text-sm";
 
@@ -37,7 +38,7 @@ const AdminPartnersPage = () => {
   useEffect(() => { void load(); }, [load]);
 
   const edit = (o?: Org) => {
-    setForm(o ? { id: o.id, name: o.name, slug: o.slug, type: o.type, seat_limit: o.seat_limit, sponsor_until: o.sponsor_until || "", status: o.status, sponsored_plan: o.sponsored_plan, logo_url: o.logo_url || "" } : emptyForm);
+    setForm(o ? { id: o.id, name: o.name, slug: o.slug, type: o.type, seat_limit: o.seat_limit, sponsor_until: o.sponsor_until || "", status: o.status, sponsored_plan: o.sponsored_plan, logo_url: o.logo_url || "" } : { ...emptyForm, sponsor_until: defaultSponsorUntil() });
     setSlugTouched(!!o);
     setLogoFile(null);
     setFormOpen(true);

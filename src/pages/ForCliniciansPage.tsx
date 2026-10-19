@@ -10,16 +10,16 @@ const config: PartnerPageConfig = {
   headlineAccent: "in one place they control.",
   intro:
     "RinVita is a branded medical record your practice offers its patients. They store, review and share every report, result and letter with any doctor by secure link or PDF. Fewer resend requests for your team, better-prepared appointments, and a premium extra your patients will value.",
-  pilotCaption: "Free 60-day pilot for 5 of your patients.",
+  pilotCaption: "Free 14-day trial — invite as many patients as you like.",
   pilotPoints: [
     "Selected clinics only",
-    "Free 60-day pilot",
-    "For 5 of your patients",
+    "Free 14-day trial",
+    "Invite as many patients as you like",
     "No EHR integration required",
     "Guided setup and co-branded invitation materials",
-    "Success review at the end of the pilot",
+    "Pricing agreed before the trial starts",
   ],
-  pilotFaqAnswer: "A free 60-day pilot for 5 of your patients, guided setup, co-branded invitation materials, no integration work, and a success review at the end.",
+  pilotFaqAnswer: "A free 14-day trial — invite as many patients as you like — with guided setup, co-branded invitation materials and no integration work. Pricing is agreed before the trial starts. If you continue, your plan begins on day 15; if not, your patients keep their accounts on the free plan.",
   problems: [
     {
       title: "Records arrive after the patient does",

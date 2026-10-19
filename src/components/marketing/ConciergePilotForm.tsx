@@ -45,7 +45,7 @@ export default function ConciergePilotForm() {
       return;
     }
     if (!consent) {
-      setError("Please confirm you're happy for us to contact you about the pilot.");
+      setError("Please confirm you're happy for us to contact you about the trial.");
       return;
     }
 
@@ -123,7 +123,7 @@ export default function ConciergePilotForm() {
       </div>
       {error && <div role="alert" className="border-destructive/30 bg-destructive/10 text-destructive" style={{ gridColumn: isMobile ? "auto" : "1 / -1", padding: 12, borderWidth: 1, borderRadius: 2, fontSize: 13 }}>{error}</div>}
       <div style={{ gridColumn: isMobile ? "auto" : "1 / -1" }}>
-        <Button type="submit" disabled={loading} className="h-auto w-full rounded-sm px-6 py-3.5 uppercase" style={{ letterSpacing: "0.06em" }}>{loading ? "Sending…" : "Apply for the founding partner pilot"}</Button>
+        <Button type="submit" disabled={loading} className="h-auto w-full rounded-sm px-6 py-3.5 uppercase" style={{ letterSpacing: "0.06em" }}>{loading ? "Sending…" : "Start a 14-day trial"}</Button>
       </div>
     </form>
   );
