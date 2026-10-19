@@ -47,6 +47,10 @@ import OAuthConsent from "./pages/OAuthConsent.tsx";
 import CookieConsent from "./components/CookieConsent";
 import { PaymentTestModeBanner } from "./components/PaymentTestModeBanner";
 import ScrollManager from "./components/ScrollManager";
+import PartnerClaimer from "./components/PartnerClaimer";
+import PartnerPublicPage from "./pages/PartnerPublicPage.tsx";
+import PartnerRoute from "./pages/partner/PartnerRoute.tsx";
+import AdminPartnersPage from "./pages/admin/AdminPartnersPage.tsx";
 
 
 const queryClient = new QueryClient();
@@ -174,6 +178,7 @@ export const AppRoutes = () => (
                 <Route index element={<AdminDashboardPage />} />
                 <Route path="users" element={<AdminPlaceholderPage title="Users" description="Review member access, plan state, and high-touch support actions." mode="users" />} />
                 <Route path="visitors" element={<AdminVisitorsPage />} />
+                <Route path="partners" element={<AdminPartnersPage />} />
                 <Route path="subscriptions" element={<AdminPlaceholderPage title="Subscriptions" description="Inspect estimated recurring revenue, trial expiry windows, and comped access." mode="subscriptions" />} />
                 <Route path="documents" element={<AdminPlaceholderPage title="Documents" description="Monitor upload processing, language coverage, and recent platform throughput." mode="documents" />} />
                 <Route path="activity" element={<AdminPlaceholderPage title="Activity log" description="Track platform signups, admin interventions, and security-sensitive events." mode="activity" />} />
@@ -181,6 +186,8 @@ export const AppRoutes = () => (
               </Route>
               <Route path="/profile" element={<Navigate to="/app/profile" replace />} />
               <Route path="/settings" element={<Navigate to="/app/settings" replace />} />
+              <Route path="/p/:slug" element={<PartnerPublicPage />} />
+              <Route path="/partner" element={<PartnerRoute />} />
               <Route path="/share/:token" element={<ShareView />} />
               <Route path="/upload-request/:token" element={<UploadRequestPage />} />
               <Route path="/media-share/:token" element={<MediaSharePage />} />
@@ -206,6 +213,7 @@ const App = () => (
           <BrowserRouter>
             <MetaPixelTracker />
             <ScrollManager />
+            <PartnerClaimer />
             <PaymentTestModeBanner />
 
             <AppRoutes />
