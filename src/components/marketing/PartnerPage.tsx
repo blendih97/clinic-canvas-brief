@@ -30,12 +30,12 @@ const WORKFLOW = [
   {
     step: "01",
     title: "Invite the patient",
-    body: "Send a co-branded invitation before travel. The patient creates their own RinVita account — you don't hold or administer it.",
+    body: "Invite by email, or share your co-branded link or QR code. The patient creates their own RinVita account and you sponsor their plan — you don't hold or administer it.",
   },
   {
     step: "02",
     title: "The patient uploads records",
-    body: "Letters, labs, imaging reports and prescriptions from any country, in any language, from a phone or laptop.",
+    body: "Letters, labs, imaging reports and prescriptions from any country, in any language. They can also request records from any provider via a secure upload link.",
   },
   {
     step: "03",
@@ -45,7 +45,7 @@ const WORKFLOW = [
   {
     step: "04",
     title: "The patient shares a clinician-ready view",
-    body: "A time-limited link the patient can revoke, showing a structured summary with the source documents behind it.",
+    body: "A one-time secure link or PDF, created by the patient, showing a structured summary with the source documents behind it.",
   },
 ];
 
@@ -63,6 +63,10 @@ const FAQ = [
   {
     q: "Who owns the account and the data?",
     a: "The patient does. Each patient holds their own RinVita account and decides what is shared, with whom, and for how long. You are the distribution partner, not the account holder.",
+  },
+  {
+    q: "Can our team see patients' records?",
+    a: "No. Partners never see medical records. You see sign-up and activity status only: names, emails, invite status, join date and last active. Coming later, with each patient's consent: sending records directly into their account.",
   },
   {
     q: "Do we need EHR or PMS integration?",
