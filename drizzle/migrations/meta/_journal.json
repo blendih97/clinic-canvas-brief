@@ -36,6 +36,13 @@
       "when": 1792396306474,
       "tag": "0004_partner_logos_policies",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792396583098,
+      "tag": "0005_partner_revoke_anon",
+      "breakpoints": true
     }
   ]
 }
