@@ -1558,6 +1558,15 @@ export type Database = {
           type: string
         }[]
       }
+      get_public_partner_by_invite: {
+        Args: { _token: string }
+        Returns: {
+          logo_url: string
+          name: string
+          slug: string
+          type: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1592,6 +1601,7 @@ export type Database = {
         }
         Returns: Json
       }
+      partner_sponsorship_expiry: { Args: { _date: string }; Returns: string }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
         Returns: {

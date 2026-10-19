@@ -43,6 +43,13 @@
       "when": 1792396583098,
       "tag": "0005_partner_revoke_anon",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792397447210,
+      "tag": "0006_partner_london_expiry_and_invite_branding",
+      "breakpoints": true
     }
   ]
 }

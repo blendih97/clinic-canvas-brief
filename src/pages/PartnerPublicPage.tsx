@@ -5,6 +5,8 @@ import { toast } from "sonner";
 import SEO from "@/components/SEO";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useQueryClient } from "@tanstack/react-query";
+import { refreshClaimAccess } from "@/lib/sponsorship";
 import { claimPartner, clearPendingPartner, isValidSlug, isValidToken, savePendingPartner } from "@/lib/partners";
 
 interface PublicPartner { name: string; slug: string; logo_url: string | null; type: string }
@@ -19,7 +21,8 @@ const PartnerPublicPage = () => {
   const { slug = "" } = useParams();
   const [params] = useSearchParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, refreshProfile } = useAuth();
+  const queryClient = useQueryClient();
   const [partner, setPartner] = useState<PublicPartner | null>(null);
   const [state, setState] = useState<"loading" | "ok" | "missing">("loading");
   const [accepting, setAccepting] = useState(false);
@@ -42,11 +45,12 @@ const PartnerPublicPage = () => {
     setAccepting(true);
     const res = await claimPartner({ slug: clean, token: isValidToken(invite) ? invite : undefined });
     setAccepting(false);
-    clearPendingPartner();
     if (!res) { toast.error("Something went wrong. Please try again."); return; }
+    await refreshClaimAccess(res.status, refreshProfile, () => queryClient.invalidateQueries());
+    clearPendingPartner();
     if (res.status === "joined" || res.status === "already_joined") {
       toast.success(`${partner?.name} is sponsoring your RinVita plan.`);
-      window.location.href = "/app";
+      navigate("/app");
     } else if (res.status === "seats_full") {
       toast.message(`${partner?.name}'s sponsored places are full right now. You can keep using RinVita on the free plan.`);
     } else {
