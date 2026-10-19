@@ -8,6 +8,8 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { useNavigate } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
+import SponsorshipNotice from "@/components/SponsorshipNotice";
+import { hasComplimentaryAccess } from "@/lib/sponsorship";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useLocale } from "@/hooks/useLocale";
 import {
@@ -103,6 +105,7 @@ const SettingsPage = () => {
   // Plan shown here must come from the live subscription, never profiles.plan
   // (which can be stale after a cancellation or a failed payment).
   const plan = planTier;
+  const complimentary = hasComplimentaryAccess(profile);
 
   return (
     <div className="min-h-screen bg-background">
@@ -202,6 +205,7 @@ const SettingsPage = () => {
 
         <section className="bg-card border border-border rounded-xl p-6 mb-6">
           <h2 className="font-heading text-lg text-foreground mb-4">{t("settings.subscription")}</h2>
+          {complimentary ? <SponsorshipNotice /> : <>
           <div className="flex items-center gap-3 mb-4">
             <span className="px-3 py-1 bg-primary/10 text-primary text-sm font-medium rounded-full capitalize">{plan}</span>
             <span className="text-sm text-muted-foreground">{planPrices[plan]}</span>
@@ -222,6 +226,7 @@ const SettingsPage = () => {
               </div>
             ))}
           </div>
+          </>}
         </section>
 
         <section className="bg-card border border-border rounded-xl p-6">

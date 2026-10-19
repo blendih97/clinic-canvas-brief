@@ -10,7 +10,9 @@ import { Eye, EyeOff, ShieldCheck, CreditCard, XCircle } from "lucide-react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useLocale } from "@/hooks/useLocale";
 import SEO from "@/components/SEO";
-import { readPendingPartner } from "@/lib/partners";
+import { capturePartnerParams, isValidSlug, isValidToken, readPendingPartner, savePendingPartner } from "@/lib/partners";
+
+interface SignupPartner { name: string; slug: string; logo_url: string | null; type: string }
 
 const AuthPage = () => {
   const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
@@ -25,6 +27,30 @@ const AuthPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [signupPartner, setSignupPartner] = useState<SignupPartner | null>(null);
+  const [partnerLoading, setPartnerLoading] = useState(false);
+
+  useEffect(() => {
+    capturePartnerParams(searchParams.toString());
+    const pending = readPendingPartner();
+    const slug = (searchParams.get("partner") || pending?.slug || "").toLowerCase();
+    const token = (searchParams.get("invite") || pending?.token || "").toLowerCase();
+    let cancelled = false;
+    setSignupPartner(null);
+    if (!isValidSlug(slug) && !isValidToken(token)) { setPartnerLoading(false); return; }
+    setPartnerLoading(true);
+    void (async () => {
+      const result = isValidSlug(slug)
+        ? await supabase.rpc("get_public_partner", { _slug: slug })
+        : await supabase.rpc("get_public_partner_by_invite" as any, { _token: token });
+      if (cancelled) return;
+      const row = Array.isArray(result.data) ? result.data[0] as SignupPartner : null;
+      setSignupPartner(row);
+      if (row) savePendingPartner({ slug: row.slug, token });
+      setPartnerLoading(false);
+    })();
+    return () => { cancelled = true; };
+  }, [searchParams]);
 
   useEffect(() => {
     const requestedMode = searchParams.get("mode");
@@ -240,7 +266,10 @@ const AuthPage = () => {
               {mode === "signup" && (
                 <div className="mb-5 rounded-lg border border-primary/20 bg-primary/5 px-3 py-2.5 text-center">
                   <p className="text-xs text-foreground/80 leading-relaxed">
-                    <span className="font-medium text-foreground">Free plan</span> · 3 documents, fully translated · No card required
+                    {signupPartner ? <>
+                      {signupPartner.logo_url && <img src={signupPartner.logo_url} alt={signupPartner.name} className="mx-auto mb-2 h-10 max-w-[160px] object-contain" />}
+                      <span className="font-medium text-foreground">Sponsored by {signupPartner.name} — full access, free for you</span>
+                    </> : partnerLoading ? "Loading your sponsorship…" : <><span className="font-medium text-foreground">Free plan</span> · 3 documents, fully translated · No card required</>}
                   </p>
                   <div className="mt-2 flex items-center justify-center gap-3 text-[10px] text-muted-foreground">
                     <span className="inline-flex items-center gap-1"><ShieldCheck className="w-3 h-3 text-primary" /> Encrypted at rest and in transit</span>
@@ -332,7 +361,7 @@ const AuthPage = () => {
           )}
         </div>
 
-        {mode === "signup" && (
+        {mode === "signup" && !signupPartner && !partnerLoading && (
           <div className="mt-5 rounded-lg border border-border/60 bg-card/60 px-4 py-3">
             <p className="text-[10px] tracking-[0.12em] uppercase text-muted-foreground/80 text-center mb-2">
               What your free plan includes

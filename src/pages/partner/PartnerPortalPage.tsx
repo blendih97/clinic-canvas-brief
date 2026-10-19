@@ -7,6 +7,7 @@ import SEO from "@/components/SEO";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { MAX_INVITES_PER_SUBMIT, parseEmailList, partnerLink } from "@/lib/partners";
+import { formatSponsorshipDate } from "@/lib/sponsorship";
 
 interface Org { id: string; name: string; slug: string; logo_url: string | null; seat_limit: number; sponsor_until: string | null; status: string }
 interface Member { id: string; org_id: string; user_id: string | null; invited_email: string; role: string; status: string; joined_at: string | null }
@@ -131,7 +132,7 @@ const PartnerPortalPage = ({ orgs, myMemberships }: { orgs: Org[]; myMemberships
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           {[
             ["Invited", stats.invited], ["Joined", stats.joined], ["Active (30 days)", stats.active],
-            ["Seats used", `${stats.seats} / ${org.seat_limit}`], ["Sponsored until", fmt(org.sponsor_until)],
+            ["Seats used", `${stats.seats} / ${org.seat_limit}`], ["Sponsored until", formatSponsorshipDate(org.sponsor_until)],
           ].map(([k, v]) => (
             <div key={k as string} className={card}><p className="text-xs text-muted-foreground">{k}</p><p className="mt-1 text-xl font-heading">{v}</p></div>
           ))}

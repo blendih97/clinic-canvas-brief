@@ -1,0 +1,2 @@
+GRANT EXECUTE ON FUNCTION public.partner_sponsorship_expiry(date) TO authenticated;
+COMMENT ON FUNCTION public.partner_sponsorship_expiry(date) IS 'Pure date conversion: inclusive London end of day, contains no patient data.';

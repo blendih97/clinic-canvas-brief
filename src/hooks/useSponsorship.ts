@@ -14,6 +14,6 @@ export function useSponsorship() {
       const row = Array.isArray(data) ? data[0] : null;
       setS(row ? { ...row, active: !!row.comped_until && new Date(row.comped_until) > new Date() } as Sponsorship : null);
     });
-  }, [user, profile?.comped_until]);
+  }, [user, profile?.comped_plan, profile?.comped_until]);
   return s;
 }

@@ -2,6 +2,8 @@ import { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
+import { useQueryClient } from "@tanstack/react-query";
+import { refreshClaimAccess } from "@/lib/sponsorship";
 import { capturePartnerParams, claimPartner, clearPendingPartner, readPendingPartner, savePendingPartner } from "@/lib/partners";
 
 /**
@@ -13,6 +15,7 @@ const PartnerClaimer = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, refreshProfile } = useAuth();
+  const queryClient = useQueryClient();
   const running = useRef(false);
 
   useEffect(() => { capturePartnerParams(location.search); }, [location.search]);
@@ -32,23 +35,23 @@ const PartnerClaimer = () => {
     running.current = true;
     void (async () => {
       const res = await claimPartner(pending);
-      running.current = false;
-      if (!res) return; // keep pending; retry next load
+      if (!res) { running.current = false; return; } // keep pending; retry next load
+      await refreshClaimAccess(res.status, refreshProfile, () => queryClient.invalidateQueries());
       clearPendingPartner();
+      running.current = false;
       if (res.staff_joined) {
         toast.success("You've joined your organisation's partner portal.");
         navigate("/partner");
       }
       if (res.status === "joined") {
         toast.success(`${res.partner} is now sponsoring your RinVita plan.`);
-        void refreshProfile();
       } else if (res.status === "seats_full") {
         toast.message(`${res.partner}'s sponsored places are full right now. Your free account is ready — you can still use RinVita on the free plan.`, { duration: 9000 });
       } else if (res.status === "partner_unavailable" || res.status === "invalid_invite") {
         toast.message("That partner invitation is no longer active. Your free account is ready.");
       }
     })();
-  }, [user, location.pathname, refreshProfile, navigate]);
+  }, [user, location.pathname, refreshProfile, navigate, queryClient]);
 
   return null;
 };
