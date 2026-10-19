@@ -730,6 +730,145 @@ export type Database = {
         }
         Relationships: []
       }
+      partner_members: {
+        Row: {
+          id: string
+          invited_at: string
+          invited_by: string | null
+          invited_email: string
+          joined_at: string | null
+          org_id: string
+          role: string
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          id?: string
+          invited_at?: string
+          invited_by?: string | null
+          invited_email: string
+          joined_at?: string | null
+          org_id: string
+          role?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          id?: string
+          invited_at?: string
+          invited_by?: string | null
+          invited_email?: string
+          joined_at?: string | null
+          org_id?: string
+          role?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_members_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "partner_orgs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      partner_orgs: {
+        Row: {
+          created_at: string
+          id: string
+          logo_url: string | null
+          name: string
+          seat_limit: number
+          slug: string
+          sponsor_until: string | null
+          sponsored_plan: string
+          status: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          name: string
+          seat_limit?: number
+          slug: string
+          sponsor_until?: string | null
+          sponsored_plan?: string
+          status?: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          name?: string
+          seat_limit?: number
+          slug?: string
+          sponsor_until?: string | null
+          sponsored_plan?: string
+          status?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      partner_patient_links: {
+        Row: {
+          created_at: string
+          id: string
+          invite_token: string
+          invited_by: string | null
+          invited_email: string | null
+          joined_at: string | null
+          last_sent_at: string | null
+          org_id: string
+          patient_user_id: string | null
+          source: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          invite_token?: string
+          invited_by?: string | null
+          invited_email?: string | null
+          joined_at?: string | null
+          last_sent_at?: string | null
+          org_id: string
+          patient_user_id?: string | null
+          source?: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          invite_token?: string
+          invited_by?: string | null
+          invited_email?: string | null
+          joined_at?: string | null
+          last_sent_at?: string | null
+          org_id?: string
+          patient_user_id?: string | null
+          source?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_patient_links_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "partner_orgs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       platform_events: {
         Row: {
           actor_user_id: string | null
@@ -1387,11 +1526,51 @@ export type Database = {
           trial_ends_at: string
         }[]
       }
+      get_my_partner_sponsorship: {
+        Args: never
+        Returns: {
+          comped_plan: string
+          comped_until: string
+          logo_url: string
+          org_name: string
+        }[]
+      }
+      get_partner_patients: {
+        Args: { _org_id: string }
+        Returns: {
+          email: string
+          full_name: string
+          invited_at: string
+          joined_at: string
+          last_active_at: string
+          last_sent_at: string
+          link_id: string
+          source: string
+          status: string
+        }[]
+      }
+      get_public_partner: {
+        Args: { _slug: string }
+        Returns: {
+          logo_url: string
+          name: string
+          slug: string
+          type: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      is_partner_admin: {
+        Args: { _org_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_partner_member: {
+        Args: { _org_id: string; _user_id: string }
         Returns: boolean
       }
       move_to_dlq: {
@@ -1402,6 +1581,16 @@ export type Database = {
           source_queue: string
         }
         Returns: number
+      }
+      partner_claim: {
+        Args: {
+          _email: string
+          _email_verified: boolean
+          _slug: string
+          _token: string
+          _user_id: string
+        }
+        Returns: Json
       }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }

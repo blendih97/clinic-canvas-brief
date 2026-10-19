@@ -1,3 +1,4 @@
+import { useSponsorship } from "@/hooks/useSponsorship";
 import {
   LayoutDashboard, Droplets, ScanLine, Pill, FileText, Share2, CreditCard, Settings, LogOut, ChevronDown, User, FileDown, Users, Play, MoreHorizontal, ShieldAlert, Inbox, X
 } from "lucide-react";
@@ -52,6 +53,7 @@ interface SidebarProps {
 const Sidebar = ({ active, onNavigate, onRequestRecords }: SidebarProps) => {
   const isMobile = useIsMobile();
   const { profile, signOut, user } = useAuth();
+  const sponsorship = useSponsorship();
   const { t } = useLocale();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
@@ -109,6 +111,12 @@ const Sidebar = ({ active, onNavigate, onRequestRecords }: SidebarProps) => {
         <header className="fixed top-0 left-0 right-0 z-40 bg-card border-b border-border flex items-center justify-between px-4 py-2.5">
           <div>
             <h1 className="font-heading text-lg font-light tracking-[0.15em] gold-gradient-text">RinVita</h1>
+            {sponsorship?.active && (
+              <p className="mt-1 inline-flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                {sponsorship.logo_url && <img src={sponsorship.logo_url} alt="" className="h-3.5 w-auto max-w-[48px] object-contain" />}
+                Sponsored by {sponsorship.org_name}
+              </p>
+            )}
           </div>
           <div className="relative" ref={dropdownRef}>
             <button onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -259,6 +267,12 @@ const Sidebar = ({ active, onNavigate, onRequestRecords }: SidebarProps) => {
       <div className="p-5 border-b border-border">
         <h1 className="font-heading text-2xl font-light tracking-[0.15em] gold-gradient-text">RinVita</h1>
         <p className="text-[10px] tracking-[0.15em] text-muted-foreground mt-0.5">Your health history. Everywhere you go.</p>
+        {sponsorship?.active && (
+              <p className="mt-1 inline-flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                {sponsorship.logo_url && <img src={sponsorship.logo_url} alt="" className="h-3.5 w-auto max-w-[48px] object-contain" />}
+                Sponsored by {sponsorship.org_name}
+              </p>
+            )}
       </div>
 
       <nav className="flex-1 p-2 space-y-0.5">

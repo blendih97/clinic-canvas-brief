@@ -10,6 +10,7 @@ import { Eye, EyeOff, ShieldCheck, CreditCard, XCircle } from "lucide-react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useLocale } from "@/hooks/useLocale";
 import SEO from "@/components/SEO";
+import { readPendingPartner } from "@/lib/partners";
 
 const AuthPage = () => {
   const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
@@ -100,11 +101,14 @@ const AuthPage = () => {
     const normalizedEmail = email.trim().toLowerCase();
     const consentTime = new Date().toISOString();
     const derivedName = fullName.trim() || normalizedEmail.split("@")[0];
+    const pendingPartner = readPendingPartner();
     const { error, session } = await signUp(normalizedEmail, password, {
       full_name: derivedName,
       terms_consent_at: consentTime,
       preferred_ui_language: locale,
       preferred_translation_language: locale,
+      ...(pendingPartner?.slug ? { partner_slug: pendingPartner.slug } : {}),
+      ...(pendingPartner?.token ? { partner_invite: pendingPartner.token } : {}),
     });
     setLoading(false);
 

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { CheckCircle, Crown, ArrowRight, ExternalLink } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
+import { useSponsorship } from "@/hooks/useSponsorship";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { supabase } from "@/integrations/supabase/client";
@@ -54,6 +55,8 @@ const planCards: PlanCard[] = [
 const BillingSection = () => {
   const { profile, user } = useAuth();
   const { subscription, isActive } = useSubscription();
+  const sponsorship = useSponsorship();
+  const sponsored = !!sponsorship?.active;
   const { openCheckout, checkoutElement } = useStripeCheckout();
   const userPlan = profile?.plan || "free";
   
@@ -104,7 +107,17 @@ const BillingSection = () => {
         <p className="text-sm text-muted-foreground mt-2">Manage your RinVita membership</p>
       </div>
 
-      {!isActive && (
+      {sponsored && sponsorship && (
+        <div className="bg-primary/10 border border-primary/30 rounded-lg p-4 flex items-center gap-3">
+          {sponsorship.logo_url && <img src={sponsorship.logo_url} alt="" className="h-8 w-auto max-w-[80px] object-contain" />}
+          <p className="text-sm text-foreground">
+            Your plan is provided by <span className="font-medium">{sponsorship.org_name}</span> until{" "}
+            {new Date(sponsorship.comped_until!).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}.
+          </p>
+        </div>
+      )}
+
+      {!isActive && !sponsored && (
         <div className="bg-primary/10 border border-primary/30 rounded-lg p-4">
           <p className="text-sm text-foreground">
             <span className="font-medium">Free plan</span> — preview everything, upload up to {FREE_DOC_LIMIT} documents. Upgrade for unlimited uploads, PDF download and sharing.
@@ -112,9 +125,9 @@ const BillingSection = () => {
         </div>
       )}
 
-      <p className="text-center text-xs text-muted-foreground">Plans are billed annually.</p>
+      {!sponsored && <p className="text-center text-xs text-muted-foreground">Plans are billed annually.</p>}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {!sponsored && <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {planCards.map((plan) => {
           const isCurrent = activePlanId === plan.id;
           const priceInfo = getPrice(plan.id);
@@ -197,7 +210,7 @@ const BillingSection = () => {
             </div>
           );
         })}
-      </div>
+      </div>}
       {checkoutElement}
     </div>
   );

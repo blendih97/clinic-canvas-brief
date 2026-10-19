@@ -22,6 +22,27 @@
       "when": 1791925369349,
       "tag": "0002_stored_documents_skip_quota",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792396292131,
+      "tag": "0003_partner_phase1",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792396306474,
+      "tag": "0004_partner_logos_policies",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792396583098,
+      "tag": "0005_partner_revoke_anon",
+      "breakpoints": true
     }
   ]
 }

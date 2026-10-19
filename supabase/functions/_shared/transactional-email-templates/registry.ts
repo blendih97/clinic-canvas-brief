@@ -15,6 +15,8 @@ import { template as clinicianUpload } from './clinician-upload.tsx'
 import { template as documentProcessed } from './document-processed.tsx'
 import { template as newSignupAdmin } from './new-signup-admin.tsx'
 import { template as clinicEnquiryAdmin } from './clinic-enquiry-admin.tsx'
+import { template as partnerPatientInvite } from './partner-patient-invite.tsx'
+import { template as partnerStaffInvite } from './partner-staff-invite.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'record-request': recordRequest,
@@ -23,4 +25,6 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'document-processed': documentProcessed,
   'new-signup-admin': newSignupAdmin,
   'clinic-enquiry-admin': clinicEnquiryAdmin,
+  'partner-patient-invite': partnerPatientInvite,
+  'partner-staff-invite': partnerStaffInvite,
 }
