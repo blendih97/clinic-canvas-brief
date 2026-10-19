@@ -5,7 +5,7 @@
 - [x] Brand partner signup and remove free-plan limit copy.
 - [x] Align sponsorship expiry to London end-of-day; verify regression tests and automatic type/build checks.
 - [ ] Verify first-sign-in claim and sponsored settings on the Harbourview patient account — blocked: test-account session approval unavailable.
-- [ ] Publish the partner fixes.
+- [x] Publish the partner fixes — deployment requested for rinvita.co.uk.
 
 - [x] Update homepage and clinics copy around storing, reviewing and sharing; preserve design, pricing and backend.
 - [x] Verify requested copy, clinic pilot consistency and desktop/390px layouts.
