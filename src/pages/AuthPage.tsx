@@ -332,6 +332,7 @@ const AuthPage = () => {
           </div>
         )}
       </div>
+      {checkoutElement}
     </div>
   );
 };
