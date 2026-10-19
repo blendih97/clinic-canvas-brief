@@ -13,24 +13,24 @@ const PROBLEMS = [
 ];
 
 const PROGRAMME_STEPS = [
-  ["01", "Invite your clients", "Each gets their own RinVita hub under your name."],
-  ["02", "Send records in", "Results, letters and reports land in the client's hub, organised and translated."],
-  ["03", "Clients control access", "They decide whether your team can view their records, which sections, and for how long, and can revoke it instantly."],
-  ["04", "Every view is logged", "Clients see who looked at what and when."],
+  ["01", "Invite your clients", "By email, or with your co-branded link or QR code. Each client creates their own RinVita account."],
+  ["02", "Sponsor their plan", "Clients get full access, free for them, while your sponsorship runs."],
+  ["03", "Clients keep their own records", "They store and review their records, and can request records from any provider via a secure upload link."],
+  ["04", "Clients share with any doctor", "By one-time secure link or PDF. Your team sees sign-up and activity status only, never medical records."],
 ];
 
 const CLIENT_BENEFITS = [
   "One place for their whole history across countries and languages",
   "Results tracked over time",
   "Medications, allergies and family profiles",
-  "Secure time-limited sharing with any clinician",
+  "Sharing with any doctor by one-time secure link or PDF",
 ];
 
 const TEAM_BENEFITS = [
   "Fewer email attachments and re-sends",
   "Clients who arrive prepared",
   "A premium, branded-feeling service you can include in your membership",
-  "Visibility of which clients have joined",
+  "Sign-up and activity status for each client: invite status, join date, last active",
 ];
 
 const TRUST_POINTS = [
@@ -42,7 +42,7 @@ const TRUST_POINTS = [
 ];
 
 const FAQ = [
-  { q: "Can our team see client records?", a: "Only if the client grants access. That permission is scoped and time-limited, and the client can revoke it instantly." },
+  { q: "Can our team see client records?", a: "No. Partners never see medical records. Your team sees names, emails, invite status, join date and last active only. Clients share their records with doctors themselves." },
   { q: "Do clients have to pay?", a: "No. Pricing is agreed before the trial starts. If you continue, your plan begins on day 15; if not, your patients keep their accounts on the free plan." },
   { q: "Do you replace our clinical systems?", a: "No. RinVita sits alongside them as the client's own record." },
   { q: "Where is data stored?", a: "Stored encrypted with UK GDPR-compliant providers. See our Privacy Policy for the full list of processors." },
@@ -82,7 +82,7 @@ export default function ForConciergesPage() {
               Every result you arrange, in your client's hands — organised.
             </h1>
             <p style={{ color: marketingColors.mutedText, fontSize: isMobile ? 16 : 19, fontWeight: 300, lineHeight: 1.75, maxWidth: 820, marginBottom: 30 }}>
-              RinVita gives each of your clients a private medical hub. You send in results and letters; they're organised, translated and ready to share with any doctor, anywhere. Your clients stay in control.
+              RinVita gives each of your clients a private medical hub, co-branded with your name. Your clients store, review and share their own records with any doctor, anywhere. You see who has joined, never their medical records.
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
               <Button onClick={goToForm} size="lg" className="h-auto rounded-sm px-7 py-3.5 uppercase" style={{ letterSpacing: "0.06em" }}>Start a 14-day trial</Button>
@@ -95,7 +95,7 @@ export default function ForConciergesPage() {
           <div style={gridStyle(isMobile ? 1 : 3)}>{PROBLEMS.map(([title, body]) => <InfoCard key={title} title={title} body={body} />)}</div>
         </Section>
 
-        <Section label="How the partner programme works" title="A client-owned hub, supported by your team." paddingX={paddingX} isMobile={isMobile} intro="Founding partners will help shape this programme as we roll it out. The patient remains in control at every step.">
+        <Section label="How the partner programme works" title="A client-owned hub, supported by your team." paddingX={paddingX} isMobile={isMobile} intro="The client owns their account and records at every step. Coming later, with each client's consent: sending records directly into their account.">
           <ol style={{ ...gridStyle(isMobile || isTablet ? 1 : 4), listStyle: "none", padding: 0, margin: 0 }}>{PROGRAMME_STEPS.map(([step, title, body]) => <li key={step} style={cardStyle}><div style={{ color: marketingColors.gold, fontFamily: "Cormorant Garamond", fontSize: 27, marginBottom: 10 }}>{step}</div><h3 style={cardTitle}>{title}</h3><p style={cardBody}>{body}</p></li>)}</ol>
         </Section>
 
