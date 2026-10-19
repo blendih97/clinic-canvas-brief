@@ -609,23 +609,6 @@ export function Pricing() {
           </p>
         </div>
 
-        {/* Founding member banner */}
-        <div style={{
-          maxWidth: 780, margin: `0 auto ${isMobile ? 32 : 40}px`,
-          padding: isMobile ? "14px 18px" : "16px 24px",
-          background: marketingColors.surface,
-          border: `1px solid ${marketingColors.gold}`,
-          borderRadius: 2,
-          display: "flex", alignItems: "center", justifyContent: "center", gap: 12,
-          textAlign: "center", flexWrap: "wrap",
-        }}>
-          <span style={{ fontSize: 10.5, letterSpacing: "0.16em", color: marketingColors.gold, fontWeight: 700, textTransform: "uppercase" }}>Founding member pricing</span>
-          <span style={{ color: marketingColors.goldBorder }}>·</span>
-          <span style={{ fontSize: isMobile ? 13 : 14, color: marketingColors.ink, fontWeight: 400 }}>
-            The first 100 subscribers lock this rate <em style={{ fontFamily: "Cormorant Garamond", fontStyle: "italic", color: marketingColors.gold }}>for life</em>.
-          </span>
-        </div>
-
         {/* Paid plans */}
         <div style={{ textAlign: "center", marginBottom: 24 }}>
           <span style={{ fontSize: 11, letterSpacing: "0.16em", color: marketingColors.softText, fontWeight: 500, textTransform: "uppercase" }}>Upgrade when you need more</span>
