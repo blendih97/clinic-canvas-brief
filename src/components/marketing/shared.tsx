@@ -273,9 +273,8 @@ export function MarketingNav() {
                         {link.label}
                       </Link>
                     ))}
-                  </div>
                 </div>
-              )}
+              </div>
             </div>
             <Link
               to="/auth"
