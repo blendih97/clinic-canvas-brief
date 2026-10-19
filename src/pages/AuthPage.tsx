@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useStripeCheckout } from "@/hooks/useStripeCheckout";
+import { getPriceId } from "@/lib/planAccess";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { lovable } from "@/integrations/lovable/index";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,7 +13,8 @@ import SEO from "@/components/SEO";
 
 const AuthPage = () => {
   const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, user } = useAuth();
+  const { openCheckout, checkoutElement } = useStripeCheckout();
   const { t, locale } = useLocale();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -34,6 +37,22 @@ const AuthPage = () => {
   const rawNext = searchParams.get("next");
   const nextPath = rawNext && /^\/(?!\/)/.test(rawNext) ? rawNext : null;
   const afterAuth = nextPath ?? "/app";
+
+  // Pricing page deep-link: ?plan=standard|family preselects a paid plan so the
+  // user lands in checkout right after signup (or immediately if signed in).
+  const planParam = searchParams.get("plan");
+  const checkoutPlan = planParam === "standard" || planParam === "family" ? planParam : null;
+  const checkoutOpened = useRef(false);
+  useEffect(() => {
+    if (!user || !checkoutPlan || checkoutOpened.current) return;
+    checkoutOpened.current = true;
+    openCheckout({
+      priceId: getPriceId(checkoutPlan),
+      customerEmail: user.email,
+      userId: user.id,
+      returnUrl: `${window.location.origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
+    });
+  }, [user, checkoutPlan, openCheckout]);
 
   const goAfterAuth = () => {
     if (nextPath) window.location.href = nextPath;
@@ -124,7 +143,17 @@ const AuthPage = () => {
     resetSignupFlow();
 
     if (session) {
-      goAfterAuth();
+      if (checkoutPlan) {
+        checkoutOpened.current = true;
+        openCheckout({
+          priceId: getPriceId(checkoutPlan),
+          customerEmail: session.user.email,
+          userId: session.user.id,
+          returnUrl: `${window.location.origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
+        });
+      } else {
+        goAfterAuth();
+      }
     } else {
       navigate("/check-email");
     }
@@ -148,7 +177,7 @@ const AuthPage = () => {
 
   const handleGoogleSignIn = async () => {
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: `${window.location.origin}${afterAuth}`,
+      redirect_uri: `${window.location.origin}${checkoutPlan && !nextPath ? `/auth?plan=${checkoutPlan}` : afterAuth}`,
     });
     if (result.error) {
       toast.error(t("auth.googleFailed"));
@@ -313,6 +342,7 @@ const AuthPage = () => {
           </div>
         )}
       </div>
+      {checkoutElement}
     </div>
   );
 };

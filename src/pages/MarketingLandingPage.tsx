@@ -662,7 +662,7 @@ export function Pricing() {
                   ))}
                 </div>
                 <Link
-                  to="/auth?mode=signup"
+                  to={`/auth?mode=signup&plan=${plan.name.toLowerCase()}`}
                   style={{
                     marginTop: 24,
                     padding: "13px 20px",
@@ -681,7 +681,7 @@ export function Pricing() {
                     boxShadow: "0 4px 18px hsl(var(--primary) / 0.28)",
                   }}
                 >
-                  Start free
+                  Choose {plan.name}
                 </Link>
               </div>
             );
