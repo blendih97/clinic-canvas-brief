@@ -20,13 +20,13 @@ import { captureUtmParams, getUtmParams, trackEvent } from "@/lib/analytics";
 const PILOT_MAILTO =
   "mailto:info@rinvita.co.uk" +
   "?subject=" +
-  encodeURIComponent("Founding partner pilot — 10 patients") +
+  encodeURIComponent("RinVita 14-day trial") +
   "&body=" +
   encodeURIComponent(
     [
       "Hello RinVita team,",
       "",
-      "We would like to discuss a 30-day founding partner pilot for up to 10 patients.",
+      "We would like to start a free 14-day trial.",
       "",
       "Organisation:",
       "Country:",
@@ -98,12 +98,12 @@ const CLINICIAN_RECEIVES = [
 ];
 
 const PILOT_POINTS = [
-  "30 days, start to review",
-  "Up to 10 patients",
+  "Free 14-day trial",
+  "Invite as many patients as you like",
   "Guided setup with our team",
   "Co-branded invitation materials",
   "No EHR integration required",
-  "Success and commercial review at the end",
+  "Pricing agreed before the trial starts",
 ];
 
 export default function PartnerDemoPage() {
@@ -262,11 +262,11 @@ function Hero({
             View the sample passport
           </button>
           <a href={PILOT_MAILTO} onClick={onPilotEmail} style={ghostButton}>
-            Discuss a 10-patient pilot
+            Start a 14-day trial
           </a>
         </div>
         <p style={{ fontSize: 13, color: marketingColors.softText, fontWeight: 300 }}>
-          We are selecting a small founding group of partner organisations for the first live pilots.
+          Free 14-day trial — invite as many patients as you like.
         </p>
       </div>
     </section>
@@ -533,13 +533,12 @@ function PilotBlock({
           padding: isMobile ? "32px 24px" : "52px 56px",
         }}
       >
-        <span className="marketing-section-label">Founding partner pilot</span>
+        <span className="marketing-section-label">Free 14-day trial</span>
         <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 30 : 44, fontWeight: 300, color: marketingColors.ink, marginBottom: 14, lineHeight: 1.1 }}>
-          Run it with ten patients, then decide.
+          Invite as many patients as you like, then decide.
         </h2>
         <p style={{ fontSize: isMobile ? 14.5 : 16, lineHeight: 1.75, color: marketingColors.mutedText, fontWeight: 300, marginBottom: 24 }}>
-          A short, contained pilot with your own patients — no systems work, no change to how your clinicians practise.
-          Commercial terms are agreed with you before anything goes live.
+          No systems work, no change to how your clinicians practise. Pricing is agreed before the trial starts. If you continue, your plan begins on day 15; if not, your patients keep their accounts on the free plan.
         </p>
         <ul style={{ listStyle: "none", padding: 0, margin: "0 0 28px", display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10 }}>
           {PILOT_POINTS.map((p) => (
@@ -551,14 +550,14 @@ function PilotBlock({
         </ul>
         <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 12, marginBottom: 16 }}>
           <a href={PILOT_MAILTO} onClick={onPilotEmail} style={goldButton}>
-            Discuss a 10-patient pilot
+            Start a 14-day trial
           </a>
           <button type="button" onClick={onSample} style={ghostButton}>
             View the sample passport
           </button>
         </div>
         <p style={{ fontSize: 13, color: marketingColors.softText, fontWeight: 300 }}>
-          We are selecting a small founding group of partner organisations for the first live pilots.{" "}
+          Free 14-day trial — invite as many patients as you like.{" "}
           <Link to="/for-clinics" style={{ color: marketingColors.gold, textDecoration: "none" }}>
             More for clinics →
           </Link>{" "}

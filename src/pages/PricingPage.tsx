@@ -19,6 +19,7 @@ const PricingPage = () => {
           <p style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 22 : 26, fontWeight: 400, lineHeight: 1.3, margin: 0 }}>
             Clinics and concierges: <em style={{ color: marketingColors.gold }}>sponsor your patients</em>
           </p>
+          <p style={{ fontSize: 13, margin: "6px 0 0", color: marketingColors.gold }}>Free 14-day trial — invite as many patients as you like.</p>
           <Link to="/for-clinics" style={{ padding: "13px 24px", background: marketingColors.gold, color: "hsl(var(--primary-foreground))", borderRadius: 2, fontSize: 13, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", textDecoration: "none", textAlign: "center", whiteSpace: "nowrap" }}>
             Book a demo
           </Link>

@@ -28,9 +28,9 @@ describe("partner demo content and CTAs", () => {
 
   it("offers both CTAs, with the pilot CTA as a prefilled mailto", () => {
     expect(page).toContain("View the sample passport");
-    expect(page).toContain("Discuss a 10-patient pilot");
+    expect(page).toContain("Start a 14-day trial");
     expect(page).toContain("mailto:info@rinvita.co.uk");
-    expect(page).toContain("Founding partner pilot — 10 patients");
+    expect(page).toContain("RinVita 14-day trial");
   });
 
   it("launches the existing interactive sample demo", () => {
@@ -43,16 +43,16 @@ describe("partner demo content and CTAs", () => {
       expect(page).toContain(stage);
     }
     for (const term of [
-      "30 days, start to review",
-      "Up to 10 patients",
+      "Free 14-day trial",
+      "Invite as many patients as you like",
       "Guided setup with our team",
       "Co-branded invitation materials",
       "No EHR integration required",
-      "Success and commercial review at the end",
+      "Pricing agreed before the trial starts",
     ]) {
       expect(page).toContain(term);
     }
-    expect(page).toContain("We are selecting a small founding group of partner organisations for the first live pilots.");
+    expect(page).toContain("Free 14-day trial — invite as many patients as you like.");
   });
 
   it("keeps claims factual", () => {

@@ -41,6 +41,7 @@ const ORGANISATION_TYPES = new Set([
 ]);
 
 const NEXT_STEPS = new Set([
+  "Start a 14-day trial",
   "Apply for a founding pilot",
   "Intro call",
   "See the patient experience",

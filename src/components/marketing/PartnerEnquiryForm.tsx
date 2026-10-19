@@ -15,7 +15,7 @@ export const ORGANISATION_TYPES = [
 const PATIENT_BANDS = ["1-10", "11-30", "31-75", "76-150", "150+"];
 
 const NEXT_STEPS = [
-  "Apply for a founding pilot",
+  "Start a 14-day trial",
   "Intro call",
   "See the patient experience",
   "Send information by email",
@@ -306,11 +306,11 @@ export default function PartnerEnquiryForm({ sourcePage }: Props) {
             cursor: loading ? "not-allowed" : "pointer",
           }}
         >
-          {loading ? "Sending…" : "Apply for a founding pilot"}
+          {loading ? "Sending…" : "Start a 14-day trial"}
         </button>
         <p style={{ fontSize: 11, color: marketingColors.softText, textAlign: "center", marginTop: 10, lineHeight: 1.6 }}>
           Or email <a href="mailto:info@rinvita.co.uk" style={{ color: marketingColors.gold }}>info@rinvita.co.uk</a>.
-          Commercial terms are agreed with you before any pilot begins.
+          Pricing is agreed before the trial starts.
         </p>
       </div>
     </form>

@@ -35,7 +35,7 @@ const input = {
   patients_per_month: "11-30",
   languages_handled: "Arabic, French",
   current_problem: "Records arrive late and untranslated.",
-  preferred_next_step: "Apply for a founding pilot",
+  preferred_next_step: "Start a 14-day trial",
   consent_at: "2026-09-14T10:00:00.000Z",
   source_page: "for-concierges",
   origin: "for-concierges",
@@ -67,7 +67,7 @@ describe("partner enquiry pipeline", () => {
       country: "United Arab Emirates",
       website: "https://example.com",
       languages_handled: "Arabic, French",
-      preferred_next_step: "Apply for a founding pilot",
+      preferred_next_step: "Start a 14-day trial",
       source_page: "for-concierges",
       consent_at: "2026-09-14T10:00:00.000Z",
     });

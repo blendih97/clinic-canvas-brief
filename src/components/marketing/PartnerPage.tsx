@@ -51,12 +51,12 @@ const WORKFLOW = [
 
 const PILOT_POINTS = [
   "Selected clinics and concierge providers only",
-  "30 days",
-  "Up to 10 patients",
+  "Free 14-day trial",
+  "Invite as many patients as you like",
   "No EHR integration required",
   "Guided setup and co-branded invitation materials",
-  "Commercial terms agreed with you before launch",
-  "Success review at the end of the pilot",
+  "Pricing agreed with you before the trial starts",
+  "Patients keep their accounts on the free plan if you stop",
 ];
 
 const FAQ = [
@@ -66,7 +66,7 @@ const FAQ = [
   },
   {
     q: "Do we need EHR or PMS integration?",
-    a: "No. Nothing needs to connect to your systems. Patients upload their own records and share a view with your clinicians, so a pilot can start without any IT project.",
+    a: "No. Nothing needs to connect to your systems. Patients upload their own records and share a view with your clinicians, so a trial can start without any IT project.",
   },
   {
     q: "Which languages are supported?",
@@ -81,8 +81,8 @@ const FAQ = [
     a: "Data is encrypted at rest and in transit, access is scoped to the account holder, and sharing links are time-limited and revocable by the patient. Our Security page sets out exactly what we do and do not claim.",
   },
   {
-    q: "What does the founding partner pilot include?",
-    a: "Thirty days, up to ten patients, guided setup, co-branded invitation materials, no integration work, and a success review at the end. Commercial terms are agreed with you before the pilot begins.",
+    q: "What does the 14-day trial include?",
+    a: "Free 14-day trial — invite as many patients as you like, with guided setup, co-branded invitation materials and no integration work. Pricing is agreed before the trial starts. If you continue, your plan begins on day 15; if not, your patients keep their accounts on the free plan.",
   },
   {
     q: "Is RinVita an EHR or a diagnostic tool?",
@@ -125,7 +125,7 @@ export default function PartnerPage({ config }: { config: PartnerPageConfig }) {
               {config.intro}
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
-              <button onClick={goToForm} style={primaryCta}>Apply for a founding pilot</button>
+              <button onClick={goToForm} style={primaryCta}>Start a 14-day trial</button>
               <Link to="/demo" style={secondaryCta}>View the patient experience</Link>
             </div>
             {config.pilotCaption && <p style={{ fontSize: 13, color: marketingColors.gold, marginTop: 14, lineHeight: 1.6 }}>{config.pilotCaption}</p>}
@@ -137,7 +137,7 @@ export default function PartnerPage({ config }: { config: PartnerPageConfig }) {
 
           <div style={{ padding: isMobile ? 24 : 32, background: marketingColors.surface, border: `1px solid ${marketingColors.goldBorder}`, borderRadius: 4 }}>
             <div style={{ fontFamily: headingFont, fontSize: 11, color: marketingColors.gold, letterSpacing: "0.12em", marginBottom: 16, textTransform: "uppercase" }}>
-              Founding Partner Pilot
+              Free 14-day trial
             </div>
             <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
               {(config.pilotPoints ?? PILOT_POINTS).map((point) => (
@@ -148,7 +148,7 @@ export default function PartnerPage({ config }: { config: PartnerPageConfig }) {
               ))}
             </ul>
             <button onClick={goToForm} style={{ ...primaryCta, width: "100%", marginTop: 8 }}>
-              Apply for a founding pilot
+              Start a 14-day trial
             </button>
             {config.pilotCaption && <p style={{ fontSize: 13, color: marketingColors.gold, marginTop: 14, lineHeight: 1.6 }}>{config.pilotCaption}</p>}
           </div>
@@ -228,11 +228,12 @@ export default function PartnerPage({ config }: { config: PartnerPageConfig }) {
       <section id="apply" style={{ padding: `${isMobile ? 60 : 92}px ${paddingX}px`, scrollMarginTop: 80 }}>
         <div style={{ maxWidth: 860, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 32 }}>
-            <span className="marketing-section-label">Founding Partner Pilot</span>
+            <span className="marketing-section-label">Free 14-day trial</span>
             <h2 style={{ fontFamily: headingFont, fontSize: isMobile ? 29 : 40, fontWeight: 300, marginBottom: 12 }}>
-              Apply for a founding pilot
+              Start a 14-day trial
             </h2>
-            {config.pilotCaption && <p style={{ fontSize: 14, color: marketingColors.gold, marginBottom: 12, lineHeight: 1.6 }}>{config.pilotCaption}</p>}
+            <p style={{ fontSize: 14, color: marketingColors.gold, marginBottom: 8, lineHeight: 1.6 }}>{config.pilotCaption ?? "Free 14-day trial — invite as many patients as you like."}</p>
+            <p style={{ fontSize: 13, color: marketingColors.mutedText, marginBottom: 12, lineHeight: 1.6, fontWeight: 300 }}>Pricing is agreed before the trial starts. If you continue, your plan begins on day 15; if not, your patients keep their accounts on the free plan.</p>
             <p style={{ fontSize: 15, color: marketingColors.mutedText, lineHeight: 1.75, fontWeight: 300 }}>
               Tell us how your patients reach you and what happens to their records today. Please don't include any
               patient or medical information in this form.
@@ -266,12 +267,12 @@ export default function PartnerPage({ config }: { config: PartnerPageConfig }) {
                 {item.q}
               </summary>
               <p style={{ marginTop: 12, fontSize: 14, lineHeight: 1.8, color: marketingColors.mutedText, fontWeight: 300 }}>
-                {item.q === "What does the founding partner pilot include?" ? (config.pilotFaqAnswer ?? item.a) : item.a}
+                {item.q === "What does the 14-day trial include?" ? (config.pilotFaqAnswer ?? item.a) : item.a}
               </p>
             </details>
           ))}
           <div style={{ textAlign: "center", marginTop: 28, display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center" }}>
-            <button onClick={goToForm} style={primaryCta}>Apply for a founding pilot</button>
+            <button onClick={goToForm} style={primaryCta}>Start a 14-day trial</button>
             <Link to="/demo" style={secondaryCta}>View the patient experience</Link>
           </div>
         </div>
