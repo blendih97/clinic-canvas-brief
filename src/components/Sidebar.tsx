@@ -1,4 +1,5 @@
 import { useSponsorship } from "@/hooks/useSponsorship";
+import { useSubscription } from "@/hooks/useSubscription";
 import {
   LayoutDashboard, Droplets, ScanLine, Pill, FileText, Share2, CreditCard, Settings, LogOut, ChevronDown, User, FileDown, Users, Play, MoreHorizontal, ShieldAlert, Inbox, X
 } from "lucide-react";
@@ -54,6 +55,7 @@ const Sidebar = ({ active, onNavigate, onRequestRecords }: SidebarProps) => {
   const isMobile = useIsMobile();
   const { profile, signOut, user } = useAuth();
   const sponsorship = useSponsorship();
+  const { planTier } = useSubscription();
   const { t } = useLocale();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
@@ -62,7 +64,7 @@ const Sidebar = ({ active, onNavigate, onRequestRecords }: SidebarProps) => {
 
   const displayName = profile?.full_name || user?.email?.split("@")[0] || "User";
   const initials = displayName.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
-  const plan = profile?.plan || "free";
+  const plan = planTier;
   const planLabels: Record<string, string> = {
     free: t("sidebar.free"),
     standard: t("sidebar.standard"),

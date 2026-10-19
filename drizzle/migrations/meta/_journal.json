@@ -50,6 +50,13 @@
       "when": 1792397447210,
       "tag": "0006_partner_london_expiry_and_invite_branding",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1792397506667,
+      "tag": "0007_allow_sponsorship_date_checks",
+      "breakpoints": true
     }
   ]
 }
