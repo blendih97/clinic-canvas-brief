@@ -1,5 +1,10 @@
 # Roadmap
 
+- [ ] Refresh profile, plan state and caches immediately after partner claim.
+- [ ] Show sponsored/complimentary subscription details without purchase controls.
+- [ ] Brand partner signup and remove free-plan limit copy.
+- [ ] Align sponsorship expiry to London end-of-day and verify tests, types, live flow; publish.
+
 - [x] Update homepage and clinics copy around storing, reviewing and sharing; preserve design, pricing and backend.
 - [x] Verify requested copy, clinic pilot consistency and desktop/390px layouts.
 
