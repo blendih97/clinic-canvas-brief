@@ -22,7 +22,7 @@ export function usePageTracking() {
 
   useEffect(() => {
     // Skip noisy/internal paths
-    if (location.pathname.startsWith("/admin")) return;
+    if (location.pathname.startsWith("/admin") || location.pathname.startsWith("/preview/")) return;
 
     const track = async () => {
       try {

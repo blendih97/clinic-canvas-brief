@@ -51,6 +51,8 @@ import PartnerClaimer from "./components/PartnerClaimer";
 import PartnerPublicPage from "./pages/PartnerPublicPage.tsx";
 import PartnerRoute from "./pages/partner/PartnerRoute.tsx";
 import AdminPartnersPage from "./pages/admin/AdminPartnersPage.tsx";
+import GrowthPreviewPage from "./pages/GrowthPreviewPage";
+import AdminGrowthPage from "./pages/admin/AdminGrowthPage";
 
 
 const queryClient = new QueryClient();
@@ -160,6 +162,7 @@ export const AppRoutes = () => (
               <Route path="/demo" element={<ProductDemoPage />} />
               <Route path="/pricing" element={<PricingPage />} />
               <Route path="/partner-demo" element={<PartnerDemoPage />} />
+               <Route path="/preview/:slug" element={<GrowthPreviewPage />} />
               <Route path="/medical-passport" element={<MedicalPassportPage />} />
               <Route path="/medical-records-for-expats" element={<ExpatMedicalRecordsPage />} />
               <Route path="/organise-medical-records-for-family" element={<FamilyMedicalRecordsPage />} />
@@ -179,6 +182,7 @@ export const AppRoutes = () => (
                 <Route path="users" element={<AdminPlaceholderPage title="Users" description="Review member access, plan state, and high-touch support actions." mode="users" />} />
                 <Route path="visitors" element={<AdminVisitorsPage />} />
                 <Route path="partners" element={<AdminPartnersPage />} />
+                 <Route path="growth" element={<AdminGrowthPage />} />
                 <Route path="subscriptions" element={<AdminPlaceholderPage title="Subscriptions" description="Inspect estimated recurring revenue, trial expiry windows, and comped access." mode="subscriptions" />} />
                 <Route path="documents" element={<AdminPlaceholderPage title="Documents" description="Monitor upload processing, language coverage, and recent platform throughput." mode="documents" />} />
                 <Route path="activity" element={<AdminPlaceholderPage title="Activity log" description="Track platform signups, admin interventions, and security-sensitive events." mode="activity" />} />

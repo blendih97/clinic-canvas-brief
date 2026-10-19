@@ -29,6 +29,7 @@ function inIframe(): boolean {
 let loaded = false;
 
 function loadPixel() {
+  if (typeof window !== "undefined" && window.location.pathname.startsWith("/preview/")) return;
   if (loaded || typeof window === "undefined") return;
   if (window.fbq) { loaded = true; return; }
 
@@ -71,6 +72,7 @@ export function initMetaPixel() {
 }
 
 function fire(event: string, params?: Record<string, any>) {
+  if (typeof window !== "undefined" && window.location.pathname.startsWith("/preview/")) return;
   if (inIframe()) return;
   if (!hasMarketingConsent()) return;
   loadPixel();
