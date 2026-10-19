@@ -1,5 +1,10 @@
 # Roadmap
 
+- [ ] Growth Engine: evidence-led prospects, proposed previews and fictional interactive demos.
+- [ ] Growth Engine: saved trial applications, admin approval safeguards and aggregate view tracking.
+- [ ] Growth Engine: admin pipeline, distribution partners, CSV and draft-only outreach.
+- [ ] Growth Engine: seed three sourced demos; run tests and verify public/admin flows.
+
 - [x] Refresh profile, plan state and caches immediately after partner claim.
 - [x] Show sponsored/complimentary subscription details without purchase controls.
 - [x] Brand partner signup and remove free-plan limit copy.
