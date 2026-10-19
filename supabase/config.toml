@@ -27,3 +27,7 @@ project_id = "gnxctlydesugjdwbavdx"
     verify_jwt = false
   [functions.get-checkout-result]
     verify_jwt = false
+  [functions.partner-claim]
+    verify_jwt = false
+  [functions.partner-manage]
+    verify_jwt = false
