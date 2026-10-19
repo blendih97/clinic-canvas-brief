@@ -70,8 +70,8 @@ BEGIN
   EXECUTE 'SET LOCAL ROLE anon';
   BEGIN
     SELECT count(*) INTO n FROM public.partner_orgs;
-    failures := failures || 'anon can select partner_orgs; ';
-  EXCEPTION WHEN OTHERS THEN NULL; END;
+    IF n <> 0 THEN failures := failures || 'anon sees partner_orgs rows; '; END IF;
+  EXCEPTION WHEN insufficient_privilege THEN NULL; END;
   EXECUTE 'RESET ROLE';
   UPDATE public.partner_orgs SET status = 'suspended' WHERE id = org_b;
   EXECUTE 'SET LOCAL ROLE anon';

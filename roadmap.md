@@ -16,3 +16,5 @@
 - [x] Run tests and the production build, then verify the prerendered concierge HTML.
 - [x] Fix the top-menu "Pricing" and "How it works" links so they reach the homepage sections from every page.
 
+
+- [x] Partner Phase 1: sponsorship tables, admin partners screen, /p/:slug page, signup attribution and claim, partner portal, sponsored badge, isolation tests.
