@@ -35,10 +35,10 @@ const PartnerClaimer = () => {
     running.current = true;
     void (async () => {
       const res = await claimPartner(pending);
-      running.current = false;
-      if (!res) return; // keep pending; retry next load
+      if (!res) { running.current = false; return; } // keep pending; retry next load
       await refreshClaimAccess(res.status, refreshProfile, () => queryClient.invalidateQueries());
       clearPendingPartner();
+      running.current = false;
       if (res.staff_joined) {
         toast.success("You've joined your organisation's partner portal.");
         navigate("/partner");
