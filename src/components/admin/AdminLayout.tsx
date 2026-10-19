@@ -8,6 +8,7 @@ const navItems = [
   { to: "/admin/users", label: "Users", icon: Users },
   { to: "/admin/visitors", label: "Visitors", icon: Eye },
   { to: "/admin/partners", label: "Partners", icon: Building2 },
+  { to: "/admin/growth", label: "Growth", icon: BarChart3 },
   { to: "/admin/subscriptions", label: "Subscriptions", icon: BarChart3 },
   { to: "/admin/documents", label: "Documents", icon: FileText },
   { to: "/admin/activity", label: "Activity Log", icon: Clock3 },
@@ -75,7 +76,7 @@ const AdminLayout = () => {
           </div>
         </aside>
 
-        <main className="flex-1 p-4 md:p-6 lg:p-8">
+        <main className="min-w-0 flex-1 p-4 md:p-6 lg:p-8">
           <Outlet />
         </main>
       </div>

@@ -562,6 +562,208 @@ export type Database = {
         }
         Relationships: []
       }
+      growth_applications: {
+        Row: {
+          agreement_at: string
+          agreement_version: string
+          company: string
+          created_at: string
+          decision_note: string
+          express_agreement: boolean
+          id: string
+          identity_evidence: string
+          identity_verified: boolean
+          name: string
+          prospect_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          role: string
+          signed_terms_confirmed: boolean
+          status: string
+          terms_reference: string
+          work_email: string
+        }
+        Insert: {
+          agreement_at?: string
+          agreement_version?: string
+          company: string
+          created_at?: string
+          decision_note?: string
+          express_agreement?: boolean
+          id?: string
+          identity_evidence?: string
+          identity_verified?: boolean
+          name: string
+          prospect_id: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          role: string
+          signed_terms_confirmed?: boolean
+          status?: string
+          terms_reference?: string
+          work_email: string
+        }
+        Update: {
+          agreement_at?: string
+          agreement_version?: string
+          company?: string
+          created_at?: string
+          decision_note?: string
+          express_agreement?: boolean
+          id?: string
+          identity_evidence?: string
+          identity_verified?: boolean
+          name?: string
+          prospect_id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          role?: string
+          signed_terms_confirmed?: boolean
+          status?: string
+          terms_reference?: string
+          work_email?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "growth_applications_prospect_id_fkey"
+            columns: ["prospect_id"]
+            isOneToOne: false
+            referencedRelation: "growth_prospects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      growth_distribution_partners: {
+        Row: {
+          agreement_status: string
+          contact_name: string
+          created_at: string
+          email: string
+          follow_up: string | null
+          id: string
+          network_size_evidence: string
+          notes: string
+          opportunity: string
+          organisation: string
+          source_urls: string[]
+          suppressed: boolean
+        }
+        Insert: {
+          agreement_status?: string
+          contact_name?: string
+          created_at?: string
+          email?: string
+          follow_up?: string | null
+          id?: string
+          network_size_evidence?: string
+          notes?: string
+          opportunity?: string
+          organisation: string
+          source_urls?: string[]
+          suppressed?: boolean
+        }
+        Update: {
+          agreement_status?: string
+          contact_name?: string
+          created_at?: string
+          email?: string
+          follow_up?: string | null
+          id?: string
+          network_size_evidence?: string
+          notes?: string
+          opportunity?: string
+          organisation?: string
+          source_urls?: string[]
+          suppressed?: boolean
+        }
+        Relationships: []
+      }
+      growth_preview_daily_views: {
+        Row: {
+          day: string
+          prospect_id: string
+          views: number
+        }
+        Insert: {
+          day?: string
+          prospect_id: string
+          views?: number
+        }
+        Update: {
+          day?: string
+          prospect_id?: string
+          views?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "growth_preview_daily_views_prospect_id_fkey"
+            columns: ["prospect_id"]
+            isOneToOne: false
+            referencedRelation: "growth_prospects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      growth_prospects: {
+        Row: {
+          claim_verification_state: string
+          contact_name: string
+          created_at: string
+          email: string
+          factual_context: string
+          id: string
+          notes: string
+          organisation: string
+          partner_type: string
+          published: boolean
+          segment: string
+          slug: string
+          source_urls: string[]
+          status: string
+          suppressed: boolean
+          suppression_reason: string
+          updated_at: string
+        }
+        Insert: {
+          claim_verification_state?: string
+          contact_name?: string
+          created_at?: string
+          email?: string
+          factual_context?: string
+          id?: string
+          notes?: string
+          organisation: string
+          partner_type?: string
+          published?: boolean
+          segment?: string
+          slug: string
+          source_urls?: string[]
+          status?: string
+          suppressed?: boolean
+          suppression_reason?: string
+          updated_at?: string
+        }
+        Update: {
+          claim_verification_state?: string
+          contact_name?: string
+          created_at?: string
+          email?: string
+          factual_context?: string
+          id?: string
+          notes?: string
+          organisation?: string
+          partner_type?: string
+          published?: boolean
+          segment?: string
+          slug?: string
+          source_urls?: string[]
+          status?: string
+          suppressed?: boolean
+          suppression_reason?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       imaging_link_overrides: {
         Row: {
           created_at: string
@@ -1526,6 +1728,18 @@ export type Database = {
           trial_ends_at: string
         }[]
       }
+      get_growth_preview: {
+        Args: { _slug: string }
+        Returns: {
+          factual_context: string
+          id: string
+          organisation: string
+          partner_type: string
+          segment: string
+          slug: string
+          source_urls: string[]
+        }[]
+      }
       get_my_partner_sponsorship: {
         Args: never
         Returns: {
@@ -1610,11 +1824,38 @@ export type Database = {
           read_ct: number
         }[]
       }
+      record_growth_preview_view: {
+        Args: { _slug: string }
+        Returns: undefined
+      }
+      review_growth_application: {
+        Args: {
+          _decision: string
+          _id: string
+          _identity_evidence: string
+          _identity_verified: boolean
+          _note: string
+          _signed_terms: boolean
+          _terms_reference: string
+        }
+        Returns: undefined
+      }
       revoke_media_share: { Args: { _token: string }; Returns: boolean }
       revoke_shared_brief: { Args: { _token: string }; Returns: boolean }
       store_admin_recovery_codes: {
         Args: { _codes: string[] }
         Returns: number
+      }
+      submit_growth_application: {
+        Args: {
+          _agreement: boolean
+          _company: string
+          _name: string
+          _role: string
+          _slug: string
+          _work_email: string
+        }
+        Returns: Json
       }
       user_can_upload_document: { Args: { _user_id: string }; Returns: boolean }
       user_has_paid_access: { Args: { _user_id: string }; Returns: boolean }
