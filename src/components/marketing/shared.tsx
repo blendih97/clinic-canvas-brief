@@ -241,26 +241,28 @@ export function MarketingNav() {
               >
                 For partners ▾
               </button>
-              {partnersOpen && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "100%",
+                  left: -16,
+                  paddingTop: 10,
+                  minWidth: 200,
+                  visibility: partnersOpen ? "visible" : "hidden",
+                  opacity: partnersOpen ? 1 : 0,
+                  pointerEvents: partnersOpen ? "auto" : "none",
+                  transition: "opacity 0.2s ease, visibility 0.2s ease",
+                }}
+              >
                 <div
                   style={{
-                    position: "absolute",
-                    top: "100%",
-                    left: -16,
-                    paddingTop: 10,
-                    minWidth: 200,
+                    background: "hsl(var(--background) / 0.98)",
+                    backdropFilter: "blur(20px)",
+                    border: `1px solid ${marketingColors.goldBorder}`,
+                    borderRadius: 2,
+                    padding: "6px 0",
                   }}
                 >
-                  <div
-                    style={{
-                      background: "hsl(var(--background) / 0.98)",
-                      backdropFilter: "blur(20px)",
-                      border: `1px solid ${marketingColors.goldBorder}`,
-                      borderRadius: 2,
-                      padding: "6px 0",
-                      animation: "marketing-slide-down 0.2s ease",
-                    }}
-                  >
                     {partnerLinks.map((link) => (
                       <Link
                         key={link.href}

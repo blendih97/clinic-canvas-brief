@@ -251,7 +251,7 @@ export default function PartnerEnquiryForm({ sourcePage }: Props) {
       </div>
 
       <div style={{ gridColumn: isMobile ? "auto" : "1 / -1" }}>
-        {field("Preferred next step", "next-step",
+        {field("Preferred next step *", "next-step",
           <select id="next-step" style={inputStyle} value={nextStep} onChange={(e) => setNextStep(e.target.value)}>
             {NEXT_STEPS.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>)}
