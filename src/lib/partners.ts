@@ -86,3 +86,22 @@ export async function claimPartner(p: PendingPartner): Promise<ClaimResult | nul
 }
 
 export const partnerLink = (slug: string) => `${SITE_URL}/p/${slug}`;
+
+/**
+ * Build the query string carried between /auth and /check-email so partner
+ * attribution (partner/invite/staff) and the return path survive the hop.
+ */
+export function partnerAuthParams(source: URLSearchParams | string, extra: Record<string, string> = {}): string {
+  const q = typeof source === "string" ? new URLSearchParams(source) : source;
+  const pending = readPendingPartner();
+  const out = new URLSearchParams();
+  const slug = (q.get("partner") || pending?.slug || "").toLowerCase();
+  const token = (q.get("invite") || pending?.token || "").toLowerCase();
+  if (isValidSlug(slug)) out.set("partner", slug);
+  if (isValidToken(token)) out.set("invite", token);
+  if (q.get("staff") === "1" || pending?.staff) out.set("staff", "1");
+  const next = q.get("next");
+  if (next && /^\/(?!\/)/.test(next)) out.set("next", next);
+  for (const [k, v] of Object.entries(extra)) out.set(k, v);
+  return out.toString();
+}

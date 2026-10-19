@@ -104,7 +104,7 @@ const PartnerPublicPage = () => {
           ))}
         </div>
 
-        <div className="mt-10 flex flex-col items-center gap-3">
+        <div className="mt-10 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
           {user ? (
             <button onClick={() => void accept()} disabled={accepting}
               className="rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-60">
@@ -117,9 +117,10 @@ const PartnerPublicPage = () => {
             </button>
           )}
           {!user && (
-            <Link to={`/auth?mode=signin&partner=${encodeURIComponent(partner.slug)}${isValidToken(invite) ? `&invite=${invite}` : ""}`} className="text-sm text-muted-foreground underline underline-offset-4">
-              I already have an account
-            </Link>
+            <button onClick={() => navigate(`/auth?mode=signin&partner=${encodeURIComponent(partner.slug)}${isValidToken(invite) ? `&invite=${invite}` : ""}`)}
+              className="rounded-md border border-primary px-6 py-3 text-sm font-medium text-primary hover:bg-primary/5">
+              I already have an account — sign in
+            </button>
           )}
         </div>
 

@@ -3,6 +3,7 @@ import { Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import PartnerPortalPage from "./PartnerPortalPage";
+import { claimPartner, readPendingPartner } from "@/lib/partners";
 
 /** Guard for /partner: only active partner_members (RLS returns only their own org rows). */
 const PartnerRoute = () => {
@@ -18,8 +19,11 @@ const PartnerRoute = () => {
       const { data: orgs } = ids.length ? await supabase.from("partner_orgs").select("*").in("id", ids).order("name") : { data: [] };
       if (alive) setState({ status: orgs && orgs.length ? "ok" : "none", orgs: orgs || [], members: members || [] });
     };
+    // Existing account opening a staff invite: claim first (idempotent), then load.
+    const pending = readPendingPartner();
+    const pre = pending?.staff ? claimPartner(pending).catch(() => null) : Promise.resolve(null);
     // A just-accepted staff invite may still be processing: retry once.
-    void load().then(() => setTimeout(() => { if (alive) void load(); }, 2500));
+    void pre.then(load).then(() => setTimeout(() => { if (alive) void load(); }, 2500));
     return () => { alive = false; };
   }, [user]);
 
