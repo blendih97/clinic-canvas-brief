@@ -84,6 +84,7 @@ Deno.serve(async (req) => {
       partnerName: org.name, partnerLogoUrl: org.logo_url,
       role: role === 'partner_admin' ? 'administrator' : 'team member',
       inviteLink: `${SITE}/auth?mode=signup&staff=1&next=/partner`,
+      signinLink: `${SITE}/auth?mode=signin&staff=1&next=/partner`,
     }, `partner-staff-${org.id}-${input.email}-${Date.now()}`)
     return json({ ok: true, role })
   }
@@ -101,6 +102,7 @@ Deno.serve(async (req) => {
   const inviteLink = (token: string) => `${SITE}/p/${org.slug}?invite=${token}`
   const sendInvite = (to: string, token: string) => sendEmail('partner-patient-invite', to, {
     partnerName: org.name, partnerLogoUrl: org.logo_url, inviteLink: inviteLink(token),
+    signinLink: `${SITE}/auth?mode=signin&partner=${org.slug}&invite=${token}`,
   }, `partner-invite-${token}-${Date.now()}`)
 
   if (input.action === 'resend_invite' || input.action === 'revoke_invite') {

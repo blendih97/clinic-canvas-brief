@@ -4,9 +4,9 @@ import {
 } from 'npm:@react-email/components@0.0.22'
 import type { TemplateEntry } from './registry.ts'
 
-interface Props { partnerName?: string; partnerLogoUrl?: string | null; role?: string; inviteLink?: string }
+interface Props { partnerName?: string; partnerLogoUrl?: string | null; role?: string; inviteLink?: string; signinLink?: string }
 
-const PartnerStaffInviteEmail = ({ partnerName, partnerLogoUrl, role, inviteLink }: Props) => {
+const PartnerStaffInviteEmail = ({ partnerName, partnerLogoUrl, role, inviteLink, signinLink }: Props) => {
   const name = partnerName || 'Your organisation'
   return (
     <Html lang="en" dir="ltr">
@@ -25,6 +25,8 @@ const PartnerStaffInviteEmail = ({ partnerName, partnerLogoUrl, role, inviteLink
           <Text style={text}>Sign up or sign in with this email address to accept.</Text>
           <Section style={{ textAlign: 'center', margin: '28px 0' }}>
             <Button href={inviteLink || 'https://rinvita.co.uk/partner'} style={button}>Accept invitation</Button>
+            <Text style={orText}>or</Text>
+            <Button href={signinLink || 'https://rinvita.co.uk/auth?mode=signin&staff=1&next=/partner'} style={buttonSecondary}>I already have an account — sign in</Button>
           </Section>
           <Text style={small}>If you weren't expecting this invitation, you can safely ignore this email.</Text>
         </Container>
@@ -48,3 +50,5 @@ const h1 = { fontSize: '20px', color: '#1a1a1a', fontWeight: 500 as const, margi
 const text = { fontSize: '14px', color: '#333', lineHeight: '1.6', margin: '0 0 14px' }
 const button = { background: '#b8952a', color: '#ffffff', padding: '12px 30px', borderRadius: '6px', textDecoration: 'none', fontSize: '14px', fontWeight: 500 }
 const small = { fontSize: '12px', color: '#666', margin: '0 0 10px' }
+const orText = { fontSize: '12px', color: '#666', margin: '10px 0' }
+const buttonSecondary = { background: '#ffffff', color: '#b8952a', padding: '11px 28px', borderRadius: '6px', border: '1px solid #b8952a', textDecoration: 'none', fontSize: '14px', fontWeight: 500 }
