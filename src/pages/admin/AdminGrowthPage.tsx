@@ -47,7 +47,8 @@ export default function AdminGrowthPage() {
     e.preventDefault(); const parsed = prospectSchema.safeParse({ ...form, source_urls: splitSources(sourceText) });
     if (!parsed.success) { toast.error(parsed.error.issues[0]?.message ?? "Check the prospect details."); return; }
     setSaving(true);
-    const result = editingId ? await supabase.from("growth_prospects").update(parsed.data).eq("id", editingId) : await supabase.from("growth_prospects").insert(parsed.data);
+    const row = { ...parsed.data, organisation: parsed.data.organisation ?? form.organisation, slug: parsed.data.slug ?? form.slug };
+    const result = editingId ? await supabase.from("growth_prospects").update(row).eq("id", editingId) : await supabase.from("growth_prospects").insert(row);
     setSaving(false); if (result.error) { toast.error("Could not save prospect. Check whether the slug is already in use."); return; }
     setEditorOpen(false); toast.success("Prospect saved."); void load();
   };
@@ -60,7 +61,8 @@ export default function AdminGrowthPage() {
   const saveDist = async (e: React.FormEvent) => {
     e.preventDefault(); const parsed = distributionSchema.safeParse({ ...distForm, source_urls: splitSources(distSources) });
     if (!parsed.success) { toast.error(parsed.error.issues[0]?.message ?? "Check partner details."); return; }
-    setSaving(true); const result = distId ? await supabase.from("growth_distribution_partners").update(parsed.data).eq("id",distId) : await supabase.from("growth_distribution_partners").insert(parsed.data); setSaving(false);
+    const row = { ...parsed.data, organisation: parsed.data.organisation ?? distForm.organisation };
+    setSaving(true); const result = distId ? await supabase.from("growth_distribution_partners").update(row).eq("id",distId) : await supabase.from("growth_distribution_partners").insert(row); setSaving(false);
     if (result.error) { toast.error("Could not save referral partner."); return; } setDistOpen(false); toast.success("Referral partner saved."); void load();
   };
   const decide = async (decision: "approved_pending_setup" | "declined") => {

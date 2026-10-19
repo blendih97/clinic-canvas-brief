@@ -17,11 +17,11 @@ export const prospectSchema = z.object({
   if (p.published && (p.claim_verification_state !== "vetted" || !p.factual_context.trim() || !p.source_urls.length || p.suppressed || p.status === "archived")) ctx.addIssue({ code: "custom", message: "A preview needs vetted context and sources, and must not be suppressed or archived." });
 });
 export const distributionSchema = z.object({ organisation: short, contact_name: z.string().trim().max(200), email: z.union([email, z.literal("")]), network_size_evidence: z.string().max(2000), source_urls: z.array(safeSource).max(20), opportunity: z.string().max(2000), follow_up: z.union([z.string().regex(/^\d{4}-\d{2}-\d{2}$/), z.null()]), agreement_status: z.enum(agreementStatuses), suppressed: z.boolean(), notes: z.string().max(5000) });
-export type ProspectInput = z.infer<typeof prospectSchema>;
+export type ProspectInput = Required<z.infer<typeof prospectSchema>>;
 export type Prospect = ProspectInput & { id: string; created_at: string; updated_at: string };
 export type Preview = Pick<Prospect, "id" | "organisation" | "slug" | "segment" | "factual_context" | "source_urls" | "partner_type">;
-export type Distribution = z.infer<typeof distributionSchema> & { id: string; created_at: string };
-export type Application = z.infer<typeof applicationSchema> & { id: string; prospect_id: string; status: string; identity_verified: boolean; identity_evidence: string; signed_terms_confirmed: boolean; terms_reference: string; decision_note: string; created_at: string };
+export type Distribution = Required<z.infer<typeof distributionSchema>> & { id: string; created_at: string };
+export type Application = Required<z.infer<typeof applicationSchema>> & { id: string; prospect_id: string; status: string; identity_verified: boolean; identity_evidence: string; signed_terms_confirmed: boolean; terms_reference: string; decision_note: string; created_at: string };
 
 export const segmentCopy = {
   clinic: { audience: "patients", heading: "A patient-owned record beyond the consultation.", supporting: "A proposed way to sponsor patient access after an assessment or consultation, keeping records with the patient between providers.", link: "/for-clinics" },
