@@ -30,3 +30,7 @@
 
 
 - [x] Partner Phase 1: sponsorship tables, admin partners screen, /p/:slug page, signup attribution and claim, partner portal, sponsored badge, isolation tests.
+
+- [ ] URGENT: diagnose document analysis "Anthropic API error: 400" (logs + test call); fix if code/model, report if billing.
+- [ ] Hardening: full error body in processing_error, keep file on failure, Retry button (patient + admin), friendly failure message, admin alert email (max 1/hour).
+- [ ] End-to-end test with sample PDF (analyse-document + public translator), then publish.
