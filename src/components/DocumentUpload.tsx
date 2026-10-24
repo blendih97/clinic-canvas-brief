@@ -7,6 +7,7 @@ import { SUPPORTED_LANGUAGES, getLanguageName } from "@/lib/supportedLanguages";
 import UploadConsentModal from "@/components/UploadConsentModal";
 import { FREE_LIMIT_CODE } from "@/lib/planAccess";
 import { trackEvent } from "@/lib/analytics";
+import { FRIENDLY_FAILURE_MESSAGE } from "@/lib/documentRetry";
 
 const uploadConsentKey = (uid: string) => `rinvita.uploadConsent.${uid}`;
 

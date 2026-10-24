@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type ElementType } from "react";
+import AdminRetryButton from "@/components/admin/AdminRetryButton";
 import { ArrowRight, FileText, PoundSterling, UserPlus, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -211,6 +212,7 @@ const AdminDashboardPage = () => {
                         <span className={`inline-flex rounded-full px-2 py-1 text-xs capitalize ${statusTone[document.processing_status] || "bg-secondary text-secondary-foreground"}`}>
                           {document.processing_status === "stored" ? "Original stored (not translated)" : document.processing_status}
                         </span>
+                        {document.processing_status === "failed" && <AdminRetryButton documentId={document.document_id} />}
                       </TableCell>
                       <TableCell>{new Date(document.upload_date).toLocaleDateString()}</TableCell>
                     </TableRow>

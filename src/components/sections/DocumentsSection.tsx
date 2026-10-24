@@ -6,6 +6,8 @@ import { supabase } from "@/integrations/supabase/client";
 import DocumentViewerModal from "@/components/DocumentViewerModal";
 import type { Document } from "@/store/vaultStore";
 import { toast } from "sonner";
+import { retryDocument, FRIENDLY_FAILURE_MESSAGE } from "@/lib/documentRetry";
+import { RotateCw } from "lucide-react";
 
 const countryFlags: Record<string, string> = { UAE: "🇦🇪", UK: "🇬🇧", Qatar: "🇶🇦", Switzerland: "🇨🇭", USA: "🇺🇸" };
 
@@ -134,6 +136,25 @@ const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void 
     }
   };
 
+  const [retryingId, setRetryingId] = useState<string | null>(null);
+  const handleRetry = async (e: React.MouseEvent, doc: Document) => {
+    e.stopPropagation();
+    if (!user) return;
+    setRetryingId(doc.id);
+    const res = await retryDocument(doc.id);
+    setRetryingId(null);
+    if (res.ok) {
+      toast.success("Your document has been processed.");
+      await useVaultStore.getState().loadUserData(user.id);
+    } else if (res.code === "no_file") {
+      toast.error(res.message);
+    } else if (res.code === "free_document_limit_reached") {
+      toast.error("You have used all 3 documents on the free plan.");
+    } else {
+      toast.error(FRIENDLY_FAILURE_MESSAGE);
+    }
+  };
+
   const documentVisitCount = (docId: string) => visits.filter((v) => v.documentId === docId).length;
 
   const handleDelete = async (e: React.MouseEvent, doc: Document) => {
@@ -239,6 +260,20 @@ const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void 
                     <td className="p-4 text-xs text-muted-foreground">{d.date}</td>
                     <td className="p-4">
                       <div className="flex flex-col items-start gap-1.5">
+                        {d.processingStatus === "failed" && (
+                          <>
+                            <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-700 border border-amber-500/20 max-w-[220px] whitespace-normal">
+                              {FRIENDLY_FAILURE_MESSAGE}
+                            </span>
+                            {d.filePath && (
+                              <button onClick={(e) => handleRetry(e, d)} disabled={retryingId === d.id}
+                                className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border border-primary/40 text-primary hover:bg-primary/5 transition-colors disabled:opacity-60">
+                                {retryingId === d.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <RotateCw className="w-3 h-3" />}
+                                Retry
+                              </button>
+                            )}
+                          </>
+                        )}
                         {d.extracted && (
                           <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
                             <CheckCircle className="w-3 h-3" /> Extracted
@@ -249,7 +284,7 @@ const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void 
                             {documentVisitCount(d.id)} visit{documentVisitCount(d.id) === 1 ? "" : "s"}
                           </span>
                         )}
-                        {d.filePath && (
+                        {d.filePath && d.processingStatus !== "failed" && (
                           <button
                             onClick={(e) => handleReExtractClinical(e, d)}
                             disabled={reExtractingId === d.id}
