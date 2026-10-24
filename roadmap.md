@@ -31,6 +31,6 @@
 
 - [x] Partner Phase 1: sponsorship tables, admin partners screen, /p/:slug page, signup attribution and claim, partner portal, sponsored badge, isolation tests.
 
-- [ ] URGENT: diagnose document analysis "Anthropic API error: 400" (logs + test call); fix if code/model, report if billing.
-- [ ] Hardening: full error body in processing_error, keep file on failure, Retry button (patient + admin), friendly failure message, admin alert email (max 1/hour).
-- [ ] End-to-end test with sample PDF (analyse-document + public translator), then publish.
+- [x] URGENT: diagnosed document analysis failures — Anthropic credit balance too low (no code fault).
+- [x] Hardening: full error body in processing_error, keep file on failure, Retry button (patient + admin), friendly failure message, admin alert email (max 1/hour).
+- [ ] Successful end-to-end PDF test (analyse-document + public translator) — blocked: Anthropic account needs a credit top-up. Failure path, alert email and publish done.
