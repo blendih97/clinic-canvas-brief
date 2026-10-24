@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
+import AdminRetryButton from "@/components/admin/AdminRetryButton";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -257,7 +258,7 @@ const AdminPlaceholderPage = ({
                 <p className="text-foreground">{document.user_name}</p>
                 <p className="mt-1 text-xs text-muted-foreground">{document.document_name}</p>
               </div>
-              <span className={`inline-flex rounded-full px-2 py-1 text-xs capitalize ${statusTone[document.processing_status] || "bg-secondary text-secondary-foreground"}`}>{document.processing_status === "stored" ? "Original stored (not translated)" : document.processing_status}</span>
+              <span className={`inline-flex rounded-full px-2 py-1 text-xs capitalize ${statusTone[document.processing_status] || "bg-secondary text-secondary-foreground"}`}>{document.processing_status === "stored" ? "Original stored (not translated)" : document.processing_status}</span>{document.processing_status === "failed" && <AdminRetryButton documentId={document.document_id} />}
             </div>
           ))}
         </CardContent>
@@ -290,7 +291,7 @@ const AdminPlaceholderPage = ({
                   <td className="p-4 text-sm text-foreground">{document.document_type || "—"}</td>
                   <td className="p-4 text-sm text-foreground">{document.original_language || "—"}</td>
                   <td className="p-4 text-sm text-foreground">{fmtDateTime(document.upload_date)}</td>
-                  <td className="p-4"><span className={`inline-flex rounded-full px-2 py-1 text-xs capitalize ${statusTone[document.processing_status] || "bg-secondary text-secondary-foreground"}`}>{document.processing_status === "stored" ? "Original stored (not translated)" : document.processing_status}</span></td>
+                  <td className="p-4"><span className={`inline-flex rounded-full px-2 py-1 text-xs capitalize ${statusTone[document.processing_status] || "bg-secondary text-secondary-foreground"}`}>{document.processing_status === "stored" ? "Original stored (not translated)" : document.processing_status}</span>{document.processing_status === "failed" && <AdminRetryButton documentId={document.document_id} />}</td>
                 </tr>
               ))}
             </tbody>

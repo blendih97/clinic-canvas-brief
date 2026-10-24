@@ -1,4 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { describeAnthropicError } from "../_shared/anthropicError.ts";
+import { notifyAnalysisFailure } from "../_shared/analysisAlert.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -251,9 +253,11 @@ Deno.serve(async (req: Request) => {
 
     if (!anthropicRes.ok) {
       const errText = await anthropicRes.text();
-      console.error("Anthropic API error:", anthropicRes.status, errText);
+      const described = describeAnthropicError(anthropicRes.status, errText);
+      console.error(described);
+      await notifyAnalysisFailure(admin, "analyse-document", described);
       return new Response(
-        JSON.stringify({ error: `Anthropic API error: ${anthropicRes.status}` }),
+        JSON.stringify({ error: described, code: "analysis_failed" }),
         { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }

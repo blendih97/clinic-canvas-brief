@@ -31,3 +31,5 @@ project_id = "gnxctlydesugjdwbavdx"
     verify_jwt = false
   [functions.partner-manage]
     verify_jwt = false
+  [functions.retry-document]
+    verify_jwt = false

@@ -7,6 +7,7 @@ import { SUPPORTED_LANGUAGES, getLanguageName } from "@/lib/supportedLanguages";
 import UploadConsentModal from "@/components/UploadConsentModal";
 import { FREE_LIMIT_CODE } from "@/lib/planAccess";
 import { trackEvent } from "@/lib/analytics";
+import { FRIENDLY_FAILURE_MESSAGE } from "@/lib/documentRetry";
 
 const uploadConsentKey = (uid: string) => `rinvita.uploadConsent.${uid}`;
 
@@ -207,9 +208,21 @@ const DocumentUpload = ({ open, onClose, onLimitReached }: { open: boolean; onCl
       setPhase("confirm");
     } catch (e: any) {
       const reason = e?.message || "Something went wrong";
-      await saveFailedDocument(reason);
+      // Keep the original so the failed document can be retried later.
+      let keptPath: string | undefined;
+      if (file && user) {
+        const safeName = file.name.replace(/[^\w.\-]+/g, "_");
+        const storagePath = `${user.id}/${Date.now()}-${safeName}`;
+        const { error: upErr } = await supabase.storage
+          .from("medical-documents")
+          .upload(storagePath, file, { upsert: true, contentType: file.type || "application/octet-stream" });
+        if (!upErr) keptPath = storagePath;
+        else console.error("Could not keep failed upload:", upErr);
+      }
+      await saveFailedDocument(reason, keptPath);
+      if (user) void store.loadUserData(user.id);
       trackEvent("document_upload_failed", { stage: "analysis" });
-      setError(reason);
+      setError(FRIENDLY_FAILURE_MESSAGE);
       setPhase("input");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

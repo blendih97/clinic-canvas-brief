@@ -59,6 +59,8 @@ export interface Document {
   contentTranslated?: string;
   originalLanguageCode?: string;
   translatedLanguageCode?: string;
+  processingStatus?: string;
+  processingError?: string;
 }
 
 export interface Alert {
@@ -207,6 +209,8 @@ export const useVaultStore = create<VaultState>()((set, get) => ({
         contentTranslated: r.content_translated || undefined,
         originalLanguageCode: r.original_language_code || undefined,
         translatedLanguageCode: r.translated_language_code || undefined,
+        processingStatus: r.processing_status || undefined,
+        processingError: r.processing_error || undefined,
       })),
       alerts: (alerts.data || []).map((r: any) => ({
         type: r.type as "critical" | "flagged", message: r.message,
