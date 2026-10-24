@@ -17,6 +17,7 @@ import { template as newSignupAdmin } from './new-signup-admin.tsx'
 import { template as clinicEnquiryAdmin } from './clinic-enquiry-admin.tsx'
 import { template as partnerPatientInvite } from './partner-patient-invite.tsx'
 import { template as partnerStaffInvite } from './partner-staff-invite.tsx'
+import { template as analysisFailedAdmin } from './analysis-failed-admin.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'record-request': recordRequest,
@@ -27,4 +28,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'clinic-enquiry-admin': clinicEnquiryAdmin,
   'partner-patient-invite': partnerPatientInvite,
   'partner-staff-invite': partnerStaffInvite,
+  'analysis-failed-admin': analysisFailedAdmin,
 }
