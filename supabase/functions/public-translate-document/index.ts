@@ -9,6 +9,8 @@
 // Documents are processed in memory and never stored. Only an anonymous usage
 // row is written (with a keyed hash of the IP, never the IP itself).
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { describeAnthropicError } from "../_shared/anthropicError.ts";
+import { notifyAnalysisFailure } from "../_shared/analysisAlert.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -252,9 +254,11 @@ Deno.serve(async (req: Request) => {
     });
 
     if (!anthropicRes.ok) {
-      console.error("anthropic error", anthropicRes.status, (await anthropicRes.text()).slice(0, 500));
+      const described = describeAnthropicError(anthropicRes.status, await anthropicRes.text());
+      console.error(described);
       await logAttempt(body, targetLang, false, meta);
-      return json({ error: "Translation service is busy. Please try again in a moment." }, 502);
+      await notifyAnalysisFailure(admin, "public-translate-document", described);
+      return json({ error: "We couldn't process this file yet — we've been notified and will look into it. Please try again later." }, 502);
     }
 
     const data = await anthropicRes.json();
