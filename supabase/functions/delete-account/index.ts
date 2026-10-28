@@ -87,6 +87,11 @@ Deno.serve(async (req) => {
       adminClient.from("record_requests").delete().eq("user_id", user.id),
       adminClient.from("profiles").delete().eq("id", user.id),
       adminClient.from("user_roles").delete().eq("user_id", user.id),
+      adminClient.from("visits").delete().eq("user_id", user.id),
+      adminClient.from("shared_briefs").delete().eq("user_id", user.id),
+      adminClient.from("imaging_link_overrides").delete().eq("user_id", user.id),
+      adminClient.from("export_translation_cache").delete().eq("user_id", user.id),
+      adminClient.from("page_views").delete().eq("user_id", user.id),
     ];
 
     const results = await Promise.allSettled(deletions);
