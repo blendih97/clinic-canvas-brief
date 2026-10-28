@@ -91,6 +91,7 @@ Deno.serve(async (req) => {
       adminClient.from("shared_briefs").delete().eq("user_id", user.id),
       adminClient.from("imaging_link_overrides").delete().eq("user_id", user.id),
       adminClient.from("export_translation_cache").delete().eq("user_id", user.id),
+      adminClient.from("page_views").delete().eq("user_id", user.id),
     ];
 
     const results = await Promise.allSettled(deletions);
