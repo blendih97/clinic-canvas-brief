@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ClipboardList, FolderOpen, Share2 } from "lucide-react";
+import { ClipboardList, FileDown, FileText, FlaskConical, FolderOpen, Inbox, KeyRound, Pill, Share2 } from "lucide-react";
 import SEO from "@/components/SEO";
 import InstantDemo from "@/components/marketing/InstantDemo";
 import SampleHealthPassport from "@/components/marketing/SampleHealthPassport";
@@ -296,6 +296,48 @@ function Hero() {
             </div>
           </div>
         )}
+      </div>
+    </section>
+  );
+}
+
+function ExploreSample() {
+  const { isMobile, isTablet } = useMarketingBreakpoint();
+  const paddingX = isMobile ? 20 : isTablet ? 32 : 56;
+  const features = [
+    { icon: FlaskConical, label: "Labs with trends" },
+    { icon: FileText, label: "Reports and letters" },
+    { icon: Pill, label: "Medications and allergies" },
+    { icon: FileDown, label: "PDF sharing" },
+    { icon: KeyRound, label: "One-time clinician access demo" },
+    { icon: Inbox, label: "Request records demo" },
+  ];
+  return (
+    <section aria-label="Explore a sample medical passport" style={{ padding: isMobile ? "0 20px 56px" : `0 ${paddingX}px 72px`, background: marketingColors.cream }}>
+      <div style={{ maxWidth: 1280, margin: "0 auto", borderTop: `1px solid hsl(var(--foreground) / 0.1)`, paddingTop: isMobile ? 36 : 48, display: "grid", gridTemplateColumns: isMobile || isTablet ? "1fr" : "1.1fr 1fr", gap: isMobile ? 24 : 56, alignItems: "center" }}>
+        <div>
+          <span className="marketing-section-label">Explore a sample medical passport</span>
+          <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 28 : 36, fontWeight: 300, lineHeight: 1.15, color: marketingColors.ink, margin: "10px 0 12px", letterSpacing: 0 }}>
+            See exactly what your patients see.
+          </h2>
+          <p style={{ fontSize: isMobile ? 14.5 : 15.5, lineHeight: 1.7, color: marketingColors.mutedText, maxWidth: 520, fontWeight: 300, marginBottom: 18 }}>
+            Open a fully populated fictional patient portal and click through it like a real account. No signup, nothing stored.
+          </p>
+          <Link to="/partner-demo" style={{ display: "inline-block", padding: "13px 26px", border: `1px solid ${marketingColors.gold}`, borderRadius: 2, color: marketingColors.gold, fontSize: 14, fontWeight: 500, textDecoration: "none" }}>
+            Open the example →
+          </Link>
+          <p style={{ marginTop: 14, fontSize: 12, color: marketingColors.softText, lineHeight: 1.6, maxWidth: 520 }}>
+            Fictional demonstration. Sharing and record-request codes are simulations, not live secure access or real institutional uploads.
+          </p>
+        </div>
+        <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10 }}>
+          {features.map(({ icon: Icon, label }) => (
+            <li key={label} style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 14px", border: `1px solid hsl(var(--primary) / 0.15)`, borderRadius: 2, background: "hsl(var(--primary) / 0.04)", fontSize: 13.5, color: marketingColors.ink }}>
+              <Icon aria-hidden className="h-4 w-4 shrink-0 text-primary" />
+              <span>{label}</span>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );
