@@ -88,6 +88,11 @@ export default function ForConciergesPage() {
               <Button onClick={goToForm} size="lg" className="h-auto rounded-sm px-7 py-3.5 uppercase" style={{ letterSpacing: "0.06em" }}>Start a 14-day trial</Button>
               <Button asChild variant="outline" size="lg" className="h-auto rounded-sm px-7 py-3.5 uppercase" style={{ letterSpacing: "0.06em" }}><Link to="/demo?utm_source=for-concierges">See a sample medical passport</Link></Button>
             </div>
+            <p style={{ marginTop: 16, fontSize: 13.5, color: marketingColors.mutedText }}>
+              Prefer to click around first?{" "}
+              <Link to="/partner-demo" style={{ color: marketingColors.gold, fontWeight: 500, textDecoration: "none" }}>See an example</Link>
+              {" "}(fictional interactive portal)
+            </p>
           </div>
         </section>
 

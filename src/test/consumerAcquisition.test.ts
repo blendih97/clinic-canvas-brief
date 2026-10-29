@@ -98,7 +98,7 @@ describe("homepage consumer CTA", () => {
 
   it("keeps a 'See an example' secondary CTA and a partner route", () => {
     expect(home).toContain("See an example");
-    expect(home).toContain('to="/demo"');
+    expect(home).toContain('to="/partner-demo"');
     expect(home).toContain('to="/for-clinics"');
   });
 
