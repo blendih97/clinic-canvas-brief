@@ -654,6 +654,11 @@ export default function PartnerDemoPage() {
     setVisited((p) => new Set(p).add(n));
     if (focus) document.getElementById(`scene-tab-${n}`)?.focus();
   }, []);
+  const step = (i: number) => {
+    go(i);
+    const top = document.getElementById("scene-tabs")?.getBoundingClientRect().top ?? 0;
+    if (top < 0) document.getElementById("scene-tabs")?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "center" });
+  };
 
   const scrollToDemo = () => demoRef.current?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
 
@@ -689,7 +694,7 @@ export default function PartnerDemoPage() {
             <span className="hidden border-l border-border pl-2.5 text-xs uppercase tracking-[0.18em] text-muted-foreground sm:inline">For healthcare partners</span>
           </Link>
           <nav className="flex items-center gap-2 sm:gap-4" aria-label="Partner demo">
-            <Link to="/for-concierges" className={`hidden rounded text-sm text-muted-foreground transition hover:text-foreground sm:inline ${focusRing}`}>Partner page</Link>
+            <Link to="/for-concierges" className={`rounded text-xs text-muted-foreground transition hover:text-foreground sm:text-sm ${focusRing}`}>Partner page</Link>
             <a href={INQUIRY_MAILTO} className={`rounded-full bg-foreground px-4 py-2 text-sm text-background transition hover:opacity-90 ${focusRing}`}>Partner inquiry</a>
           </nav>
         </div>
@@ -733,7 +738,7 @@ export default function PartnerDemoPage() {
               <div className="h-1 overflow-hidden rounded-full bg-border" role="progressbar" aria-label="Scenes explored" aria-valuemin={0} aria-valuemax={SCENES.length} aria-valuenow={visited.size}>
                 <div className="h-full rounded-full bg-primary transition-[width] duration-500" style={{ width: `${progress}%` }} />
               </div>
-              <div role="tablist" aria-label="Journey scenes" onKeyDown={onTabKey} className="mt-4 grid grid-cols-5 gap-1.5 sm:gap-2">
+              <div id="scene-tabs" role="tablist" aria-label="Journey scenes" onKeyDown={onTabKey} className="mt-4 grid grid-cols-5 gap-1.5 sm:gap-2">
                 {SCENES.map((s, i) => {
                   const on = i === scene;
                   return (
@@ -762,10 +767,10 @@ export default function PartnerDemoPage() {
             <div className="sticky bottom-3 z-30 mt-10">
               <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card/95 px-4 py-3 shadow-lg backdrop-blur">
                 <div className="flex gap-2">
-                  <button type="button" onClick={() => go(scene - 1)} disabled={scene === 0} className={`rounded-full border border-border px-4 py-2 text-sm transition hover:border-primary/40 disabled:opacity-60 ${focusRing}`}>Back</button>
+                  <button type="button" onClick={() => step(scene - 1)} disabled={scene === 0} className={`rounded-full border border-border px-4 py-2 text-sm transition hover:border-primary/40 disabled:opacity-60 ${focusRing}`}>Back</button>
                   {scene < SCENES.length - 1
-                    ? <button type="button" onClick={() => go(scene + 1)} className={`rounded-full bg-foreground px-4 py-2 text-sm text-background transition hover:opacity-90 ${focusRing}`}>Next: {SCENES[scene + 1].short}</button>
-                    : <button type="button" onClick={() => go(0)} className={`rounded-full border border-border px-4 py-2 text-sm transition hover:border-primary/40 ${focusRing}`}>Start again</button>}
+                    ? <button type="button" onClick={() => step(scene + 1)} className={`rounded-full bg-foreground px-4 py-2 text-sm text-background transition hover:opacity-90 ${focusRing}`}>Next: {SCENES[scene + 1].short}</button>
+                    : <button type="button" onClick={() => step(0)} className={`rounded-full border border-border px-4 py-2 text-sm transition hover:border-primary/40 ${focusRing}`}>Start again</button>}
                 </div>
                 <a href={INQUIRY_MAILTO} className={`rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90 ${focusRing}`}>Talk to us about partnering</a>
               </div>
