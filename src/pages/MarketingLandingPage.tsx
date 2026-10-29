@@ -217,7 +217,7 @@ function Hero() {
             <Link to="/auth?mode=signup" style={{ padding: isMobile ? "18px 24px" : "17px 36px", background: marketingColors.gold, borderRadius: 2, color: "hsl(var(--primary-foreground))", fontSize: isMobile ? 15 : 15.5, fontWeight: 600, letterSpacing: "0.05em", textDecoration: "none", textAlign: "center", boxShadow: "0 6px 28px hsl(var(--primary) / 0.4)" }}>
               Start free — 3 documents
             </Link>
-            <Link to="/demo" style={{ padding: isMobile ? "15px 24px" : "15px 28px", background: "transparent", border: `1px solid ${marketingColors.gold}`, borderRadius: 2, color: marketingColors.gold, fontSize: 14, textDecoration: "none", textAlign: "center", fontWeight: 500 }}>
+            <Link to="/partner-demo" style={{ padding: isMobile ? "15px 24px" : "15px 28px", background: "transparent", border: `1px solid ${marketingColors.gold}`, borderRadius: 2, color: marketingColors.gold, fontSize: 14, textDecoration: "none", textAlign: "center", fontWeight: 500 }}>
               See an example →
             </Link>
           </div>
@@ -1148,6 +1148,7 @@ const MarketingLandingPage = () => {
       <MarketingStyles />
       <MarketingNav />
       <Hero />
+      <ExploreSample />
       <PassportContents />
       <PartnerStrip />
       <ThreeSteps />
