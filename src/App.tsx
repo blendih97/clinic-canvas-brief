@@ -53,6 +53,7 @@ import PartnerRoute from "./pages/partner/PartnerRoute.tsx";
 import AdminPartnersPage from "./pages/admin/AdminPartnersPage.tsx";
 import GrowthPreviewPage from "./pages/GrowthPreviewPage";
 import AdminGrowthPage from "./pages/admin/AdminGrowthPage";
+import { hasAuthIntent } from "@/lib/authIntent";
 
 
 const queryClient = new QueryClient();
@@ -75,8 +76,9 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 const AuthRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
+  const { search } = useLocation();
   if (loading) return null;
-  if (user) return <Navigate to="/app" replace />;
+  if (user && !hasAuthIntent(search)) return <Navigate to="/app" replace />;
   return <>{children}</>;
 };
 

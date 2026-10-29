@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Shield, Clock, AlertTriangle, Pill, Droplets, ScanLine } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { newRecipientSecret, shareExpiryDelay, SHARE_REVALIDATE_MS } from "@/lib/shareRecipient";
 
 interface SharedBrief {
   token: string;
@@ -23,35 +25,55 @@ const ShareView = () => {
   const [accepted, setAccepted] = useState(false);
   const [declined, setDeclined] = useState(false);
   const [submittingAccept, setSubmittingAccept] = useState(false);
+  const recipientSecret = useRef<string | null>(null);
+  const requestVersion = useRef(0);
+  const currentBrief = useRef<SharedBrief | null>(null);
+
+  const clearBrief = () => {
+    requestVersion.current += 1;
+    currentBrief.current = null;
+    setBrief(null);
+    setExpired(true);
+  };
+
+  useEffect(() => {
+    requestVersion.current += 1;
+    recipientSecret.current = null;
+    currentBrief.current = null;
+    setBrief(null);
+    setAccepted(false);
+    setExpired(false);
+    setDeclined(false);
+  }, [token]);
 
   const handleAccept = async () => {
     if (!token) return;
     setSubmittingAccept(true);
     setLoading(true);
     try {
-      // Best-effort audit log (timestamp + IP captured server-side)
-      void supabase.functions
-        .invoke("log-share-acceptance", { body: { token } })
-        .catch(() => undefined);
-
-      // Token-gated lookup via secure edge function (no broad anon RLS).
+      recipientSecret.current ??= newRecipientSecret();
+      const version = ++requestVersion.current;
       const { data, error } = await supabase.functions.invoke("get-shared-brief", {
-        body: { token },
+        body: { token, recipientSecret: recipientSecret.current },
       });
+      if (version !== requestVersion.current) return;
       const brief = (data as any)?.brief;
       const isExpired = (data as any)?.expired;
 
-      if (error || !brief || isExpired) {
-        setExpired(true);
+      if (error || (data as any)?.protocol !== 2 || !brief || isExpired) {
+        clearBrief();
         setAccepted(true);
-      } else if (brief.expires_at && new Date(brief.expires_at) < new Date()) {
-        setExpired(true);
+      } else if (!brief.expires_at || Date.parse(brief.expires_at) <= Date.now()) {
+        clearBrief();
         setAccepted(true);
       } else {
+        currentBrief.current = brief;
         setBrief(brief as SharedBrief);
         setAccepted(true);
       }
-
+    } catch {
+      clearBrief();
+      setAccepted(true);
     } finally {
       setLoading(false);
       setSubmittingAccept(false);
@@ -59,17 +81,67 @@ const ShareView = () => {
   };
 
   useEffect(() => {
+    if (!accepted || expired || !token || !recipientSecret.current) return;
+    let stopped = false;
+    let inFlight = false;
+    const revalidate = async () => {
+      if (inFlight || document.visibilityState === "hidden") return;
+      inFlight = true;
+      const version = ++requestVersion.current;
+      try {
+        const { data, error } = await supabase.functions.invoke("get-shared-brief", {
+          body: { token, recipientSecret: recipientSecret.current },
+        });
+        if (stopped || version !== requestVersion.current) return;
+        const fresh = data?.brief as SharedBrief | null;
+        if (error || data?.protocol !== 2 || !fresh?.expires_at || Date.parse(fresh.expires_at) <= Date.now()) {
+          clearBrief();
+        } else {
+          currentBrief.current = fresh;
+          setBrief(fresh);
+        }
+      } catch { if (!stopped) clearBrief(); }
+      finally { inFlight = false; }
+    };
+    const visibility = () => {
+      if (document.visibilityState === "hidden") {
+        requestVersion.current += 1;
+        currentBrief.current = null;
+        setBrief(null);
+      } else { void revalidate(); }
+    };
+    const focus = () => {
+      requestVersion.current += 1;
+      currentBrief.current = null;
+      setBrief(null);
+      void revalidate();
+    };
+    const poll = setInterval(() => void revalidate(), SHARE_REVALIDATE_MS);
+    document.addEventListener("visibilitychange", visibility);
+    window.addEventListener("focus", focus);
+    return () => {
+      stopped = true;
+      clearInterval(poll);
+      document.removeEventListener("visibilitychange", visibility);
+      window.removeEventListener("focus", focus);
+    };
+  }, [accepted, expired, token]);
+
+  useEffect(() => {
     if (!brief) return;
     const update = () => {
       const diff = new Date(brief.expires_at).getTime() - Date.now();
-      if (diff <= 0) { setExpired(true); return; }
+      if (diff <= 0) { clearBrief(); return; }
       const h = Math.floor(diff / 3600000);
       const m = Math.floor((diff % 3600000) / 60000);
       setTimeRemaining(`${h}h ${m}m remaining`);
     };
     update();
-    const interval = setInterval(update, 60000);
-    return () => clearInterval(interval);
+    const interval = setInterval(update, 1000);
+    const timeout = setTimeout(() => {
+      if (Date.parse(brief.expires_at) <= Date.now()) clearBrief();
+    }, shareExpiryDelay(brief.expires_at));
+    return () => { clearInterval(interval); clearTimeout(timeout); };
   }, [brief]);
 
   if (declined) {
@@ -101,29 +173,29 @@ const ShareView = () => {
             <li>You acknowledge this data is protected under UK GDPR and you accept responsibility for handling it lawfully.</li>
           </ol>
           <p className="text-xs text-muted-foreground mb-6">
-            Your acceptance, including timestamp and IP address, is logged for audit purposes.
+            This link opens in one recipient session only. Acceptance is recorded. Reloading or closing this page requires a new link.
           </p>
           <div className="flex gap-3">
-            <button
+            <Button
               onClick={() => setDeclined(true)}
               className="flex-1 py-2.5 bg-muted text-foreground rounded-lg text-sm font-medium hover:bg-muted/80 transition-colors"
             >
               Decline
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleAccept}
               disabled={submittingAccept}
               className="flex-[2] py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
             >
               {submittingAccept ? "Loading…" : "I Accept"}
-            </button>
+            </Button>
           </div>
         </div>
       </div>
     );
   }
 
-  if (loading) {
+  if (loading || (accepted && !expired && !brief)) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="animate-pulse text-muted-foreground text-sm">Loading health brief…</div>
@@ -137,7 +209,7 @@ const ShareView = () => {
         <div className="text-center max-w-md">
           <Shield className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-40" />
           <h1 className="font-heading text-2xl text-foreground mb-2">Link Expired or Invalid</h1>
-          <p className="text-sm text-muted-foreground">This health brief link has expired or does not exist. Please request a new link from the patient.</p>
+          <p className="text-sm text-muted-foreground">This link is unavailable, expired, revoked or already opened in another session. Please request a new link from the patient.</p>
         </div>
       </div>
     );
@@ -167,8 +239,9 @@ const ShareView = () => {
         <div className="bg-card border border-primary/20 rounded-lg p-5 text-sm text-foreground/80 leading-relaxed">
           <p className="font-medium text-foreground mb-1.5">For the receiving clinician</p>
           <p>
-            This is a patient-curated medical summary. Records have been organised and translated by AI from original documents at the patient's request. All source documents are accessible below. This is not a substitute for clinical records from the originating institution.
+            This is a patient-curated medical summary. Records have been organised and translated by AI from original documents at the patient's request. This is not a substitute for clinical records from the originating institution.
           </p>
+          <p className="mt-2">Expiry closes this view automatically. Revocation is checked every five seconds while this page is visible. Information already read, copied or downloaded cannot be retracted.</p>
         </div>
         <div className="bg-primary/5 border border-primary/10 rounded-lg p-4 text-sm text-primary">
           Scope: {brief.scope || "Full Health History"} · Created {new Date(brief.created_at).toLocaleDateString()}
@@ -183,7 +256,7 @@ const ShareView = () => {
             <div className="flex flex-wrap gap-2">
               {allergies.map((a: any, i: number) => (
                 <span key={i} className="px-3 py-1.5 bg-destructive/10 text-destructive border border-destructive/20 rounded-full text-xs font-medium">
-                  {a.substance} — {a.reaction}
+                  {a.substance} · {a.reaction}
                 </span>
               ))}
             </div>
@@ -256,7 +329,7 @@ const ShareView = () => {
             <div className="space-y-3">
               {imagingResults.map((im: any, i: number) => (
                 <div key={i} className="bg-card border border-border rounded-lg p-4">
-                  <p className="text-sm font-medium text-foreground mb-1">{im.type} — {im.region}</p>
+                  <p className="text-sm font-medium text-foreground mb-1">{im.type} · {im.region}</p>
                   <p className="text-sm text-foreground/80">{im.finding}</p>
                   <p className="text-xs text-muted-foreground mt-2">{im.facility} · {im.date}</p>
                 </div>

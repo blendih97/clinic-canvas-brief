@@ -88,6 +88,7 @@ const AuthPage = () => {
   }, [user, nextPath, checkoutPlan, navigate]);
 
   const goAfterAuth = () => {
+    if (checkoutPlan) return; // Keep the authenticated page mounted for its checkout effect.
     if (nextPath) window.location.href = nextPath;
     else navigate("/app");
   };
