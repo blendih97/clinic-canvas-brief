@@ -21,79 +21,29 @@ describe("/partner-demo route", () => {
 });
 
 describe("partner demo content and CTAs", () => {
-  it("uses the required eyebrow and headline", () => {
-    expect(page).toContain("60-second partner demo");
-    expect(page).toContain("See the record before the appointment.");
+  it("uses the required hero copy and fictional badge", () => {
+    expect(page).toContain("See the entire patient journey");
+    expect(page).toContain("A medical passport that travels with the patient, not the provider.");
+    expect(page).toContain("Fictional demonstration. No real patient information.");
   });
 
-  it("offers both CTAs, with the pilot CTA as a prefilled mailto", () => {
-    expect(page).toContain("View the sample passport");
-    expect(page).toContain("Start a 14-day trial");
-    expect(page).toContain("mailto:info@rinvita.co.uk");
-    expect(page).toContain("RinVita 14-day trial");
+  it("links to the partner page and the inquiry mailto", () => {
+    expect(page).toContain("/for-concierges");
+    expect(page).toContain("mailto:hello@rinvita.co.uk?subject=RinVita%20Partner%20Demo");
   });
 
-  it("launches the existing interactive sample demo", () => {
-    expect(page).toContain("InstantDemo");
-    expect(page).toContain("sample-passport-demo");
+  it("makes no network or AI calls", () => {
+    for (const s of ["supabase", "fetch(", "functions.invoke", "trackEvent"]) expect(page).not.toContain(s);
   });
 
-  it("shows the three transformation stages and pilot terms", () => {
-    for (const stage of ["Scattered records", "Organised & translated", "Shared with the right clinician"]) {
-      expect(page).toContain(stage);
-    }
-    for (const term of [
-      "Free 14-day trial",
-      "Invite as many patients as you like",
-      "Guided setup with our team",
-      "Co-branded invitation materials",
-      "No EHR integration required",
-      "Pricing agreed before the trial starts",
-    ]) {
-      expect(page).toContain(term);
-    }
-    expect(page).toContain("Free 14-day trial — invite as many patients as you like.");
-  });
-
-  it("keeps claims factual", () => {
+  it("keeps claims factual and avoids em dashes", () => {
     const lower = page.toLowerCase();
     for (const phrase of ["end-to-end encrypt", "clinical-grade", "fully gdpr", "guaranteed", "testimonial"]) {
       expect(lower, `claims "${phrase}"`).not.toContain(phrase);
     }
     expect(page).toContain("does not diagnose");
-    expect(page).toContain("encrypted at rest and in transit");
-  });
-});
-
-describe("partner demo analytics", () => {
-  beforeEach(() => {
-    (window as unknown as { fbq?: unknown }).fbq = vi.fn();
-  });
-
-  it("declares the three campaign events", () => {
-    const analytics = readFileSync("src/lib/analytics.ts", "utf8");
-    for (const evt of ["partner_demo_view", "sample_passport_click", "pilot_email_click"]) {
-      expect(analytics).toContain(`"${evt}"`);
-      expect(page).toContain(evt);
-    }
-  });
-
-  it("sends campaign attribution only", () => {
-    const fbq = (window as unknown as { fbq: ReturnType<typeof vi.fn> }).fbq;
-    trackEvent("partner_demo_view", {
-      utm_source: "outbound",
-      utm_medium: "email",
-      utm_campaign: "clinics-q3",
-      utm_content: "variant-a",
-    });
-    const payload = fbq.mock.calls[0][2] as Record<string, unknown>;
-    expect(Object.keys(payload).sort()).toEqual([
-      "utm_campaign",
-      "utm_content",
-      "utm_medium",
-      "utm_source",
-    ]);
-    expect(payload.utm_campaign).toBe("clinics-q3");
+    expect(page).toContain("hypotheses, not proven");
+    expect(page).not.toContain("\u2014");
   });
 });
 
