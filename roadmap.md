@@ -1,5 +1,10 @@
 # Roadmap
 
+- [ ] Secure real brief single-use consumption and prompt recipient invalidation, with concurrency tests.
+- [ ] Repair revoked partner claims, source-owned sponsorship, staff audit and scoped account cleanup.
+- [ ] Repair clinical PDF reaction and authenticated checkout intent; label pilot exclusions.
+- [ ] Run isolated synthetic regression and browser checks; document blocked external flows and deployment gates.
+
 - [x] Replace partner demo with a populated local patient portal and five persistent navigation tabs.
 - [x] Implement selected-section PDF export, one-time/expiry simulation and provider request/receipt simulation.
 - [x] Verify demo interactions and mobile/desktop layout; leave production unpublished.
