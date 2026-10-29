@@ -36,7 +36,7 @@ export function consumeDemoAccess(access: DemoAccess, now = Date.now()): DemoAcc
 export function passportSections(selected: ShareSection[], reports: DemoReport[]) {
   return selected.map(section => ({ title: section, lines: section === "Reports" ? reports.map(r => `${r.title} | ${r.date} | ${r.provider}\n${r.summary}`) : section === "Labs" ? DEMO_LABS.map(l => `${l.name}: ${l.value} ${l.unit} | Reference ${l.low}-${l.high} | ${labFlag(l.value, l.low, l.high)}\nSource: Example City Laboratory, 18 Oct 2026`) : section === "Medications" ? DEMO_MEDS.filter(m => m.status === "Current").map(m => `${m.name} ${m.dose}, ${m.frequency}\nSource: ${m.source}`) : ["Penicillin: urticaria (hives). Recorded in French endocrinology report, 12 Mar 2026; reconfirmed in discharge summary, 03 Jun 2026."] }));
 }
-function plainPDF(text: string) { return text.replaceAll("µ", "u").replaceAll("é", "e").replaceAll("è", "e").replaceAll("à", "a").replaceAll("ê", "e").replaceAll("î", "i"); }
+function plainPDF(text: string) { return text.replace(/µ/g, "u").replace(/[éèê]/g, "e").replace(/à/g, "a").replace(/î/g, "i"); }
 export function buildDemoPDF(selected: ShareSection[], reports: DemoReport[], original?: DemoReport) {
   const pdf = new jsPDF();
   let y = 24;

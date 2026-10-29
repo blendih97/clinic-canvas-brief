@@ -207,13 +207,7 @@ export const AppRoutes = () => (
   </Routes>
 );
 
-const App = () => {
-  // This public, local-only demo must not mount auth, attribution, analytics,
-  // partner claiming or payment effects. All existing routes keep their shell.
-  if (typeof window !== "undefined" && window.location.pathname === "/partner-demo") {
-    return <BrowserRouter><PartnerDemoPage /></BrowserRouter>;
-  }
-  return (
+const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <LocaleProvider>
@@ -233,7 +227,6 @@ const App = () => {
       </LocaleProvider>
     </AuthProvider>
   </QueryClientProvider>
-  );
-};
+);
 
 export default App;
