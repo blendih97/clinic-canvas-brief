@@ -487,7 +487,7 @@ function ScenePassport() {
 /* Scene 4: translate and trace                                        */
 /* ------------------------------------------------------------------ */
 
-const TRANSLATIONS = {
+const TRANSLATIONS: Record<"ar" | "fr", { doc: string; lines: [string, string][] }> = {
   ar: {
     doc: "mri-ae",
     lines: [
@@ -506,7 +506,7 @@ const TRANSLATIONS = {
       ["Conclusion : contrôle glycémique à surveiller.", "Conclusion: glycaemic control to be monitored."],
     ],
   },
-} as const;
+};
 
 function SceneTranslate() {
   const [lang, setLang] = useState<"ar" | "fr">("ar");
