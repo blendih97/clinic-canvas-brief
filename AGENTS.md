@@ -1,5 +1,7 @@
 # Project rules
 
+- The partner portal demo uses its own local synthetic data/PDF module and accessible dialog; its standalone app shell excludes auth, attribution and tracking effects so demo interactions never reach live services.
+
 - Growth previews read only a restricted public RPC from vetted, published, unsuppressed prospects; deterministic segment templates and the shared fictional dataset prevent invented facts or clinical access.
 - Growth applications use validated RPC submissions and admin-only review with identity and signed-terms evidence; approval never provisions sponsorship or invokes billing.
 - Growth preview analytics store daily aggregate counts only, excluding these pages from session tracking and marketing pixels to prevent prospect profiling.
