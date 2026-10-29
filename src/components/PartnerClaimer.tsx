@@ -47,7 +47,7 @@ const PartnerClaimer = () => {
         toast.success(`${res.partner} is now sponsoring your RinVita plan.`);
       } else if (res.status === "seats_full") {
         toast.message(`${res.partner}'s sponsored places are full right now. Your free account is ready — you can still use RinVita on the free plan.`, { duration: 9000 });
-      } else if (res.status === "partner_unavailable" || res.status === "invalid_invite") {
+      } else if (["partner_unavailable", "invalid_invite", "invite_revoked", "invite_used", "sponsorship_revoked"].includes(res.status)) {
         toast.message("That partner invitation is no longer active. Your free account is ready.");
       }
     })();

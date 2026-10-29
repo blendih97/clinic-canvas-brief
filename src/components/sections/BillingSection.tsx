@@ -58,7 +58,7 @@ const BillingSection = () => {
   const { profile, user } = useAuth();
   const { subscription, isActive, planTier } = useSubscription();
   const sponsorship = useSponsorship();
-  const sponsored = hasComplimentaryAccess(profile);
+  const sponsored = !!sponsorship?.active || hasComplimentaryAccess(profile);
   const { openCheckout, checkoutElement } = useStripeCheckout();
   
   const billingPeriod: BillingPeriod = "annual";
