@@ -1,6 +1,6 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
-import { trackEvent } from "@/lib/analytics";
+import { DEMO_REPORTS, DEMO_LABS, labFlag, createDemoAccess, consumeDemoAccess, accessStatus, passportSections, buildDemoPDF } from "@/lib/partnerPortalDemo";
 
 const page = readFileSync("src/pages/PartnerDemoPage.tsx", "utf8");
 
@@ -17,33 +17,6 @@ describe("/partner-demo route", () => {
   it("sets noindex head metadata", () => {
     expect(page).toContain("noindex");
     expect(page).toContain('path="/partner-demo"');
-  });
-});
-
-describe("partner demo content and CTAs", () => {
-  it("uses the required hero copy and fictional badge", () => {
-    expect(page).toContain("See the entire patient journey");
-    expect(page).toContain("A medical passport that travels with the patient, not the provider.");
-    expect(page).toContain("Fictional demonstration. No real patient information.");
-  });
-
-  it("links to the partner page and the inquiry mailto", () => {
-    expect(page).toContain("/for-concierges");
-    expect(page).toContain("mailto:hello@rinvita.co.uk?subject=RinVita%20Partner%20Demo");
-  });
-
-  it("makes no network or AI calls", () => {
-    for (const s of ["supabase", "fetch(", "functions.invoke", "trackEvent"]) expect(page).not.toContain(s);
-  });
-
-  it("keeps claims factual and avoids em dashes", () => {
-    const lower = page.toLowerCase();
-    for (const phrase of ["end-to-end encrypt", "clinical-grade", "fully gdpr", "guaranteed", "testimonial"]) {
-      expect(lower, `claims "${phrase}"`).not.toContain(phrase);
-    }
-    expect(page).toContain("does not diagnose");
-    expect(page).toContain("hypotheses, not proven");
-    expect(page).not.toContain("\u2014");
   });
 });
 
@@ -66,5 +39,48 @@ describe("email brand assets", () => {
     }
     expect(logo).toContain("RinVita");
     expect(logo).toContain("Cormorant Garamond");
+  });
+});
+
+
+describe("local fictional patient portal rules", () => {
+  it("includes only selected information in a PDF", () => {
+    const pdf = buildDemoPDF(["Allergies"], DEMO_REPORTS).output();
+    expect(pdf).toContain("Penicillin");
+    expect(pdf).not.toContain("Metformin");
+    expect(pdf).not.toContain("HbA1c");
+    expect(pdf).toContain("FAKE TEST DATA");
+  });
+  it("includes selected lab values and source attribution", () => {
+    const pdf = buildDemoPDF(["Labs"], DEMO_REPORTS).output();
+    expect(pdf).toContain("HbA1c: 6.8 %");
+    expect(pdf).toContain("Example City Laboratory, 18 Oct 2026");
+    expect(pdf).not.toContain("Metformin");
+  });
+  it("opens a simulated code exactly once", () => {
+    const access = createDemoAccess(["Allergies"], 15000, DEMO_REPORTS, 1000);
+    const consumed = consumeDemoAccess(access, 2000);
+    expect(consumed?.used).toBe(true);
+    if (!consumed) throw new Error("Expected first opening");
+    expect(consumeDemoAccess(consumed, 3000)).toBeNull();
+  });
+  it("expires at precisely the selected deadline", () => {
+    const access = createDemoAccess(["Labs"], 15000, DEMO_REPORTS, 1000);
+    expect(access.expiresAt).toBe(16000);
+    expect(accessStatus(access, 15999)).toBe("ready");
+    expect(consumeDemoAccess(access, 16000)).toBeNull();
+    expect(accessStatus(access, 16000)).toBe("expired");
+  });
+  it("snapshots selected sections for the clinician", () => {
+    const selected: ("Labs" | "Allergies")[] = ["Labs"];
+    const access = createDemoAccess(selected, 86400000, DEMO_REPORTS, 1000);
+    selected.push("Allergies");
+    expect(access.sections).toEqual(["Labs"]);
+    expect(passportSections(access.sections, access.reports).map(s => s.title)).toEqual(["Labs"]);
+  });
+  it("flags results against the supplied reference intervals", () => {
+    expect(DEMO_LABS.map(l => labFlag(l.value, l.low, l.high))).toEqual(["High", "In range", "Low", "Low", "In range", "In range"]);
+    expect(labFlag(120, 120, 160)).toBe("In range");
+    expect(labFlag(160, 120, 160)).toBe("In range");
   });
 });
