@@ -209,9 +209,13 @@ GRANT EXECUTE ON FUNCTION public.partner_staff_mutation(uuid,text,text,text,uuid
 
 CREATE OR REPLACE FUNCTION public.cleanup_partner_personal_data(_user_id uuid,_email text)
 RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
-DECLARE n_links integer; n_members integer;
+DECLARE n_links integer; n_members integer; removed_rows text[];
 BEGIN
   IF _user_id IS NULL THEN RAISE EXCEPTION 'user_required'; END IF;
+  SELECT array_agg(id::text) INTO removed_rows FROM (
+    SELECT id FROM public.partner_patient_links WHERE patient_user_id=_user_id OR (patient_user_id IS NULL AND lower(invited_email)=lower(_email))
+    UNION ALL SELECT id FROM public.partner_members WHERE user_id=_user_id OR (user_id IS NULL AND lower(invited_email)=lower(_email))
+  ) rows;
   UPDATE public.platform_events SET details_json='{}'::jsonb
     WHERE details_json->>'row_id' IN (
       SELECT id::text FROM public.partner_patient_links WHERE patient_user_id=_user_id OR (patient_user_id IS NULL AND lower(invited_email)=lower(_email))
@@ -226,7 +230,7 @@ BEGIN
   UPDATE public.partner_members SET invited_by=NULL WHERE invited_by=_user_id;
   -- Remove personal identifiers from retained events referencing this user/member/link.
   UPDATE public.platform_events SET user_id=NULL,actor_user_id=NULL,details_json='{}'::jsonb
-    WHERE user_id=_user_id OR actor_user_id=_user_id;
+    WHERE user_id=_user_id OR actor_user_id=_user_id OR details_json->>'row_id'=ANY(removed_rows);
   INSERT INTO public.platform_events(event_type,details_json)
     VALUES('partner_account_cleanup',jsonb_build_object('links_removed',n_links,'members_removed',n_members));
 END $$;

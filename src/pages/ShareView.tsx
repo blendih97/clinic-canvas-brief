@@ -87,10 +87,8 @@ const ShareView = () => {
   useEffect(() => {
     if (!accepted || expired || !token || !recipientSecret.current) return;
     let stopped = false;
-    let inFlight = false;
     const revalidate = async () => {
-      if (inFlight || document.visibilityState === "hidden") return;
-      inFlight = true;
+      if (document.visibilityState === "hidden") return;
       const version = ++requestVersion.current;
       try {
         const { data, error } = await supabase.functions.invoke("get-shared-brief", {
@@ -105,7 +103,6 @@ const ShareView = () => {
           setBrief(fresh);
         }
       } catch { if (!stopped) clearBrief(); }
-      finally { inFlight = false; }
     };
     const visibility = () => {
       if (document.visibilityState === "hidden") {
