@@ -1,5 +1,9 @@
 # Roadmap
 
+- [x] Replace partner demo with a populated local patient portal and five persistent navigation tabs.
+- [x] Implement selected-section PDF export, one-time/expiry simulation and provider request/receipt simulation.
+- [x] Verify demo interactions and mobile/desktop layout; leave production unpublished.
+
 - [x] Growth Engine: evidence-led prospects, proposed previews and fictional interactive demos.
 - [x] Growth Engine: saved trial applications, admin approval safeguards and aggregate view tracking.
 - [x] Growth Engine: admin pipeline, distribution partners, CSV and draft-only outreach.

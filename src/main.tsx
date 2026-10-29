@@ -1,7 +1,13 @@
 import { createRoot } from "react-dom/client";
 import { HelmetProvider } from "react-helmet-async";
-import App from "./App.tsx";
+import { lazy, Suspense } from "react";
+import { BrowserRouter } from "react-router-dom";
+import PartnerDemoPage from "./pages/PartnerDemoPage";
 import "./index.css";
+
+// Do not load the live application graph (including payment scripts) for the
+// local-only demonstration. Existing application routes are unchanged.
+const App = lazy(() => import("./App.tsx"));
 
 // PWA service worker registration — only in production, not in iframes
 const isInIframe = (() => {
@@ -19,8 +25,11 @@ if (!isPreviewHost && !isInIframe && "serviceWorker" in navigator) {
   );
 }
 
-createRoot(document.getElementById("root")!).render(
+const root = document.getElementById("root");
+if (root) createRoot(root).render(
   <HelmetProvider>
-    <App />
+    {window.location.pathname === "/partner-demo"
+      ? <BrowserRouter><PartnerDemoPage /></BrowserRouter>
+      : <Suspense fallback={null}><App /></Suspense>}
   </HelmetProvider>
 );
