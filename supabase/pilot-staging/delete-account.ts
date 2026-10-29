@@ -63,27 +63,47 @@ Deno.serve(async (req) => {
       const { error } = await adminClient.from("share_brief_acceptances").delete().eq("token", brief.token);
       if (error) throw error;
     }
-    const { error: auditError } = await adminClient.from("admin_actions").delete().or(`admin_user_id.eq.${user.id},target_user_id.eq.${user.id}`);
+    const { error: auditError } = await adminClient.from("admin_actions")
+      .update({ target_user_id: null, details_json: {} }).eq("target_user_id", user.id);
     if (auditError) throw auditError;
+    // Admin actor FK cannot be anonymised without a separate reviewed retention migration.
+    const { count: actorActions, error: actorLookupError } = await adminClient.from("admin_actions")
+      .select("id", { count: "exact", head: true }).eq("admin_user_id", user.id);
+    if (actorLookupError || actorActions) throw new Error("Admin audit retention review required before account deletion");
     const documentPaths = new Set<string>();
 
-    const { data: documents } = await adminClient
+    const { data: documents, error: documentLookupError } = await adminClient
       .from("documents")
       .select("file_path")
       .eq("user_id", user.id);
 
+    if (documentLookupError) throw documentLookupError;
     documents?.forEach((document) => {
       if (document.file_path) documentPaths.add(document.file_path);
     });
 
-    const { data: mediaShares } = await adminClient
+    const { data: mediaShares, error: mediaLookupError } = await adminClient
       .from("media_shares")
       .select("file_path")
       .eq("user_id", user.id);
 
+    if (mediaLookupError) throw mediaLookupError;
     mediaShares?.forEach((item) => {
       if (item.file_path) documentPaths.add(item.file_path);
     });
+
+    if (documentPaths.size > 0) {
+      const { error } = await adminClient.storage.from("medical-documents").remove([...documentPaths].filter(path => path.startsWith(`${user.id}/`)));
+      if (error) throw error;
+    }
+
+    const { data: avatarFiles, error: avatarListError } = await adminClient.storage.from("avatars").list(user.id);
+    if (avatarListError) throw avatarListError;
+    if (avatarFiles && avatarFiles.length > 0) {
+      const { error } = await adminClient.storage.from("avatars").remove(avatarFiles.map((file) => `${user.id}/${file.name}`));
+      if (error) throw error;
+    }
+
 
     const deletions = [
       adminClient.from("alerts").delete().eq("user_id", user.id),
@@ -95,8 +115,8 @@ Deno.serve(async (req) => {
       adminClient.from("imaging_results").delete().eq("user_id", user.id),
       adminClient.from("medications").delete().eq("user_id", user.id),
       adminClient.from("media_shares").delete().eq("user_id", user.id),
-      adminClient.from("platform_events").delete().eq("user_id", user.id),
-      adminClient.from("platform_events").delete().eq("actor_user_id", user.id),
+
+
       adminClient.from("record_requests").delete().eq("user_id", user.id),
 
       adminClient.from("user_roles").delete().eq("user_id", user.id),
@@ -114,17 +134,6 @@ Deno.serve(async (req) => {
     if (failed?.error) throw failed.error;
     const { error: profileError } = await adminClient.from("profiles").delete().eq("id", user.id);
     if (profileError) throw profileError;
-
-    if (documentPaths.size > 0) {
-      const { error } = await adminClient.storage.from("medical-documents").remove([...documentPaths].filter(path => path.startsWith(`${user.id}/`)));
-      if (error) throw error;
-    }
-
-    const { data: avatarFiles } = await adminClient.storage.from("avatars").list(user.id);
-    if (avatarFiles && avatarFiles.length > 0) {
-      const { error } = await adminClient.storage.from("avatars").remove(avatarFiles.map((file) => `${user.id}/${file.name}`));
-      if (error) throw error;
-    }
 
     const { error: deleteUserError } = await adminClient.auth.admin.deleteUser(user.id);
     if (deleteUserError) throw deleteUserError;
