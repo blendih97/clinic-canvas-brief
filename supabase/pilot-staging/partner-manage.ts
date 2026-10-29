@@ -31,8 +31,7 @@ Deno.serve(async (req) => {
   const { data: u, error: uErr } = await db.auth.getUser(jwt)
   if (uErr || !u?.user) return json({ error: 'unauthorized' }, 401)
   const userId = u.user.id
-  // Audit actor is passed via a transaction-local JWT claim by the database mutation RPC in a later deployment gate.
-  // Current trigger still records operation and IDs even for service-role writes.
+
 
   let raw: unknown
   try { raw = await req.json() } catch { return json({ error: 'invalid_json' }, 400) }
@@ -64,26 +63,18 @@ Deno.serve(async (req) => {
   if (input.action === 'invite_staff' || input.action === 'remove_staff') {
     if (!isPlatformAdmin && !isOrgAdmin) return json({ error: 'forbidden' }, 403)
 
-    if (input.action === 'remove_staff') {
-      const { data: target } = await db.from('partner_members').select('id,user_id').eq('id', input.memberId).eq('org_id', org.id).maybeSingle()
-      if (!target) return json({ error: 'not_found' }, 404)
-      if (target.user_id === userId && !isPlatformAdmin) return json({ error: 'cannot_remove_self' }, 400)
-      const { error } = await db.from('partner_members').delete().eq('id', target.id).eq('org_id', org.id)
-      if (error) return json({ error: 'remove_failed' }, 500)
-      return json({ ok: true })
-    }
-
-    const { count } = await db.from('partner_members').select('id', { count: 'exact', head: true }).eq('org_id', org.id)
-    const role = (count ?? 0) === 0 ? 'partner_admin' : (input.role ?? 'partner_staff')
-    const { data: existing } = await db.from('partner_members').select('id,status').eq('org_id', org.id).ilike('invited_email', input.email).maybeSingle()
-    if (existing && existing.status === 'active') return json({ error: 'already_member' }, 409)
-    if (!existing) {
-      const { error } = await db.from('partner_members').insert({ org_id: org.id, invited_email: input.email, role, invited_by: userId })
-      if (error) return json({ error: 'invite_failed' }, 500)
-    } else {
-      const { error } = await db.from('partner_members').update({ status: 'invited', invited_at: new Date().toISOString(), role }).eq('id', existing.id)
-      if (error) return json({ error: 'invite_failed' }, 500)
-    }
+    const userDb = createClient(url, Deno.env.get('SUPABASE_ANON_KEY') ?? '', {
+      global: { headers: { Authorization: `Bearer ${jwt}` } },
+    })
+    const { data: mutation, error: mutationError } = await userDb.rpc('partner_staff_mutation', {
+      _org_id: org.id, _action: input.action,
+      _email: input.action === 'invite_staff' ? input.email : null,
+      _role: input.action === 'invite_staff' ? input.role ?? 'partner_staff' : null,
+      _member_id: input.action === 'remove_staff' ? input.memberId : null,
+    })
+    if (mutationError) return json({ error: mutationError.message }, mutationError.code === '42501' ? 403 : 400)
+    if (input.action === 'remove_staff') return json({ ok: true })
+    const role = mutation.role
     const delivered = await sendEmail('partner-staff-invite', input.email, {
       partnerName: org.name, partnerLogoUrl: org.logo_url,
       role: role === 'partner_admin' ? 'administrator' : 'team member',
