@@ -151,7 +151,7 @@ const AdminPartnersPage = () => {
           const ol = links.filter((l) => l.org_id === o.id);
           const invited = ol.filter((l) => l.status === "invited").length;
           const joined = ol.filter((l) => l.status === "joined").length;
-          const seats = ol.filter((l) => l.patient_user_id).length;
+          const seats = ol.filter((l) => l.patient_user_id && l.status === "joined").length;
           const om = members.filter((m) => m.org_id === o.id);
           return (
             <div key={o.id} className="rounded-xl border border-border bg-card p-5 space-y-4">

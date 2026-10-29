@@ -16,7 +16,7 @@ const PartnerRoute = () => {
     const load = async () => {
       const { data: members } = await supabase.from("partner_members").select("*").eq("user_id", user.id).eq("status", "active");
       const ids = (members || []).map((m) => m.org_id);
-      const { data: orgs } = ids.length ? await supabase.from("partner_orgs").select("*").in("id", ids).order("name") : { data: [] };
+      const { data: orgs } = ids.length ? await supabase.from("partner_orgs").select("*").in("id", ids).eq("status", "active").order("name") : { data: [] };
       if (alive) setState({ status: orgs && orgs.length ? "ok" : "none", orgs: orgs || [], members: members || [] });
     };
     // Existing account opening a staff invite: claim first (idempotent), then load.
@@ -24,7 +24,10 @@ const PartnerRoute = () => {
     const pre = pending?.staff ? claimPartner(pending).catch(() => null) : Promise.resolve(null);
     // A just-accepted staff invite may still be processing: retry once.
     void pre.then(load).then(() => setTimeout(() => { if (alive) void load(); }, 2500));
-    return () => { alive = false; };
+    const refresh = () => { if (alive) void load(); };
+    const interval = setInterval(refresh, 5_000);
+    window.addEventListener("focus", refresh);
+    return () => { alive = false; clearInterval(interval); window.removeEventListener("focus", refresh); };
   }, [user]);
 
   if (loading || (user && state.status === "loading")) {

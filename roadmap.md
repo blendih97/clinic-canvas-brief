@@ -1,5 +1,13 @@
 # Roadmap
 
+- [x] Stage secure real brief single-use consumption and prompt recipient invalidation; local database and concurrent-browser checks passed.
+- [x] Stage revoked partner claims, independent sponsorship, staff audit and scoped partner cleanup; local SQL regressions passed.
+- [x] Stage clinical PDF reaction fix; repair preview checkout intent and label Family/DICOM pilot exclusions.
+- [x] Run isolated synthetic regression and browser checks; record results in docs/partner-pilot-remediation.md.
+- [ ] Release staged SQL/functions and verify hosted flows — blocked until mail sandbox, complete deletion verification and release gates pass.
+- [ ] Verify new signup/confirmation, extraction and provider invitation/upload with captured mail — blocked: no isolated mail capture environment.
+- [ ] Verify full account-deletion storage cleanup under retries and injected failures — blocked: local hosted-service emulation not completed; staged candidate remains unreleased.
+
 - [x] Replace partner demo with a populated local patient portal and five persistent navigation tabs.
 - [x] Implement selected-section PDF export, one-time/expiry simulation and provider request/receipt simulation.
 - [x] Verify demo interactions and mobile/desktop layout; leave production unpublished.

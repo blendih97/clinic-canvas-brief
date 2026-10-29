@@ -384,7 +384,7 @@ const MediaViewerModal = ({
                 <p>Facility: {item.facility}</p>
               </div>
               <p className="text-xs text-primary bg-primary/5 border border-primary/10 rounded-lg p-3">
-                DICOM viewer coming soon. Download the original file to view in your PACS system.
+                DICOM rendering is not supported in this pilot. Download the original file for a compatible clinical viewer. PDF radiology reports and supported images can be viewed here.
               </p>
             </div>
           ) : (

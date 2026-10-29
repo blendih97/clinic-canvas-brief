@@ -1,5 +1,9 @@
 # Project rules
 
+- Partner pilot release candidates stay in `supabase/pilot-staging` until isolated validation and explicit shared-backend release gates pass, because normal edge-function edits deploy automatically.
+- Real medical brief recipients use an atomic database claim and an in-memory recipient secret; revalidation never relies on URL tokens alone, because public links must not leak records to a second session.
+- Partner entitlements derive independently from current joined links and active, unexpired organisations; never overwrite profile comp or subscription grants, because those can have unrelated legitimate sources.
+
 - The partner portal demo uses its own local synthetic data/PDF module and accessible dialog; its standalone app shell excludes auth, attribution and tracking effects so demo interactions never reach live services.
 
 - Growth previews read only a restricted public RPC from vetted, published, unsuppressed prospects; deterministic segment templates and the shared fictional dataset prevent invented facts or clinical access.

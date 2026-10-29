@@ -10,10 +10,23 @@ export function useSponsorship() {
   const [s, setS] = useState<Sponsorship | null>(null);
   useEffect(() => {
     if (!user) { setS(null); return; }
-    void supabase.rpc("get_my_partner_sponsorship").then(({ data }) => {
+    let cancelled = false;
+    const refresh = () => { void supabase.rpc("get_my_partner_sponsorship").then(({ data }) => {
+      if (cancelled) return;
       const row = Array.isArray(data) ? data[0] : null;
       setS(row ? { ...row, active: !!row.comped_until && new Date(row.comped_until) > new Date() } as Sponsorship : null);
-    });
+    }); };
+    refresh();
+    const interval = setInterval(refresh, 5_000);
+    const visible = () => { if (document.visibilityState === "visible") refresh(); };
+    window.addEventListener("focus", refresh);
+    document.addEventListener("visibilitychange", visible);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+      window.removeEventListener("focus", refresh);
+      document.removeEventListener("visibilitychange", visible);
+    };
   }, [user, profile?.comped_plan, profile?.comped_until]);
   return s;
 }
