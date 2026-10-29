@@ -51,7 +51,7 @@ const PartnerPortalPage = ({ orgs, myMemberships }: { orgs: Org[]; myMemberships
       invited: patients.filter((p) => p.status === "invited").length,
       joined: patients.filter((p) => p.status === "joined").length,
       active: patients.filter((p) => p.last_active_at && now - new Date(p.last_active_at).getTime() < 30 * DAY && p.joined_at).length,
-      seats: patients.filter((p) => p.joined_at).length,
+      seats: patients.filter((p) => p.joined_at && p.status === "joined").length,
     };
   }, [patients]);
 

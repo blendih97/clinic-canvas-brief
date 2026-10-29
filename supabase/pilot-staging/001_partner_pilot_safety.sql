@@ -52,6 +52,33 @@ $$;
 REVOKE ALL ON FUNCTION public.partner_plan_tier(uuid) FROM PUBLIC,anon,authenticated;
 GRANT EXECUTE ON FUNCTION public.partner_plan_tier(uuid) TO service_role;
 
+CREATE OR REPLACE FUNCTION public.is_partner_member(_user_id uuid,_org_id uuid)
+RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path=public AS $$
+  SELECT EXISTS(SELECT 1 FROM public.partner_members m JOIN public.partner_orgs o ON o.id=m.org_id
+    WHERE m.user_id=_user_id AND m.org_id=_org_id AND m.status='active' AND o.status='active');
+$$;
+CREATE OR REPLACE FUNCTION public.is_partner_admin(_user_id uuid,_org_id uuid)
+RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path=public AS $$
+  SELECT EXISTS(SELECT 1 FROM public.partner_members m JOIN public.partner_orgs o ON o.id=m.org_id
+    WHERE m.user_id=_user_id AND m.org_id=_org_id AND m.status='active'
+      AND m.role='partner_admin' AND o.status='active');
+$$;
+CREATE OR REPLACE FUNCTION public.get_public_partner(_slug text)
+RETURNS TABLE(name text,slug text,logo_url text,type text)
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path=public AS $$
+  SELECT o.name,o.slug,o.logo_url,o.type FROM public.partner_orgs o
+    WHERE o.slug=lower(trim(_slug)) AND o.status='active'
+      AND public.partner_sponsorship_expiry(o.sponsor_until)>now() LIMIT 1;
+$$;
+CREATE OR REPLACE FUNCTION public.get_public_partner_by_invite(_token text)
+RETURNS TABLE(name text,slug text,logo_url text,type text)
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path=public AS $$
+  SELECT o.name,o.slug,o.logo_url,o.type FROM public.partner_orgs o
+    JOIN public.partner_patient_links l ON l.org_id=o.id
+    WHERE l.invite_token=_token AND _token ~ '^[a-f0-9]{64}$' AND l.status='invited'
+      AND o.status='active' AND public.partner_sponsorship_expiry(o.sponsor_until)>now() LIMIT 1;
+$$;
+
 CREATE OR REPLACE FUNCTION public.get_my_partner_sponsorship()
 RETURNS TABLE(org_name text,logo_url text,comped_plan text,comped_until timestamptz)
 LANGUAGE sql STABLE SECURITY DEFINER SET search_path=public AS $$
@@ -111,7 +138,7 @@ BEGIN
   IF existing.status='revoked' THEN RETURN jsonb_build_object('status','sponsorship_revoked','staff_joined',staff_joined); END IF;
   SELECT count(*) INTO seats_used FROM public.partner_patient_links
     WHERE org_id=org.id AND patient_user_id IS NOT NULL AND status='joined';
-  IF seats_used>=org.seat_limit THEN RETURN jsonb_build_object('status','seats_full','staff_joined',staff_joined); END IF;
+  IF seats_used>=org.seat_limit THEN RETURN jsonb_build_object('status','seats_full','partner',org.name,'staff_joined',staff_joined); END IF;
   IF link.id IS NULL THEN
     SELECT * INTO link FROM public.partner_patient_links WHERE org_id=org.id
       AND patient_user_id IS NULL AND status='invited' AND lower(invited_email)=lower(_email)
@@ -201,7 +228,7 @@ BEGIN
       INSERT INTO public.partner_members(org_id,invited_email,role,invited_by)
         VALUES(_org_id,lower(trim(_email)),assigned_role,actor);
     ELSE
-      UPDATE public.partner_members SET status='invited',role=assigned_role,invited_by=actor,invited_at=now() WHERE id=target.id;
+      UPDATE public.partner_members SET status='invited',user_id=NULL,role=assigned_role,invited_by=actor,invited_at=now() WHERE id=target.id;
     END IF;
     RETURN jsonb_build_object('ok',true,'role',assigned_role);
   END IF;
