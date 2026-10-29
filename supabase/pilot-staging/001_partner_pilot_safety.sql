@@ -172,11 +172,50 @@ CREATE TRIGGER pilot_partner_orgs_audit AFTER INSERT OR UPDATE OR DELETE ON publ
 CREATE TRIGGER pilot_partner_links_audit AFTER INSERT OR UPDATE OR DELETE ON public.partner_patient_links
   FOR EACH ROW EXECUTE FUNCTION public.audit_partner_change();
 
+CREATE OR REPLACE FUNCTION public.partner_staff_mutation(_org_id uuid,_action text,_email text DEFAULT NULL,_role text DEFAULT NULL,_member_id uuid DEFAULT NULL)
+RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
+DECLARE actor uuid:=auth.uid(); target public.partner_members%ROWTYPE; assigned_role text;
+BEGIN
+  IF actor IS NULL OR NOT (public.has_role(actor,'admin') OR public.is_partner_admin(actor,_org_id)) THEN
+    RAISE EXCEPTION 'forbidden' USING ERRCODE='42501';
+  END IF;
+  PERFORM 1 FROM public.partner_orgs WHERE id=_org_id AND status='active' FOR UPDATE;
+  IF NOT FOUND THEN RAISE EXCEPTION 'partner_unavailable'; END IF;
+  IF _action='remove_staff' THEN
+    SELECT * INTO target FROM public.partner_members WHERE id=_member_id AND org_id=_org_id FOR UPDATE;
+    IF target.id IS NULL THEN RAISE EXCEPTION 'not_found'; END IF;
+    IF target.user_id=actor AND NOT public.has_role(actor,'admin') THEN RAISE EXCEPTION 'cannot_remove_self'; END IF;
+    DELETE FROM public.partner_members WHERE id=target.id;
+    RETURN jsonb_build_object('ok',true);
+  ELSIF _action='invite_staff' THEN
+    IF _email IS NULL OR length(_email)>254 OR _email !~ '^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$'
+       OR COALESCE(_role,'partner_staff') NOT IN ('partner_admin','partner_staff') THEN RAISE EXCEPTION 'invalid_request'; END IF;
+    assigned_role:=CASE WHEN NOT EXISTS(SELECT 1 FROM public.partner_members WHERE org_id=_org_id)
+      THEN 'partner_admin' ELSE COALESCE(_role,'partner_staff') END;
+    SELECT * INTO target FROM public.partner_members WHERE org_id=_org_id AND lower(invited_email)=lower(_email) FOR UPDATE;
+    IF target.status='active' THEN RAISE EXCEPTION 'already_member'; END IF;
+    IF target.id IS NULL THEN
+      INSERT INTO public.partner_members(org_id,invited_email,role,invited_by)
+        VALUES(_org_id,lower(trim(_email)),assigned_role,actor);
+    ELSE
+      UPDATE public.partner_members SET status='invited',role=assigned_role,invited_by=actor,invited_at=now() WHERE id=target.id;
+    END IF;
+    RETURN jsonb_build_object('ok',true,'role',assigned_role);
+  END IF;
+  RAISE EXCEPTION 'invalid_action';
+END $$;
+REVOKE ALL ON FUNCTION public.partner_staff_mutation(uuid,text,text,text,uuid) FROM PUBLIC,anon;
+GRANT EXECUTE ON FUNCTION public.partner_staff_mutation(uuid,text,text,text,uuid) TO authenticated,service_role;
+
 CREATE OR REPLACE FUNCTION public.cleanup_partner_personal_data(_user_id uuid,_email text)
 RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
 DECLARE n_links integer; n_members integer;
 BEGIN
   IF _user_id IS NULL THEN RAISE EXCEPTION 'user_required'; END IF;
+  UPDATE public.platform_events SET details_json='{}'::jsonb
+    WHERE details_json->>'row_id' IN (
+      SELECT id::text FROM public.partner_patient_links WHERE patient_user_id=_user_id OR (patient_user_id IS NULL AND lower(invited_email)=lower(_email))
+      UNION ALL SELECT id::text FROM public.partner_members WHERE user_id=_user_id OR (user_id IS NULL AND lower(invited_email)=lower(_email)));
   DELETE FROM public.partner_patient_links WHERE patient_user_id=_user_id
     OR (patient_user_id IS NULL AND lower(invited_email)=lower(_email));
   GET DIAGNOSTICS n_links=ROW_COUNT;

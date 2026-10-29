@@ -5,14 +5,18 @@ import { Shield, Clock, AlertTriangle, Pill, Droplets, ScanLine } from "lucide-r
 import { Button } from "@/components/ui/button";
 import { newRecipientSecret, shareExpiryDelay, SHARE_REVALIDATE_MS } from "@/lib/shareRecipient";
 
+interface SharedLab { marker: string; value: number; unit: string; range?: string; status: string }
+interface SharedMedication { name: string; dose?: string; frequency?: string; active?: boolean }
+interface SharedAllergy { substance: string; reaction?: string }
+interface SharedImaging { type: string; region?: string; finding?: string; facility?: string; date?: string }
 interface SharedBrief {
   token: string;
   scope: string;
   expires_at: string;
-  blood_results: any[];
-  medications: any[];
-  allergies: any[];
-  imaging_results: any[];
+  blood_results: SharedLab[];
+  medications: SharedMedication[];
+  allergies: SharedAllergy[];
+  imaging_results: SharedImaging[];
   created_at: string;
 }
 
@@ -57,10 +61,10 @@ const ShareView = () => {
         body: { token, recipientSecret: recipientSecret.current },
       });
       if (version !== requestVersion.current) return;
-      const brief = (data as any)?.brief;
-      const isExpired = (data as any)?.expired;
+      const brief = data?.brief as SharedBrief | null;
+      const isExpired = data?.expired;
 
-      if (error || (data as any)?.protocol !== 2 || !brief || isExpired) {
+      if (error || data?.protocol !== 2 || !brief || isExpired) {
         clearBrief();
         setAccepted(true);
       } else if (!brief.expires_at || Date.parse(brief.expires_at) <= Date.now()) {
@@ -215,10 +219,10 @@ const ShareView = () => {
     );
   }
 
-  const bloodResults = (brief.blood_results || []) as any[];
-  const medications = (brief.medications || []) as any[];
-  const allergies = (brief.allergies || []) as any[];
-  const imagingResults = (brief.imaging_results || []) as any[];
+  const bloodResults = brief.blood_results || [];
+  const medications = brief.medications || [];
+  const allergies = brief.allergies || [];
+  const imagingResults = brief.imaging_results || [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -254,7 +258,7 @@ const ShareView = () => {
               <h2 className="font-heading text-lg text-foreground">Known Allergies</h2>
             </div>
             <div className="flex flex-wrap gap-2">
-              {allergies.map((a: any, i: number) => (
+              {allergies.map((a, i) => (
                 <span key={i} className="px-3 py-1.5 bg-destructive/10 text-destructive border border-destructive/20 rounded-full text-xs font-medium">
                   {a.substance} · {a.reaction}
                 </span>
@@ -270,7 +274,7 @@ const ShareView = () => {
               <h2 className="font-heading text-lg text-foreground">Medications</h2>
             </div>
             <div className="bg-card border border-border rounded-lg divide-y divide-border">
-              {medications.map((m: any, i: number) => (
+              {medications.map((m, i) => (
                 <div key={i} className="p-4 flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-foreground">{m.name}</p>
@@ -300,7 +304,7 @@ const ShareView = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {bloodResults.map((b: any, i: number) => (
+                  {bloodResults.map((b, i) => (
                     <tr key={i} className="border-b border-border/50">
                       <td className="p-4 text-sm text-foreground">{b.marker}</td>
                       <td className="p-4 text-sm text-foreground">{b.value} {b.unit}</td>
@@ -327,7 +331,7 @@ const ShareView = () => {
               <h2 className="font-heading text-lg text-foreground">Imaging Findings</h2>
             </div>
             <div className="space-y-3">
-              {imagingResults.map((im: any, i: number) => (
+              {imagingResults.map((im, i) => (
                 <div key={i} className="bg-card border border-border rounded-lg p-4">
                   <p className="text-sm font-medium text-foreground mb-1">{im.type} · {im.region}</p>
                   <p className="text-sm text-foreground/80">{im.finding}</p>
