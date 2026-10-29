@@ -318,7 +318,7 @@ function ExploreSample() {
         <div>
           <span className="marketing-section-label">Explore a sample medical passport</span>
           <h2 style={{ fontFamily: "Cormorant Garamond", fontSize: isMobile ? 28 : 36, fontWeight: 300, lineHeight: 1.15, color: marketingColors.ink, margin: "10px 0 12px", letterSpacing: 0 }}>
-            See exactly what your patients see.
+            See exactly what your record looks like.
           </h2>
           <p style={{ fontSize: isMobile ? 14.5 : 15.5, lineHeight: 1.7, color: marketingColors.mutedText, maxWidth: 520, fontWeight: 300, marginBottom: 18 }}>
             Open a fully populated fictional patient portal and click through it like a real account. No signup, nothing stored.
