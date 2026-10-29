@@ -72,7 +72,7 @@ export function capturePartnerParams(search: string) {
 }
 
 export interface ClaimResult {
-  status: "joined" | "already_joined" | "seats_full" | "partner_unavailable" | "invalid_invite" | "none";
+  status: "joined" | "already_joined" | "seats_full" | "partner_unavailable" | "invalid_invite" | "invite_revoked" | "invite_used" | "sponsorship_revoked" | "email_verification_required" | "none";
   partner?: string;
   staff_joined?: number;
 }

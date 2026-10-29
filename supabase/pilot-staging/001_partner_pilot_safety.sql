@@ -165,10 +165,13 @@ BEGIN
     VALUES(event,actor,jsonb_build_object('org_id',COALESCE(r->>'org_id',r->>'id'),'row_id',r->>'id','operation',TG_OP,'status',r->>'status'));
   RETURN CASE WHEN TG_OP='DELETE' THEN OLD ELSE NEW END;
 END $$;
+DROP TRIGGER IF EXISTS pilot_partner_members_audit ON public.partner_members;
 CREATE TRIGGER pilot_partner_members_audit AFTER INSERT OR UPDATE OR DELETE ON public.partner_members
   FOR EACH ROW EXECUTE FUNCTION public.audit_partner_change();
+DROP TRIGGER IF EXISTS pilot_partner_orgs_audit ON public.partner_orgs;
 CREATE TRIGGER pilot_partner_orgs_audit AFTER INSERT OR UPDATE OR DELETE ON public.partner_orgs
   FOR EACH ROW EXECUTE FUNCTION public.audit_partner_change();
+DROP TRIGGER IF EXISTS pilot_partner_links_audit ON public.partner_patient_links;
 CREATE TRIGGER pilot_partner_links_audit AFTER INSERT OR UPDATE OR DELETE ON public.partner_patient_links
   FOR EACH ROW EXECUTE FUNCTION public.audit_partner_change();
 

@@ -1,4 +1,8 @@
 \set ON_ERROR_STOP on
+-- Never execute fixture setup on the managed/shared database.
+DO $$ BEGIN
+  IF inet_server_port() IS DISTINCT FROM 55432 THEN RAISE EXCEPTION 'isolated_local_database_required'; END IF;
+END $$;
 BEGIN;
 GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA public TO authenticated,service_role;
 GRANT USAGE ON SCHEMA public TO authenticated,service_role;
@@ -48,6 +52,27 @@ DELETE FROM public.partner_members;
 DO $$ BEGIN
  IF NOT EXISTS(SELECT 1 FROM public.platform_events WHERE event_type='partner_staff_removed') THEN RAISE EXCEPTION 'missing staff audit'; END IF;
 END $$;
+INSERT INTO public.partner_members(org_id,user_id,invited_email,status,role) VALUES
+  ('20000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000001','a@example.invalid','active','partner_admin'),
+  ('20000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000002','b@example.invalid','active','partner_staff');
+SELECT set_config('request.jwt.claims','{"sub":"10000000-0000-0000-0000-000000000002","role":"authenticated"}',true);
+SET LOCAL ROLE authenticated;
+DO $$ BEGIN
+  BEGIN
+    PERFORM public.partner_staff_mutation('20000000-0000-0000-0000-000000000001','invite_staff','fake@example.invalid','partner_admin',NULL);
+    RAISE EXCEPTION 'staff_escalation_allowed';
+  EXCEPTION WHEN insufficient_privilege THEN NULL; END;
+END $$;
+RESET ROLE;
+SELECT set_config('request.jwt.claims','{"sub":"10000000-0000-0000-0000-000000000001","role":"authenticated"}',true);
+SET LOCAL ROLE authenticated;
+SELECT public.partner_staff_mutation('20000000-0000-0000-0000-000000000001','invite_staff','fake@example.invalid','partner_staff',NULL);
+RESET ROLE;
+DO $$ BEGIN
+  IF NOT EXISTS(SELECT 1 FROM public.platform_events WHERE event_type='partner_staff_invited'
+    AND actor_user_id='10000000-0000-0000-0000-000000000001') THEN RAISE EXCEPTION 'staff_audit_actor_missing'; END IF;
+END $$;
+SELECT set_config('request.jwt.claims','{}',true);
 INSERT INTO public.shared_briefs(token,user_id,expires_at,blood_results) VALUES ('local-fake-test-token','10000000-0000-0000-0000-000000000001',now()+interval '1 hour','[{"marker":"FAKE","value":7.4}]');
 DO $$ BEGIN
  IF public.consume_shared_brief('local-fake-test-token',repeat('a',64)) IS NULL THEN RAISE EXCEPTION 'first consume failed'; END IF;
