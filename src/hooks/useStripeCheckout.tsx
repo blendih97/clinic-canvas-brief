@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { X } from "lucide-react";
 import { StripeEmbeddedCheckout } from "@/components/StripeEmbeddedCheckout";
+import { recordFunnel } from "@/lib/funnel";
 
 interface CheckoutOptions {
   priceId: string;
@@ -15,6 +16,7 @@ export function useStripeCheckout() {
   const [options, setOptions] = useState<CheckoutOptions | null>(null);
 
   const openCheckout = useCallback((opts: CheckoutOptions) => {
+    recordFunnel("checkout_started", opts.priceId.startsWith("family") ? "family" : "standard");
     setOptions(opts);
     setIsOpen(true);
   }, []);
