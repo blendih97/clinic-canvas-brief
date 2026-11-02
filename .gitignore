@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# imaging dev
+scripts/imaging-fixtures/fixtures-out/
+supabase/.branches/
+supabase/.temp/

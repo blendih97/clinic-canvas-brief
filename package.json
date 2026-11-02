@@ -14,6 +14,9 @@
     "build:client": "vite build"
   },
   "dependencies": {
+    "@cornerstonejs/core": "5.14.0",
+    "@cornerstonejs/dicom-image-loader": "5.14.0",
+    "@cornerstonejs/tools": "5.14.0",
     "@hookform/resolvers": "^3.10.0",
     "@lovable.dev/cloud-auth-js": "^1.1.2",
     "@lovable.dev/mcp-js": "^0.26.1",
@@ -51,10 +54,13 @@
     "@tanstack/react-query": "^5.83.0",
     "@types/qrcode": "^1.5.6",
     "class-variance-authority": "^0.7.1",
+    "client-zip": "2.5.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^3.6.0",
+    "dicom-parser": "1.8.21",
     "embla-carousel-react": "^8.6.0",
+    "fflate": "0.8.3",
     "input-otp": "^1.4.2",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.7",
@@ -72,6 +78,7 @@
     "sonner": "^1.7.4",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
+    "tus-js-client": "4.3.1",
     "vaul": "^0.9.9",
     "zod": "^3.25.76",
     "zustand": "^5.0.12"
