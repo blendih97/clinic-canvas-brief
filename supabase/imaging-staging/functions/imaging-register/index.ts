@@ -118,7 +118,8 @@ Deno.serve(async req => {
   if (!parsedBody.success) return json(req, { error: 'invalid_request' }, 400);
   const { batchId, files, imageLabel } = parsedBody.data;
   const db = admin();
-  const pathRe = new RegExp(`^${userId}/${batchId}/[0-9a-f-]{36}$`);
+  // Any of the patient's own batches (a resumed upload keeps its original folder).
+  const pathRe = new RegExp(`^${userId}/[0-9a-f-]{36}/[0-9a-f-]{36}$`);
 
   // Storage quota
   const { data: usage } = await db.from('imaging_studies').select('total_bytes').eq('user_id', userId);

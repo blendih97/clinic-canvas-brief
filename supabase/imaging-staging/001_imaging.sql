@@ -43,7 +43,8 @@ CREATE TABLE IF NOT EXISTS public.imaging_studies (
   study_date date,
   institution text,
   series_count int NOT NULL DEFAULT 0,
-  instance_count int NOT NULL DEFAULT 0,
+  instance_count int NOT NULL DEFAULT 0,  -- files
+  image_count int NOT NULL DEFAULT 0,     -- frames (what a patient calls "images")
   total_bytes bigint NOT NULL DEFAULT 0,
   status text NOT NULL DEFAULT 'uploading' CHECK (status IN ('uploading', 'ready', 'partial', 'failed')),
   report_document_id uuid REFERENCES public.documents(id) ON DELETE SET NULL,
@@ -222,7 +223,7 @@ BEGIN
 
   SELECT coalesce(jsonb_agg(jsonb_build_object(
       'id', st.id, 'label', st.label, 'study_date', st.study_date, 'modalities', st.modalities,
-      'kind', st.kind, 'series_count', st.series_count, 'instance_count', st.instance_count,
+      'kind', st.kind, 'series_count', st.series_count, 'instance_count', st.image_count,
       'total_bytes', st.total_bytes,
       'series', (SELECT coalesce(jsonb_agg(jsonb_build_object(
           'id', se.id, 'description', se.description, 'modality', se.modality, 'series_number', se.series_number,
@@ -253,6 +254,7 @@ LANGUAGE sql SECURITY DEFINER SET search_path = public AS $$
   UPDATE public.imaging_studies st SET
     series_count = (SELECT count(*) FROM public.imaging_series se WHERE se.study_id = st.id),
     instance_count = (SELECT count(*) FROM public.imaging_instances i WHERE i.study_id = st.id),
+    image_count = (SELECT coalesce(sum(number_of_frames), 0) FROM public.imaging_instances i WHERE i.study_id = st.id),
     total_bytes = (SELECT coalesce(sum(size_bytes), 0) FROM public.imaging_instances i WHERE i.study_id = st.id),
     modalities = (SELECT coalesce(array_agg(DISTINCT se.modality) FILTER (WHERE se.modality IS NOT NULL), '{}')
                   FROM public.imaging_series se WHERE se.study_id = st.id),

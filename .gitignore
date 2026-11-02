@@ -27,3 +27,5 @@ dist-ssr
 scripts/imaging-fixtures/fixtures-out/
 supabase/.branches/
 supabase/.temp/
+
+scripts/imaging-dev/e2e-out/

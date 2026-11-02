@@ -9,6 +9,8 @@ import { dedupeImaging } from "@/lib/visitDedupe";
 import MedicalDisclaimer from "@/components/MedicalDisclaimer";
 import RequestImagingModal from "@/components/RequestImagingModal";
 import { toast } from "sonner";
+import ImagingVault from "@/components/imaging/ImagingVault";
+import { IMAGING_ENABLED } from "@/lib/imaging/api";
 
 const statusBadge = {
   normal: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
@@ -104,9 +106,17 @@ const ImagingSection = () => {
     return (
       <div className="space-y-8">
         {headerBlock}
-        <div className="bg-card border border-border rounded-lg p-12 text-center text-muted-foreground text-sm">
-          No imaging results yet. Request a scan from your radiology provider to get started.
-        </div>
+        {IMAGING_ENABLED && (
+          <ImagingVault
+            canShare={hasAccess(profile, "share_brief", { isActive, planTier })}
+            onOpenDocuments={() => window.dispatchEvent(new CustomEvent("navigate-section", { detail: "documents" }))}
+          />
+        )}
+        {!IMAGING_ENABLED && (
+          <div className="bg-card border border-border rounded-lg p-12 text-center text-muted-foreground text-sm">
+            No imaging results yet. Request a scan from your radiology provider to get started.
+          </div>
+        )}
         <RequestImagingModal open={requestImagingOpen} onClose={() => setRequestImagingOpen(false)} />
       </div>
     );
@@ -115,7 +125,14 @@ const ImagingSection = () => {
   return (
     <div className="space-y-8">
       {headerBlock}
+      {IMAGING_ENABLED && (
+        <ImagingVault
+          canShare={hasAccess(profile, "share_brief", { isActive, planTier })}
+          onOpenDocuments={() => window.dispatchEvent(new CustomEvent("navigate-section", { detail: "documents" }))}
+        />
+      )}
 
+      {IMAGING_ENABLED && <h3 className="font-heading text-xl text-foreground -mb-4">Findings from your reports</h3>}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Study list */}
         <div className="space-y-3">

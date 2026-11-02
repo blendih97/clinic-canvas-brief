@@ -60,6 +60,7 @@
     "date-fns": "^3.6.0",
     "dicom-parser": "1.8.21",
     "embla-carousel-react": "^8.6.0",
+    "events": "3.3.0",
     "fflate": "0.8.3",
     "input-otp": "^1.4.2",
     "jspdf": "^4.2.1",
@@ -85,6 +86,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
+    "@originjs/vite-plugin-commonjs": "1.0.3",
     "@tailwindcss/typography": "^0.5.16",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^6.6.0",

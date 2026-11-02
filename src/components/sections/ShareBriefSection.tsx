@@ -6,6 +6,8 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { hasAccess } from "@/lib/planAccess";
 import { supabase } from "@/integrations/supabase/client";
 import { SUPPORTED_LANGUAGES, getLanguageName } from "@/lib/supportedLanguages";
+import ImagingStudyPicker from "@/components/imaging/ImagingStudyPicker";
+import { IMAGING_ENABLED, listStudies, type ImagingStudy } from "@/lib/imaging/api";
 
 const expiries = [
   { id: "2h", label: "2 Hours", seconds: 7200, desc: "For in-person consultations" },
@@ -43,6 +45,13 @@ const ShareBriefSection = () => {
   const [customFrom, setCustomFrom] = useState("");
   const [customTo, setCustomTo] = useState("");
   const [includeOriginals, setIncludeOriginals] = useState(true);
+  const [scanStudies, setScanStudies] = useState<ImagingStudy[]>([]);
+  const [scanIds, setScanIds] = useState<string[]>([]);
+  const [scanDownload, setScanDownload] = useState(false);
+  useEffect(() => {
+    if (!IMAGING_ENABLED || locked) return;
+    listStudies().then(setScanStudies).catch(() => setScanStudies([]));
+  }, [locked]);
 
   const totalRecords = bloodResults.length + uniqueMedications.length;
   const selectedExpiry = expiries.find((e) => e.id === expiry) || expiries[1];
@@ -146,7 +155,8 @@ const ShareBriefSection = () => {
       medications: translated.medications as any,
       allergies: translated.allergies as any,
       imaging_results: translated.imagingResults as any,
-    });
+      ...(IMAGING_ENABLED ? { imaging_study_ids: scanIds, allow_imaging_download: scanIds.length > 0 && scanDownload } : {}),
+    } as any);
 
     if (error) {
       console.error("Failed to create share link:", error);
@@ -184,7 +194,7 @@ const ShareBriefSection = () => {
     );
   }
 
-  const sectionsOn = Object.values(sections).some(Boolean);
+  const sectionsOn = Object.values(sections).some(Boolean) || scanIds.length > 0;
   const customRangeValid = dateRange !== "custom" || (customFrom && customTo);
 
   return (
@@ -245,6 +255,10 @@ const ShareBriefSection = () => {
               ))}
             </div>
           </div>
+
+          {IMAGING_ENABLED && (
+            <ImagingStudyPicker studies={scanStudies} selected={scanIds} onChange={setScanIds} allowDownload={scanDownload} onAllowDownload={setScanDownload} />
+          )}
 
           <div className="bg-card border border-border rounded-xl p-5 space-y-4">
             <div>

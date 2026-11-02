@@ -18,7 +18,7 @@ from pydicom.uid import (
     JPEGLSLossless, JPEG2000Lossless, DeflatedExplicitVRLittleEndian, generate_uid,
 )
 
-OUT = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(__file__), "fixtures-out")
+OUT = sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith("--") else os.path.join(os.path.dirname(__file__), "fixtures-out")
 os.makedirs(OUT, exist_ok=True)
 
 SOP = {
@@ -166,7 +166,7 @@ def zipdir(src, dest):
                 z.write(full, os.path.relpath(full, os.path.dirname(src)))
 
 
-if __name__ == "__main__":
+if __name__ == "__main__" and "--large" not in sys.argv:
     # 1. CT abdomen: two series, uncompressed explicit VR, plus extensionless CD-style files
     s = generate_uid()
     ct_series(os.path.join(OUT, "ct_abdomen"), s, 40, ExplicitVRLittleEndian, 1, "Axial 5mm")
@@ -201,3 +201,14 @@ if __name__ == "__main__":
     print("fixtures written to", OUT)
     for root, _, files in os.walk(OUT):
         print(root, len(files))
+
+
+def large_fixtures(out):
+    """Large synthetic study for performance / resume tests (python3 generate.py OUT --large)."""
+    ct_series(os.path.join(out, "large_ct"), generate_uid(), 300, ExplicitVRLittleEndian, 1, "Axial 1mm", size=512)
+    us_multiframe(os.path.join(out, "large_us"), generate_uid(), frames=1500)
+
+
+if __name__ == "__main__" and "--large" in sys.argv:
+    large_fixtures(OUT)
+    print("large fixtures written")

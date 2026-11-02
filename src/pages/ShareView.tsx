@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Shield, Clock, AlertTriangle, Pill, Droplets, ScanLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { newRecipientSecret, shareExpiryDelay, SHARE_REVALIDATE_MS } from "@/lib/shareRecipient";
+import SharedImaging from "@/components/imaging/SharedImaging";
+import { IMAGING_ENABLED } from "@/lib/imaging/api";
 
 interface SharedLab { marker: string; value: number; unit: string; range?: string; status: string }
 interface SharedMedication { name: string; dose?: string; frequency?: string; active?: boolean }
@@ -337,6 +339,10 @@ const ShareView = () => {
               ))}
             </div>
           </section>
+        )}
+
+        {IMAGING_ENABLED && token && recipientSecret.current && (
+          <SharedImaging token={token} recipientSecret={recipientSecret.current} />
         )}
 
         <div className="text-center text-xs text-muted-foreground pt-6 border-t border-border space-y-2">

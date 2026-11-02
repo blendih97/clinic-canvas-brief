@@ -16,3 +16,7 @@
 - Partner-table isolation is verified by supabase/tests/partner_rls_test.sql (run via SQL; it rolls itself back and reports PASS/FAIL).
 - Claim success refreshes the auth profile and query caches; subscription hooks refetch on complimentary-field changes so all mounted access checks update together.
 - Subscription views share SponsorshipNotice and formatSponsorshipDate; server-side partner_sponsorship_expiry handles calendar-to-instant conversion to avoid inconsistent expiry displays.
+- Imaging release candidates stay in `supabase/imaging-staging` (SQL + functions) until approved; they depend on `supabase/pilot-staging` being released first. The UI is behind `VITE_IMAGING_VAULT=1` (off by default).
+- Imaging bytes are only ever served by `imaging-stream` after a server-side check (owner JWT, or a Share Brief viewing session re-checked against revocation, expiry and study scope on every request); never return storage paths or signed URLs to browsers.
+- Imaging originals are stored and downloaded unmodified (server SHA-256 at registration; ZIP download uses STORE); never transcode or compress clinical files.
+- The DICOM viewer uses Cornerstone3D with `useLegacyMetadataProvider: true` (the v5 naturalized wadouri path failed to find pixel data in testing) and needs `viteCommonjs()` plus the `events` package in Vite.
