@@ -23,6 +23,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { canUploadDocument, countQuotaDocuments, hasAccess, type Feature, FREE_DOC_LIMIT } from "@/lib/planAccess";
 import { useSubscription } from "@/hooks/useSubscription";
 import { trackEvent } from "@/lib/analytics";
+import PendingPlanBanner from "@/components/PendingPlanBanner";
+import { emptyDashboard } from "@/lib/onboarding";
+import { Button } from "@/components/ui/button";
 
 type Section = "overview" | "blood" | "imaging" | "media" | "medications" | "documents" | "share" | "billing" | "export" | "family";
 
@@ -42,7 +45,8 @@ const Index = () => {
   const { isActive, planTier } = useSubscription();
   const canUpload = canUploadDocument(profile, countQuotaDocuments(documents as any), isActive);
   const freeDocsUsed = Math.min(documents.length, FREE_DOC_LIMIT);
-  const showFreeBanner = !isActive && !viewingMember;
+  const firstRecord = emptyDashboard(documents.length, !!viewingMember);
+  const showFreeBanner = !isActive && !viewingMember && !firstRecord;
 
   const profileIncomplete = !!profile && !viewingMember && (
     !profile.nationality || !profile.emergency_contact_name || !profile.emergency_contact_phone
@@ -55,7 +59,7 @@ const Index = () => {
     setProfilePromptDismissed(true);
     try { localStorage.setItem("rinvita-profile-prompt-dismissed", "1"); } catch {}
   };
-  const showProfilePrompt = profileIncomplete && !profilePromptDismissed;
+  const showProfilePrompt = profileIncomplete && !profilePromptDismissed && !firstRecord;
 
   const requestUpload = () => {
     if (!canUpload) {
@@ -183,7 +187,7 @@ const Index = () => {
     }
   };
 
-  const showUploadBanner = documents.length === 0 && user;
+  const showUploadBanner = firstRecord && user && section === "overview";
 
   return (
     <>
@@ -191,6 +195,7 @@ const Index = () => {
       <div className="flex min-h-screen bg-background">
         <Sidebar active={section} onNavigate={setSection} onRequestRecords={requestRecordsAccess} />
         <main className="flex-1 p-6 md:p-8 overflow-auto pb-20 md:pb-8 pt-16 md:pt-8">
+          {!viewingMember && <PendingPlanBanner />}
           {viewingMember && (
             <div className="mb-4 p-4 bg-primary/10 border border-primary/30 rounded-lg flex items-center justify-between">
               <p className="text-sm text-foreground">
@@ -263,17 +268,15 @@ const Index = () => {
           ))}
 
           {showUploadBanner && (
-            <div className="mb-4 p-4 bg-primary/5 border border-primary/20 rounded-lg flex items-center justify-between">
-              <p className="text-sm text-foreground">
-                <span className="font-medium">Get started:</span> Upload your first medical document to begin building your health record.
-              </p>
-              <button onClick={requestUpload}
-                className="shrink-0 ml-3 px-4 py-1.5 bg-primary text-primary-foreground rounded-lg text-xs font-medium hover:bg-primary/90">
-                Upload
-              </button>
+            <div className="mb-8 p-6 md:p-8 bg-card border border-primary/30 rounded-lg">
+              <h1 className="font-heading text-3xl text-foreground">Add your first medical record</h1>
+              <div className="mt-6 flex flex-col sm:flex-row gap-3">
+                <Button onClick={requestUpload}><Upload className="w-4 h-4 mr-2" />Upload</Button>
+                <Button variant="outline" onClick={requestRecordsAccess}>Request records from a provider</Button>
+              </div>
             </div>
           )}
-          {!viewingMember && (
+          {!viewingMember && !showUploadBanner && (
             <div className="flex items-center justify-end mb-4">
               <button onClick={requestUpload}
                 disabled={!canUpload}

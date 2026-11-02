@@ -132,7 +132,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signIn = async (email: string, password: string) => {
     const normalizedEmail = email.trim().toLowerCase();
-    const { error } = await withAuthTimeout(
+    const { error, data } = await withAuthTimeout(
       supabase.auth.signInWithPassword({ email: normalizedEmail, password }),
       "Sign in"
     );

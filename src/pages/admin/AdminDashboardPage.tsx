@@ -3,6 +3,8 @@ import AdminRetryButton from "@/components/admin/AdminRetryButton";
 import { ArrowRight, FileText, PoundSterling, UserPlus, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { FUNNEL_EVENTS } from "@/lib/funnel";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -54,6 +56,15 @@ const AdminDashboardPage = () => {
   });
   const [recentSignups, setRecentSignups] = useState<AdminRecentSignup[]>([]);
   const [recentDocuments, setRecentDocuments] = useState<AdminRecentDocument[]>([]);
+  const [funnel, setFunnel] = useState<Array<{ day: string; event: string; plan: string; count: number }>>([]);
+  const [funnelError, setFunnelError] = useState(false);
+  useEffect(() => {
+    const since = new Date(Date.now() - 6 * 86400000).toISOString().slice(0, 10);
+    void supabase.from("onboarding_funnel_daily" as never).select("day,event,plan,count").gte("day", since).order("day", { ascending: false }).then(({ data, error }) => {
+      setFunnelError(!!error);
+      setFunnel((data || []) as unknown as typeof funnel);
+    });
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -223,6 +234,15 @@ const AdminDashboardPage = () => {
           </CardContent>
         </Card>
       </div>
+
+      <section className="space-y-3" aria-label="Daily signup funnel">
+        <h2 className="font-heading text-2xl text-foreground">Daily funnel</h2>
+        {funnelError ? <p className="text-destructive text-sm">Could not load funnel counts.</p> : <div className="overflow-x-auto">
+          <Table><TableHeader><TableRow><TableHead>UTC day</TableHead><TableHead>Plan</TableHead>{FUNNEL_EVENTS.map(event => <TableHead key={event} className="whitespace-nowrap">{event.replaceAll("_", " ")}</TableHead>)}</TableRow></TableHeader>
+            <TableBody>{Array.from({ length: 7 }, (_, i) => new Date(Date.now() - i * 86400000).toISOString().slice(0, 10)).flatMap(day => ["free", "standard", "family"].map(plan => <TableRow key={day + plan}><TableCell className="whitespace-nowrap">{day}</TableCell><TableCell className="capitalize">{plan}</TableCell>{FUNNEL_EVENTS.map(event => <TableCell key={event}>{funnel.filter(row => row.day === day && row.plan === plan && row.event === event).reduce((sum, row) => sum + Number(row.count), 0)}</TableCell>)}</TableRow>))}</TableBody>
+          </Table>
+        </div>}
+      </section>
 
       <div className="grid gap-4 md:grid-cols-3">
         <Link to="/admin/users" className="rounded-lg border border-border bg-card p-4 transition-colors hover:border-primary/40">

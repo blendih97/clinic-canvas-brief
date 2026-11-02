@@ -113,6 +113,7 @@ const OverviewSection = ({ onNavigate, onUpload, onRequestRecords }: OverviewPro
       )}
 
       {/* Primary actions */}
+      {documents.length > 0 && (
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <button
           onClick={onUpload}
@@ -151,6 +152,7 @@ const OverviewSection = ({ onNavigate, onUpload, onRequestRecords }: OverviewPro
           </div>
         </button>
       </div>
+      )}
 
       {/* Recent Documents */}
       {recentDocs.length > 0 && (
