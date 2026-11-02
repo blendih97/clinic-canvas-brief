@@ -1,5 +1,11 @@
 # Roadmap
 
+- [ ] Restore every unreleased frontend dependency to currently deployed backend compatibility; leave pilot staging untouched.
+- [ ] Fix inline signup errors, password guidance and cross-device paid-plan intention.
+- [ ] Automatically save processed uploads and simplify the empty dashboard.
+- [ ] Add anonymous daily funnel counts and admin view.
+- [ ] Run regression tests, verify automatic type/build results, security-check and request publishing.
+
 - [x] Stage secure real brief single-use consumption and prompt recipient invalidation; local database and concurrent-browser checks passed.
 - [x] Stage revoked partner claims, independent sponsorship, staff audit and scoped partner cleanup; local SQL regressions passed.
 - [x] Stage clinical PDF reaction fix; repair preview checkout intent and label Family/DICOM pilot exclusions.
