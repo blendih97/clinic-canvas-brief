@@ -153,7 +153,7 @@ const AuthPage = () => {
       ...(checkoutPlan ? { plan_intent: checkoutPlan } : {}),
       ...(pendingPartner?.slug ? { partner_slug: pendingPartner.slug } : {}),
       ...(pendingPartner?.token ? { partner_invite: pendingPartner.token } : {}),
-    });
+    }).catch((error: Error) => ({ error, session: null }));
     setLoading(false);
 
     if (error) {

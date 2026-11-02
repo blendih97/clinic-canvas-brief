@@ -1,18 +1,16 @@
 # Roadmap
 
-- [ ] Restore every unreleased frontend dependency to currently deployed backend compatibility; leave pilot staging untouched.
-- [ ] Fix inline signup errors, password guidance and cross-device paid-plan intention.
-- [ ] Automatically save processed uploads and simplify the empty dashboard.
-- [ ] Add anonymous daily funnel counts and admin view.
+- [x] Restore every unreleased frontend dependency to currently deployed backend compatibility; leave pilot staging untouched.
+- [x] Fix inline signup errors, password guidance and cross-device paid-plan intention.
+- [x] Automatically save processed uploads and simplify the empty dashboard.
+- [x] Add anonymous daily funnel counts and admin view.
 - [ ] Run regression tests, verify automatic type/build results, security-check and request publishing.
 
 - [x] Stage secure real brief single-use consumption and prompt recipient invalidation; local database and concurrent-browser checks passed.
 - [x] Stage revoked partner claims, independent sponsorship, staff audit and scoped partner cleanup; local SQL regressions passed.
 - [x] Stage clinical PDF reaction fix; repair preview checkout intent and label Family/DICOM pilot exclusions.
 - [x] Run isolated synthetic regression and browser checks; record results in docs/partner-pilot-remediation.md.
-- [ ] Release staged SQL/functions and verify hosted flows — blocked until mail sandbox, complete deletion verification and release gates pass.
-- [ ] Verify new signup/confirmation, extraction and provider invitation/upload with captured mail — blocked: no isolated mail capture environment.
-- [ ] Verify full account-deletion storage cleanup under retries and injected failures — blocked: local hosted-service emulation not completed; staged candidate remains unreleased.
+- Deferred separate project: staged pilot SQL/functions, hosted captured-mail QA and deletion retry validation remain unreleased by owner decision.
 
 - [x] Replace partner demo with a populated local patient portal and five persistent navigation tabs.
 - [x] Implement selected-section PDF export, one-time/expiry simulation and provider request/receipt simulation.

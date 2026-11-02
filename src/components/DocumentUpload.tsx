@@ -288,10 +288,9 @@ const DocumentUpload = ({ open, onClose, onLimitReached }: { open: boolean; onCl
       }
     }
 
-    let createdDocumentId: string | undefined;
+    const createdDocumentId = crypto.randomUUID();
     {
       const meta = result.documentMeta;
-      createdDocumentId = crypto.randomUUID();
       try {
         await store.addDocuments([
         {
@@ -320,7 +319,8 @@ const DocumentUpload = ({ open, onClose, onLimitReached }: { open: boolean; onCl
           trackEvent("free_limit_reached", { source: "save" });
           trackEvent("paywall_shown", { feature: "unlimited_uploads" });
           busy.current = false;
-          handleClose();
+          setPhase("input");
+          setError("Your document limit was reached. Choose a plan to save this extraction.");
           onLimitReached?.();
           return;
         }
