@@ -71,6 +71,20 @@
       "when": 1792450005367,
       "tag": "0009_growth_engine_mvp",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1793623888830,
+      "tag": "0010_onboarding_daily_funnel",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1793624597228,
+      "tag": "0011_restrict_onboarding_funnel_grants",
+      "breakpoints": true
     }
   ]
 }

@@ -11,6 +11,8 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useLocale } from "@/hooks/useLocale";
 import SEO from "@/components/SEO";
 import { capturePartnerParams, partnerAuthParams, isValidSlug, isValidToken, readPendingPartner, savePendingPartner } from "@/lib/partners";
+import { signupError, signupPlanCopy, strongPassword } from "@/lib/onboarding";
+import { recordFunnel } from "@/lib/funnel";
 
 interface SignupPartner { name: string; slug: string; logo_url: string | null; type: string }
 
@@ -29,6 +31,7 @@ const AuthPage = () => {
   const [fullName, setFullName] = useState("");
   const [signupPartner, setSignupPartner] = useState<SignupPartner | null>(null);
   const [partnerLoading, setPartnerLoading] = useState(false);
+  const [inlineError, setInlineError] = useState<string | null>(null);
 
   useEffect(() => {
     capturePartnerParams(searchParams.toString());
@@ -69,6 +72,9 @@ const AuthPage = () => {
   // user lands in checkout right after signup (or immediately if signed in).
   const planParam = searchParams.get("plan");
   const checkoutPlan = planParam === "standard" || planParam === "family" ? planParam : null;
+  useEffect(() => {
+    if (mode === "signup") recordFunnel("signup_page_viewed", checkoutPlan);
+  }, [mode, checkoutPlan]);
   const checkoutOpened = useRef(false);
   useEffect(() => {
     if (!user || !checkoutPlan || checkoutOpened.current) return;
@@ -94,6 +100,7 @@ const AuthPage = () => {
   };
 
   const resetSignupFlow = () => {
+    setInlineError(null);
     setEmail("");
     setPassword("");
     setFullName("");
@@ -115,12 +122,15 @@ const AuthPage = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    recordFunnel("signup_submitted", checkoutPlan);
     if (!email || !password) {
-      toast.error(t("auth.completeAccountFields"));
+      setInlineError(t("auth.completeAccountFields"));
+      recordFunnel("signup_error", checkoutPlan, "missing_fields");
       return;
     }
-    if (password.length < 6) {
-      toast.error(t("auth.passwordTooShort"));
+    if (password.length < 8) {
+      setInlineError("Please choose a password with at least 8 characters.");
+      recordFunnel("signup_error", checkoutPlan, "too_short");
       return;
     }
 
@@ -140,15 +150,19 @@ const AuthPage = () => {
       terms_consent_at: consentTime,
       preferred_ui_language: locale,
       preferred_translation_language: locale,
+      ...(checkoutPlan ? { plan_intent: checkoutPlan } : {}),
       ...(pendingPartner?.slug ? { partner_slug: pendingPartner.slug } : {}),
       ...(pendingPartner?.token ? { partner_invite: pendingPartner.token } : {}),
-    });
+    }).catch((error: Error) => ({ error, session: null }));
     setLoading(false);
 
     if (error) {
-      toast.error(error.message);
+      const mapped = signupError(error);
+      setInlineError(mapped.message);
+      recordFunnel("signup_error", checkoutPlan, mapped.code);
       return;
     }
+    recordFunnel("signup_succeeded", checkoutPlan);
 
     // Meta Pixel: standard Lead + CompleteRegistration + funnel event
     try {
@@ -276,12 +290,12 @@ const AuthPage = () => {
                     {signupPartner ? <>
                       {signupPartner.logo_url && <img src={signupPartner.logo_url} alt={signupPartner.name} className="mx-auto mb-2 h-10 max-w-[160px] object-contain" />}
                       <span className="font-medium text-foreground">Sponsored by {signupPartner.name} — full access, free for you</span>
-                    </> : partnerLoading ? "Loading your sponsorship…" : <><span className="font-medium text-foreground">Free plan</span> · 3 documents, fully translated · No card required</>}
+                    </> : partnerLoading ? "Loading your sponsorship…" : checkoutPlan ? signupPlanCopy(checkoutPlan) : <><span className="font-medium text-foreground">Free plan</span> · 3 documents, fully translated · No card required</>}
                   </p>
                   <div className="mt-2 flex items-center justify-center gap-3 text-[10px] text-muted-foreground">
                     <span className="inline-flex items-center gap-1"><ShieldCheck className="w-3 h-3 text-primary" /> Encrypted at rest and in transit</span>
                     <span className="inline-flex items-center gap-1"><XCircle className="w-3 h-3 text-primary" /> Cancel anytime</span>
-                    <span className="inline-flex items-center gap-1"><CreditCard className="w-3 h-3 text-primary" /> No card</span>
+                    {!checkoutPlan && <span className="inline-flex items-center gap-1"><CreditCard className="w-3 h-3 text-primary" /> No card</span>}
                   </div>
                 </div>
               )}
@@ -328,14 +342,15 @@ const AuthPage = () => {
                   </div>
                   <div>
                     <label className="text-xs font-medium text-foreground">{t("auth.email")}</label>
-                    <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
+                    <input type="email" required value={email} onChange={(e) => { setEmail(e.target.value); setInlineError(null); }}
                       inputMode="email" autoComplete="email" autoCapitalize="none" autoCorrect="off" spellCheck={false}
                       className="w-full mt-1 px-3 py-2.5 bg-background border border-border rounded-lg text-base text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
                   </div>
                   <div>
                     <label className="text-xs font-medium text-foreground">{t("auth.password")}</label>
                     <div className="relative mt-1">
-                      <input type={showPassword ? "text" : "password"} required value={password} onChange={(e) => setPassword(e.target.value)}
+                      <input type={showPassword ? "text" : "password"} required value={password} onChange={(e) => { setPassword(e.target.value); setInlineError(null); }}
+                        aria-describedby="signup-password-hint signup-error" aria-invalid={!!inlineError}
                         autoComplete="new-password" autoCapitalize="none" autoCorrect="off" spellCheck={false}
                         className="w-full px-3 py-2.5 pr-10 bg-background border border-border rounded-lg text-base text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
                       <button type="button" onClick={() => setShowPassword((v) => !v)}
@@ -344,18 +359,18 @@ const AuthPage = () => {
                         {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
                     </div>
-                    <p className={`text-[11px] mt-1 ${password.length >= 6 ? "text-primary" : "text-muted-foreground"}`}>
-                      {password.length >= 6 ? "✓ Strong enough" : "At least 6 characters"}
-                    </p>
+                    {inlineError && <p id="signup-error" role="alert" className="text-sm text-destructive font-medium mt-2">{inlineError}</p>}
+                    <p id="signup-password-hint" className="text-xs mt-2 text-muted-foreground">At least 8 characters. Avoid common or previously leaked passwords.</p>
+                    {strongPassword(password) && <p className="text-xs mt-1 text-foreground">Strong</p>}
                   </div>
 
                   <button type="submit" disabled={loading}
                     className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
                     {loading ? t("auth.creatingAccount") : t("auth.createAccount")}
                   </button>
-                  <p className="text-[11px] text-muted-foreground text-center">
+                  {!checkoutPlan && <p className="text-[11px] text-muted-foreground text-center">
                     No credit card required · Cancel anytime
-                  </p>
+                  </p>}
                   <p className="text-[11px] text-muted-foreground/80 text-center leading-relaxed">
                     By creating an account you agree to our{" "}
                     <Link to="/terms" target="_blank" rel="noopener" className="underline hover:text-foreground">Terms</Link>
@@ -368,7 +383,7 @@ const AuthPage = () => {
           )}
         </div>
 
-        {mode === "signup" && !signupPartner && !partnerLoading && (
+        {mode === "signup" && !checkoutPlan && !signupPartner && !partnerLoading && (
           <div className="mt-5 rounded-lg border border-border/60 bg-card/60 px-4 py-3">
             <p className="text-[10px] tracking-[0.12em] uppercase text-muted-foreground/80 text-center mb-2">
               What your free plan includes

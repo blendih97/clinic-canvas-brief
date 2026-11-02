@@ -8,6 +8,8 @@ import UploadConsentModal from "@/components/UploadConsentModal";
 import { FREE_LIMIT_CODE } from "@/lib/planAccess";
 import { trackEvent } from "@/lib/analytics";
 import { FRIENDLY_FAILURE_MESSAGE } from "@/lib/documentRetry";
+import { recordFunnel } from "@/lib/funnel";
+import { Button } from "@/components/ui/button";
 
 const uploadConsentKey = (uid: string) => `rinvita.uploadConsent.${uid}`;
 
@@ -76,6 +78,9 @@ const DocumentUpload = ({ open, onClose, onLimitReached }: { open: boolean; onCl
   const { user, profile } = useAuth();
   const [targetLanguage, setTargetLanguage] = useState<string>(profile?.preferred_translation_language || "en");
   const [showConsent, setShowConsent] = useState(false);
+  const [savedDocument, setSavedDocument] = useState<{ id: string; filePath?: string } | null>(null);
+  const [removing, setRemoving] = useState(false);
+  const busy = useRef(false);
 
   useEffect(() => {
     if (profile?.preferred_translation_language) {
@@ -100,6 +105,7 @@ const DocumentUpload = ({ open, onClose, onLimitReached }: { open: boolean; onCl
   }, [phase]);
 
   const reset = () => {
+    setSavedDocument(null);
     setPhase("input");
     setFile(null);
     setPastedText("");
@@ -109,6 +115,7 @@ const DocumentUpload = ({ open, onClose, onLimitReached }: { open: boolean; onCl
   };
 
   const handleClose = () => {
+    if (busy.current) return;
     reset();
     onClose();
   };
@@ -147,6 +154,9 @@ const DocumentUpload = ({ open, onClose, onLimitReached }: { open: boolean; onCl
   }, [user, file]);
 
   const handleSubmit = useCallback(async () => {
+    if (busy.current || !user) return;
+    busy.current = true;
+    recordFunnel("upload_started");
     setPhase("processing");
     setStepIndex(0);
     setError(null);
@@ -196,6 +206,7 @@ const DocumentUpload = ({ open, onClose, onLimitReached }: { open: boolean; onCl
           trackEvent("free_limit_reached", { source: "upload" });
           trackEvent("paywall_shown", { feature: "unlimited_uploads" });
           setPhase("input");
+          busy.current = false;
           handleClose();
           onLimitReached?.();
           return;
@@ -205,7 +216,7 @@ const DocumentUpload = ({ open, onClose, onLimitReached }: { open: boolean; onCl
 
       setResult(data);
       setStepIndex(processingSteps.length); // mark all ticks complete
-      setPhase("confirm");
+      await saveExtraction(data);
     } catch (e: any) {
       const reason = e?.message || "Something went wrong";
       // Keep the original so the failed document can be retried later.
@@ -224,6 +235,8 @@ const DocumentUpload = ({ open, onClose, onLimitReached }: { open: boolean; onCl
       trackEvent("document_upload_failed", { stage: "analysis" });
       setError(FRIENDLY_FAILURE_MESSAGE);
       setPhase("input");
+    } finally {
+      busy.current = false;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [file, pastedText, targetLanguage, saveFailedDocument, onLimitReached]);
@@ -256,8 +269,8 @@ const DocumentUpload = ({ open, onClose, onLimitReached }: { open: boolean; onCl
     void handleSubmit();
   };
 
-  const handleConfirm = async () => {
-    if (!result || !user) return;
+  const saveExtraction = async (result: ExtractionResult) => {
+    if (!result || !user) throw new Error("Please sign in to save your document.");
     const uid = user.id;
 
     // Upload original file to storage and get file_path
@@ -269,32 +282,25 @@ const DocumentUpload = ({ open, onClose, onLimitReached }: { open: boolean; onCl
         .from("medical-documents")
         .upload(storagePath, file, { upsert: true, contentType: file.type || "application/octet-stream" });
       if (uploadErr) {
-        console.error("Original file upload failed:", uploadErr);
-        setError(`Could not store original file: ${uploadErr.message}`);
+        throw new Error("Could not store the original file.");
       } else {
         filePath = storagePath;
       }
     }
 
-    if (result.bloodResults?.length) store.addBloodResults(result.bloodResults, uid);
-    if (result.imagingResults?.length) store.addImagingResults(result.imagingResults, uid);
-    if (result.medications?.length) store.addMedications(result.medications, uid);
-    if (result.allergies?.length) store.addAllergies(result.allergies, uid);
-    if (result.alerts?.length) store.addAlerts(result.alerts, uid);
-
-    let createdDocumentId: string | undefined;
-    if (result.documentMeta) {
-      createdDocumentId = crypto.randomUUID();
+    const createdDocumentId = crypto.randomUUID();
+    {
+      const meta = result.documentMeta;
       try {
         await store.addDocuments([
         {
           id: createdDocumentId,
-          name: result.documentMeta.name || file?.name || "Document",
-          type: result.documentMeta.type || "Unknown",
-          date: result.documentMeta.date || new Date().toISOString().split("T")[0],
-          facility: result.documentMeta.facility || "Unknown",
-          country: result.documentMeta.country || "Unknown",
-          pages: result.documentMeta.pages || 1,
+          name: meta?.name || file?.name || "Document",
+          type: meta?.type || "Unknown",
+          date: meta?.date || new Date().toISOString().split("T")[0],
+          facility: meta?.facility || "Unknown",
+          country: meta?.country || "Unknown",
+          pages: meta?.pages || 1,
           extracted: true,
           fileUrl: filePath, // legacy field kept for compatibility
           filePath, // new dedicated field
@@ -312,7 +318,9 @@ const DocumentUpload = ({ open, onClose, onLimitReached }: { open: boolean; onCl
         if (message.includes("free_document_limit_reached")) {
           trackEvent("free_limit_reached", { source: "save" });
           trackEvent("paywall_shown", { feature: "unlimited_uploads" });
-          handleClose();
+          busy.current = false;
+          setPhase("input");
+          setError("Your document limit was reached. Choose a plan to save this extraction.");
           onLimitReached?.();
           return;
         }
@@ -323,6 +331,14 @@ const DocumentUpload = ({ open, onClose, onLimitReached }: { open: boolean; onCl
         return;
       }
     }
+
+    setSavedDocument({ id: createdDocumentId, filePath });
+    recordFunnel("upload_saved");
+    if (result.bloodResults?.length) await store.addBloodResults(result.bloodResults, uid);
+    if (result.imagingResults?.length) await store.addImagingResults(result.imagingResults, uid);
+    if (result.medications?.length) await store.addMedications(result.medications, uid);
+    if (result.allergies?.length) await store.addAllergies(result.allergies, uid);
+    if (result.alerts?.length) await store.addAlerts(result.alerts, uid);
 
     if (result.visits?.length) {
       const visitRows = result.visits
@@ -344,8 +360,27 @@ const DocumentUpload = ({ open, onClose, onLimitReached }: { open: boolean; onCl
     }
 
     trackEvent("document_upload_completed", { has_file: !!file });
-    setPhase("done");
+    setPhase("confirm");
   };
+
+  const removeSaved = async () => {
+    if (!savedDocument || !window.confirm("Remove this document from your records? This cannot be undone.")) return;
+    setRemoving(true);
+    try {
+      await store.removeDocument(savedDocument.id, savedDocument.filePath);
+      handleClose();
+    } catch {
+      setError("We couldn't remove this document. Please try again.");
+    } finally { setRemoving(false); }
+  };
+
+  useEffect(() => {
+    const warn = (event: BeforeUnloadEvent) => {
+      if (busy.current) { event.preventDefault(); event.returnValue = ""; }
+    };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, []);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -381,7 +416,7 @@ const DocumentUpload = ({ open, onClose, onLimitReached }: { open: boolean; onCl
             {phase === "confirm" && "Review Extraction"}
             {phase === "done" && "Success"}
           </h3>
-          <button onClick={handleClose} className="text-muted-foreground hover:text-foreground">
+          <button onClick={handleClose} disabled={phase === "processing"} aria-label="Close upload" className="text-muted-foreground hover:text-foreground">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -508,8 +543,9 @@ const DocumentUpload = ({ open, onClose, onLimitReached }: { open: boolean; onCl
           {phase === "confirm" && result && (
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                We extracted the following from your document. Review and confirm to save.
+                Saved to your records
               </p>
+              {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
 
               {result.documentMeta && (
                 <div className="p-3 bg-muted rounded-lg text-xs space-y-1">
@@ -526,43 +562,39 @@ const DocumentUpload = ({ open, onClose, onLimitReached }: { open: boolean; onCl
               <div className="grid grid-cols-2 gap-2 text-xs">
                 {(result.bloodResults?.length ?? 0) > 0 && (
                   <div className="p-2.5 bg-muted rounded flex items-center gap-2">
-                    <span className="text-primary font-medium">{result.bloodResults!.length}</span> blood markers
+                    <span className="text-primary font-medium">{result.bloodResults?.length}</span> blood markers
                   </div>
                 )}
                 {(result.imagingResults?.length ?? 0) > 0 && (
                   <div className="p-2.5 bg-muted rounded flex items-center gap-2">
-                    <span className="text-primary font-medium">{result.imagingResults!.length}</span> imaging findings
+                    <span className="text-primary font-medium">{result.imagingResults?.length}</span> imaging findings
                   </div>
                 )}
                 {(result.medications?.length ?? 0) > 0 && (
                   <div className="p-2.5 bg-muted rounded flex items-center gap-2">
-                    <span className="text-primary font-medium">{result.medications!.length}</span> medications
+                    <span className="text-primary font-medium">{result.medications?.length}</span> medications
                   </div>
                 )}
                 {(result.allergies?.length ?? 0) > 0 && (
                   <div className="p-2.5 bg-muted rounded flex items-center gap-2">
-                    <span className="text-primary font-medium">{result.allergies!.length}</span> allergies
+                    <span className="text-primary font-medium">{result.allergies?.length}</span> allergies
                   </div>
                 )}
                 {(result.alerts?.length ?? 0) > 0 && (
                   <div className="p-2.5 bg-muted rounded flex items-center gap-2">
-                    <span className="text-primary font-medium">{result.alerts!.length}</span> alerts
+                    <span className="text-primary font-medium">{result.alerts?.length}</span> alerts
                   </div>
                 )}
                 {(result.visits?.length ?? 0) > 0 && (
                   <div className="p-2.5 bg-muted rounded flex items-center gap-2">
-                    <span className="text-primary font-medium">{result.visits!.length}</span> clinical {result.visits!.length === 1 ? "visit" : "visits"}
+                    <span className="text-primary font-medium">{result.visits?.length}</span> clinical {result.visits?.length === 1 ? "visit" : "visits"}
                   </div>
                 )}
               </div>
 
               <div className="flex gap-2">
-                <button onClick={reset} className="flex-1 py-2 bg-muted text-foreground rounded-lg text-sm">
-                  Discard
-                </button>
-                <button onClick={handleConfirm} className="flex-1 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors">
-                  Confirm & Save
-                </button>
+                <Button variant="outline" onClick={() => void removeSaved()} disabled={removing} className="flex-1">Remove this document</Button>
+                <Button onClick={handleClose} disabled={removing} className="flex-1">Done</Button>
               </div>
             </div>
           )}
