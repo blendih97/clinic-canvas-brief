@@ -3,8 +3,8 @@ import { beforeEach, expect, it, vi } from "vitest";
 import DocumentUpload from "@/components/DocumentUpload";
 
 const mocks = vi.hoisted(() => ({
-  save: vi.fn(async () => {}), remove: vi.fn(async () => {}), invoke: vi.fn(),
-  visits: vi.fn(async () => {}),
+  save: vi.fn(async (_docs: Array<{ id: string }>, _userId: string) => {}), remove: vi.fn(async (_id: string, _path?: string) => {}), invoke: vi.fn(),
+  visits: vi.fn(async (_visits: Array<{ documentId: string }>, _userId: string) => {}),
 }));
 vi.mock("@/hooks/useAuth", () => ({ useAuth: () => ({ user: { id: "synthetic" }, profile: null }) }));
 vi.mock("@/store/vaultStore", () => ({ useVaultStore: () => ({ addDocuments: mocks.save, removeDocument: mocks.remove, addVisits: mocks.visits }) }));
