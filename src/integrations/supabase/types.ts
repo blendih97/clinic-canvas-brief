@@ -899,6 +899,30 @@ export type Database = {
         }
         Relationships: []
       }
+      onboarding_funnel_daily: {
+        Row: {
+          count: number
+          day: string
+          error_code: string
+          event: string
+          plan: string
+        }
+        Insert: {
+          count?: number
+          day?: string
+          error_code?: string
+          event: string
+          plan?: string
+        }
+        Update: {
+          count?: number
+          day?: string
+          error_code?: string
+          event?: string
+          plan?: string
+        }
+        Relationships: []
+      }
       page_views: {
         Row: {
           country: string | null
@@ -1826,6 +1850,10 @@ export type Database = {
       }
       record_growth_preview_view: {
         Args: { _slug: string }
+        Returns: undefined
+      }
+      record_onboarding_funnel: {
+        Args: { _error_code?: string; _event: string; _plan?: string }
         Returns: undefined
       }
       review_growth_application: {
