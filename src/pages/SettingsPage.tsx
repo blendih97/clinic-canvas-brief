@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import SponsorshipNotice from "@/components/SponsorshipNotice";
-import { useSponsorship } from "@/hooks/useSponsorship";
 import { hasComplimentaryAccess } from "@/lib/sponsorship";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useLocale } from "@/hooks/useLocale";
@@ -25,7 +24,6 @@ import {
 const SettingsPage = () => {
   const { user, profile, signOut } = useAuth();
   const { planTier } = useSubscription();
-  const sponsorship = useSponsorship();
   const { t, isRTL } = useLocale();
   const navigate = useNavigate();
   const store = useVaultStore();
@@ -107,7 +105,7 @@ const SettingsPage = () => {
   // Plan shown here must come from the live subscription, never profiles.plan
   // (which can be stale after a cancellation or a failed payment).
   const plan = planTier;
-  const complimentary = !!sponsorship?.active || hasComplimentaryAccess(profile);
+  const complimentary = hasComplimentaryAccess(profile);
 
   return (
     <div className="min-h-screen bg-background">

@@ -47,19 +47,7 @@ export function useSubscription() {
     setLoading(false);
   }, [user, profile?.comped_plan, profile?.comped_until]);
 
-  useEffect(() => {
-    void fetch();
-    const refresh = () => { void fetch(); };
-    const visible = () => { if (document.visibilityState === "visible") refresh(); };
-    const interval = setInterval(refresh, 5_000);
-    window.addEventListener("focus", refresh);
-    document.addEventListener("visibilitychange", visible);
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener("focus", refresh);
-      document.removeEventListener("visibilitychange", visible);
-    };
-  }, [fetch]);
+  useEffect(() => { fetch(); }, [fetch]);
 
   useEffect(() => {
     if (!user) return;

@@ -5,7 +5,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useSubscription } from "@/hooks/useSubscription";
 import { hasAccess } from "@/lib/planAccess";
-import { useSponsorship } from "@/hooks/useSponsorship";
 
 interface FamilyMember {
   id: string;
@@ -19,8 +18,6 @@ interface FamilyMember {
 const FamilySection = ({ onViewMember }: { onViewMember: (memberId: string, memberName: string) => void }) => {
   const { user, profile } = useAuth();
   const { isActive, planTier } = useSubscription();
-  const sponsorship = useSponsorship();
-  const pilotUnsupported = !!sponsorship?.active;
   const [members, setMembers] = useState<FamilyMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [inviteEmail, setInviteEmail] = useState("");
@@ -29,9 +26,9 @@ const FamilySection = ({ onViewMember }: { onViewMember: (memberId: string, memb
   const isFamilyPlan = hasAccess(profile, "family_invite", { isActive, planTier });
 
   useEffect(() => {
-    if (user && isFamilyPlan && !pilotUnsupported) loadMembers();
+    if (user && isFamilyPlan) loadMembers();
     else setLoading(false);
-  }, [user, isFamilyPlan, pilotUnsupported]);
+  }, [user, isFamilyPlan]);
 
   const loadMembers = async () => {
     if (!user) return;
@@ -129,13 +126,6 @@ const FamilySection = ({ onViewMember }: { onViewMember: (memberId: string, memb
       .join("")
       .toUpperCase()
       .slice(0, 2);
-
-  if (pilotUnsupported) {
-    return <section className="space-y-3">
-      <h2 className="font-heading text-3xl text-foreground">Family Vault</h2>
-      <p className="text-sm text-muted-foreground">Family record switching is not available in the partner pilot. Each patient uses their own private account.</p>
-    </section>;
-  }
 
   if (loading) {
     return (
