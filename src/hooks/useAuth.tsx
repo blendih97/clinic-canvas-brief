@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User, Session } from "@supabase/supabase-js";
-import { recordFunnel } from "@/lib/funnel";
 
 export interface Profile {
   id: string;
@@ -136,10 +135,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       supabase.auth.signInWithPassword({ email: normalizedEmail, password }),
       "Sign in"
     );
-    if (!error && data?.user && !data.user.user_metadata?.first_login_recorded) {
-      recordFunnel("first_login", data.user.user_metadata?.plan_intent);
-      void supabase.auth.updateUser({ data: { first_login_recorded: true } });
-    }
     return { error: error ? new Error(error.message) : null };
   };
 

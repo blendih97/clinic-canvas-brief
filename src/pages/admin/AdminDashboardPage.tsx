@@ -238,7 +238,7 @@ const AdminDashboardPage = () => {
       <section className="space-y-3" aria-label="Daily signup funnel">
         <h2 className="font-heading text-2xl text-foreground">Daily funnel</h2>
         {funnelError ? <p className="text-destructive text-sm">Could not load funnel counts.</p> : <div className="overflow-x-auto">
-          <Table><TableHeader><TableRow><TableHead>UTC day</TableHead><TableHead>Plan</TableHead>{FUNNEL_EVENTS.map(event => <TableHead key={event} className="whitespace-nowrap">{event.replaceAll("_", " ")}</TableHead>)}</TableRow></TableHeader>
+          <Table><TableHeader><TableRow><TableHead>UTC day</TableHead><TableHead>Plan</TableHead>{FUNNEL_EVENTS.map(event => <TableHead key={event} className="whitespace-nowrap">{event.replace(/_/g, " ")}</TableHead>)}</TableRow></TableHeader>
             <TableBody>{Array.from({ length: 7 }, (_, i) => new Date(Date.now() - i * 86400000).toISOString().slice(0, 10)).flatMap(day => ["free", "standard", "family"].map(plan => <TableRow key={day + plan}><TableCell className="whitespace-nowrap">{day}</TableCell><TableCell className="capitalize">{plan}</TableCell>{FUNNEL_EVENTS.map(event => <TableCell key={event}>{funnel.filter(row => row.day === day && row.plan === plan && row.event === event).reduce((sum, row) => sum + Number(row.count), 0)}</TableCell>)}</TableRow>))}</TableBody>
           </Table>
         </div>}

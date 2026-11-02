@@ -7,6 +7,7 @@ import { pendingPlan } from "@/lib/onboarding";
 import { getPriceId, PLAN_PRICES } from "@/lib/planAccess";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { recordFunnel } from "@/lib/funnel";
 
 export default function PendingPlanBanner() {
   const { user } = useAuth();
@@ -14,6 +15,17 @@ export default function PendingPlanBanner() {
   const { openCheckout, checkoutElement } = useStripeCheckout();
   const [dismissed, setDismissed] = useState(false);
   const plan = pendingPlan(user?.user_metadata?.plan_intent, isActive);
+  useEffect(() => {
+    if (!user || user.user_metadata?.first_login_recorded) return;
+    let cancelled = false;
+    void supabase.auth.getUser().then(({ data, error }) => {
+      if (cancelled || error || !data.user || data.user.user_metadata?.first_login_recorded) return;
+      void supabase.auth.updateUser({ data: { first_login_recorded: true } }).then(({ error }) => {
+        if (!error) recordFunnel("first_login", data.user?.user_metadata?.plan_intent);
+      });
+    });
+    return () => { cancelled = true; };
+  }, [user?.id, user?.user_metadata?.first_login_recorded]);
   useEffect(() => {
     if (!user?.user_metadata?.plan_intent || loading || !subscription || !["active", "trialing"].includes(subscription.status)) return;
     void supabase.auth.updateUser({ data: { plan_intent: null } });
