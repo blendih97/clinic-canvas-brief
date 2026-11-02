@@ -4,7 +4,7 @@
 - [x] Fix inline signup errors, password guidance and cross-device paid-plan intention.
 - [x] Automatically save processed uploads and simplify the empty dashboard.
 - [x] Add anonymous daily funnel counts and admin view.
-- [ ] Run regression tests, verify automatic type/build results, security-check and request publishing.
+- [x] Run regression tests, verify automatic type/build results and security-check; publish request follows validation.
 
 - [x] Stage secure real brief single-use consumption and prompt recipient invalidation; local database and concurrent-browser checks passed.
 - [x] Stage revoked partner claims, independent sponsorship, staff audit and scoped partner cleanup; local SQL regressions passed.

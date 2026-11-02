@@ -39,4 +39,4 @@ Compatibility restoration does not release the safety remediation or make real s
 - Fresh backend security scan: eight warnings and two informational findings, no critical findings in that scan; existing warnings not modified.
 - Direct payment completion, cross-device confirmation email delivery, hosted first-login counts and hosted admin funnel UI remain unverified to avoid real emails/charges/customer changes.
 
-Publishing status: pending request after final validation.
+Publishing status: request follows final validation; deployment completion is not yet verified.
