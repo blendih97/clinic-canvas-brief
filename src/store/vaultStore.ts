@@ -306,6 +306,7 @@ export const useVaultStore = create<VaultState>()((set, get) => ({
 
   addDocuments: async (docs, userId) => {
     const rows = docs.map((d) => ({
+      ...(d.id ? { id: d.id } : {}),
       user_id: userId, name: d.name, type: d.type, date: d.date, facility: d.facility,
       country: d.country, pages: d.pages, extracted: d.extracted ?? true, file_url: d.fileUrl,
       file_path: d.filePath,
@@ -371,10 +372,12 @@ export const useVaultStore = create<VaultState>()((set, get) => ({
   },
 
   removeDocument: async (id: string, filePath?: string) => {
+    const { error } = await supabase.from("documents").delete().eq("id", id);
+    if (error) throw error;
     if (filePath) {
-      await supabase.storage.from("medical-documents").remove([filePath]);
+      const { error: storageError } = await supabase.storage.from("medical-documents").remove([filePath]);
+      if (storageError) throw storageError;
     }
-    await supabase.from("documents").delete().eq("id", id);
     set((s) => ({
       documents: s.documents.filter((d) => d.id !== id),
       visits: s.visits.filter((v) => v.documentId !== id),

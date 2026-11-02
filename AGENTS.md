@@ -1,8 +1,11 @@
 # Project rules
 
 - Partner pilot release candidates stay in `supabase/pilot-staging` until isolated validation and explicit shared-backend release gates pass, because normal edge-function edits deploy automatically.
-- Real medical brief recipients use an atomic database claim and an in-memory recipient secret; revalidation never relies on URL tokens alone, because public links must not leak records to a second session.
-- Partner entitlements derive independently from current joined links and active, unexpired organisations; never overwrite profile comp or subscription grants, because those can have unrelated legitimate sources.
+- Published medical sharing uses the deployed token-only get-shared-brief contract; recipient-claim safety remains staged and must not be assumed by frontend releases.
+- Published sponsorship follows deployed profile complimentary fields and existing RPCs; independent partner entitlement semantics remain staged until separately released.
+- Onboarding funnel writes validated dimensions into daily aggregate counters via a restricted RPC; admin-only reads keep identities and clinical data out of this reporting.
+- Consumer plan intent is auth metadata, never an access grant; payment reminders defer to verified subscription access and reuse existing checkout.
+- Upload persistence completes before extraction review, with a stable document ID; closing review cannot discard the record or break visit linkage.
 
 - The partner portal demo uses its own local synthetic data/PDF module and accessible dialog; its standalone app shell excludes auth, attribution and tracking effects so demo interactions never reach live services.
 
