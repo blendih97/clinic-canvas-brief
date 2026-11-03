@@ -392,7 +392,7 @@ const ShareBriefSection = () => {
           <div className="flex gap-3">
             <button onClick={() => setStep(2)} className="flex items-center gap-2 px-5 py-2.5 bg-muted text-foreground rounded-lg text-sm"><ArrowLeft className="w-4 h-4" /> Back</button>
             <button onClick={handleGenerate} disabled={generating} className="flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-60">
-              <Lock className="w-4 h-4" /> {generating ? "Translating & generating…" : `Generate Encrypted Link in ${getLanguageName(language)}`}
+              <Lock className="w-4 h-4" /> {generating ? "Translating & generating…" : `Generate secure link in ${getLanguageName(language)}`}
             </button>
           </div>
         </div>
@@ -404,8 +404,8 @@ const ShareBriefSection = () => {
             <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
               <Shield className="w-6 h-6 text-primary" />
             </div>
-            <h3 className="font-heading text-xl text-foreground mb-1">Encrypted Link Ready</h3>
-            <p className="text-xs text-muted-foreground mb-4">AES-256 encrypted · {getLanguageName(language)} · Tokenised share link</p>
+            <h3 className="font-heading text-xl text-foreground mb-1">Secure link ready</h3>
+            <p className="text-xs text-muted-foreground mb-4">Time-limited · {getLanguageName(language)} · You can revoke it at any time</p>
             <div className="flex items-center gap-2 bg-muted rounded-lg border border-border p-3 mb-3">
               <code className={`flex-1 text-xs truncate ${revoked ? "text-muted-foreground line-through" : "text-foreground/70"}`}>{shareLink}</code>
               <button

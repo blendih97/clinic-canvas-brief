@@ -85,6 +85,7 @@ const SharedDocumentViewer = ({ token, doc, onClose }: { token: string; doc: Sha
   const [fileError, setFileError] = useState<string | null>(null);
   const [showOriginalText, setShowOriginalText] = useState(false);
   const lines = summaryLines(doc.summary);
+  const isSmallScreen = typeof window !== "undefined" && window.matchMedia?.("(max-width: 767px)").matches;
   const origCode = (doc.originalLanguageCode || "").toLowerCase();
   const hasOriginalText = !!doc.contentOriginal && origCode !== "" && origCode !== (doc.translatedLanguageCode || "en").toLowerCase();
 
@@ -141,7 +142,10 @@ const SharedDocumentViewer = ({ token, doc, onClose }: { token: string; doc: Sha
                 </div>
                 <div className="flex-1 overflow-auto p-3 flex items-start justify-center">
                   {file.kind === "image" ? <img src={file.url} alt={doc.name || "Original document"} className="max-w-full rounded" />
-                    : <iframe src={file.url} title={doc.name || "Original document"} className="w-full min-h-[520px] rounded border-0 bg-white" />}
+                    : isSmallScreen ? (
+                      // Phones don't display PDFs inside a page reliably: open them in the browser's viewer.
+                      <a href={file.url} target="_blank" rel="noopener noreferrer" className="m-auto inline-flex items-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium"><ExternalLink className="w-4 h-4" /> Open the original PDF</a>
+                    ) : <iframe src={file.url} title={doc.name || "Original document"} className="w-full min-h-[520px] rounded border-0 bg-white" />}
                 </div>
               </>
             ) : null}
