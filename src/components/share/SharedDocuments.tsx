@@ -93,7 +93,12 @@ const SharedDocumentViewer = ({ token, doc, onClose }: { token: string; doc: Sha
     setLoadingFile(true); setFileError(null);
     const { data, error } = await supabase.functions.invoke("get-shared-brief", { body: { token, documentId: doc.id } });
     const url = (data as any)?.url;
-    if (error || !url) setFileError("The original file is no longer available. The link may have expired or been revoked.");
+    let code: string | undefined = (data as any)?.revoked ? "revoked" : (data as any)?.expired ? "expired" : undefined;
+    if (error) { try { code = (await (error as any)?.context?.json?.())?.error; } catch { /* generic */ } }
+    if (error || !url) setFileError(
+      code === "no_file" ? "The original file wasn't stored for this record. RinVita's reading is shown alongside."
+      : code === "revoked" || code === "expired" || !code ? "This link has expired or been revoked, so the original can no longer be opened."
+      : "The original file couldn't be opened. Please try again.");
     else setFile({ url, kind: (data as any)?.kind || "other" });
     setLoadingFile(false);
   };
