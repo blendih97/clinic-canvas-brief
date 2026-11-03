@@ -124,7 +124,12 @@ export interface DisplayRange { text: string; typical: boolean }
 /** The range to show for a result. Stored "Typical:" ranges are re-resolved from the vetted table. */
 export function displayRange(r: { marker: string; unit?: string | null; range?: string | null }, sex?: string | null): DisplayRange | null {
   const raw = (r.range ?? "").trim();
-  if (raw && !raw.toLowerCase().startsWith(TYPICAL_PREFIX.toLowerCase())) return { text: raw, typical: false };
+  if (raw && !raw.toLowerCase().startsWith(TYPICAL_PREFIX.toLowerCase())) {
+    // Lab printed separate male/female ranges: show the one for the patient's recorded sex, labelled.
+    const own = forSex(raw, sex);
+    const label = norm(sex) === "female" ? "Female" : "Male";
+    return { text: own === raw ? raw : `${label}: ${own}`, typical: false };
+  }
   const typical = typicalRange(r.marker, r.unit);
   if (!typical) return null;
   return { text: forSex(typical, sex), typical: true };

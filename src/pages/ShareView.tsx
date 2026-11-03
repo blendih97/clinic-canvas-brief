@@ -201,13 +201,15 @@ const ShareView = () => {
               <h2 className="font-heading text-lg text-foreground">Medications</h2>
             </div>
             <div className="bg-card border border-border rounded-lg divide-y divide-border">
-              {medications.map((m: any, i: number) => (
-                <div key={i} className="p-4 flex items-center justify-between">
+              {[...medications].sort((a: any, b: any) => Number(b.active !== false) - Number(a.active !== false)).map((m: any, i: number) => (
+                <div key={i} className={`p-4 flex items-center justify-between gap-3 ${m.active === false ? "bg-muted/30" : ""}`}>
                   <div>
-                    <p className="text-sm font-medium text-foreground">{m.name}</p>
-                    <p className="text-xs text-muted-foreground">{m.dose} · {m.frequency}</p>
+                    <p className={`text-sm font-medium ${m.active === false ? "text-muted-foreground" : "text-foreground"}`}>{m.name}</p>
+                    <p className="text-xs text-muted-foreground">{[m.dose, m.frequency].filter(Boolean).join(" · ")}{m.date ? ` · ${m.date}` : ""}</p>
                   </div>
-                  {m.active && <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">Active</span>}
+                  {m.active === false
+                    ? <span className="shrink-0 text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground border border-border">Past</span>
+                    : <span className="shrink-0 text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">Current</span>}
                 </div>
               ))}
             </div>

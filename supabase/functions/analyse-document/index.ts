@@ -22,6 +22,8 @@ REFERENCE RANGES:
 - "status": use the document's own flag when it gives one (e.g. "H", "L", "*", "Abnormal" -> "flagged"). Otherwise compare the value with the PRINTED range only. With no flag and no printed range, use "normal".
 - Return ONLY valid JSON, no markdown fences, no explanation
 
+- Medication "active": false when the document says it was stopped, discontinued, completed or replaced, or when the document gives it a fixed duration of 3 months or less (e.g. "for 5 days", "for 2 weeks"). Otherwise true.
+
 TRANSLATION RULES:
 - Detect the source language of the document.
 - The user wants the translation in: **${targetLangName}** (ISO code: ${targetLang}).

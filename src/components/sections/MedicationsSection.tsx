@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Pill, AlertTriangle, CheckCircle, Plus, X, Edit2, Trash2 } from "lucide-react";
+import { Pill, AlertTriangle, CheckCircle, Plus, X, Edit2, Trash2, History, RotateCcw, CircleStop } from "lucide-react";
 import { dedupeMedications, useVaultStore } from "@/store/vaultStore";
 import { useAuth } from "@/hooks/useAuth";
 import MedicalDisclaimer from "@/components/MedicalDisclaimer";
@@ -7,6 +7,9 @@ import MedicalDisclaimer from "@/components/MedicalDisclaimer";
 const MedicationsSection = () => {
   const { medications, allergies, addMedications, addAllergies, removeMedication, removeAllergy, updateMedication } = useVaultStore();
   const uniqueMedications = dedupeMedications(medications).unique;
+  const byDateDesc = (a: { date: string }, b: { date: string }) => (b.date || "").localeCompare(a.date || "");
+  const currentMeds = uniqueMedications.filter((m) => m.active !== false).sort(byDateDesc);
+  const pastMeds = uniqueMedications.filter((m) => m.active === false).sort(byDateDesc);
   const { user } = useAuth();
   const [showMedModal, setShowMedModal] = useState(false);
   const [showAllergyModal, setShowAllergyModal] = useState(false);
@@ -18,6 +21,7 @@ const MedicationsSection = () => {
   const [medFreq, setMedFreq] = useState("");
   const [medDate, setMedDate] = useState("");
   const [medPrescriber, setMedPrescriber] = useState("");
+  const [medActive, setMedActive] = useState(true);
 
   // Allergy form state
   const [allergySubstance, setAllergySubstance] = useState("");
@@ -25,7 +29,7 @@ const MedicationsSection = () => {
   const [allergySeverity, setAllergySeverity] = useState("Mild");
 
   const resetMedForm = () => {
-    setMedName(""); setMedDose(""); setMedFreq(""); setMedDate(""); setMedPrescriber("");
+    setMedName(""); setMedDose(""); setMedFreq(""); setMedDate(""); setMedPrescriber(""); setMedActive(true);
     setEditingMed(null);
   };
 
@@ -37,13 +41,13 @@ const MedicationsSection = () => {
     if (!medName.trim() || !user) return;
     if (editingMed) {
       await updateMedication(editingMed, {
-        name: medName, dose: medDose, frequency: medFreq, date: medDate, prescriber: medPrescriber,
+        name: medName, dose: medDose, frequency: medFreq, date: medDate, prescriber: medPrescriber, active: medActive,
       });
     } else {
       await addMedications([{
         id: crypto.randomUUID(), name: medName, dose: medDose, frequency: medFreq,
         date: medDate || new Date().toISOString().split("T")[0], prescriber: medPrescriber,
-        facility: "", active: true, source: "manual",
+        facility: "", active: medActive, source: "manual",
       }], user.id);
     }
     resetMedForm();
@@ -62,9 +66,50 @@ const MedicationsSection = () => {
 
   const openEditMed = (m: typeof medications[0]) => {
     setMedName(m.name); setMedDose(m.dose); setMedFreq(m.frequency);
-    setMedDate(m.date); setMedPrescriber(m.prescriber); setEditingMed(m.id);
+    setMedDate(m.date); setMedPrescriber(m.prescriber); setMedActive(m.active !== false); setEditingMed(m.id);
     setShowMedModal(true);
   };
+
+  const renderMed = (m: typeof medications[0], current: boolean) => (
+    <div key={m.id} className="p-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 hover:bg-muted/50 transition-colors">
+      <div className="flex items-center gap-4 flex-1 min-w-0">
+        <div className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center ${current ? "bg-emerald-500/10" : "bg-muted"}`}>
+          {current ? <CheckCircle className="w-4 h-4 text-emerald-600" /> : <History className="w-4 h-4 text-muted-foreground" />}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className={`text-sm font-medium ${current ? "text-foreground" : "text-muted-foreground"}`}>
+            {m.name} <span className={current ? "text-primary" : ""}>{m.dose}</span>
+            <span className={`ml-2 align-middle px-1.5 py-0.5 rounded-full text-[10px] font-medium border ${current
+              ? "bg-emerald-500/10 text-emerald-700 border-emerald-500/20"
+              : "bg-muted text-muted-foreground border-border"}`}>
+              {current ? "Current" : "Completed"}
+            </span>
+            {m.source === "manual" && <span className="ml-2 px-1.5 py-0.5 bg-muted text-muted-foreground rounded text-[9px]">Manual</span>}
+          </p>
+          <p className="text-xs text-muted-foreground">{m.frequency}</p>
+        </div>
+      </div>
+      <div className="flex items-center gap-3 pl-12 sm:pl-0">
+        <div className="text-left sm:text-right">
+          <p className={`text-xs ${current ? "text-foreground" : "text-muted-foreground"}`}>{m.prescriber}</p>
+          <p className="text-[10px] text-muted-foreground">{m.facility ? `${m.facility} · ` : ""}{m.date}</p>
+        </div>
+        <button
+          onClick={() => updateMedication(m.id, { active: !current })}
+          className="shrink-0 flex items-center gap-1 px-2 py-1 text-[11px] text-muted-foreground border border-border rounded-md hover:text-foreground hover:bg-muted transition-colors"
+          title={current ? "Move to past medications" : "Move back to current medications"}
+        >
+          {current ? <><CircleStop className="w-3 h-3" /> Mark stopped</> : <><RotateCcw className="w-3 h-3" /> Mark current</>}
+        </button>
+        {m.source === "manual" && (
+          <div className="flex gap-1">
+            <button onClick={() => openEditMed(m)} className="p-1 text-muted-foreground hover:text-foreground"><Edit2 className="w-3 h-3" /></button>
+            <button onClick={() => removeMedication(m.id)} className="p-1 text-muted-foreground hover:text-destructive"><Trash2 className="w-3 h-3" /></button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 
   return (
     <div className="space-y-8">
@@ -119,7 +164,7 @@ const MedicationsSection = () => {
             <Pill className="w-4 h-4 text-primary" />
             <h3 className="font-heading text-lg text-foreground">Medications</h3>
             <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
-              {uniqueMedications.filter((m) => m.active).length} active
+              {currentMeds.length} current
             </span>
           </div>
           <button onClick={() => { resetMedForm(); setShowMedModal(true); }} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-primary border border-primary/30 rounded-lg hover:bg-primary/5 transition-colors">
@@ -127,31 +172,29 @@ const MedicationsSection = () => {
           </button>
         </div>
         {uniqueMedications.length > 0 ? (
-          <div className="bg-card border border-border rounded-lg overflow-hidden divide-y divide-border/50">
-            {uniqueMedications.map((m) => (
-              <div key={m.id} className="p-4 flex items-center gap-4 hover:bg-muted/50 transition-colors">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  <CheckCircle className="w-4 h-4 text-primary" />
+          <div className="space-y-6">
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-emerald-700 mb-2">Currently taking</p>
+              {currentMeds.length > 0 ? (
+                <div className="bg-card border border-border rounded-lg overflow-hidden divide-y divide-border/50">
+                  {currentMeds.map((m) => renderMed(m, true))}
                 </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-foreground">
-                    {m.name} <span className="text-primary">{m.dose}</span>
-                    {m.source === "manual" && <span className="ml-2 px-1.5 py-0.5 bg-muted text-muted-foreground rounded text-[9px]">Manual</span>}
-                  </p>
-                  <p className="text-xs text-muted-foreground">{m.frequency}</p>
+              ) : (
+                <div className="bg-card border border-border rounded-lg p-6 text-center text-muted-foreground text-sm">
+                  No current medications.
                 </div>
-                <div className="text-right">
-                  <p className="text-xs text-foreground">{m.prescriber}</p>
-                  <p className="text-[10px] text-muted-foreground">{m.facility ? `${m.facility} · ` : ""}{m.date}</p>
+              )}
+            </div>
+            {pastMeds.length > 0 && (
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-2 flex items-center gap-1.5">
+                  <History className="w-3.5 h-3.5" /> Past medications
+                </p>
+                <div className="bg-muted/30 border border-border rounded-lg overflow-hidden divide-y divide-border/50">
+                  {pastMeds.map((m) => renderMed(m, false))}
                 </div>
-                {m.source === "manual" && (
-                  <div className="flex gap-1">
-                    <button onClick={() => openEditMed(m)} className="p-1 text-muted-foreground hover:text-foreground"><Edit2 className="w-3 h-3" /></button>
-                    <button onClick={() => removeMedication(m.id)} className="p-1 text-muted-foreground hover:text-destructive"><Trash2 className="w-3 h-3" /></button>
-                  </div>
-                )}
               </div>
-            ))}
+            )}
           </div>
         ) : (
           <div className="bg-card border border-border rounded-lg p-12 text-center text-muted-foreground text-sm">
@@ -201,6 +244,10 @@ const MedicationsSection = () => {
                     className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
                 </div>
               </div>
+              <label className="flex items-center gap-2 text-sm text-foreground">
+                <input type="checkbox" checked={medActive} onChange={(e) => setMedActive(e.target.checked)} className="accent-primary" />
+                I'm currently taking this
+              </label>
               <button onClick={handleSaveMed} disabled={!medName.trim()}
                 className="w-full py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-40">
                 {editingMed ? "Update Medication" : "Add Medication"}

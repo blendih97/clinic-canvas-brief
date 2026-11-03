@@ -4,9 +4,9 @@ import { displayRange, typicalRange, rangeForStorage } from "@/lib/referenceRang
 import { getBloodInsight } from "@/lib/insights";
 
 describe("reference ranges", () => {
-  it("keeps the lab's own range untouched", () => {
+  it("keeps the lab's own range (numbers untouched; the patient's own half when split by sex)", () => {
     expect(displayRange({ marker: "Haemoglobin", unit: "g/dL", range: "Male: 14 - 16 g%, Female: 12 - 14 g%" }, "male"))
-      .toEqual({ text: "Male: 14 - 16 g%, Female: 12 - 14 g%", typical: false });
+      .toEqual({ text: "Male: 14 - 16 g%", typical: false });
     expect(rangeForStorage("Albumin", "g/L", "35 - 52")).toBe("35 - 52");
   });
   it("uses the vetted table (OUH) when the report prints none, same unit only", () => {
@@ -56,5 +56,15 @@ describe("status and formatting", () => {
   it("normalises decimal commas but not thousands separators", () => {
     expect(normaliseDecimalCommas("4,0 – 5,6")).toBe("4.0 – 5.6");
     expect(normaliseDecimalCommas("1,000 – 4,500")).toBe("1,000 – 4,500");
+  });
+});
+
+describe("printed sex-specific ranges", () => {
+  it("shows the patient's own half, labelled", () => {
+    const r = { marker: "Haemoglobin", unit: "g/L", range: "Male: 130 - 170, Female: 115 - 155" };
+    expect(displayRange(r, "female")?.text).toBe("Female: 115 - 155");
+    expect(displayRange(r, "male")?.text).toBe("Male: 130 - 170");
+    expect(displayRange(r, null)?.text).toBe("Male: 130 - 170, Female: 115 - 155");
+    expect(displayRange({ marker: "Vitamin D", unit: "nmol/L", range: "50 - 175" }, "female")?.text).toBe("50 - 175");
   });
 });
