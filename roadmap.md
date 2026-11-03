@@ -13,7 +13,7 @@
 - Deferred separate project: staged pilot SQL/functions, hosted captured-mail QA and deletion retry validation remain unreleased by owner decision.
 
 - [x] Replace partner demo with a populated local patient portal and five persistent navigation tabs.
-- [x] Implement selected-section PDF export, one-time/expiry simulation and provider request/receipt simulation.
+- [x] Implement selected-section PDF export, time-limited (expiry) access simulation and provider request/receipt simulation.
 - [x] Verify demo interactions and mobile/desktop layout; leave production unpublished.
 
 - [x] Growth Engine: evidence-led prospects, proposed previews and fictional interactive demos.

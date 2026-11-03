@@ -57,12 +57,12 @@ describe("local fictional patient portal rules", () => {
     expect(pdf).toContain("Example City Laboratory, 18 Oct 2026");
     expect(pdf).not.toContain("Metformin");
   });
-  it("opens a simulated code exactly once", () => {
+  it("reopens a simulated code until it expires, like the live link", () => {
     const access = createDemoAccess(["Allergies"], 15000, DEMO_REPORTS, 1000);
     const consumed = consumeDemoAccess(access, 2000);
     expect(consumed?.used).toBe(true);
     if (!consumed) throw new Error("Expected first opening");
-    expect(consumeDemoAccess(consumed, 3000)).toBeNull();
+    expect(consumeDemoAccess(consumed, 3000)).not.toBeNull(); // reusable until expiry, like the live link
   });
   it("expires at precisely the selected deadline", () => {
     const access = createDemoAccess(["Labs"], 15000, DEMO_REPORTS, 1000);

@@ -13,7 +13,7 @@ describe("store, review and share messaging", () => {
     for (const copy of [
       "Store — every record, every provider, every country",
       "Review — results tracked over time, medications and allergies in one list",
-      "Share — one-time secure link or PDF, no app or login for the doctor",
+      "Share — secure, time-limited link or PDF, no app or login for the doctor",
       "Add your records",
       "We organise them into your medical record",
       "Share with any doctor in one tap",

@@ -14,7 +14,7 @@ interface PublicPartner { name: string; slug: string; logo_url: string | null; t
 const benefits = [
   { icon: FolderLock, title: "Store", text: "Keep every report, scan and letter in one secure place." },
   { icon: Eye, title: "Review", text: "See your history clearly, translated automatically where needed." },
-  { icon: Share2, title: "Share", text: "Send any doctor a one-time link or a PDF when you choose." },
+  { icon: Share2, title: "Share", text: "Send any doctor a time-limited link you can revoke, or a PDF, when you choose." },
 ];
 
 const PartnerPublicPage = () => {

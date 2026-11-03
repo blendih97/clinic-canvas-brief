@@ -16,14 +16,14 @@ const PROGRAMME_STEPS = [
   ["01", "Invite your clients", "By email, or with your co-branded link or QR code. Each client creates their own RinVita account."],
   ["02", "Sponsor their plan", "Clients get full access, free for them, while your sponsorship runs."],
   ["03", "Clients keep their own records", "They store and review their records, and can request records from any provider via a secure upload link."],
-  ["04", "Clients share with any doctor", "By one-time secure link or PDF. Your team sees sign-up and activity status only, never medical records."],
+  ["04", "Clients share with any doctor", "By secure, time-limited link or PDF. Your team sees sign-up and activity status only, never medical records."],
 ];
 
 const CLIENT_BENEFITS = [
   "One place for their whole history across countries and languages",
   "Results tracked over time",
   "Medications, allergies and family profiles",
-  "Sharing with any doctor by one-time secure link or PDF",
+  "Sharing with any doctor by secure, time-limited link or PDF",
 ];
 
 const TEAM_BENEFITS = [

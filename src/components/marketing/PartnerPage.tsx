@@ -45,7 +45,7 @@ const WORKFLOW = [
   {
     step: "04",
     title: "The patient shares a clinician-ready view",
-    body: "A one-time secure link or PDF, created by the patient, showing a structured summary with the source documents behind it.",
+    body: "A secure, time-limited link the patient can revoke, or a PDF, created by the patient, showing a structured summary with the source documents behind it.",
   },
 ];
 

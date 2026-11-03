@@ -174,7 +174,7 @@ function DoctorBrief() {
         <ul className="my-7 space-y-5 text-sm font-light leading-relaxed text-muted-foreground">{[
           "One page, clinical order: alerts, medications, labs, imaging, history.",
           "Every value traceable to its source document and language.",
-          "Secure one-time link or PDF — no app or login needed for the doctor.",
+          "Secure, time-limited link you can revoke, or a PDF — no app or login needed for the doctor.",
           "Not a diagnostic tool; nothing is interpreted or changed. Review the structured output against the originals.",
         ].map((point) => <li key={point} className="flex gap-3"><span className="text-primary" aria-hidden>◆</span><span>{point}</span></li>)}</ul>
         <Button asChild className="h-auto max-w-full whitespace-normal rounded-sm px-6 py-4 text-sm"><a href="#sample-passport">See a sample clinician brief →</a></Button>
@@ -211,7 +211,7 @@ function Hero() {
             <em style={{ fontStyle: "italic", color: marketingColors.gold }}>Ready to share with any doctor.</em>
           </h1>
           <p style={{ fontSize: isMobile ? 16 : 17, lineHeight: 1.7, color: marketingColors.mutedText, maxWidth: 520, marginBottom: isMobile ? 22 : 28, fontWeight: 300 }}>
-            Store every report, result and letter from every provider. Review your history any time, and share it with any doctor in seconds by a secure one-time link or a PDF. Records from abroad are translated automatically.
+            Store every report, result and letter from every provider. Review your history any time, and share it with any doctor in seconds by a secure, time-limited link or a PDF. Records from abroad are translated automatically.
           </p>
           <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 12, alignItems: isMobile ? "stretch" : "center" }}>
             <Link to="/auth?mode=signup" style={{ padding: isMobile ? "18px 24px" : "17px 36px", background: marketingColors.gold, borderRadius: 2, color: "hsl(var(--primary-foreground))", fontSize: isMobile ? 15 : 15.5, fontWeight: 600, letterSpacing: "0.05em", textDecoration: "none", textAlign: "center", boxShadow: "0 6px 28px hsl(var(--primary) / 0.4)" }}>
@@ -225,7 +225,7 @@ function Hero() {
             {[
               { icon: FolderOpen, text: "Store — every record, every provider, every country" },
               { icon: ClipboardList, text: "Review — results tracked over time, medications and allergies in one list" },
-              { icon: Share2, text: "Share — one-time secure link or PDF, no app or login for the doctor" },
+              { icon: Share2, text: "Share — secure, time-limited link or PDF, no app or login for the doctor" },
             ].map(({ icon: Icon, text }) => <li key={text} className="flex items-start gap-3"><Icon aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-primary" /><span className="min-w-0">{text}</span></li>)}
           </ul>
           <div style={{ marginTop: 12, fontSize: 12.5, color: marketingColors.softText, letterSpacing: "0.01em", fontWeight: 400 }}>
@@ -309,7 +309,7 @@ function ExploreSample() {
     { icon: FileText, label: "Reports and letters" },
     { icon: Pill, label: "Medications and allergies" },
     { icon: FileDown, label: "PDF sharing" },
-    { icon: KeyRound, label: "One-time clinician access demo" },
+    { icon: KeyRound, label: "Time-limited clinician access demo" },
     { icon: Inbox, label: "Request records demo" },
   ];
   return (
@@ -491,7 +491,7 @@ function Features() {
   const features = [
     ["One Secure Place", "Store Every Record", "Reports, results and letters from every provider and country, with originals always available."],
     ["Your History Together", "Review Your Record", "Results tracked over time, medications, allergies, imaging and visits — translated automatically where needed across 45+ languages."],
-    ["You Stay In Control", "Share With Any Doctor", "Share by secure one-time link or PDF, with no app or login needed for the doctor."],
+    ["You Stay In Control", "Share With Any Doctor", "Share by secure, time-limited link or PDF, with no app or login needed for the doctor."],
     ["Up to 6 Members", "Family Plan", "Manage records for elderly parents, children, and dependents under one secure account."],
   ];
 
@@ -1096,7 +1096,7 @@ function ThreeSteps() {
   const steps = [
     { n: "01", title: "Add your records", body: "Store reports, results and letters as PDFs, scans or photographs from any country or provider." },
     { n: "02", title: "We organise them into your medical record", body: "Review labs, medications, allergies, imaging and visits, linked to their originals and translated automatically where needed." },
-    { n: "03", title: "Share with any doctor in one tap", body: "Send a secure one-time link or a PDF — no app or login needed for the doctor." },
+    { n: "03", title: "Share with any doctor in one tap", body: "Send a secure, time-limited link or a PDF — no app or login needed for the doctor." },
   ];
 
   return (
@@ -1184,7 +1184,7 @@ const MarketingLandingPage = () => {
     <div className="marketing-page" style={{ background: marketingColors.cream, color: marketingColors.ink }}>
       <SEO
         title="RinVita — Store, review and share your medical records with any doctor"
-        description="Store every report, result and letter in one secure place. Review your history and share with any doctor by one-time link or PDF, translated automatically where needed."
+        description="Store every report, result and letter in one secure place. Review your history and share with any doctor by time-limited link or PDF, translated automatically where needed."
         path="/"
       />
       <MarketingStyles />
