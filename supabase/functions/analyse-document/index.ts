@@ -200,7 +200,10 @@ Deno.serve(async (req: Request) => {
     );
   }
 
-  const { data: canUpload } = await admin.rpc("user_can_upload_document", { _user_id: userId });
+  // Re-analysing a document that already holds one of the user's slots (internal
+  // calls only, e.g. retry-document for a stored record) must not be blocked by the quota.
+  const alreadyCounted = isInternal && body?.alreadyCounted === true;
+  const { data: canUpload } = alreadyCounted ? { data: true } : await admin.rpc("user_can_upload_document", { _user_id: userId });
   if (canUpload === false) {
     return new Response(
       JSON.stringify({

@@ -1,4 +1,5 @@
-// Retries analysis of a failed document using the original file kept in storage.
+// Analyses a document from the original file kept in storage: retries a failed
+// upload, or reads a stored-but-never-analysed record (e.g. received from a provider).
 // Callable by the document's owner or an admin. Quota is enforced by
 // analyse-document (failed documents never counted towards it).
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
@@ -10,6 +11,8 @@ const corsHeaders = {
 };
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+
+const imageMimeFromPath = (p: string) => /\.png$/i.test(p) ? "image/png" : /\.gif$/i.test(p) ? "image/gif" : /\.webp$/i.test(p) ? "image/webp" : "image/jpeg";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -39,7 +42,7 @@ Deno.serve(async (req) => {
   if (!UUID.test(documentId)) return json({ error: "documentId is required" }, 400);
 
   const { data: doc } = await admin.from("documents")
-    .select("id,user_id,name,file_path,processing_status,date,facility")
+    .select("id,user_id,name,file_path,file_url,processing_status,date,facility")
     .eq("id", documentId).maybeSingle();
   if (!doc) return json({ error: "Document not found" }, 404);
 
@@ -47,15 +50,20 @@ Deno.serve(async (req) => {
     const { data: isAdmin } = await admin.rpc("has_role", { _user_id: callerId, _role: "admin" });
     if (!isAdmin) return json({ error: "Document not found" }, 404);
   }
-  if (doc.processing_status !== "failed") return json({ error: "Only failed documents can be retried", code: "not_failed" }, 409);
-  if (!doc.file_path) return json({ error: "The original file wasn't kept for this upload, so it can't be retried. Please upload it again.", code: "no_file" }, 409);
+  const ANALYSABLE = new Set(["failed", "stored", "pending"]);
+  if (!ANALYSABLE.has(String(doc.processing_status || ""))) return json({ error: "This document has already been analysed", code: "not_failed" }, 409);
+  // Older received records kept the storage path in file_url only. Only paths inside the owner's own folder are accepted.
+  const legacyPath = doc.file_url && !/^https?:/i.test(doc.file_url) && doc.file_url.startsWith(`${doc.user_id}/`) ? doc.file_url : null;
+  const storagePath: string | null = doc.file_path || legacyPath;
+  const alreadyCounted = doc.processing_status !== "failed"; // stored/pending already use a document slot
+  if (!storagePath) return json({ error: "The original file wasn't kept for this upload, so it can't be retried. Please upload it again.", code: "no_file" }, 409);
 
-  const { data: blob, error: dlErr } = await admin.storage.from("medical-documents").download(doc.file_path);
+  const { data: blob, error: dlErr } = await admin.storage.from("medical-documents").download(storagePath);
   if (dlErr || !blob) return json({ error: "Original file could not be loaded", code: "no_file" }, 409);
 
   const mime = blob.type || "";
-  const isPdf = mime === "application/pdf" || /\.pdf$/i.test(doc.file_path);
-  const isImage = mime.startsWith("image/") || /\.(jpe?g|png|gif|webp)$/i.test(doc.file_path);
+  const isPdf = mime === "application/pdf" || /\.pdf$/i.test(storagePath);
+  const isImage = mime.startsWith("image/") || /\.(jpe?g|png|gif|webp)$/i.test(storagePath);
   if (!isPdf && !isImage) return json({ error: "Only PDFs and images can be analysed", code: "unsupported" }, 409);
 
   const { data: profile } = await admin.from("profiles")
@@ -67,11 +75,12 @@ Deno.serve(async (req) => {
   const { data: extracted, error: aiError } = await admin.functions.invoke("analyse-document", {
     body: {
       fileType: isPdf ? "pdf" : "image",
-      mediaType: isPdf ? "application/pdf" : (mime || "image/jpeg"),
+      mediaType: isPdf ? "application/pdf" : (mime.startsWith("image/") ? mime : imageMimeFromPath(storagePath)),
       base64: toBase64(await blob.arrayBuffer()),
       fileName: doc.name,
       targetLanguage,
       forUserId: doc.user_id,
+      alreadyCounted,
     },
   });
 
@@ -99,6 +108,7 @@ Deno.serve(async (req) => {
     country: meta.country || "",
     pages: meta.pages || 1,
     extracted: true,
+    file_path: storagePath,
     original_language: meta.originalLang || extracted.fullText?.original_language_code || null,
     original_language_code: extracted.fullText?.original_language_code || null,
     translated_language_code: extracted.fullText?.translated_language_code || targetLanguage,

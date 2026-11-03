@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { displayRange } from "@/lib/referenceRanges";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import SharedDocuments, { type SharedDoc } from "@/components/share/SharedDocuments";
 import { Shield, Clock, AlertTriangle, Pill, Droplets, ScanLine } from "lucide-react";
 
 interface SharedBrief {
@@ -12,6 +13,7 @@ interface SharedBrief {
   medications: any[];
   allergies: any[];
   imaging_results: any[];
+  documents?: SharedDoc[];
   created_at: string;
 }
 
@@ -148,6 +150,7 @@ const ShareView = () => {
   const medications = (brief.medications || []) as any[];
   const allergies = (brief.allergies || []) as any[];
   const imagingResults = (brief.imaging_results || []) as any[];
+  const sharedDocuments = (brief.documents || []) as SharedDoc[];
 
   return (
     <div className="min-h-screen bg-background">
@@ -168,7 +171,7 @@ const ShareView = () => {
         <div className="bg-card border border-primary/20 rounded-lg p-5 text-sm text-foreground/80 leading-relaxed">
           <p className="font-medium text-foreground mb-1.5">For the receiving clinician</p>
           <p>
-            This is a patient-curated medical summary. Records have been organised and translated by AI from original documents at the patient's request. All source documents are accessible below. This is not a substitute for clinical records from the originating institution.
+            This is a patient-curated medical summary. Records have been organised and translated by AI from original documents at the patient's request. {sharedDocuments.length > 0 ? "The documents the patient chose to share are listed below, with the originals where provided." : "The patient did not include source documents in this brief."} This is not a substitute for clinical records from the originating institution.
           </p>
         </div>
         <div className="bg-primary/5 border border-primary/10 rounded-lg p-4 text-sm text-primary">
@@ -265,6 +268,8 @@ const ShareView = () => {
             </div>
           </section>
         )}
+
+        {token && <SharedDocuments token={token} documents={sharedDocuments} />}
 
         <div className="text-center text-xs text-muted-foreground pt-6 border-t border-border space-y-2">
           <p>Generated securely by RinVita · This link will expire automatically</p>

@@ -21,3 +21,5 @@
 - Subscription views share SponsorshipNotice and formatSponsorshipDate; server-side partner_sponsorship_expiry handles calendar-to-instant conversion to avoid inconsistent expiry displays.
 - Lab results always show a range: the lab-printed range wins; otherwise a typical UK adult range from the vetted, sourced table in src/lib/referenceRanges.ts (same unit only, mirrored in supabase/functions/_shared). The AI never supplies ranges; status is always the lab's flag.
 - Billing and Family are self-pay only: hidden for patients with an active partner sponsorship. The Imaging section stays hidden until the scan viewer is released; imaging reports live in Documents.
+- Share Brief documents: shared_briefs.documents holds ids + RinVita's text only (never storage paths). get-shared-brief issues a 120-second file URL per request, only for a valid brief, a document the patient marked fileShared, owned by the brief's owner.
+- Stored/pending/failed documents are analysed server-side by retry-document from the saved original (file_path, or a legacy file_url inside the owner's folder); re-analysis of an already-counted document skips the free quota.

@@ -146,7 +146,24 @@ const ShareBriefSection = () => {
       medications: translated.medications as any,
       allergies: translated.allergies as any,
       imaging_results: translated.imagingResults as any,
-    });
+      // Documents: ids + RinVita's reading only. Storage paths are never stored in the
+      // brief; the doctor's file access is resolved server-side from the patient's own
+      // documents. Original files are shared only when "include originals" is on.
+      // Identity and file availability come from the patient's own records; only the
+      // readable text is taken from the (optional) translated copy.
+      documents: payload.documents.map((src: any, i: number) => {
+        const tr: any = (docsForShare || []).find((x: any) => x?.id === src.id) || (docsForShare || [])[i] || src;
+        return {
+          id: src.id, name: src.name, type: tr.type ?? src.type, date: src.date, facility: src.facility, country: src.country,
+          summary: tr.summary ?? src.summary ?? null,
+          contentTranslated: tr.contentTranslated ?? src.contentTranslated ?? null,
+          contentOriginal: includeOriginals ? (src.contentOriginal ?? null) : null,
+          originalLanguageCode: src.originalLanguageCode ?? null,
+          translatedLanguageCode: tr.translatedLanguageCode ?? src.translatedLanguageCode ?? null,
+          fileShared: includeOriginals && !!(src.filePath || src.fileUrl),
+        };
+      }) as any,
+    } as any);
 
     if (error) {
       console.error("Failed to create share link:", error);
@@ -301,8 +318,8 @@ const ShareBriefSection = () => {
 
             <label className="flex items-center justify-between p-3 bg-background border border-border rounded-lg cursor-pointer">
               <div>
-                <p className="text-sm text-foreground">Include original-language source documents</p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">Doctor can switch to the original alongside the translation.</p>
+                <p className="text-sm text-foreground">Include original documents</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">The doctor can open the original files and original-language text alongside RinVita's reading.</p>
               </div>
               <input
                 type="checkbox"

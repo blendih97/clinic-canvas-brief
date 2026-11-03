@@ -17,11 +17,15 @@ const arrayBufferToBase64 = (buf: ArrayBuffer): string => {
   return btoa(binary);
 };
 
-const inferType = (mime: string): "pdf" | "image" | "other" => {
-  if (mime === "application/pdf") return "pdf";
-  if (mime.startsWith("image/")) return "image";
+const inferType = (mime: string, name = ""): "pdf" | "image" | "other" => {
+  if (mime === "application/pdf" || /\.pdf$/i.test(name)) return "pdf";
+  if (mime.startsWith("image/") || /\.(jpe?g|png|gif|webp)$/i.test(name)) return "image";
   return "other";
 };
+const mediaTypeFor = (mime: string, name: string, kind: "pdf" | "image" | "other") =>
+  kind === "pdf" ? "application/pdf"
+  : mime.startsWith("image/") ? mime
+  : /\.png$/i.test(name) ? "image/png" : /\.gif$/i.test(name) ? "image/gif" : /\.webp$/i.test(name) ? "image/webp" : "image/jpeg";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -93,7 +97,7 @@ Deno.serve(async (req) => {
     const targetLanguage = profile?.preferred_translation_language || "en";
 
     // Try AI extraction for PDFs and images
-    const fileType = inferType(file.type || "");
+    const fileType = inferType(file.type || "", file.name || "");
     let extracted: any = null;
     let extractionError: string | null = null;
 
@@ -103,7 +107,7 @@ Deno.serve(async (req) => {
         const { data: aiData, error: aiError } = await supabase.functions.invoke("analyse-document", {
           body: {
             fileType,
-            mediaType: file.type,
+            mediaType: mediaTypeFor(file.type || "", file.name || "", fileType),
             base64,
             fileName: file.name,
             targetLanguage,

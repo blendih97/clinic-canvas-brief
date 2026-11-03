@@ -5,6 +5,9 @@ import { useVaultStore } from "@/store/vaultStore";
 import { supabase } from "@/integrations/supabase/client";
 import { SUPPORTED_LANGUAGES, getLanguageName } from "@/lib/supportedLanguages";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useRef } from "react";
+import { retryDocument, FRIENDLY_FAILURE_MESSAGE } from "@/lib/documentRetry";
+import { useAuth } from "@/hooks/useAuth";
 
 
 interface Props {
@@ -87,6 +90,10 @@ const DocumentViewerModal = ({ document: docProp, onClose, onShare }: Props) => 
   const [reprocessError, setReprocessError] = useState<string | null>(null);
   const [zoom, setZoom] = useState(1);
   const isMobile = useIsMobile();
+  const { user } = useAuth();
+  const [analysing, setAnalysing] = useState(false);
+  const [analyseError, setAnalyseError] = useState<string | null>(null);
+  const autoStarted = useRef(false);
 
   const storagePath = doc.filePath || doc.fileUrl;
   const isImageDoc = !!(doc.type?.toLowerCase().includes("image") || doc.name.match(/\.(jpg|jpeg|png|gif|webp)$/i));
@@ -100,6 +107,30 @@ const DocumentViewerModal = ({ document: docProp, onClose, onShare }: Props) => 
       .createSignedUrl(storagePath, 3600)
       .then(({ data }) => { if (data?.signedUrl) setSignedUrl(data.signedUrl); });
   }, [storagePath]);
+
+  // Records that were stored but never read by RinVita (e.g. received from a provider
+  // before analysis existed, or a failed upload) are analysed from the saved original.
+  const status = doc.processingStatus || "";
+  const notYetAnalysed = ["stored", "pending", "failed"].includes(status);
+  const runAnalysis = async () => {
+    if (analysing || !user) return;
+    setAnalysing(true); setAnalyseError(null);
+    const res = await retryDocument(doc.id);
+    if (res.ok) {
+      await useVaultStore.getState().loadUserData(user.id);
+    } else {
+      setAnalyseError(res.code === "no_file" || res.code === "unsupported" || res.code === "free_document_limit_reached" ? (res.message || FRIENDLY_FAILURE_MESSAGE) : FRIENDLY_FAILURE_MESSAGE);
+    }
+    setAnalysing(false);
+  };
+  useEffect(() => {
+    // Start automatically for stored/pending records; failed ones wait for the button.
+    if (!autoStarted.current && storagePath && (status === "stored" || status === "pending")) {
+      autoStarted.current = true;
+      void runAnalysis();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [doc.id, status, storagePath]);
 
   const relatedBlood = bloodResults.filter((b) => b.source === doc.name || b.date === doc.date);
   const relatedImaging = imagingResults.filter((i) => i.facility === doc.facility && i.date === doc.date);
@@ -303,6 +334,27 @@ const DocumentViewerModal = ({ document: docProp, onClose, onShare }: Props) => 
           </div>
 
           <div className="md:w-1/2 p-5 overflow-auto space-y-5">
+            {notYetAnalysed && (
+              <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 space-y-3" role="status">
+                {analysing ? (
+                  <p className="text-sm text-foreground flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin text-primary" /> RinVita is reading this document. This usually takes 10–30 seconds.</p>
+                ) : (
+                  <>
+                    <p className="text-sm text-foreground">
+                      <span className="font-medium">RinVita hasn't read this document yet.</span> Analyse it to add its findings, results and medications to your record and health brief.
+                    </p>
+                    {storagePath ? (
+                      <button onClick={runAnalysis} className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors">
+                        <Sparkles className="w-4 h-4" /> Analyse with RinVita
+                      </button>
+                    ) : (
+                      <p className="text-xs text-muted-foreground">The original file isn't available, so please upload it again.</p>
+                    )}
+                    {analyseError && <p className="text-xs text-destructive">{analyseError}</p>}
+                  </>
+                )}
+              </div>
+            )}
             {hasOriginalLanguage && (
               <div className="flex gap-1 bg-muted rounded-lg p-1" role="tablist" aria-label="Document language">
                 <button
