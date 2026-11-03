@@ -33,3 +33,5 @@ project_id = "gnxctlydesugjdwbavdx"
     verify_jwt = false
   [functions.retry-document]
     verify_jwt = false
+  [functions.send-share-brief]
+    verify_jwt = false

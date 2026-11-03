@@ -7,7 +7,9 @@ import DocumentViewerModal from "@/components/DocumentViewerModal";
 import type { Document } from "@/store/vaultStore";
 import { toast } from "sonner";
 import { retryDocument, FRIENDLY_FAILURE_MESSAGE } from "@/lib/documentRetry";
-import { RotateCw } from "lucide-react";
+import { RotateCw, Download } from "lucide-react";
+import { buildCombinedPdf, downloadBytes, safeFileName } from "@/lib/combinedPdf";
+import { displayRange } from "@/lib/referenceRanges";
 
 const countryFlags: Record<string, string> = { UAE: "🇦🇪", UK: "🇬🇧", Qatar: "🇶🇦", Switzerland: "🇨🇭", USA: "🇺🇸" };
 
@@ -35,6 +37,46 @@ const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void 
   const addVisits = useVaultStore((s) => s.addVisits);
   const updateDocument = useVaultStore((s) => s.updateDocument);
   const removeDocument = useVaultStore((s) => s.removeDocument);
+  const [bundling, setBundling] = useState<string | null>(null);
+
+  // One PDF with a RinVita summary and every original, e.g. to send to a hospital.
+  const downloadAllAsPdf = async () => {
+    if (bundling || !documents.length) return;
+    setBundling("Preparing…");
+    try {
+      const st = useVaultStore.getState();
+      const summaryOf = (sum: Document["summary"]): string[] => {
+        if (!sum) return [];
+        if (typeof sum === "string") return [sum];
+        if (Array.isArray(sum)) return sum.filter((x) => typeof x === "string");
+        return (sum.englishText?.length ? sum.englishText : sum.bullets) || [];
+      };
+      const res = await buildCombinedPdf({
+        title: `Medical records${profile?.full_name ? ` — ${profile.full_name}` : ""}`,
+        subtitle: `Compiled by RinVita on ${new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })} · ${documents.length} documents`,
+        allergies: st.allergies.map((a) => [a.substance, a.reaction].filter(Boolean).join(" — ")),
+        medications: st.medications.filter((m) => m.active !== false).map((m) => [m.name, m.dose, m.frequency].filter(Boolean).join(" · ")),
+        labs: st.bloodResults.map((b) => ({ marker: b.marker, value: `${b.value} ${b.unit || ""}`.trim(), range: (() => { const d = displayRange(b); return d ? (d.typical ? `${d.text}, typical UK adult range` : d.text) : ""; })(), status: b.status })),
+        docs: documents.map((d) => ({
+          name: d.name, type: d.type, facility: d.facility, date: d.date,
+          summary: summaryOf(d.summary), text: d.contentTranslated,
+          getFile: async () => {
+            const path = d.filePath || (d.fileUrl && !/^https?:/i.test(d.fileUrl) ? d.fileUrl : null);
+            if (!path) return null;
+            const { data: blob } = await supabase.storage.from("medical-documents").download(path);
+            if (!blob) return null;
+            const isPdf = blob.type === "application/pdf" || /\.pdf$/i.test(path);
+            const isImg = blob.type.startsWith("image/") || /\.(jpe?g|png|gif|webp)$/i.test(path);
+            return { bytes: await blob.arrayBuffer(), kind: isPdf ? "pdf" : isImg ? "image" : "other", mime: blob.type };
+          },
+        })),
+      }, (done, total) => setBundling(`Adding ${Math.min(done + 1, total)} of ${total}…`));
+      downloadBytes(res.bytes, `${safeFileName(profile?.full_name || "RinVita")}-medical-records.pdf`);
+      toast.success(res.missing.length ? `PDF ready. ${res.missing.length} record(s) had no original file, so RinVita's text is included.` : "PDF ready with every document.");
+    } catch {
+      toast.error("The PDF couldn't be created. Please try again.");
+    } finally { setBundling(null); }
+  };
   const { user, profile } = useAuth();
   const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
   const [showViewer, setShowViewer] = useState(false);
@@ -187,12 +229,20 @@ const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void 
           <h2 className="font-heading text-3xl font-light text-foreground">Documents</h2>
           <p className="text-sm text-muted-foreground mt-2">Full archive of uploaded medical records</p>
         </div>
+        <div className="flex flex-wrap items-center gap-2 justify-end">
+        {documents.length > 0 && (
+          <button onClick={downloadAllAsPdf} disabled={!!bundling}
+            className="flex items-center gap-2 px-4 py-2 border border-border text-foreground rounded-lg text-sm font-medium hover:border-primary/30 transition-colors disabled:opacity-60">
+            {bundling ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />} {bundling || "Download all as one PDF"}
+          </button>
+        )}
         {onRequestRecords && (
           <button onClick={onRequestRecords}
             className="flex items-center gap-2 px-4 py-2 border border-border text-foreground rounded-lg text-sm font-medium hover:border-primary/30 transition-colors">
             <Send className="w-4 h-4" /> Request Records
           </button>
         )}
+        </div>
       </div>
 
       {/* Search */}

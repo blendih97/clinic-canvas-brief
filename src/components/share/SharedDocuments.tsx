@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { FileText, X, Loader2, ExternalLink, Download, Languages, Globe, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { buildCombinedPdf, downloadBytes, type BundleInput } from "@/lib/combinedPdf";
+import { displayRange } from "@/lib/referenceRanges";
 
 export interface SharedDoc {
   id: string | null;
@@ -31,26 +33,72 @@ export function summaryLines(summary: unknown): string[] {
 
 const PREVIEW_COUNT = 3;
 
-/** Documents section of the doctor's share page: list, "view all", and a side-by-side viewer. */
-const SharedDocuments = ({ token, documents }: { token: string; documents: SharedDoc[] }) => {
+export interface BriefCover { allergies?: any[]; medications?: any[]; bloodResults?: any[]; createdAt?: string }
+
+/** Fetches one shared original through the token-checked function (short-lived URL). */
+async function fetchSharedFile(token: string, documentId: string) {
+  const { data, error } = await supabase.functions.invoke("get-shared-brief", { body: { token, documentId } });
+  const url = (data as any)?.url;
+  if (error || !url) return null;
+  const res = await fetch(url);
+  if (!res.ok) return null;
+  const kind = ((data as any)?.kind || "other") as "pdf" | "image" | "other";
+  return { bytes: await res.arrayBuffer(), kind, mime: res.headers.get("content-type") || undefined };
+}
+
+/** Documents section of the doctor's share page: list, "view all", one-PDF download and a side-by-side viewer. */
+const SharedDocuments = ({ token, documents, cover }: { token: string; documents: SharedDoc[]; cover?: BriefCover }) => {
   const [showAll, setShowAll] = useState(false);
   const [open, setOpen] = useState<SharedDoc | null>(null);
+  const [bundling, setBundling] = useState<string | null>(null);
+  const [bundleNote, setBundleNote] = useState<string | null>(null);
   if (documents.length === 0) return null;
+
+  const downloadAll = async () => {
+    if (bundling) return;
+    setBundleNote(null); setBundling("Preparing…");
+    try {
+      const input: BundleInput = {
+        title: "Medical records shared via RinVita",
+        subtitle: `Shared ${cover?.createdAt ? new Date(cover.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : ""} · ${documents.length} document${documents.length === 1 ? "" : "s"}`,
+        allergies: (cover?.allergies || []).map((a: any) => [a.substance, a.reaction].filter(Boolean).join(" — ")),
+        medications: (cover?.medications || []).map((m: any) => [m.name, m.dose, m.frequency].filter(Boolean).join(" · ")),
+        labs: (cover?.bloodResults || []).map((b: any) => ({ marker: b.marker, value: `${b.value} ${b.unit || ""}`.trim(), range: (() => { const d = displayRange(b); return d ? (d.typical ? `${d.text}, typical UK adult range` : d.text) : ""; })(), status: b.status })),
+        docs: documents.map((d) => ({
+          name: d.name || "Document", type: d.type, facility: d.facility, date: d.date,
+          summary: summaryLines(d.summary), text: d.contentTranslated,
+          getFile: d.fileShared && d.id ? () => fetchSharedFile(token, d.id as string) : undefined,
+        })),
+      };
+      const res = await buildCombinedPdf(input, (done, total) => setBundling(`Adding document ${Math.min(done + 1, total)} of ${total}…`));
+      downloadBytes(res.bytes, `RinVita-records-${new Date().toISOString().slice(0, 10)}.pdf`);
+      setBundleNote(res.missing.length ? `Downloaded. ${res.missing.length} document${res.missing.length === 1 ? " has" : "s have"} no original file, so RinVita's text is included instead.` : "Downloaded: one PDF with every document.");
+    } catch {
+      setBundleNote("The PDF couldn't be created. The link may have expired; please try again.");
+    } finally { setBundling(null); }
+  };
   const visible = showAll ? documents : documents.slice(0, PREVIEW_COUNT);
 
   return (
     <section>
-      <div className="flex items-center justify-between gap-2 mb-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
         <div className="flex items-center gap-2">
           <FileText className="w-4 h-4 text-primary" />
           <h2 className="font-heading text-lg text-foreground">Documents ({documents.length})</h2>
         </div>
-        {documents.length > PREVIEW_COUNT && (
-          <button onClick={() => setShowAll((v) => !v)} className="text-xs font-medium text-primary hover:underline">
-            {showAll ? "Show fewer" : `View all ${documents.length} documents`}
+        <div className="flex items-center gap-3">
+          {documents.length > PREVIEW_COUNT && (
+            <button onClick={() => setShowAll((v) => !v)} className="text-xs font-medium text-primary hover:underline">
+              {showAll ? "Show fewer" : `View all ${documents.length} documents`}
+            </button>
+          )}
+          <button onClick={downloadAll} disabled={!!bundling} className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-primary text-primary rounded-lg text-xs font-medium hover:bg-primary/5 disabled:opacity-60">
+            {bundling ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+            {bundling || "Download all as one PDF"}
           </button>
-        )}
+        </div>
       </div>
+      {bundleNote && <p className="text-xs text-muted-foreground mb-3" role="status">{bundleNote}</p>}
       <div className="space-y-3">
         {visible.map((d, i) => {
           const lines = summaryLines(d.summary);

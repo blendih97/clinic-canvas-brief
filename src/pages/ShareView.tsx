@@ -269,7 +269,7 @@ const ShareView = () => {
           </section>
         )}
 
-        {token && <SharedDocuments token={token} documents={sharedDocuments} />}
+        {token && <SharedDocuments token={token} documents={sharedDocuments} cover={{ allergies, medications, bloodResults, createdAt: brief.created_at }} />}
 
         <div className="text-center text-xs text-muted-foreground pt-6 border-t border-border space-y-2">
           <p>Generated securely by RinVita · This link will expire automatically</p>

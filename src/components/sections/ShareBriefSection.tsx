@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Clock, Eye, Lock, Copy, CheckCircle, Shield, ArrowRight, ArrowLeft, Languages, Calendar } from "lucide-react";
+import { Clock, Eye, Lock, Copy, CheckCircle, Shield, ArrowRight, ArrowLeft, Languages, Calendar, Mail, Loader2 } from "lucide-react";
 import { dedupeMedications, useVaultStore } from "@/store/vaultStore";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
@@ -43,6 +43,33 @@ const ShareBriefSection = () => {
   const [customFrom, setCustomFrom] = useState("");
   const [customTo, setCustomTo] = useState("");
   const [includeOriginals, setIncludeOriginals] = useState(true);
+  // Per-document choice (all selected by default; "excluded" so new uploads are included automatically).
+  const [excludedDocIds, setExcludedDocIds] = useState<Set<string>>(new Set());
+  const [showDocPicker, setShowDocPicker] = useState(false);
+  const toggleDoc = (id: string) => setExcludedDocIds((prev) => { const n = new Set(prev); if (n.has(id)) n.delete(id); else n.add(id); return n; });
+  const selectedDocCount = documents.filter((d) => !excludedDocIds.has(d.id)).length;
+  // Email to a hospital (sent server-side: link only, never attachments).
+  const [emailTo, setEmailTo] = useState("");
+  const [emailHospital, setEmailHospital] = useState("");
+  const [emailNote, setEmailNote] = useState("");
+  const [emailSending, setEmailSending] = useState(false);
+  const [emailResult, setEmailResult] = useState<{ ok: boolean; text: string } | null>(null);
+  const sendEmail = async () => {
+    if (!shareToken || emailSending) return;
+    setEmailSending(true); setEmailResult(null);
+    const { data, error } = await supabase.functions.invoke("send-share-brief", {
+      body: { token: shareToken, recipientEmail: emailTo.trim(), hospitalName: emailHospital.trim(), note: emailNote.trim() },
+    });
+    let message: string | undefined;
+    if (error) { try { message = (await (error as any)?.context?.json?.())?.error; } catch { /* generic */ } }
+    if (!error && (data as any)?.sent) {
+      setEmailResult({ ok: true, text: `Sent to ${emailTo.trim()}. They'll receive one email with a secure link to everything you shared.` });
+      setEmailTo(""); setEmailNote("");
+    } else {
+      setEmailResult({ ok: false, text: message || "The email couldn't be sent. Please check the address and try again." });
+    }
+    setEmailSending(false);
+  };
 
   const totalRecords = bloodResults.length + uniqueMedications.length;
   const selectedExpiry = expiries.find((e) => e.id === expiry) || expiries[1];
@@ -102,7 +129,7 @@ const ShareBriefSection = () => {
       imagingResults: sections.imaging ? imagingResults.filter((r) => withinDateRange(r.date)) : [],
       medications: sections.medications ? uniqueMedications.filter((r) => withinDateRange(r.date)) : [],
       allergies: sections.allergies ? allergies : [],
-      documents: sections.documents ? documents.filter((r) => withinDateRange(r.date)) : [],
+      documents: sections.documents ? documents.filter((r) => withinDateRange(r.date) && !excludedDocIds.has(r.id)) : [],
       alerts,
     };
 
@@ -257,9 +284,36 @@ const ShareBriefSection = () => {
                     />
                     <span className="text-sm text-foreground">{label}</span>
                   </div>
-                  <span className="text-xs text-muted-foreground">{count} items</span>
+                  <span className="text-xs text-muted-foreground">{key === "documents" && excludedDocIds.size > 0 ? `${selectedDocCount} of ${count}` : count} items</span>
                 </label>
               ))}
+              {sections.documents && documents.length > 0 && (
+                <div className="bg-card border border-border rounded-lg">
+                  <button type="button" onClick={() => setShowDocPicker((v) => !v)} className="w-full flex items-center justify-between p-3 text-xs font-medium text-primary">
+                    <span>{showDocPicker ? "Hide document list" : "Choose which documents to include"}</span>
+                    <span className="text-muted-foreground font-normal">{selectedDocCount} of {documents.length} selected</span>
+                  </button>
+                  {showDocPicker && (
+                    <div className="border-t border-border p-3 space-y-2">
+                      <div className="flex gap-3 text-xs">
+                        <button type="button" className="text-primary hover:underline" onClick={() => setExcludedDocIds(new Set())}>Select all</button>
+                        <button type="button" className="text-muted-foreground hover:underline" onClick={() => setExcludedDocIds(new Set(documents.map((d) => d.id)))}>Select none</button>
+                      </div>
+                      <div className="max-h-64 overflow-auto space-y-1">
+                        {documents.map((d) => (
+                          <label key={d.id} className="flex items-center gap-3 p-2 rounded hover:bg-muted/50 cursor-pointer">
+                            <input type="checkbox" checked={!excludedDocIds.has(d.id)} onChange={() => toggleDoc(d.id)} className="w-4 h-4 rounded border-border text-primary" />
+                            <span className="min-w-0">
+                              <span className="block text-sm text-foreground truncate">{d.name}</span>
+                              <span className="block text-[11px] text-muted-foreground">{[d.type, d.facility, d.date].filter(Boolean).join(" · ")}</span>
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
@@ -442,7 +496,28 @@ const ShareBriefSection = () => {
               </div>
             </div>
           </div>
-          <button onClick={() => { setStep(1); setGenerated(false); setCountdown(0); setShareLink(""); setShareToken(""); setRevoked(false); }} className="flex items-center gap-2 px-5 py-2.5 bg-muted text-foreground rounded-lg text-sm">Create Another Brief</button>
+          {!revoked && (
+            <div className="bg-card border border-border rounded-xl p-5 space-y-3">
+              <div className="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-primary" />
+                <h3 className="font-heading text-lg text-foreground">Email it to a hospital or doctor</h3>
+              </div>
+              <p className="text-xs text-muted-foreground">They receive one email with a secure link to everything above, including a one-click download of all documents as a single PDF. No attachments are sent, so the link still expires and you can revoke it.</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <input value={emailHospital} onChange={(e) => setEmailHospital(e.target.value)} maxLength={120} placeholder="Hospital or doctor (optional)" className="px-3 py-2 bg-background border border-border rounded-lg text-sm" aria-label="Hospital or doctor name" />
+                <input type="email" value={emailTo} onChange={(e) => setEmailTo(e.target.value)} maxLength={254} placeholder="Email address" className="px-3 py-2 bg-background border border-border rounded-lg text-sm" aria-label="Recipient email address" />
+              </div>
+              <textarea value={emailNote} onChange={(e) => setEmailNote(e.target.value)} maxLength={600} rows={2} placeholder="Message (optional), e.g. my appointment is on Thursday" className="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm" aria-label="Message to the recipient" />
+              <div className="flex items-center gap-3">
+                <button onClick={sendEmail} disabled={emailSending || !/^\S+@\S+\.\S+$/.test(emailTo.trim())} className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 disabled:opacity-50">
+                  {emailSending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />} Send email
+                </button>
+                <p className="text-[11px] text-muted-foreground">Check the address carefully before sending.</p>
+              </div>
+              {emailResult && <p role="status" className={`text-xs ${emailResult.ok ? "text-emerald-700" : "text-destructive"}`}>{emailResult.text}</p>}
+            </div>
+          )}
+          <button onClick={() => { setEmailResult(null); setStep(1); setGenerated(false); setCountdown(0); setShareLink(""); setShareToken(""); setRevoked(false); }} className="flex items-center gap-2 px-5 py-2.5 bg-muted text-foreground rounded-lg text-sm">Create Another Brief</button>
         </div>
       )}
     </div>
