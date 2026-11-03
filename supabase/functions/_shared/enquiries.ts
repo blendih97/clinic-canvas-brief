@@ -34,7 +34,7 @@ const ADMIN_RECIPIENT = "info@rinvita.co.uk";
 /** Minimal structural type — keeps this module importable outside Deno. */
 export interface EnquiryClient {
   from: (table: string) => { insert: (row: unknown) => PromiseLike<{ error: { message: string } | null }> };
-  functions: { invoke: (name: string, args: unknown) => Promise<{ error: unknown }> };
+  functions: { invoke: (name: string, options?: { body?: unknown }) => PromiseLike<{ error: unknown }> };
 }
 
 export async function saveEnquiryAndNotify(
