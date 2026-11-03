@@ -1,4 +1,4 @@
-import { rangeForStorage } from "./referenceRanges.ts";
+import { rangeForStorage, statusForStorage } from "./referenceRanges.ts";
 // Writes an analyse-document result into the patient's structured tables.
 // Used by retry-document (server-side retry of a failed upload).
 // deno-lint-ignore-file no-explicit-any
@@ -16,7 +16,7 @@ export async function persistExtraction(
       .filter((b: any) => b && b.marker && b.unit !== undefined && b.value !== undefined)
       .map((b: any) => ({
         user_id: userId, marker: String(b.marker), value: Number(b.value), unit: String(b.unit ?? ""),
-        range: rangeForStorage(String(b.marker), b.unit, b.range ? String(b.range) : null), status: b.status || "normal",
+        range: rangeForStorage(String(b.marker), b.unit, b.range ? String(b.range) : null), status: statusForStorage(String(b.marker), b.unit, Number(b.value), b.range ? String(b.range) : null, b.status),
         trend: Array.isArray(b.trend) ? b.trend : [], date: b.date || docDate, source: b.source || docFacility,
       }));
     if (rows.length) await supabase.from("blood_results").insert(rows);
@@ -38,7 +38,13 @@ export async function persistExtraction(
     if (rows.length) await supabase.from("medications").insert(rows);
   }
   if (Array.isArray(extracted.allergies) && extracted.allergies.length) {
-    const rows = extracted.allergies.filter((a: any) => a && a.substance).map((a: any) => ({
+    const { data: existing } = await supabase.from("allergies").select("substance").eq("user_id", userId);
+    const known = new Set((existing || []).map((a: any) => String(a.substance || "").trim().toLowerCase()));
+    const rows = extracted.allergies.filter((a: any) => {
+      const k = String(a?.substance || "").trim().toLowerCase();
+      if (!k || known.has(k)) return false;
+      known.add(k); return true;
+    }).map((a: any) => ({
       user_id: userId, substance: a.substance, reaction: a.reaction || null, severity: a.severity || null, source: "ai",
     }));
     if (rows.length) await supabase.from("allergies").insert(rows);

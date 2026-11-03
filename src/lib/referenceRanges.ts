@@ -62,12 +62,52 @@ export function typicalRange(marker: string, unit: string | null | undefined): s
   return hit ? hit.range : null;
 }
 
+/** "4,0 – 5,6" -> "4.0 – 5.6". Only decimal commas (1–2 digits after); "1,000" is left alone. */
+export function normaliseDecimalCommas(s: string): string {
+  return s.replace(/(\d),(\d{1,2})(?!\d)/g, "$1.$2");
+}
+
+const isLabRange = (r: string | null | undefined) => {
+  const t = (r ?? "").trim();
+  return !!t && !t.toLowerCase().startsWith(TYPICAL_PREFIX.toLowerCase()) && !/^(null|n\/?a|none|-|—)$/i.test(t);
+};
+
 /** The value to store in blood_results.range: the lab's range, else "Typical: …", else null. */
 export function rangeForStorage(marker: string, unit: string | null | undefined, labRange: string | null | undefined): string | null {
   const lab = (labRange ?? "").trim();
-  if (lab && !lab.toLowerCase().startsWith(TYPICAL_PREFIX.toLowerCase()) && !/^(null|n\/?a|none|-|—)$/i.test(lab)) return lab;
+  if (isLabRange(lab)) return normaliseDecimalCommas(lab);
   const typical = typicalRange(marker, unit);
   return typical ? `${TYPICAL_PREFIX} ${typical}` : null;
+}
+
+/** true/false when the value is outside/inside the range; null when the range can't be read.
+ *  For "Male: …, Female: …" it is outside only if outside every listed range. */
+export function outsideRange(value: number, range: string): boolean | null {
+  if (!Number.isFinite(value)) return null;
+  const parts = range.split(/,\s*(?=(?:male|female)\s*:)/i).map((p) => p.replace(/^\s*(male|female)\s*:\s*/i, ""));
+  const verdicts = parts.map((p) => {
+    const t = normaliseDecimalCommas(p).replace(/\(.*?\)/g, "").trim();
+    let m = t.match(/^(-?\d+(?:\.\d+)?)\s*(?:–|—|-|to)\s*(-?\d+(?:\.\d+)?)/i);
+    if (m) return value < Number(m[1]) || value > Number(m[2]);
+    m = t.match(/^(<=|≤|<)\s*(-?\d+(?:\.\d+)?)/);
+    if (m) return m[1] === "<" ? value >= Number(m[2]) : value > Number(m[2]);
+    m = t.match(/^(>=|≥|>)\s*(-?\d+(?:\.\d+)?)/);
+    if (m) return m[1] === ">" ? value <= Number(m[2]) : value < Number(m[2]);
+    return null;
+  });
+  if (verdicts.some((v) => v === null)) return null;
+  return verdicts.every((v) => v === true);
+}
+
+/**
+ * The status to store. A lab-printed range or a document flag always wins.
+ * With neither, a value outside the vetted typical range is marked "flagged".
+ */
+export function statusForStorage(marker: string, unit: string | null | undefined, value: number, labRange: string | null | undefined, aiStatus: string | null | undefined): string {
+  const status = aiStatus === "flagged" || aiStatus === "critical" ? aiStatus : "normal";
+  if (isLabRange(labRange) || status !== "normal") return status;
+  const typical = typicalRange(marker, unit);
+  return typical && outsideRange(value, typical) === true ? "flagged" : "normal";
 }
 
 /** Picks the line for the patient's sex from "Male: a – b, Female: c – d". */

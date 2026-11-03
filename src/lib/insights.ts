@@ -1,4 +1,7 @@
-export function getBloodInsight(status: string, trend: number[], rangeIsTypical = false): string {
+export function getBloodInsight(status: string, trend: number[], rangeIsTypical = false, outsideTypical: boolean | null = null): string {
+  if (rangeIsTypical && (status === "flagged" || status === "critical") && outsideTypical === true) {
+    return "This value is outside the typical UK adult range. Your report did not print the laboratory's own range, so discuss it with your doctor.";
+  }
   if (rangeIsTypical && (status === "flagged" || status === "critical")) {
     return "Your laboratory marked this result as abnormal using its own reference range, which is not printed on the report. Ranges differ between laboratories, so discuss it with your doctor.";
   }

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { supabase } from "@/integrations/supabase/client";
-import { rangeForStorage } from "@/lib/referenceRanges";
+import { rangeForStorage, statusForStorage } from "@/lib/referenceRanges";
 
 export interface BloodResult {
   id: string;
@@ -216,7 +216,14 @@ export const useVaultStore = create<VaultState>()((set, get) => ({
       alerts: (alerts.data || []).map((r: any) => ({
         type: r.type as "critical" | "flagged", message: r.message,
       })),
-      allergies: (allergies.data || []).map((r: any) => ({
+      // One entry per substance (several documents often record the same allergy);
+      // keep the most detailed reaction.
+      allergies: Object.values((allergies.data || []).reduce((acc: Record<string, any>, r: any) => {
+        const key = String(r.substance || "").trim().toLowerCase();
+        const cur = acc[key];
+        if (!cur || String(r.reaction || "").length > String(cur.reaction || "").length) acc[key] = r;
+        return acc;
+      }, {})).map((r: any) => ({
         id: r.id, substance: r.substance, reaction: r.reaction || "", severity: r.severity || "",
         source: r.source || "ai",
       })),
@@ -249,7 +256,7 @@ export const useVaultStore = create<VaultState>()((set, get) => ({
   addBloodResults: async (results, userId) => {
     const rows = results.map((r) => ({
       user_id: userId, marker: r.marker, value: r.value, unit: r.unit, range: rangeForStorage(r.marker, r.unit, r.range),
-      status: r.status, trend: r.trend, date: r.date, source: r.source,
+      status: statusForStorage(r.marker, r.unit, Number(r.value), r.range, r.status), trend: r.trend, date: r.date, source: r.source,
     }));
     const { data } = await supabase.from("blood_results").insert(rows).select();
     if (data) {
@@ -348,7 +355,14 @@ export const useVaultStore = create<VaultState>()((set, get) => ({
   },
 
   addAllergies: async (newAllergies, userId) => {
-    const rows = newAllergies.map((a) => ({
+    const known = new Set(get().allergies.map((a) => a.substance.trim().toLowerCase()));
+    const fresh = newAllergies.filter((a) => {
+      const k = (a.substance || "").trim().toLowerCase();
+      if (!k || known.has(k)) return false;
+      known.add(k); return true;
+    });
+    if (!fresh.length) return;
+    const rows = fresh.map((a) => ({
       user_id: userId, substance: a.substance, reaction: a.reaction, severity: a.severity,
       source: a.source || "ai",
     }));
@@ -368,7 +382,14 @@ export const useVaultStore = create<VaultState>()((set, get) => ({
   },
 
   removeAllergy: async (id: string) => {
-    await supabase.from("allergies").delete().eq("id", id);
+    // Remove every row for the same substance, since the list shows one entry per substance.
+    const target = get().allergies.find((a) => a.id === id);
+    const { data: auth } = await supabase.auth.getUser();
+    if (target && auth?.user) {
+      await supabase.from("allergies").delete().eq("user_id", auth.user.id).ilike("substance", target.substance.trim());
+    } else {
+      await supabase.from("allergies").delete().eq("id", id);
+    }
     set((s) => ({ allergies: s.allergies.filter((a) => a.id !== id) }));
   },
 

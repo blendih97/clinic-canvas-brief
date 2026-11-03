@@ -33,3 +33,28 @@ describe("reference ranges", () => {
     expect(readFileSync("supabase/functions/_shared/referenceRanges.ts", "utf8")).toBe(readFileSync("src/lib/referenceRanges.ts", "utf8"));
   });
 });
+
+import { statusForStorage, outsideRange, normaliseDecimalCommas } from "@/lib/referenceRanges";
+describe("status and formatting", () => {
+  it("flags a value outside the typical range when the report gives no range or flag", () => {
+    expect(statusForStorage("HbA1c", "%", 6.8, null, "normal")).toBe("flagged");
+    expect(statusForStorage("HbA1c", "%", 5.2, null, "normal")).toBe("normal");
+  });
+  it("keeps the lab's flag and the lab's own comparison", () => {
+    expect(statusForStorage("Uric Acid", "umol/L", 265, null, "flagged")).toBe("flagged");
+    expect(statusForStorage("HbA1c", "%", 6.0, "4,0 – 6,5", "normal")).toBe("normal");
+  });
+  it("reads ranges, including sex-specific ones", () => {
+    expect(outsideRange(265, "Male: 200 – 430, Female: 140 – 360")).toBe(false);
+    expect(outsideRange(420, "Male: 200 – 430, Female: 140 – 360")).toBe(false); // inside the male range
+    expect(outsideRange(450, "Male: 200 – 430, Female: 140 – 360")).toBe(true);
+    expect(outsideRange(6, "0 – 5")).toBe(true);
+    expect(outsideRange(1.9, "< 1.70 (fasting)")).toBe(true);
+    expect(outsideRange(40, "> 50 (adequate)")).toBe(true);
+    expect(outsideRange(3, "see report")).toBeNull();
+  });
+  it("normalises decimal commas but not thousands separators", () => {
+    expect(normaliseDecimalCommas("4,0 – 5,6")).toBe("4.0 – 5.6");
+    expect(normaliseDecimalCommas("1,000 – 4,500")).toBe("1,000 – 4,500");
+  });
+});
