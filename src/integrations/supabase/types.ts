@@ -1316,6 +1316,7 @@ export type Database = {
           allergies: Json | null
           blood_results: Json | null
           created_at: string
+          documents: Json | null
           expires_at: string | null
           id: string
           imaging_results: Json | null
@@ -1329,6 +1330,7 @@ export type Database = {
           allergies?: Json | null
           blood_results?: Json | null
           created_at?: string
+          documents?: Json | null
           expires_at?: string | null
           id?: string
           imaging_results?: Json | null
@@ -1342,6 +1344,7 @@ export type Database = {
           allergies?: Json | null
           blood_results?: Json | null
           created_at?: string
+          documents?: Json | null
           expires_at?: string | null
           id?: string
           imaging_results?: Json | null
