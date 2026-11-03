@@ -1,7 +1,7 @@
 import { useSponsorship } from "@/hooks/useSponsorship";
 import { useSubscription } from "@/hooks/useSubscription";
 import {
-  LayoutDashboard, Droplets, ScanLine, Pill, FileText, Share2, CreditCard, Settings, LogOut, ChevronDown, User, FileDown, Users, Play, MoreHorizontal, ShieldAlert, Inbox, X
+  LayoutDashboard, Droplets, Pill, FileText, Share2, CreditCard, Settings, LogOut, ChevronDown, User, FileDown, Users, Play, MoreHorizontal, ShieldAlert, Inbox, X
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/hooks/useAuth";
@@ -11,37 +11,37 @@ import { useLocale } from "@/hooks/useLocale";
 
 type Section = "overview" | "blood" | "imaging" | "media" | "medications" | "documents" | "share" | "billing" | "export" | "family";
 
-const baseNavItems: { id: Section; labelKey: string; icon: React.ElementType; familyOnly?: boolean }[] = [
+// Imaging is hidden until the scan viewer is released; imaging reports live in Documents.
+// Family and Billing are self-pay only: hidden for patients sponsored by a partner.
+const baseNavItems: { id: Section; labelKey: string; icon: React.ElementType; familyOnly?: boolean; selfPayOnly?: boolean }[] = [
   { id: "overview", labelKey: "sidebar.overview", icon: LayoutDashboard },
   { id: "blood", labelKey: "sidebar.blood", icon: Droplets },
-  { id: "imaging", labelKey: "sidebar.imaging", icon: ScanLine },
   { id: "media", labelKey: "sidebar.media", icon: Play },
   { id: "medications", labelKey: "sidebar.medications", icon: Pill },
   { id: "documents", labelKey: "sidebar.documents", icon: FileText },
   { id: "export", labelKey: "sidebar.export", icon: FileDown },
   { id: "share", labelKey: "sidebar.share", icon: Share2 },
-  { id: "family", labelKey: "sidebar.family", icon: Users, familyOnly: true },
-  { id: "billing", labelKey: "sidebar.billing", icon: CreditCard },
+  { id: "family", labelKey: "sidebar.family", icon: Users, familyOnly: true, selfPayOnly: true },
+  { id: "billing", labelKey: "sidebar.billing", icon: CreditCard, selfPayOnly: true },
 ];
 
 // Primary mobile items (always visible at the bottom). Order matters.
-const mobilePrimary: Section[] = ["overview", "blood", "imaging", "documents"];
+const mobilePrimary: Section[] = ["overview", "blood", "medications", "documents"];
 
 // Items that live inside the mobile "More" sheet (in display order).
 type SheetAction =
-  | { kind: "section"; id: Section; labelKey: string; icon: React.ElementType; familyOnly?: boolean }
+  | { kind: "section"; id: Section; labelKey: string; icon: React.ElementType; familyOnly?: boolean; selfPayOnly?: boolean }
   | { kind: "route"; route: string; labelKey: string; icon: React.ElementType }
   | { kind: "callback"; callback: "requestRecords"; labelKey: string; icon: React.ElementType };
 
 const mobileMoreItems: SheetAction[] = [
-  { kind: "section", id: "medications", labelKey: "sidebar.medications", icon: Pill },
   { kind: "section", id: "medications", labelKey: "sidebar.allergies", icon: ShieldAlert },
   { kind: "section", id: "media", labelKey: "sidebar.media", icon: Play },
-  { kind: "section", id: "family", labelKey: "sidebar.family", icon: Users, familyOnly: true },
+  { kind: "section", id: "family", labelKey: "sidebar.family", icon: Users, familyOnly: true, selfPayOnly: true },
   { kind: "section", id: "share", labelKey: "sidebar.share", icon: Share2 },
   { kind: "callback", callback: "requestRecords", labelKey: "sidebar.requestRecords", icon: Inbox },
   { kind: "section", id: "export", labelKey: "sidebar.export", icon: FileDown },
-  { kind: "section", id: "billing", labelKey: "sidebar.billing", icon: CreditCard },
+  { kind: "section", id: "billing", labelKey: "sidebar.billing", icon: CreditCard, selfPayOnly: true },
   { kind: "route", route: "/app/settings", labelKey: "sidebar.settings", icon: Settings },
 ];
 
@@ -71,7 +71,10 @@ const Sidebar = ({ active, onNavigate, onRequestRecords }: SidebarProps) => {
     family: t("sidebar.familyPlan"),
   };
 
-  const navItems = baseNavItems.filter((item) => !item.familyOnly || plan === "family");
+  // Sponsored = an active partner sponsorship. Hidden while it is still loading,
+  // so sponsored patients never see a flash of Billing.
+  const hideSelfPay = sponsorship === undefined || !!sponsorship?.active;
+  const navItems = baseNavItems.filter((item) => (!item.familyOnly || plan === "family") && !(item.selfPayOnly && hideSelfPay));
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -104,7 +107,7 @@ const Sidebar = ({ active, onNavigate, onRequestRecords }: SidebarProps) => {
     const primaryItems = navItems.filter((item) => mobilePrimary.includes(item.id))
       // sort to match the mobilePrimary order
       .sort((a, b) => mobilePrimary.indexOf(a.id) - mobilePrimary.indexOf(b.id));
-    const sheetItems = mobileMoreItems.filter((it) => !(it.kind === "section" && it.familyOnly && plan !== "family"));
+    const sheetItems = mobileMoreItems.filter((it) => !(it.kind === "section" && ((it.familyOnly && plan !== "family") || (it.selfPayOnly && hideSelfPay))));
     const moreActive = !mobilePrimary.includes(active);
 
     return (

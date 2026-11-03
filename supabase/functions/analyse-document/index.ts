@@ -15,6 +15,12 @@ CRITICAL RULES:
 - Only extract information EXPLICITLY present in the document
 - NEVER fabricate, guess, or infer values not stated
 - If a document is an imaging report with no blood tests, bloodResults MUST be empty
+
+REFERENCE RANGES (every bloodResults item MUST have a "range"):
+- If the document prints a reference range for the result, copy it exactly as printed (keep sex-specific wording, e.g. "Male: 14 - 16, Female: 12 - 14").
+- If the document prints NO reference range for that result, set "range" to a widely used adult reference range for that marker IN THE SAME UNIT as the value, prefixed exactly with "Typical: " (e.g. "Typical: 35 - 50"; sex-specific as "Typical: Male: 200 - 430, Female: 140 - 360"). Never present a typical range as the laboratory's own.
+- If you cannot give a reliable range in that exact unit, set "range" to null. Never convert units.
+- "status" reflects the document's own flag when it gives one; otherwise compare the value with the range.
 - Return ONLY valid JSON, no markdown fences, no explanation
 
 TRANSLATION RULES:
@@ -43,7 +49,7 @@ Return this exact JSON structure:
       "marker": "string (in ${targetLangName})",
       "value": number,
       "unit": "string",
-      "range": "string",
+      "range": "string (lab-printed range, or \"Typical: ...\" when the document prints none)",
       "status": "normal" | "flagged" | "critical",
       "trend": [number],
       "date": "YYYY-MM-DD",

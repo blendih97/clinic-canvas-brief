@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { displayRange } from "@/lib/referenceRanges";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Shield, Clock, AlertTriangle, Pill, Droplets, ScanLine } from "lucide-react";
@@ -231,7 +232,7 @@ const ShareView = () => {
                     <tr key={i} className="border-b border-border/50">
                       <td className="p-4 text-sm text-foreground">{b.marker}</td>
                       <td className="p-4 text-sm text-foreground">{b.value} {b.unit}</td>
-                      <td className="p-4 text-xs text-muted-foreground">{b.range}</td>
+                      <td className="p-4 text-xs text-muted-foreground">{(() => { const d = displayRange(b); return d ? (d.typical ? <>{d.text}<span className="block text-[10px]">Typical adult range (not on report)</span></> : d.text) : "—"; })()}</td>
                       <td className="p-4">
                         <span className={`text-xs px-2 py-0.5 rounded-full border ${
                           b.status === "critical" ? "bg-destructive/10 text-destructive border-destructive/20" :

@@ -3,7 +3,6 @@ import SplashScreen from "@/components/SplashScreen";
 import Sidebar from "@/components/Sidebar";
 import OverviewSection from "@/components/sections/OverviewSection";
 import BloodResultsSection from "@/components/sections/BloodResultsSection";
-import ImagingSection from "@/components/sections/ImagingSection";
 import MediaSection from "@/components/sections/MediaSection";
 import MedicationsSection from "@/components/sections/MedicationsSection";
 import DocumentsSection from "@/components/sections/DocumentsSection";
@@ -22,6 +21,7 @@ import { useVaultStore } from "@/store/vaultStore";
 import { supabase } from "@/integrations/supabase/client";
 import { canUploadDocument, countQuotaDocuments, hasAccess, type Feature, FREE_DOC_LIMIT } from "@/lib/planAccess";
 import { useSubscription } from "@/hooks/useSubscription";
+import { useSponsorship } from "@/hooks/useSponsorship";
 import { trackEvent } from "@/lib/analytics";
 import PendingPlanBanner from "@/components/PendingPlanBanner";
 import { emptyDashboard } from "@/lib/onboarding";
@@ -43,10 +43,12 @@ const Index = () => {
   const { loadUserData, documents } = useVaultStore();
 
   const { isActive, planTier } = useSubscription();
+  const sponsorship = useSponsorship();
+  const sponsored = !!sponsorship?.active;
   const canUpload = canUploadDocument(profile, countQuotaDocuments(documents as any), isActive);
   const freeDocsUsed = Math.min(documents.length, FREE_DOC_LIMIT);
   const firstRecord = emptyDashboard(documents.length, !!viewingMember);
-  const showFreeBanner = !isActive && !viewingMember && !firstRecord;
+  const showFreeBanner = !isActive && !viewingMember && !firstRecord && sponsorship !== undefined && !sponsored;
 
   const profileIncomplete = !!profile && !viewingMember && (
     !profile.nationality || !profile.emergency_contact_name || !profile.emergency_contact_phone
@@ -160,6 +162,11 @@ const Index = () => {
     setSection("overview");
   };
 
+  // Billing and Family are for self-pay patients only.
+  useEffect(() => {
+    if (sponsored && (section === "billing" || section === "family")) setSection("overview");
+  }, [sponsored, section]);
+
   const renderSection = () => {
     switch (section) {
       case "overview":
@@ -167,7 +174,8 @@ const Index = () => {
       case "blood":
         return <BloodResultsSection />;
       case "imaging":
-        return <ImagingSection />;
+        // Imaging section is hidden until the scan viewer is released; reports live in Documents.
+        return <DocumentsSection onRequestRecords={requestRecordsAccess} />;
       case "media":
         return <MediaSection onRequestRecords={requestRecordsAccess} onUpload={requestUpload} />;
       case "medications":

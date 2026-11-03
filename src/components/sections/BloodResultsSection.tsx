@@ -4,6 +4,18 @@ import { useVaultStore } from "@/store/vaultStore";
 import { useAuth } from "@/hooks/useAuth";
 import { getBloodInsight } from "@/lib/insights";
 import MedicalDisclaimer from "@/components/MedicalDisclaimer";
+import { displayRange, TYPICAL_NOTE } from "@/lib/referenceRanges";
+
+const RangeText = ({ r, sex, className = "text-[10px] text-muted-foreground" }: { r: any; sex?: string | null; className?: string }) => {
+  const d = displayRange(r, sex);
+  if (!d) return <p className={className}>Range: not provided</p>;
+  return (
+    <p className={className} title={d.typical ? TYPICAL_NOTE : "Range printed on your laboratory report"}>
+      {d.typical ? "Typical range" : "Range"}: {d.text}
+      {d.typical && <span className="block text-[9px] text-muted-foreground/80">Not printed on your report</span>}
+    </p>
+  );
+};
 
 const statusColors = {
   normal: { badge: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20", border: "border-l-emerald-500" },
@@ -137,17 +149,6 @@ const BloodResultsSection = ({ pinnedIds, onTogglePin }: BloodResultsSectionProp
     );
   }
 
-  const renderRange = (range: string) => {
-    if (!sex) {
-      return (
-        <span>
-          {range}
-          <span className="block text-[9px] text-muted-foreground mt-0.5">Complete your profile to see your personalised range.</span>
-        </span>
-      );
-    }
-    return range;
-  };
 
   return (
     <div className="space-y-8">
@@ -219,7 +220,7 @@ const BloodResultsSection = ({ pinnedIds, onTogglePin }: BloodResultsSectionProp
                         <div className="flex items-center gap-4 shrink-0">
                           <div className="text-right">
                             <p className="text-sm text-foreground">{r.value} <span className="text-xs text-muted-foreground">{r.unit}</span></p>
-                            {r.range && <p className="text-[10px] text-muted-foreground">Range: {r.range}</p>}
+                            <RangeText r={r} sex={sex} />
                           </div>
                           <span className={`text-[10px] px-2 py-0.5 rounded-full border ${statusColors[r.status].badge}`}>{r.status}</span>
                           {onTogglePin && (
@@ -301,7 +302,7 @@ const BloodResultsSection = ({ pinnedIds, onTogglePin }: BloodResultsSectionProp
                       {r.value}
                       <span className="text-xs text-muted-foreground ml-1">{r.unit}</span>
                     </p>
-                    <p className="text-[10px] text-muted-foreground mt-1">Range: {renderRange(r.range)}</p>
+                    <RangeText r={r} sex={sex} className="text-[10px] text-muted-foreground mt-1" />
                   </div>
                   <div className="flex flex-col items-end gap-1">
                     <Sparkline data={r.trend} status={r.status} />
@@ -366,7 +367,7 @@ const BloodResultsSection = ({ pinnedIds, onTogglePin }: BloodResultsSectionProp
                     <tr key={r.id} className="border-b border-border/50 hover:bg-muted/50 transition-colors">
                       <td className="p-4 text-sm text-foreground font-medium">{r.marker}</td>
                       <td className="p-4 text-sm text-foreground">{r.value} <span className="text-muted-foreground text-xs">{r.unit}</span></td>
-                      <td className="p-4 text-xs text-muted-foreground">{r.range}</td>
+                      <td className="p-4"><RangeText r={r} sex={sex} className="text-xs text-muted-foreground" /></td>
                       <td className="p-4"><span className={`text-[10px] px-2 py-0.5 rounded-full border ${statusColors[r.status].badge}`}>{r.status}</span></td>
                       <td className="p-4"><Sparkline data={r.trend} status={r.status} /></td>
                       <td className="p-4 text-[11px] text-muted-foreground italic max-w-[200px]">{getBloodInsight(r.status, r.trend)}</td>
@@ -384,7 +385,7 @@ const BloodResultsSection = ({ pinnedIds, onTogglePin }: BloodResultsSectionProp
                       <tr key={h.id} className="bg-muted/30 border-b border-border/30">
                         <td className="p-3 pl-8 text-xs text-muted-foreground">{h.marker}</td>
                         <td className="p-3 text-xs text-muted-foreground">{h.value} {h.unit}</td>
-                        <td className="p-3 text-xs text-muted-foreground">{h.range}</td>
+                        <td className="p-3"><RangeText r={h} sex={sex} className="text-xs text-muted-foreground" /></td>
                         <td className="p-3"><span className={`text-[10px] px-2 py-0.5 rounded-full border ${statusColors[h.status].badge}`}>{h.status}</span></td>
                         <td className="p-3"></td>
                         <td className="p-3 text-[10px] text-muted-foreground italic">{getBloodInsight(h.status, h.trend)}</td>
