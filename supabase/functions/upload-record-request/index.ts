@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { rangeForStorage } from "../_shared/referenceRanges.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -165,7 +166,7 @@ Deno.serve(async (req) => {
             marker: String(b.marker),
             value: Number(b.value),
             unit: String(b.unit ?? ""),
-            range: b.range ? String(b.range) : null,
+            range: rangeForStorage(String(b.marker), b.unit, b.range ? String(b.range) : null),
             status: b.status || "normal",
             trend: Array.isArray(b.trend) ? b.trend : [],
             date: b.date || docDate,

@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { supabase } from "@/integrations/supabase/client";
+import { rangeForStorage } from "@/lib/referenceRanges";
 
 export interface BloodResult {
   id: string;
@@ -247,7 +248,7 @@ export const useVaultStore = create<VaultState>()((set, get) => ({
 
   addBloodResults: async (results, userId) => {
     const rows = results.map((r) => ({
-      user_id: userId, marker: r.marker, value: r.value, unit: r.unit, range: r.range,
+      user_id: userId, marker: r.marker, value: r.value, unit: r.unit, range: rangeForStorage(r.marker, r.unit, r.range),
       status: r.status, trend: r.trend, date: r.date, source: r.source,
     }));
     const { data } = await supabase.from("blood_results").insert(rows).select();

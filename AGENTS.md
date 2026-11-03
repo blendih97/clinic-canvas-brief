@@ -19,5 +19,5 @@
 - Partner-table isolation is verified by supabase/tests/partner_rls_test.sql (run via SQL; it rolls itself back and reports PASS/FAIL).
 - Claim success refreshes the auth profile and query caches; subscription hooks refetch on complimentary-field changes so all mounted access checks update together.
 - Subscription views share SponsorshipNotice and formatSponsorshipDate; server-side partner_sponsorship_expiry handles calendar-to-instant conversion to avoid inconsistent expiry displays.
-- Lab results always show a range: the lab-printed range wins; otherwise a "Typical:" range (from extraction or src/lib/referenceRanges.ts, same unit only) labelled as not printed on the report.
+- Lab results always show a range: the lab-printed range wins; otherwise a typical UK adult range from the vetted, sourced table in src/lib/referenceRanges.ts (same unit only, mirrored in supabase/functions/_shared). The AI never supplies ranges; status is always the lab's flag.
 - Billing and Family are self-pay only: hidden for patients with an active partner sponsorship. The Imaging section stays hidden until the scan viewer is released; imaging reports live in Documents.

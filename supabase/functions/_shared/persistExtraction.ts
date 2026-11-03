@@ -1,3 +1,4 @@
+import { rangeForStorage } from "./referenceRanges.ts";
 // Writes an analyse-document result into the patient's structured tables.
 // Used by retry-document (server-side retry of a failed upload).
 // deno-lint-ignore-file no-explicit-any
@@ -15,7 +16,7 @@ export async function persistExtraction(
       .filter((b: any) => b && b.marker && b.unit !== undefined && b.value !== undefined)
       .map((b: any) => ({
         user_id: userId, marker: String(b.marker), value: Number(b.value), unit: String(b.unit ?? ""),
-        range: b.range ? String(b.range) : null, status: b.status || "normal",
+        range: rangeForStorage(String(b.marker), b.unit, b.range ? String(b.range) : null), status: b.status || "normal",
         trend: Array.isArray(b.trend) ? b.trend : [], date: b.date || docDate, source: b.source || docFacility,
       }));
     if (rows.length) await supabase.from("blood_results").insert(rows);

@@ -12,7 +12,7 @@ const RangeText = ({ r, sex, className = "text-[10px] text-muted-foreground" }: 
   return (
     <p className={className} title={d.typical ? TYPICAL_NOTE : "Range printed on your laboratory report"}>
       {d.typical ? "Typical range" : "Range"}: {d.text}
-      {d.typical && <span className="block text-[9px] text-muted-foreground/80">Not printed on your report</span>}
+      {d.typical && <span className="block text-[9px] text-muted-foreground/80">Typical UK adult range · not printed on your report</span>}
     </p>
   );
 };
@@ -215,7 +215,7 @@ const BloodResultsSection = ({ pinnedIds, onTogglePin }: BloodResultsSectionProp
                       <div key={r.id} className={`flex items-center justify-between p-4 border-l-4 ${statusColors[r.status].border}`}>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm text-foreground font-medium">{r.marker}</p>
-                          <p className="text-[11px] text-muted-foreground italic mt-0.5">{getBloodInsight(r.status, r.trend)}</p>
+                          <p className="text-[11px] text-muted-foreground italic mt-0.5">{getBloodInsight(r.status, r.trend, !!displayRange(r)?.typical)}</p>
                         </div>
                         <div className="flex items-center gap-4 shrink-0">
                           <div className="text-right">
@@ -313,7 +313,7 @@ const BloodResultsSection = ({ pinnedIds, onTogglePin }: BloodResultsSectionProp
                   </div>
                 </div>
                 <p className="text-[11px] text-muted-foreground mt-3 leading-relaxed italic">
-                  {getBloodInsight(r.status, r.trend)}
+                  {getBloodInsight(r.status, r.trend, !!displayRange(r)?.typical)}
                 </p>
 
                 {/* History toggle */}
@@ -370,7 +370,7 @@ const BloodResultsSection = ({ pinnedIds, onTogglePin }: BloodResultsSectionProp
                       <td className="p-4"><RangeText r={r} sex={sex} className="text-xs text-muted-foreground" /></td>
                       <td className="p-4"><span className={`text-[10px] px-2 py-0.5 rounded-full border ${statusColors[r.status].badge}`}>{r.status}</span></td>
                       <td className="p-4"><Sparkline data={r.trend} status={r.status} /></td>
-                      <td className="p-4 text-[11px] text-muted-foreground italic max-w-[200px]">{getBloodInsight(r.status, r.trend)}</td>
+                      <td className="p-4 text-[11px] text-muted-foreground italic max-w-[200px]">{getBloodInsight(r.status, r.trend, !!displayRange(r)?.typical)}</td>
                       <td className="p-4 text-xs text-muted-foreground">{r.date}</td>
                       <td className="p-4">
                         {group.history.length > 0 && (
@@ -388,7 +388,7 @@ const BloodResultsSection = ({ pinnedIds, onTogglePin }: BloodResultsSectionProp
                         <td className="p-3"><RangeText r={h} sex={sex} className="text-xs text-muted-foreground" /></td>
                         <td className="p-3"><span className={`text-[10px] px-2 py-0.5 rounded-full border ${statusColors[h.status].badge}`}>{h.status}</span></td>
                         <td className="p-3"></td>
-                        <td className="p-3 text-[10px] text-muted-foreground italic">{getBloodInsight(h.status, h.trend)}</td>
+                        <td className="p-3 text-[10px] text-muted-foreground italic">{getBloodInsight(h.status, h.trend, !!displayRange(h)?.typical)}</td>
                         <td className="p-3 text-xs text-muted-foreground">{h.date}</td>
                         <td className="p-3 text-[10px] text-muted-foreground">{h.source}</td>
                       </tr>

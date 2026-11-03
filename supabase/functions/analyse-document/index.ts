@@ -16,11 +16,10 @@ CRITICAL RULES:
 - NEVER fabricate, guess, or infer values not stated
 - If a document is an imaging report with no blood tests, bloodResults MUST be empty
 
-REFERENCE RANGES (every bloodResults item MUST have a "range"):
-- If the document prints a reference range for the result, copy it exactly as printed (keep sex-specific wording, e.g. "Male: 14 - 16, Female: 12 - 14").
-- If the document prints NO reference range for that result, set "range" to a widely used adult reference range for that marker IN THE SAME UNIT as the value, prefixed exactly with "Typical: " (e.g. "Typical: 35 - 50"; sex-specific as "Typical: Male: 200 - 430, Female: 140 - 360"). Never present a typical range as the laboratory's own.
-- If you cannot give a reliable range in that exact unit, set "range" to null. Never convert units.
-- "status" reflects the document's own flag when it gives one; otherwise compare the value with the range.
+REFERENCE RANGES:
+- If the document prints a reference range for a result, copy it into "range" exactly as printed (keep sex-specific wording, e.g. "Male: 14 - 16, Female: 12 - 14").
+- If the document prints NO reference range for that result, set "range" to null. Never supply a range from general knowledge; the app adds a vetted typical range itself.
+- "status": use the document's own flag when it gives one (e.g. "H", "L", "*", "Abnormal" -> "flagged"). Otherwise compare the value with the PRINTED range only. With no flag and no printed range, use "normal".
 - Return ONLY valid JSON, no markdown fences, no explanation
 
 TRANSLATION RULES:
@@ -49,7 +48,7 @@ Return this exact JSON structure:
       "marker": "string (in ${targetLangName})",
       "value": number,
       "unit": "string",
-      "range": "string (lab-printed range, or \"Typical: ...\" when the document prints none)",
+      "range": "string as printed, or null when the document prints none",
       "status": "normal" | "flagged" | "critical",
       "trend": [number],
       "date": "YYYY-MM-DD",
