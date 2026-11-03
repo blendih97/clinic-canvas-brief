@@ -56,7 +56,7 @@ const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void 
         subtitle: `Compiled by RinVita on ${new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })} · ${documents.length} documents`,
         allergies: st.allergies.map((a) => [a.substance, a.reaction].filter(Boolean).join(" — ")),
         medications: st.medications.filter((m) => m.active !== false).map((m) => [m.name, m.dose, m.frequency].filter(Boolean).join(" · ")),
-        labs: st.bloodResults.map((b) => ({ marker: b.marker, value: `${b.value} ${b.unit || ""}`.trim(), range: (() => { const d = displayRange(b); return d ? (d.typical ? `${d.text}, typical UK adult range` : d.text) : ""; })(), status: b.status })),
+        labs: [...st.bloodResults].sort((x, y) => (y.date || "").localeCompare(x.date || "")).map((b) => ({ date: b.date || undefined, marker: b.marker, value: `${b.value} ${b.unit || ""}`.trim(), range: (() => { const d = displayRange(b); return d ? (d.typical ? `${d.text}, typical UK adult range` : d.text) : ""; })(), status: b.status })),
         docs: documents.map((d) => ({
           name: d.name, type: d.type, facility: d.facility, date: d.date,
           summary: summaryOf(d.summary), text: d.contentTranslated,

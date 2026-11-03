@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { displayRange } from "@/lib/referenceRanges";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -147,6 +147,18 @@ const ShareView = () => {
   }
 
   const bloodResults = (brief.blood_results || []) as any[];
+  // Newest results first, grouped by the date the sample was taken (original order kept within a date).
+  const labGroups = bloodResults.reduce((acc: { date: string; rows: any[] }[], b: any) => {
+    const date = b.date || "";
+    const g = acc.find((x) => x.date === date);
+    if (g) g.rows.push(b); else acc.push({ date, rows: [b] });
+    return acc;
+  }, []).sort((a, b) => b.date.localeCompare(a.date));
+  const fmtLabDate = (d: string) => {
+    if (!d) return "Date not stated";
+    const t = new Date(d + "T00:00:00");
+    return isNaN(t.getTime()) ? d : t.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+  };
   const medications = (brief.medications || []) as any[];
   const allergies = (brief.allergies || []) as any[];
   const imagingResults = (brief.imaging_results || []) as any[];
@@ -175,7 +187,7 @@ const ShareView = () => {
           </p>
         </div>
         <div className="bg-primary/5 border border-primary/10 rounded-lg p-4 text-sm text-primary">
-          Scope: {brief.scope || "Full Health History"} · Created {new Date(brief.created_at).toLocaleDateString()}
+          Scope: {brief.scope || "Full Health History"} · Created {new Date(brief.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
         </div>
 
         {allergies.length > 0 && (
@@ -222,8 +234,8 @@ const ShareView = () => {
               <Droplets className="w-4 h-4 text-primary" />
               <h2 className="font-heading text-lg text-foreground">Lab Results</h2>
             </div>
-            <div className="bg-card border border-border rounded-lg overflow-hidden">
-              <table className="w-full">
+            <div className="bg-card border border-border rounded-lg overflow-x-auto">
+              <table className="w-full min-w-[560px]">
                 <thead>
                   <tr className="border-b border-border text-left">
                     <th className="p-4 text-xs text-muted-foreground uppercase font-medium">Marker</th>
@@ -233,8 +245,15 @@ const ShareView = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {bloodResults.map((b: any, i: number) => (
-                    <tr key={i} className="border-b border-border/50">
+                  {labGroups.map((g) => (
+                    <Fragment key={g.date || "undated"}>
+                      <tr className="bg-muted/40 border-b border-border/50">
+                        <td colSpan={4} className="px-4 py-2 text-xs font-medium text-foreground">
+                          Sample date: {fmtLabDate(g.date)} <span className="text-muted-foreground font-normal">· {g.rows.length} result{g.rows.length === 1 ? "" : "s"}</span>
+                        </td>
+                      </tr>
+                      {g.rows.map((b: any, i: number) => (
+                    <tr key={`${g.date}-${i}`} className="border-b border-border/50">
                       <td className="p-4 text-sm text-foreground">{b.marker}</td>
                       <td className="p-4 text-sm text-foreground">{b.value} {b.unit}</td>
                       <td className="p-4 text-xs text-muted-foreground">{(() => { const d = displayRange(b); return d ? (d.typical ? <>{d.text}<span className="block text-[10px]">Typical UK adult range, not printed on the report</span></> : d.text) : "—"; })()}</td>
@@ -246,6 +265,8 @@ const ShareView = () => {
                         }`}>{b.status}</span>
                       </td>
                     </tr>
+                      ))}
+                    </Fragment>
                   ))}
                 </tbody>
               </table>

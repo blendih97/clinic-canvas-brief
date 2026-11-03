@@ -63,7 +63,7 @@ const SharedDocuments = ({ token, documents, cover }: { token: string; documents
         subtitle: `Shared ${cover?.createdAt ? new Date(cover.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : ""} · ${documents.length} document${documents.length === 1 ? "" : "s"}`,
         allergies: (cover?.allergies || []).map((a: any) => [a.substance, a.reaction].filter(Boolean).join(" — ")),
         medications: (cover?.medications || []).map((m: any) => [m.name, m.dose, m.frequency].filter(Boolean).join(" · ")),
-        labs: (cover?.bloodResults || []).map((b: any) => ({ marker: b.marker, value: `${b.value} ${b.unit || ""}`.trim(), range: (() => { const d = displayRange(b); return d ? (d.typical ? `${d.text}, typical UK adult range` : d.text) : ""; })(), status: b.status })),
+        labs: [...(cover?.bloodResults || [])].sort((x: any, y: any) => (y.date || "").localeCompare(x.date || "")).map((b: any) => ({ date: b.date || undefined, marker: b.marker, value: `${b.value} ${b.unit || ""}`.trim(), range: (() => { const d = displayRange(b); return d ? (d.typical ? `${d.text}, typical UK adult range` : d.text) : ""; })(), status: b.status })),
         docs: documents.map((d) => ({
           name: d.name || "Document", type: d.type, facility: d.facility, date: d.date,
           summary: summaryLines(d.summary), text: d.contentTranslated,

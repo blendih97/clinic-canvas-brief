@@ -19,7 +19,7 @@ export interface BundleInput {
   subtitle?: string;                   // e.g. "Shared via RinVita on 3 Nov 2026"
   allergies?: string[];
   medications?: string[];
-  labs?: { marker: string; value: string; range: string; status: string }[];
+  labs?: { marker: string; value: string; range: string; status: string; date?: string }[];
   docs: BundleDoc[];
 }
 
@@ -117,7 +117,7 @@ export async function buildCombinedPdf(input: BundleInput, onProgress?: (done: n
   if (input.medications?.length) { w.text("Medications", { size: 12, bold: true }); input.medications.forEach((m) => w.text(`• ${m}`, { indent: 6, gap: 1 })); w.y -= 6; }
   if (input.labs?.length) {
     w.text("Lab results", { size: 12, bold: true });
-    input.labs.forEach((l) => w.text(`• ${l.marker}: ${l.value}${l.range ? `  (range ${l.range})` : ""}${l.status && l.status !== "normal" ? `  [${l.status}]` : ""}`, { indent: 6, gap: 1 }));
+    input.labs.forEach((l) => w.text(`• ${l.date ? `${l.date}  ` : ""}${l.marker}: ${l.value}${l.range ? `  (range ${l.range})` : ""}${l.status && l.status !== "normal" ? `  [${l.status}]` : ""}`, { indent: 6, gap: 1 }));
     w.y -= 6;
   }
   w.text(`Enclosed documents (${input.docs.length})`, { size: 12, bold: true });
