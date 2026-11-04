@@ -3,7 +3,8 @@ import { displayRange } from "@/lib/referenceRanges";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import SharedDocuments, { type SharedDoc } from "@/components/share/SharedDocuments";
-import { Shield, Clock, AlertTriangle, Pill, Droplets, ScanLine } from "lucide-react";
+import { Shield, Clock, AlertTriangle, Pill, Droplets, ScanLine, Globe } from "lucide-react";
+import { SHARE_GATE_LANGUAGES, findShareGateLanguage, initialShareGateLanguage, saveShareGateLanguage } from "@/components/share/shareGateText";
 
 interface SharedBrief {
   token: string;
@@ -26,6 +27,8 @@ const ShareView = () => {
   const [accepted, setAccepted] = useState(false);
   const [declined, setDeclined] = useState(false);
   const [submittingAccept, setSubmittingAccept] = useState(false);
+  const [gateLang, setGateLang] = useState(() => initialShareGateLanguage());
+  const g = gateLang.text;
 
   const handleAccept = async () => {
     if (!token) return;
@@ -77,11 +80,11 @@ const ShareView = () => {
 
   if (declined) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-6">
+      <div className="min-h-screen bg-background flex items-center justify-center p-6" lang={gateLang.code} dir={gateLang.dir}>
         <div className="text-center max-w-md">
           <Shield className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-40" />
-          <h1 className="font-heading text-2xl text-foreground mb-2">Access declined</h1>
-          <p className="text-sm text-muted-foreground">Please contact the person who shared these records.</p>
+          <h1 className="font-heading text-2xl text-foreground mb-2">{g.declinedTitle}</h1>
+          <p className="text-sm text-muted-foreground">{g.declinedBody}</p>
         </div>
       </div>
     );
@@ -89,38 +92,50 @@ const ShareView = () => {
 
   if (!accepted) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-6">
-        <div className="max-w-xl w-full bg-card border border-border rounded-xl p-8 shadow-sm">
-          <div className="flex items-center gap-3 mb-5">
-            <Shield className="w-5 h-5 text-primary" />
-            <h1 className="font-heading text-xl text-foreground">Clinician access agreement</h1>
+      <div className="min-h-screen bg-background flex items-center justify-center p-4 sm:p-6">
+        <div className="max-w-xl w-full bg-card border border-border rounded-xl p-6 sm:p-8 shadow-sm" lang={gateLang.code} dir={gateLang.dir}>
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+            <div className="flex items-center gap-3 min-w-0">
+              <Shield className="w-5 h-5 text-primary shrink-0" />
+              <h1 className="font-heading text-xl text-foreground">{g.title}</h1>
+            </div>
+            <label className="flex items-center gap-1.5 text-xs text-muted-foreground" dir="ltr">
+              <Globe className="w-3.5 h-3.5" aria-hidden="true" />
+              <span className="sr-only">{g.language}</span>
+              <select
+                id="share-gate-language"
+                aria-label={g.language}
+                value={gateLang.code}
+                onChange={(e) => {
+                  const next = findShareGateLanguage(e.target.value);
+                  if (next) { setGateLang(next); saveShareGateLanguage(next.code); }
+                }}
+                className="bg-background border border-border rounded-md px-2 py-1 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+              >
+                {SHARE_GATE_LANGUAGES.map((l) => (
+                  <option key={l.code} value={l.code}>{l.name}</option>
+                ))}
+              </select>
+            </label>
           </div>
-          <p className="text-sm text-foreground/80 leading-relaxed mb-4">
-            You are about to access health records shared by a RinVita user. By proceeding you confirm that:
-          </p>
-          <ol className="text-sm text-foreground/80 leading-relaxed mb-5 space-y-2 list-decimal pl-5">
-            <li>You are a qualified healthcare professional accessing these records for clinical purposes only;</li>
-            <li>You will not store, share or process this data beyond the clinical purpose intended;</li>
-            <li>You acknowledge this data is protected under UK GDPR and you accept responsibility for handling it lawfully.</li>
-          </ol>
-          <p className="text-xs text-muted-foreground mb-6">
-            Your acceptance, including timestamp and IP address, is logged for audit purposes.
-          </p>
-          <div className="flex gap-3">
-            <button
-              onClick={() => setDeclined(true)}
-              className="flex-1 py-2.5 bg-muted text-foreground rounded-lg text-sm font-medium hover:bg-muted/80 transition-colors"
-            >
-              Decline
-            </button>
+          <p className="text-sm text-foreground leading-relaxed mb-3">{g.intro}</p>
+          <p className="text-sm text-foreground/80 leading-relaxed mb-6">{g.body}</p>
+          <div className="flex flex-col gap-3">
             <button
               onClick={handleAccept}
               disabled={submittingAccept}
-              className="flex-[2] py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
+              className="w-full py-3 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
             >
-              {submittingAccept ? "Loading…" : "I Accept"}
+              {submittingAccept ? g.loading : g.open}
+            </button>
+            <button
+              onClick={() => setDeclined(true)}
+              className="self-center text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground"
+            >
+              {g.notForMe}
             </button>
           </div>
+          <p className="text-xs text-muted-foreground mt-6">{g.logged}</p>
         </div>
       </div>
     );
