@@ -108,7 +108,7 @@ const RequestRecordsModal = ({ open, onClose }: Props) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-foreground/30 backdrop-blur-sm" onClick={handleClose} />
-      <div className="relative bg-card border border-border rounded-xl shadow-xl w-full max-w-lg mx-4">
+      <div className="relative bg-card border border-border rounded-xl shadow-xl w-full max-w-lg mx-4 max-h-[92vh] overflow-y-auto">
         <div className="flex items-center justify-between p-5 border-b border-border">
           <h3 className="font-heading text-xl text-foreground">
             {sent ? "Request Sent" : "Request Records from Provider"}
