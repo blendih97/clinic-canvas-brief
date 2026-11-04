@@ -1,3 +1,4 @@
+import { setPartnerChoseRecords } from "@/hooks/usePartnerAccess";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
@@ -94,6 +95,7 @@ const AuthPage = () => {
   }, [user, nextPath, checkoutPlan, navigate]);
 
   const goAfterAuth = () => {
+    setPartnerChoseRecords(false);
     if (checkoutPlan) return; // Keep the authenticated page mounted for its checkout effect.
     if (nextPath) window.location.href = nextPath;
     else navigate("/app");

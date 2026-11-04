@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { useQueryClient } from "@tanstack/react-query";
 import { refreshClaimAccess } from "@/lib/sponsorship";
+import { PARTNER_ACCESS_CHANGED } from "@/hooks/usePartnerAccess";
 import { capturePartnerParams, claimPartner, clearPendingPartner, readPendingPartner, savePendingPartner } from "@/lib/partners";
 
 /**
@@ -40,6 +41,7 @@ const PartnerClaimer = () => {
       clearPendingPartner();
       running.current = false;
       if (res.staff_joined) {
+        window.dispatchEvent(new Event(PARTNER_ACCESS_CHANGED));
         toast.success("You've joined your organisation's partner portal.");
         navigate("/partner");
       }

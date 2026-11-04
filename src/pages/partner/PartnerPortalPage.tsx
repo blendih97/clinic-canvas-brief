@@ -6,6 +6,7 @@ import { Copy, Download, LogOut } from "lucide-react";
 import SEO from "@/components/SEO";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { usePartnerAccess } from "@/hooks/usePartnerAccess";
 import { MAX_INVITES_PER_SUBMIT, parseEmailList, partnerLink } from "@/lib/partners";
 import { formatSponsorshipDate } from "@/lib/sponsorship";
 
@@ -21,6 +22,7 @@ const DAY = 86400_000;
 
 const PartnerPortalPage = ({ orgs, myMemberships }: { orgs: Org[]; myMemberships: Member[] }) => {
   const { user, signOut } = useAuth();
+  const partnerAccess = usePartnerAccess();
   const [orgId, setOrgId] = useState(orgs[0]?.id);
   const org = orgs.find((o) => o.id === orgId) || orgs[0];
   const isAdmin = myMemberships.some((m) => m.org_id === org.id && m.role === "partner_admin");
@@ -120,7 +122,7 @@ const PartnerPortalPage = ({ orgs, myMemberships }: { orgs: Org[]; myMemberships
               </select>
             )}
             <span className="hidden sm:inline text-muted-foreground">{user?.email}</span>
-            <Link to="/app" className="rounded-md border border-border px-3 py-1.5">My records</Link>
+            {partnerAccess?.hasOwnRecords && <Link to="/app?records=1" className="rounded-md border border-border px-3 py-1.5">My records</Link>}
             <button onClick={() => void signOut()} className="rounded-md border border-border px-3 py-1.5" aria-label="Sign out"><LogOut className="h-4 w-4" /></button>
           </div>
         </div>

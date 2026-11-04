@@ -1,7 +1,8 @@
 import { useSponsorship } from "@/hooks/useSponsorship";
+import { usePartnerAccess, setPartnerChoseRecords } from "@/hooks/usePartnerAccess";
 import { useSubscription } from "@/hooks/useSubscription";
 import {
-  LayoutDashboard, Droplets, Pill, FileText, Share2, CreditCard, Settings, LogOut, ChevronDown, User, FileDown, Users, Play, MoreHorizontal, ShieldAlert, Inbox, X
+  LayoutDashboard, Droplets, Pill, FileText, Share2, CreditCard, Settings, LogOut, ChevronDown, User, FileDown, Users, Play, MoreHorizontal, ShieldAlert, Inbox, X, Building2
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/hooks/useAuth";
@@ -55,6 +56,7 @@ const Sidebar = ({ active, onNavigate, onRequestRecords }: SidebarProps) => {
   const isMobile = useIsMobile();
   const { profile, signOut, user } = useAuth();
   const sponsorship = useSponsorship();
+  const partnerAccess = usePartnerAccess();
   const { planTier } = useSubscription();
   const { t } = useLocale();
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -140,6 +142,12 @@ const Sidebar = ({ active, onNavigate, onRequestRecords }: SidebarProps) => {
                   className="w-full text-left px-3 py-2 text-xs text-foreground hover:bg-muted flex items-center gap-2">
                   <User className="w-3.5 h-3.5" /> {t("sidebar.viewProfile")}
                 </button>
+                {partnerAccess?.isPartner && (
+                  <button onClick={() => { setPartnerChoseRecords(false); nav("/partner"); setDropdownOpen(false); }}
+                    className="w-full text-left px-3 py-2 text-xs text-foreground hover:bg-muted flex items-center gap-2">
+                    <Building2 className="w-3.5 h-3.5" /> Partner portal
+                  </button>
+                )}
                 <button onClick={() => { nav("/app/settings"); setDropdownOpen(false); }}
                   className="w-full text-left px-3 py-2 text-xs text-foreground hover:bg-muted flex items-center gap-2">
                   <Settings className="w-3.5 h-3.5" /> {t("sidebar.settings")}

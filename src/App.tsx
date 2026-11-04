@@ -48,6 +48,8 @@ import CookieConsent from "./components/CookieConsent";
 import { PaymentTestModeBanner } from "./components/PaymentTestModeBanner";
 import ScrollManager from "./components/ScrollManager";
 import PartnerClaimer from "./components/PartnerClaimer";
+import { usePartnerAccess, partnerChoseRecords, setPartnerChoseRecords } from "@/hooks/usePartnerAccess";
+import { readPendingPartner } from "@/lib/partners";
 import PartnerPublicPage from "./pages/PartnerPublicPage.tsx";
 import PartnerRoute from "./pages/partner/PartnerRoute.tsx";
 import AdminPartnersPage from "./pages/admin/AdminPartnersPage.tsx";
@@ -71,6 +73,32 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   }
 
   if (!user) return <Navigate to="/auth" replace />;
+  return <>{children}</>;
+};
+
+/**
+ * Partner staff use the partner portal, not the patient app. Staff with no records of
+ * their own are always sent to /partner. Staff who are also patients land on /partner
+ * after signing in and can open their own records with "My records" (?records=1).
+ */
+const PatientAppGuard = ({ children }: { children: React.ReactNode }) => {
+  const access = usePartnerAccess();
+  const { search } = useLocation();
+  const wantsRecords = new URLSearchParams(search).get("records") === "1";
+  useEffect(() => { if (wantsRecords) setPartnerChoseRecords(true); }, [wantsRecords]);
+
+  if (readPendingPartner()?.staff) return <Navigate to="/partner" replace />;
+  if (access === undefined) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-3">
+        <h1 className="font-heading text-2xl font-light tracking-[0.15em] gold-gradient-text">RinVita</h1>
+        <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+  if (access.isPartner && (!access.hasOwnRecords || (!wantsRecords && !partnerChoseRecords()))) {
+    return <Navigate to="/partner" replace />;
+  }
   return <>{children}</>;
 };
 
@@ -176,9 +204,9 @@ export const AppRoutes = () => (
               <Route path="/for-partners" element={<Navigate to="/for-clinics" replace />} />
               <Route path="/clinics" element={<ClinicsPartnersPage />} />
               <Route path="/partners" element={<ClinicsPartnersPage />} />
-              <Route path="/app" element={<ProtectedRoute><Index /></ProtectedRoute>} />
-              <Route path="/app/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-              <Route path="/app/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+              <Route path="/app" element={<ProtectedRoute><PatientAppGuard><Index /></PatientAppGuard></ProtectedRoute>} />
+              <Route path="/app/profile" element={<ProtectedRoute><PatientAppGuard><ProfilePage /></PatientAppGuard></ProtectedRoute>} />
+              <Route path="/app/settings" element={<ProtectedRoute><PatientAppGuard><SettingsPage /></PatientAppGuard></ProtectedRoute>} />
               <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
                 <Route index element={<AdminDashboardPage />} />
                 <Route path="users" element={<AdminPlaceholderPage title="Users" description="Review member access, plan state, and high-touch support actions." mode="users" />} />
