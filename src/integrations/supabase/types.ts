@@ -1247,14 +1247,9 @@ export type Database = {
       }
       record_requests: {
         Row: {
-          consent_signed_at: string | null
-          consent_signed_name: string | null
-          consent_statement: string | null
           created_at: string
           expires_at: string
           id: string
-          patient_dob: string | null
-          patient_email: string | null
           patient_name: string
           provider_email: string
           provider_name: string
@@ -1264,14 +1259,9 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          consent_signed_at?: string | null
-          consent_signed_name?: string | null
-          consent_statement?: string | null
           created_at?: string
           expires_at?: string
           id?: string
-          patient_dob?: string | null
-          patient_email?: string | null
           patient_name?: string
           provider_email: string
           provider_name: string
@@ -1281,14 +1271,9 @@ export type Database = {
           user_id: string
         }
         Update: {
-          consent_signed_at?: string | null
-          consent_signed_name?: string | null
-          consent_statement?: string | null
           created_at?: string
           expires_at?: string
           id?: string
-          patient_dob?: string | null
-          patient_email?: string | null
           patient_name?: string
           provider_email?: string
           provider_name?: string
