@@ -12,6 +12,10 @@ interface RecordRequestProps {
   requestDescription?: string
   uploadLink?: string
   isImaging?: boolean
+  patientEmail?: string
+  patientDob?: string
+  consentStatement?: string
+  consentSignedName?: string
 }
 
 const RecordRequestEmail = ({
@@ -20,7 +24,12 @@ const RecordRequestEmail = ({
   requestDescription,
   uploadLink,
   isImaging,
+  patientEmail,
+  patientDob,
+  consentStatement,
+  consentSignedName,
 }: RecordRequestProps) => {
+  const dob = patientDob ? new Date(`${patientDob}T12:00:00`).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : null
   const subjectIntro = isImaging
     ? 'has requested copies of their imaging studies'
     : 'has requested access to their medical records'
@@ -52,6 +61,24 @@ const RecordRequestEmail = ({
               {requestDescription || 'Their full medical record on file.'}
             </Text>
           </Section>
+
+          <Text style={textBold}>Patient details</Text>
+          <Section style={detailsBox}>
+            <Text style={detailLine}><strong>Name:</strong> {patientName || 'Not given'}</Text>
+            {dob ? <Text style={detailLine}><strong>Date of birth:</strong> {dob}</Text> : null}
+            {patientEmail ? <Text style={detailLine}><strong>Email:</strong> {patientEmail}</Text> : null}
+          </Section>
+
+          {consentStatement && consentSignedName ? (
+            <>
+              <Text style={textBold}>Signed consent to release</Text>
+              <Section style={requestBox}>
+                <Text style={requestText}>{consentStatement}</Text>
+                <Text style={signature}>{consentSignedName}</Text>
+                <Text style={small}>Signed electronically by {consentSignedName} from their RinVita account. A signed consent form (PDF) can be downloaded from the upload page.</Text>
+              </Section>
+            </>
+          ) : null}
 
           <Text style={text}>
             Please use the secure link below to upload the requested{' '}
@@ -96,6 +123,10 @@ export const template = {
     requestDescription: 'Full medical record from the past 5 years.',
     uploadLink: 'https://rinvita.co.uk/upload-request/sample-token',
     isImaging: false,
+    patientEmail: 'jane@example.com',
+    patientDob: '1980-02-14',
+    consentStatement: 'I, Jane Doe (date of birth 14 February 1980), authorise Sample Clinic to release copies of my medical records described in this request to me, by uploading them to my personal health record on RinVita (rinvita.co.uk), which I control. My contact email is jane@example.com. This consent covers only the records described and expires after 30 days. I can withdraw it at any time before the records are uploaded by contacting Sample Clinic.',
+    consentSignedName: 'Jane Doe',
   },
 } satisfies TemplateEntry
 
@@ -109,6 +140,9 @@ const textBold = { ...text, fontWeight: 600 as const }
 const requestBox = { background: '#f5f5f0', padding: '14px 16px', borderRadius: '6px', margin: '8px 0 18px', borderLeft: '3px solid #b8952a' }
 const requestText = { fontSize: '14px', color: '#333', lineHeight: '1.5', margin: 0 }
 const button = { background: '#b8952a', color: '#ffffff', padding: '12px 30px', borderRadius: '6px', textDecoration: 'none', fontSize: '14px', fontWeight: 500 }
+const detailsBox = { background: '#fafaf7', padding: '10px 16px', borderRadius: '6px', margin: '8px 0 18px', border: '1px solid #eee' }
+const detailLine = { fontSize: '13px', color: '#333', lineHeight: '1.5', margin: '2px 0' }
+const signature = { fontFamily: 'Georgia, serif', fontStyle: 'italic' as const, fontSize: '20px', color: '#1f2933', margin: '14px 0 4px' }
 const small = { fontSize: '12px', color: '#666', margin: '0 0 10px' }
 const footer = { borderTop: '1px solid #eee', marginTop: '28px', paddingTop: '14px' }
 const footerBrand = { fontFamily: 'Georgia, serif', fontSize: '14px', color: '#b8952a', letterSpacing: '0.1em', margin: 0 }

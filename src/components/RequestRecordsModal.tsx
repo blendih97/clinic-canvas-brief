@@ -3,6 +3,8 @@ import { X, Send, Loader2, CheckCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import RecordConsentFields, { consentReady } from "@/components/RecordConsentFields";
+import { consentStatement } from "@/lib/recordConsent";
 
 interface Props {
   open: boolean;
@@ -16,8 +18,13 @@ const RequestRecordsModal = ({ open, onClose }: Props) => {
   const [description, setDescription] = useState("");
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [agreed, setAgreed] = useState(false);
+  const [signature, setSignature] = useState("");
+  const patientName = profile?.full_name || user?.email?.split("@")[0] || "Patient";
+  const patientDob = profile?.date_of_birth || null;
 
   const reset = () => {
+    setAgreed(false); setSignature("");
     setProviderName("");
     setProviderEmail("");
     setDescription("");
@@ -30,13 +37,22 @@ const RequestRecordsModal = ({ open, onClose }: Props) => {
     onClose();
   };
 
+  const consentDetails = {
+    patientName,
+    patientEmail: user?.email || "",
+    patientDob,
+    providerName: providerName.trim(),
+    requestDescription: "",
+  };
+
   const handleSend = async () => {
     if (!user || !providerName.trim() || !providerEmail.trim() || !description.trim()) return;
+    if (!consentReady(consentDetails, agreed, signature)) return;
     setSending(true);
 
     try {
       const token = crypto.randomUUID();
-      const patientName = profile?.full_name || user.email?.split("@")[0] || "Patient";
+      const statement = consentStatement({ ...consentDetails, requestDescription: description.trim() });
       const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
       const { data: inserted, error } = await supabase.from("record_requests").insert({
@@ -45,6 +61,10 @@ const RequestRecordsModal = ({ open, onClose }: Props) => {
         provider_email: providerEmail.trim(),
         request_description: description.trim(),
         patient_name: patientName,
+        patient_email: user.email,
+        patient_dob: patientDob,
+        consent_statement: statement,
+        consent_signed_name: signature.trim(),
         token,
         status: "pending",
         expires_at: expiresAt,
@@ -63,6 +83,10 @@ const RequestRecordsModal = ({ open, onClose }: Props) => {
             patientName,
             requestDescription: description.trim(),
             uploadLink: `${appUrl}/upload-request/${token}`,
+            patientEmail: user.email,
+            patientDob: patientDob || undefined,
+            consentStatement: statement,
+            consentSignedName: signature.trim(),
             isImaging: false,
           },
         },
@@ -147,9 +171,11 @@ const RequestRecordsModal = ({ open, onClose }: Props) => {
                 />
               </div>
 
+              <RecordConsentFields details={consentDetails} agreed={agreed} onAgreed={setAgreed} signature={signature} onSignature={setSignature} />
+
               <button
                 onClick={handleSend}
-                disabled={sending || !providerName.trim() || !providerEmail.trim() || !description.trim()}
+                disabled={sending || !providerName.trim() || !providerEmail.trim() || !description.trim() || !consentReady(consentDetails, agreed, signature)}
                 className="w-full flex items-center justify-center gap-2 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium disabled:opacity-40 hover:bg-primary/90 transition-colors"
               >
                 {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}

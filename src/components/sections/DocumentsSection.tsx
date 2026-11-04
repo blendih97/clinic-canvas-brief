@@ -8,8 +8,9 @@ import type { Document } from "@/store/vaultStore";
 import { toast } from "sonner";
 import { retryDocument, FRIENDLY_FAILURE_MESSAGE } from "@/lib/documentRetry";
 import { RotateCw, Download } from "lucide-react";
-import { buildCombinedPdf, downloadBytes, safeFileName } from "@/lib/combinedPdf";
-import { displayRange } from "@/lib/referenceRanges";
+import { safeFileName } from "@/lib/combinedPdf";
+import { buildHealthBrief } from "@/lib/healthBrief";
+import { downloadBlob } from "@/lib/pdfExportV2";
 
 const countryFlags: Record<string, string> = { UAE: "🇦🇪", UK: "🇬🇧", Qatar: "🇶🇦", Switzerland: "🇨🇭", USA: "🇺🇸" };
 
@@ -45,34 +46,22 @@ const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void 
     setBundling("Preparing…");
     try {
       const st = useVaultStore.getState();
-      const summaryOf = (sum: Document["summary"]): string[] => {
-        if (!sum) return [];
-        if (typeof sum === "string") return [sum];
-        if (Array.isArray(sum)) return sum.filter((x) => typeof x === "string");
-        return (sum.englishText?.length ? sum.englishText : sum.bullets) || [];
-      };
-      const res = await buildCombinedPdf({
-        title: `Medical records${profile?.full_name ? ` — ${profile.full_name}` : ""}`,
-        subtitle: `Compiled by RinVita on ${new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })} · ${documents.length} documents`,
-        allergies: st.allergies.map((a) => [a.substance, a.reaction].filter(Boolean).join(" — ")),
-        medications: st.medications.filter((m) => m.active !== false).map((m) => [m.name, m.dose, m.frequency].filter(Boolean).join(" · ")),
-        labs: [...st.bloodResults].sort((x, y) => (y.date || "").localeCompare(x.date || "")).map((b) => ({ date: b.date || undefined, marker: b.marker, value: `${b.value} ${b.unit || ""}`.trim(), range: (() => { const d = displayRange(b); return d ? (d.typical ? `${d.text}, typical UK adult range` : d.text) : ""; })(), status: b.status })),
-        docs: documents.map((d) => ({
-          name: d.name, type: d.type, facility: d.facility, date: d.date,
-          summary: summaryOf(d.summary), text: d.contentTranslated,
-          getFile: async () => {
-            const path = d.filePath || (d.fileUrl && !/^https?:/i.test(d.fileUrl) ? d.fileUrl : null);
-            if (!path) return null;
-            const { data: blob } = await supabase.storage.from("medical-documents").download(path);
-            if (!blob) return null;
-            const isPdf = blob.type === "application/pdf" || /\.pdf$/i.test(path);
-            const isImg = blob.type.startsWith("image/") || /\.(jpe?g|png|gif|webp)$/i.test(path);
-            return { bytes: await blob.arrayBuffer(), kind: isPdf ? "pdf" : isImg ? "image" : "other", mime: blob.type };
-          },
-        })),
-      }, (done, total) => setBundling(`Adding ${Math.min(done + 1, total)} of ${total}…`));
-      downloadBytes(res.bytes, `${safeFileName(profile?.full_name || "RinVita")}-medical-records.pdf`);
-      toast.success(res.missing.length ? `PDF ready. ${res.missing.length} record(s) had no original file, so RinVita's text is included.` : "PDF ready with every document.");
+      const { blob, missing } = await buildHealthBrief({
+        data: { bloodResults: st.bloodResults, imagingResults: st.imagingResults, medications: st.medications, documents: st.documents, alerts: st.alerts, allergies: st.allergies },
+        patient: {
+          fullName: profile?.full_name || "Patient",
+          dob: profile?.date_of_birth || undefined,
+          biologicalSex: (profile as any)?.biological_sex || undefined,
+          nationality: profile?.nationality || undefined,
+          bloodType: profile?.blood_type || undefined,
+          conditions: (profile as any)?.current_diagnoses || undefined,
+        },
+        language: "en",
+        includeOriginals: true,
+        onProgress: (phase, detail) => setBundling(detail || (phase === "merging" ? "Adding the originals…" : "Preparing…")),
+      });
+      downloadBlob(blob, `${safeFileName(profile?.full_name || "RinVita")}-health-brief.pdf`);
+      toast.success(missing.length ? `PDF ready. ${missing.length} record(s) had no original file, so RinVita's reading is included.` : "PDF ready with every document.");
     } catch {
       toast.error("The PDF couldn't be created. Please try again.");
     } finally { setBundling(null); }

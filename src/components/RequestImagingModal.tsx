@@ -3,6 +3,8 @@ import { X, Send, Loader2, CheckCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import RecordConsentFields, { consentReady } from "@/components/RecordConsentFields";
+import { consentStatement } from "@/lib/recordConsent";
 
 interface Props {
   open: boolean;
@@ -21,24 +23,37 @@ const RequestImagingModal = ({ open, onClose }: Props) => {
   const [refNumber, setRefNumber] = useState("");
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [agreed, setAgreed] = useState(false);
+  const [signature, setSignature] = useState("");
+  const patientName = profile?.full_name || user?.email?.split("@")[0] || "Patient";
+  const patientDob = profile?.date_of_birth || null;
 
   const reset = () => {
     setProviderName(""); setProviderEmail(""); setImagingType("MRI");
     setBodyRegion(""); setStudyDate(""); setRefNumber("");
-    setSending(false); setSent(false);
+    setSending(false); setSent(false); setAgreed(false); setSignature("");
   };
 
   const handleClose = () => { reset(); onClose(); };
 
+  const consentDetails = {
+    patientName,
+    patientEmail: user?.email || "",
+    patientDob,
+    providerName: providerName.trim(),
+    requestDescription: "",
+  };
+
   const handleSend = async () => {
     if (!user || !providerName.trim() || !providerEmail.trim() || !bodyRegion.trim()) return;
+    if (!consentReady(consentDetails, agreed, signature)) return;
     setSending(true);
 
     try {
       const token = crypto.randomUUID();
-      const patientName = profile?.full_name || user.email?.split("@")[0] || "Patient";
       const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
       const description = `${imagingType} — ${bodyRegion}${studyDate ? ` (study date: ${studyDate})` : ""}${refNumber ? ` · Ref: ${refNumber}` : ""}. Please share the full DICOM study and any associated radiology report.`;
+      const statement = consentStatement({ ...consentDetails, requestDescription: description });
 
       const { data: inserted, error } = await supabase.from("record_requests").insert({
         user_id: user.id,
@@ -46,6 +61,10 @@ const RequestImagingModal = ({ open, onClose }: Props) => {
         provider_email: providerEmail.trim(),
         request_description: description,
         patient_name: patientName,
+        patient_email: user.email,
+        patient_dob: patientDob,
+        consent_statement: statement,
+        consent_signed_name: signature.trim(),
         token,
         status: "pending",
         expires_at: expiresAt,
@@ -63,6 +82,10 @@ const RequestImagingModal = ({ open, onClose }: Props) => {
             patientName,
             requestDescription: description,
             uploadLink: `${appUrl}/upload-request/${token}`,
+            patientEmail: user.email,
+            patientDob: patientDob || undefined,
+            consentStatement: statement,
+            consentSignedName: signature.trim(),
             isImaging: true,
           },
         },
@@ -158,8 +181,10 @@ const RequestImagingModal = ({ open, onClose }: Props) => {
                 The provider will receive a secure link accepting DICOM, JPEG, PNG and MP4 files — no login required.
               </p>
 
+              <RecordConsentFields details={consentDetails} agreed={agreed} onAgreed={setAgreed} signature={signature} onSignature={setSignature} />
+
               <button onClick={handleSend}
-                disabled={sending || !providerName.trim() || !providerEmail.trim() || !bodyRegion.trim()}
+                disabled={sending || !providerName.trim() || !providerEmail.trim() || !bodyRegion.trim() || !consentReady(consentDetails, agreed, signature)}
                 className="w-full flex items-center justify-center gap-2 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium disabled:opacity-40 hover:bg-primary/90 transition-colors">
                 {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                 {sending ? "Sending…" : "Send Request"}

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { Upload, CheckCircle, AlertTriangle, FileText, X, Loader2, Shield, FileImage } from "lucide-react";
+import { Upload, CheckCircle, AlertTriangle, FileText, X, Loader2, Shield, FileImage, ShieldCheck, Download } from "lucide-react";
+import { buildConsentPdf, formatDob, formatSignedAt } from "@/lib/recordConsent";
 import { supabase } from "@/integrations/supabase/client";
 
 const ACCEPTED_TYPES = ".pdf,.jpg,.jpeg,.png,.tif,.tiff,.dcm,.dicom,.mp4,.mov,.avi,.doc,.docx";
@@ -94,6 +95,20 @@ const UploadRequestPage = () => {
 
   const firstName = request?.patient_name?.split(" ")[0] || "the patient";
 
+  const downloadConsent = async () => {
+    if (!request?.consent_signed_name) return;
+    const bytes = await buildConsentPdf({
+      patientName: request.patient_name, patientEmail: request.patient_email || "", patientDob: request.patient_dob,
+      providerName: request.provider_name, requestDescription: request.request_description,
+      statement: request.consent_statement, signedName: request.consent_signed_name, signedAt: request.consent_signed_at, requestId: request.id,
+    });
+    const url = URL.createObjectURL(new Blob([bytes.slice()], { type: "application/pdf" }));
+    const a = document.createElement("a");
+    a.href = url; a.download = `Consent-to-release-${(request.patient_name || "patient").replace(/[^\w-]+/g, "-")}.pdf`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+  };
+
   const Shell = ({ children }: { children: React.ReactNode }) => (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">{children}</div>
   );
@@ -179,6 +194,29 @@ const UploadRequestPage = () => {
               <p className="text-sm text-foreground whitespace-pre-wrap">{request.request_description}</p>
             </div>
           </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+            <div className="p-3 rounded-lg border border-border"><p className="text-[11px] text-muted-foreground">Patient</p><p className="text-foreground font-medium break-words">{request.patient_name}</p></div>
+            <div className="p-3 rounded-lg border border-border"><p className="text-[11px] text-muted-foreground">Date of birth</p><p className="text-foreground font-medium">{request.patient_dob ? formatDob(request.patient_dob) : "Not given"}</p></div>
+            <div className="p-3 rounded-lg border border-border"><p className="text-[11px] text-muted-foreground">Patient email</p><p className="text-foreground font-medium break-all">{request.patient_email || "Not given"}</p></div>
+          </div>
+
+          {request.consent_signed_name ? (
+            <div className="rounded-lg border border-primary/25 bg-primary/5 p-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-primary" />
+                <p className="text-sm font-medium text-foreground">Signed consent to release</p>
+              </div>
+              <p className="text-xs text-foreground leading-relaxed">{request.consent_statement}</p>
+              <div>
+                <p className="font-heading italic text-2xl text-foreground">{request.consent_signed_name}</p>
+                <p className="text-[11px] text-muted-foreground">Signed electronically from the patient's RinVita account · {formatSignedAt(request.consent_signed_at)}</p>
+              </div>
+              <button onClick={downloadConsent} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border bg-background text-xs font-medium text-foreground hover:border-primary/40">
+                <Download className="w-3.5 h-3.5" /> Download signed consent (PDF)
+              </button>
+            </div>
+          ) : null}
 
           <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 space-y-2">
             <div className="flex items-start gap-2">

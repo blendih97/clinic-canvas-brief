@@ -4,7 +4,7 @@
 
 import React from "npm:react@18.3.1";
 // @ts-ignore - Deno resolves npm specifiers
-import { renderToBuffer, Document, Page, Text, View, StyleSheet, Font, Svg, Circle } from "npm:@react-pdf/renderer@4.0.0";
+import { renderToBuffer, Document, Page, Text, View, StyleSheet, Font, Svg, Circle, Polygon } from "npm:@react-pdf/renderer@4.0.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -942,6 +942,277 @@ const DocumentsPage = (data: PatientPayload, styles: Styles) => {
 };
 
 // ---------- HTTP handler ----------
+
+// =====================================================================================
+// Health Brief v2 — mirrors the clinician share page: allergies, medications (current
+// then past), lab results grouped by sample date (newest first), imaging, documents.
+// One divider page per document is rendered LAST (exactly one page each, in the same
+// order as `documents`); the browser inserts each original's pages after its divider.
+// =====================================================================================
+
+interface BriefV2Payload {
+  version: 2;
+  language: string;
+  generatedAtLabel: string;
+  patient: { fullName: string; dobLabel?: string; sex?: string; nationality?: string; bloodType?: string; conditions?: string };
+  allergies: { substance: string; reaction?: string; severity?: string }[];
+  medications: { name: string; dose?: string; frequency?: string; prescriber?: string; facility?: string; dateLabel?: string; active: boolean }[];
+  labGroups: { dateLabel: string; rows: { marker: string; value: string; range?: string; typical?: boolean; status: string }[] }[];
+  imaging: { title: string; dateLabel?: string; facility?: string; finding?: string; status?: string }[];
+  documents: { name: string; type?: string; dateLabel?: string; facility?: string; country?: string; summary: string[]; hasOriginal: boolean; text?: string }[];
+  /** false: no divider pages (originals not requested). */
+  includeOriginals?: boolean;
+  strings?: Partial<typeof BRIEF_EN>;
+}
+
+const BRIEF_EN = {
+  title: "Health Brief",
+  forClinicianTitle: "For the receiving clinician",
+  forClinician: "This is a patient-held summary. RinVita organised and translated it with AI from the patient's own documents. Each original document follows its own summary page, newest first. It does not replace records from the originating institution.",
+  forClinicianNoOriginals: "This is a patient-held summary. RinVita organised and translated it with AI from the patient's own documents. It does not replace records from the originating institution.",
+  dob: "Date of birth",
+  created: "Created",
+  conditions: "Conditions",
+  allergies: "Known allergies",
+  noAllergies: "No known allergies recorded",
+  medications: "Medications",
+  current: "Current",
+  past: "Past",
+  noMedications: "No medications recorded",
+  labs: "Lab results",
+  sampleDate: "Sample date",
+  results: "results",
+  result1: "result",
+  colTest: "Test",
+  colResult: "Result",
+  colRange: "Range",
+  colStatus: "Status",
+  normal: "Normal",
+  flagged: "Flagged",
+  critical: "Critical",
+  typicalNote: "Typical UK adult range, not printed on the report",
+  imaging: "Imaging",
+  documents: "Documents",
+  originalIncluded: "Original included",
+  noOriginal: "Original not stored",
+  originalDoc: "Original document",
+  of: "of",
+  rinvitaReading: "RinVita's reading",
+  originalFollows: "The original document follows.",
+  originalMissing: "The original file was not stored in RinVita. RinVita's reading of it is shown here.",
+  footer: "Prepared by the patient with RinVita · Not a medical device · ICO ZC123014",
+  page: "Page",
+};
+
+const B = { ink: "#1F2933", muted: "#5F6B74", line: "#E4E0D6", gold: "#B8952A", cream: "#F6F2E9", paper: "#FFFFFF",
+  okBg: "#E8F5EE", ok: "#22704A", warnBg: "#FBF1DC", warn: "#8A5A0B", badBg: "#FDECEC", bad: "#B42318", redBg: "#FDF1F0", redLine: "#F3C9C4" };
+
+function briefStyles(language: string) {
+  const { display, body } = fontsForLanguage(language);
+  const rtl = isRtlLanguage(language);
+  const align = rtl ? "right" : "left";
+  const row = rtl ? "row-reverse" : "row";
+  return StyleSheet.create({
+    page: { paddingTop: 70, paddingBottom: 56, paddingHorizontal: 42, fontFamily: body, fontSize: 9.5, color: B.ink, backgroundColor: B.paper, direction: rtl ? "rtl" : "ltr" },
+    header: { position: "absolute", top: 24, left: 42, right: 42, flexDirection: row, justifyContent: "space-between", alignItems: "center", paddingBottom: 8, borderBottomWidth: 0.6, borderBottomColor: B.line },
+    brand: { flexDirection: "row", alignItems: "center" },
+    brandText: { fontFamily: "Cormorant Garamond", fontSize: 15, fontWeight: 600, color: B.gold, marginLeft: 6, letterSpacing: 1 },
+    headerRight: { fontSize: 8, color: B.muted, textAlign: rtl ? "left" : "right" },
+    footer: { position: "absolute", bottom: 22, left: 42, right: 42, flexDirection: row, justifyContent: "space-between", fontSize: 7.5, color: B.muted, borderTopWidth: 0.6, borderTopColor: B.line, paddingTop: 6 },
+    title: { fontFamily: display, fontSize: 28, fontWeight: display === "Cormorant Garamond" ? 600 : 400, color: B.ink, textAlign: align },
+    name: { fontSize: 14, fontWeight: 700, marginTop: 4, textAlign: align },
+    meta: { fontSize: 9, color: B.muted, marginTop: 3, textAlign: align },
+    note: { marginTop: 14, padding: 10, backgroundColor: B.cream, borderRadius: 6 },
+    noteTitle: { fontSize: 9, fontWeight: 700, marginBottom: 3, textAlign: align },
+    noteText: { fontSize: 8.5, color: B.muted, lineHeight: 1.45, textAlign: align },
+    h2: { fontFamily: display, fontSize: 17, fontWeight: display === "Cormorant Garamond" ? 600 : 400, color: B.ink, marginTop: 20, marginBottom: 8, textAlign: align },
+    chips: { flexDirection: row, flexWrap: "wrap" },
+    chip: { backgroundColor: B.redBg, borderWidth: 0.6, borderColor: B.redLine, borderRadius: 10, paddingVertical: 3, paddingHorizontal: 8, marginRight: 6, marginBottom: 6, fontSize: 9, color: B.bad },
+    text: { fontSize: 9.5, textAlign: align, lineHeight: 1.4 },
+    mutedText: { fontSize: 9, color: B.muted, textAlign: align },
+    card: { borderWidth: 0.6, borderColor: B.line, borderRadius: 6 },
+    medRow: { flexDirection: row, justifyContent: "space-between", alignItems: "center", paddingVertical: 7, paddingHorizontal: 10, borderBottomWidth: 0.6, borderBottomColor: B.line },
+    medPast: { backgroundColor: "#FAFAF8" },
+    medName: { fontSize: 10, fontWeight: 700, textAlign: align },
+    medNamePast: { fontSize: 10, fontWeight: 700, color: B.muted, textAlign: align },
+    medSub: { fontSize: 8.5, color: B.muted, marginTop: 1, textAlign: align },
+    pill: { fontSize: 7.5, paddingVertical: 2, paddingHorizontal: 7, borderRadius: 8 },
+    groupHead: { flexDirection: row, backgroundColor: B.cream, paddingVertical: 5, paddingHorizontal: 10, borderBottomWidth: 0.6, borderBottomColor: B.line },
+    groupHeadText: { fontSize: 9, fontWeight: 700 },
+    groupHeadCount: { fontSize: 9, color: B.muted },
+    th: { flexDirection: row, paddingVertical: 5, paddingHorizontal: 10, borderBottomWidth: 0.6, borderBottomColor: B.line },
+    thText: { fontSize: 7.5, color: B.muted, textTransform: "uppercase", letterSpacing: 0.6 },
+    tr: { flexDirection: row, alignItems: "center", paddingVertical: 5, paddingHorizontal: 10, borderBottomWidth: 0.4, borderBottomColor: B.line },
+    cTest: { width: "34%", paddingRight: 6 }, cResult: { width: "22%", paddingRight: 6 }, cRange: { width: "28%", paddingRight: 6 }, cStatus: { width: "16%", alignItems: rtl ? "flex-start" : "flex-end" },
+    cellText: { fontSize: 9, textAlign: align },
+    cellBold: { fontSize: 9, fontWeight: 700, textAlign: align },
+    cellSmall: { fontSize: 6.8, color: B.muted, marginTop: 1, textAlign: align },
+    docRow: { paddingVertical: 8, paddingHorizontal: 10, borderBottomWidth: 0.6, borderBottomColor: B.line },
+    docTop: { flexDirection: row, justifyContent: "space-between" },
+    docName: { fontSize: 10, fontWeight: 700, textAlign: align, width: "78%" },
+    docTag: { fontSize: 7.5, color: B.muted, textAlign: rtl ? "left" : "right" },
+    bullet: { flexDirection: row, marginTop: 2 },
+    bulletDot: { width: 9, fontSize: 9, color: B.gold },
+    bulletText: { flex: 1, fontSize: 8.6, color: B.ink, lineHeight: 1.35, textAlign: align },
+    divKicker: { fontSize: 9, fontWeight: 700, color: B.gold, letterSpacing: 1, textTransform: "uppercase", textAlign: align },
+    divTitle: { fontFamily: display, fontSize: 22, fontWeight: display === "Cormorant Garamond" ? 600 : 400, marginTop: 6, textAlign: align },
+    divMeta: { fontSize: 9.5, color: B.muted, marginTop: 4, textAlign: align },
+    divRule: { borderBottomWidth: 0.6, borderBottomColor: B.line, marginVertical: 14 },
+    divFollows: { marginTop: 16, fontSize: 9, color: B.muted, textAlign: align },
+    divText: { fontSize: 8.4, lineHeight: 1.4, textAlign: align },
+  });
+}
+type BS = ReturnType<typeof briefStyles>;
+
+const Logo = ({ size = 16 }: { size?: number }) =>
+  h(Svg, { width: size, height: size, viewBox: "0 0 28 28" },
+    h(Polygon, { points: "14,2 26,9 26,19 14,26 2,19 2,9", fill: "none", stroke: B.gold, strokeWidth: 1.6 }),
+    h(Polygon, { points: "14,8 20,11.5 20,16.5 14,20 8,16.5 8,11.5", fill: B.gold, fillOpacity: 0.25 }),
+    h(Circle, { cx: 14, cy: 14, r: 2.5, fill: B.gold }),
+  );
+
+const BriefHeader = ({ s, right }: { s: BS; right: string }) =>
+  h(View, { style: s.header, fixed: true },
+    h(View, { style: s.brand }, h(Logo, { size: 16 }), h(Text, { style: s.brandText }, "RinVita")),
+    h(Text, { style: s.headerRight }, right),
+  );
+
+const BriefFooter = ({ s, t }: { s: BS; t: typeof BRIEF_EN }) =>
+  h(View, { style: s.footer, fixed: true },
+    h(Text, null, t.footer),
+    // Page numbers are stamped by the browser after the originals are merged in.
+    h(Text, null, " "),
+  );
+
+function statusPill(status: string, s: BS, t: typeof BRIEF_EN) {
+  const st = (status || "normal").toLowerCase();
+  const [bg, fg, label] = st === "critical" ? [B.badBg, B.bad, t.critical] : st === "flagged" ? [B.warnBg, B.warn, t.flagged] : [B.okBg, B.ok, t.normal];
+  return h(Text, { style: [s.pill, { backgroundColor: bg, color: fg }] }, label);
+}
+
+const Bulleted = ({ items, s }: { items: string[]; s: BS }) =>
+  h(View, null, items.map((it, i) => h(View, { key: i, style: s.bullet }, h(Text, { style: s.bulletDot }, "•"), h(Text, { style: s.bulletText }, it))));
+
+function clip(str: string, n: number) { return str.length > n ? str.slice(0, n - 1).trimEnd() + "…" : str; }
+
+function renderBriefV2(p: BriefV2Payload) {
+  const t = { ...BRIEF_EN, ...(p.strings || {}) } as typeof BRIEF_EN;
+  const s = briefStyles(p.language);
+  const right = `${t.title} · ${p.patient.fullName}`;
+  const meta = [p.patient.dobLabel && `${t.dob}: ${p.patient.dobLabel}`, p.patient.sex, p.patient.nationality, p.patient.bloodType].filter(Boolean).join("  ·  ");
+  const current = p.medications.filter((m) => m.active);
+  const past = p.medications.filter((m) => !m.active);
+  const medRow = (m: BriefV2Payload["medications"][number], i: number, isPast: boolean) =>
+    h(View, { key: `${isPast ? "p" : "c"}${i}`, style: isPast ? [s.medRow, s.medPast] : s.medRow, wrap: false },
+      h(View, { style: { width: "80%" } },
+        h(Text, { style: isPast ? s.medNamePast : s.medName }, m.name),
+        h(Text, { style: s.medSub }, [m.dose, m.frequency, m.dateLabel].filter(Boolean).join("  ·  ")),
+        (m.prescriber || m.facility) ? h(Text, { style: s.medSub }, [m.prescriber, m.facility].filter(Boolean).join(", ")) : null,
+      ),
+      h(Text, { style: [s.pill, isPast ? { backgroundColor: "#EEEDEA", color: B.muted } : { backgroundColor: B.okBg, color: B.ok }] }, isPast ? t.past : t.current),
+    );
+
+  const main = h(Page, { size: "A4", style: s.page },
+    h(BriefHeader, { s, right }),
+    h(BriefFooter, { s, t }),
+    h(Text, { style: s.title }, t.title),
+    h(Text, { style: s.name }, p.patient.fullName),
+    meta ? h(Text, { style: s.meta }, meta) : null,
+    h(Text, { style: s.meta }, `${t.created} ${p.generatedAtLabel}`),
+    h(View, { style: s.note },
+      h(Text, { style: s.noteTitle }, t.forClinicianTitle),
+      h(Text, { style: s.noteText }, p.includeOriginals === false ? t.forClinicianNoOriginals : t.forClinician),
+    ),
+
+    h(Text, { style: s.h2, minPresenceAhead: 30 }, t.allergies),
+    p.allergies.length
+      ? h(View, { style: s.chips }, p.allergies.map((a, i) => h(Text, { key: i, style: s.chip }, [a.substance, a.reaction, a.severity].filter(Boolean).join(" · "))))
+      : h(Text, { style: s.mutedText }, t.noAllergies),
+
+    p.patient.conditions ? h(View, null,
+      h(Text, { style: s.h2, minPresenceAhead: 30 }, t.conditions),
+      h(Text, { style: s.text }, p.patient.conditions),
+    ) : null,
+
+    h(Text, { style: s.h2, minPresenceAhead: 50 }, t.medications),
+    p.medications.length
+      ? h(View, { style: s.card }, ...current.map((m, i) => medRow(m, i, false)), ...past.map((m, i) => medRow(m, i, true)))
+      : h(Text, { style: s.mutedText }, t.noMedications),
+
+    p.labGroups.length ? h(Text, { style: s.h2, minPresenceAhead: 80 }, t.labs) : null,
+    ...p.labGroups.map((g, gi) =>
+      h(View, { key: `g${gi}`, style: [s.card, { marginBottom: 10 }] },
+        h(View, { wrap: false },
+          h(View, { style: s.groupHead },
+            h(Text, { style: s.groupHeadText }, `${t.sampleDate}: ${g.dateLabel}`),
+            h(Text, { style: s.groupHeadCount }, `  ·  ${g.rows.length} ${g.rows.length === 1 ? t.result1 : t.results}`),
+          ),
+          h(View, { style: s.th },
+            h(Text, { style: [s.thText, s.cTest] }, t.colTest),
+            h(Text, { style: [s.thText, s.cResult] }, t.colResult),
+            h(Text, { style: [s.thText, s.cRange] }, t.colRange),
+            h(Text, { style: [s.thText, s.cStatus] }, t.colStatus),
+          ),
+        ),
+        ...g.rows.map((r, ri) => {
+          const off = (r.status || "normal").toLowerCase() !== "normal";
+          return h(View, { key: `r${ri}`, style: s.tr, wrap: false },
+            h(View, { style: s.cTest }, h(Text, { style: s.cellText }, r.marker)),
+            h(View, { style: s.cResult }, h(Text, { style: off ? s.cellBold : s.cellText }, r.value)),
+            h(View, { style: s.cRange },
+              h(Text, { style: s.cellText }, r.range || "—"),
+              r.typical ? h(Text, { style: s.cellSmall }, t.typicalNote) : null,
+            ),
+            h(View, { style: s.cStatus }, statusPill(r.status, s, t)),
+          );
+        }),
+      )),
+
+    p.imaging.length ? h(Text, { style: s.h2, minPresenceAhead: 50 }, t.imaging) : null,
+    p.imaging.length ? h(View, { style: s.card },
+      ...p.imaging.map((im, i) => h(View, { key: i, style: s.docRow, wrap: false },
+        h(View, { style: s.docTop },
+          h(Text, { style: s.docName }, im.title),
+          (im.status || "").toLowerCase() === "flagged" ? statusPill("flagged", s, t) : null,
+        ),
+        h(Text, { style: s.medSub }, [im.dateLabel, im.facility].filter(Boolean).join("  ·  ")),
+        im.finding ? h(Text, { style: [s.bulletText, { marginTop: 3 }] }, clip(im.finding, 900)) : null,
+      ))) : null,
+
+    p.documents.length ? h(Text, { style: s.h2, minPresenceAhead: 50 }, `${t.documents} (${p.documents.length})`) : null,
+    p.documents.length ? h(View, { style: s.card },
+      ...p.documents.map((d, i) => h(View, { key: i, style: s.docRow, wrap: false },
+        h(View, { style: s.docTop },
+          h(Text, { style: s.docName }, `${i + 1}. ${d.name}`),
+          p.includeOriginals === false ? null : h(Text, { style: s.docTag }, d.hasOriginal ? t.originalIncluded : t.noOriginal),
+        ),
+        h(Text, { style: s.medSub }, [d.type, d.dateLabel, d.facility, d.country].filter(Boolean).join("  ·  ")),
+        d.summary.length ? h(View, { style: { marginTop: 3 } }, h(Bulleted, { items: d.summary.slice(0, 3).map((x) => clip(x, 260)), s })) : null,
+      ))) : null,
+  );
+
+  // One divider per document. Text is capped so each fits on exactly one A4 page.
+  const dividers = p.includeOriginals === false ? [] : p.documents.map((d, i) =>
+    h(Page, { key: `d${i}`, size: "A4", style: s.page },
+      h(BriefHeader, { s, right }),
+      h(BriefFooter, { s, t }),
+      h(Text, { style: s.divKicker }, `${t.originalDoc} ${i + 1} ${t.of} ${p.documents.length}`),
+      h(Text, { style: s.divTitle }, clip(d.name, 140)),
+      h(Text, { style: s.divMeta }, [d.type, d.dateLabel, d.facility, d.country].filter(Boolean).join("  ·  ")),
+      h(View, { style: s.divRule }),
+      d.summary.length ? h(Text, { style: [s.noteTitle, { marginBottom: 4 }] }, t.rinvitaReading) : null,
+      d.summary.length ? h(Bulleted, { items: d.summary.slice(0, d.hasOriginal ? 10 : 6).map((x) => clip(x, d.hasOriginal ? 320 : 220)), s }) : null,
+      d.hasOriginal
+        ? h(Text, { style: s.divFollows }, t.originalFollows)
+        : h(View, null,
+            h(Text, { style: s.divFollows }, t.originalMissing),
+            d.text ? h(Text, { style: [s.divText, { marginTop: 8 }] }, clip(d.text, 1500)) : null,
+          ),
+    ));
+
+  return h(Document, { title: `${p.patient.fullName} — ${t.title}`, author: "RinVita", creator: "RinVita", producer: "RinVita" }, main, ...dividers);
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -960,7 +1231,18 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const payload = await req.json() as PatientPayload;
+    const raw = await req.json();
+    if (raw?.version === 2) {
+      const p = raw as BriefV2Payload;
+      if (!p?.patient?.fullName) {
+        return new Response(JSON.stringify({ error: "Missing patient data" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+      const { display, body } = fontsForLanguage(p.language);
+      await Promise.all([ensureFontFamily(display), ensureFontFamily(body), ensureFontFamily("Cormorant Garamond")]);
+      const buf = await renderToBuffer(renderBriefV2(p));
+      return new Response(buf, { headers: { ...corsHeaders, "Content-Type": "application/pdf", "Content-Disposition": `attachment; filename="health-brief-${p.language}.pdf"` } });
+    }
+    const payload = raw as PatientPayload;
 
     if (!payload?.patient?.fullName) {
       return new Response(

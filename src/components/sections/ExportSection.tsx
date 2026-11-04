@@ -6,7 +6,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import UpgradeModal from "@/components/UpgradeModal";
 import { generateExportPDF, generateSelectionPDF, type ExportOptions } from "@/lib/pdfExport";
-import { generatePatientSummaryV2, downloadBlob, type ProgressPhase } from "@/lib/pdfExportV2";
+import { downloadBlob } from "@/lib/pdfExportV2";
+import { buildHealthBrief, type BriefPhase } from "@/lib/healthBrief";
 import { SUPPORTED_LANGUAGES, getLanguageName } from "@/lib/supportedLanguages";
 
 type ExportMode = "full" | "category" | "selection";
@@ -70,7 +71,18 @@ const ExportSection = () => {
         : dateRange,
   });
 
-  const [progressPhase, setProgressPhase] = useState<ProgressPhase | null>(null);
+  const [progressPhase, setProgressPhase] = useState<BriefPhase | null>(null);
+  const [progressDetail, setProgressDetail] = useState<string | null>(null);
+
+  // Date range for the Health Brief (medications and allergies are always included).
+  const inRange = (iso?: string) => {
+    if (dateRange === "all" || !iso) return true;
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return true;
+    if (dateRange === "12m") return d.getTime() >= Date.now() - 365 * 86_400_000;
+    if (dateRange === "6m") return d.getTime() >= Date.now() - 182 * 86_400_000;
+    return (!customFrom || d >= new Date(customFrom)) && (!customTo || d <= new Date(`${customTo}T23:59:59`));
+  };
 
   const handleGenerate = async () => {
     if (!isActive && (mode === "category" || mode === "selection")) {
@@ -87,28 +99,30 @@ const ExportSection = () => {
       if (mode === "selection") {
         await generateSelectionPDF(store, patientName, dob, selectedDocs, options);
       } else if (mode === "full") {
-        const blob = await generatePatientSummaryV2({
+        const { blob, missing } = await buildHealthBrief({
           data: {
-            bloodResults: store.bloodResults,
-            imagingResults: store.imagingResults,
+            bloodResults: store.bloodResults.filter((r) => inRange(r.date)),
+            imagingResults: store.imagingResults.filter((r) => inRange(r.date)),
             medications: store.medications,
-            documents: store.documents,
+            documents: store.documents.filter((d) => inRange(d.date)),
             alerts: store.alerts,
             allergies: store.allergies,
           },
-          visits: store.visits,
-          imagingOverrides: store.imagingLinkOverrides,
           patient: {
             fullName: patientName,
             dob,
             biologicalSex: (profile as any)?.biological_sex || undefined,
             nationality: profile?.nationality || undefined,
             bloodType: profile?.blood_type || undefined,
-            chronicConditions: (profile as any)?.current_diagnoses || undefined,
+            conditions: (profile as any)?.current_diagnoses || undefined,
           },
           language,
-          onProgress: (phase) => setProgressPhase(phase),
+          includeOriginals: includeAppendix,
+          onProgress: (phase, detail) => { setProgressPhase(phase); setProgressDetail(detail ?? null); },
         });
+        if (missing.length) {
+          (await import("sonner")).toast.message(`${missing.length} document${missing.length === 1 ? " has" : "s have"} no stored original, so RinVita's reading is included instead.`);
+        }
         const safeName = (patientName || "patient").replace(/[^a-z0-9-_]+/gi, "-").toLowerCase();
         if (isActive) {
           downloadBlob(blob, `rinvita-health-brief-${safeName}-${language}.pdf`);
@@ -319,8 +333,8 @@ const ExportSection = () => {
 
             <label className="flex items-center justify-between p-3 bg-background border border-border rounded-lg cursor-pointer">
               <div>
-                <p className="text-sm text-foreground">Include original documents as appendix</p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">Appends the source-language text of each document at the end of the PDF.</p>
+                <p className="text-sm text-foreground">{mode === "full" ? "Include the original documents" : "Include original documents as appendix"}</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">{mode === "full" ? "Each original PDF or photo follows its summary page, newest first." : "Appends the source-language text of each document at the end of the PDF."}</p>
               </div>
               <input
                 type="checkbox"
@@ -341,8 +355,12 @@ const ExportSection = () => {
               {generating
                 ? progressPhase === "translating"
                   ? "Translating content…"
+                  : progressPhase === "collecting"
+                  ? (progressDetail || "Collecting originals…")
                   : progressPhase === "rendering"
-                  ? "Rendering PDF…"
+                  ? "Designing your Health Brief…"
+                  : progressPhase === "merging"
+                  ? "Adding the original documents…"
                   : progressPhase === "ready"
                   ? "Ready — downloading…"
                   : "Preparing…"
@@ -350,9 +368,9 @@ const ExportSection = () => {
             </button>
             {generating && mode === "full" && (
               <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
-                <ProgressDot active={progressPhase === "translating"} done={progressPhase === "rendering" || progressPhase === "ready"} label="Translating" />
+                <ProgressDot active={progressPhase === "collecting"} done={progressPhase === "rendering" || progressPhase === "merging" || progressPhase === "ready"} label="Originals" />
                 <span className="text-muted-foreground/40">→</span>
-                <ProgressDot active={progressPhase === "rendering"} done={progressPhase === "ready"} label="Rendering" />
+                <ProgressDot active={progressPhase === "rendering" || progressPhase === "merging"} done={progressPhase === "ready"} label="Building" />
                 <span className="text-muted-foreground/40">→</span>
                 <ProgressDot active={progressPhase === "ready"} done={false} label="Ready" />
               </div>
@@ -360,7 +378,7 @@ const ExportSection = () => {
             {!generating && mode === "full" && (
               <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
                 <Sparkles className="w-3 h-3 text-primary" />
-                New export engine — full Patient Summary, Visit History, Medications, Blood and Imaging in 45+ languages.
+                The same layout your doctor sees from a shared link: allergies, medications, labs by date, imaging and every document, newest first.
               </p>
             )}
           </div>
