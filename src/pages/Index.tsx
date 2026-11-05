@@ -164,8 +164,9 @@ const Index = () => {
 
   // Billing and Family are for self-pay patients only.
   useEffect(() => {
-    if (sponsored && (section === "billing" || section === "family")) setSection("overview");
-  }, [sponsored, section]);
+    const staff = sponsorship?.kind === "partner_staff";
+    if (sponsored && (section === "family" || (section === "billing" && !staff))) setSection("overview");
+  }, [sponsored, section, sponsorship?.kind]);
 
   const renderSection = () => {
     switch (section) {

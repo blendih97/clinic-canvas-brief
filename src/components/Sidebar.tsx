@@ -76,7 +76,9 @@ const Sidebar = ({ active, onNavigate, onRequestRecords }: SidebarProps) => {
   // Sponsored = an active partner sponsorship. Hidden while it is still loading,
   // so sponsored patients never see a flash of Billing.
   const hideSelfPay = sponsorship === undefined || !!sponsorship?.active;
-  const navItems = baseNavItems.filter((item) => (!item.familyOnly || plan === "family") && !(item.selfPayOnly && hideSelfPay));
+  // Partner staff with full access still see Subscription (it explains their access); Family stays hidden.
+  const staffAccess = !!sponsorship?.active && sponsorship.kind === "partner_staff";
+  const navItems = baseNavItems.filter((item) => (!item.familyOnly || plan === "family") && !(item.selfPayOnly && hideSelfPay && !(staffAccess && item.id === "billing")));
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -109,7 +111,7 @@ const Sidebar = ({ active, onNavigate, onRequestRecords }: SidebarProps) => {
     const primaryItems = navItems.filter((item) => mobilePrimary.includes(item.id))
       // sort to match the mobilePrimary order
       .sort((a, b) => mobilePrimary.indexOf(a.id) - mobilePrimary.indexOf(b.id));
-    const sheetItems = mobileMoreItems.filter((it) => !(it.kind === "section" && ((it.familyOnly && plan !== "family") || (it.selfPayOnly && hideSelfPay))));
+    const sheetItems = mobileMoreItems.filter((it) => !(it.kind === "section" && ((it.familyOnly && plan !== "family") || (it.selfPayOnly && hideSelfPay && !(staffAccess && it.id === "billing")))));
     const moreActive = !mobilePrimary.includes(active);
 
     return (
@@ -121,7 +123,7 @@ const Sidebar = ({ active, onNavigate, onRequestRecords }: SidebarProps) => {
             {sponsorship?.active && (
               <p className="mt-1 inline-flex items-center gap-1.5 text-[10px] text-muted-foreground">
                 {sponsorship.logo_url && <img src={sponsorship.logo_url} alt="" className="h-3.5 w-auto max-w-[48px] object-contain" />}
-                Sponsored by {sponsorship.org_name}
+                {sponsorship.kind === "partner_staff" ? `${sponsorship.org_name} partner access` : `Sponsored by ${sponsorship.org_name}`}
               </p>
             )}
           </div>
@@ -283,7 +285,7 @@ const Sidebar = ({ active, onNavigate, onRequestRecords }: SidebarProps) => {
         {sponsorship?.active && (
               <p className="mt-1 inline-flex items-center gap-1.5 text-[10px] text-muted-foreground">
                 {sponsorship.logo_url && <img src={sponsorship.logo_url} alt="" className="h-3.5 w-auto max-w-[48px] object-contain" />}
-                Sponsored by {sponsorship.org_name}
+                {sponsorship.kind === "partner_staff" ? `${sponsorship.org_name} partner access` : `Sponsored by ${sponsorship.org_name}`}
               </p>
             )}
       </div>
