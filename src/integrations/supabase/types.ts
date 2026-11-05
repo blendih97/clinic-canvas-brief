@@ -1013,9 +1013,7 @@ export type Database = {
           slug: string
           sponsor_until: string | null
           sponsored_plan: string
-          staff_full_access: boolean
           status: string
-          tagline: string | null
           type: string
           updated_at: string
         }
@@ -1028,9 +1026,7 @@ export type Database = {
           slug: string
           sponsor_until?: string | null
           sponsored_plan?: string
-          staff_full_access?: boolean
           status?: string
-          tagline?: string | null
           type?: string
           updated_at?: string
         }
@@ -1043,9 +1039,7 @@ export type Database = {
           slug?: string
           sponsor_until?: string | null
           sponsored_plan?: string
-          staff_full_access?: boolean
           status?: string
-          tagline?: string | null
           type?: string
           updated_at?: string
         }
@@ -1793,7 +1787,6 @@ export type Database = {
         Returns: {
           comped_plan: string
           comped_until: string
-          kind: string
           logo_url: string
           org_name: string
         }[]
@@ -1818,7 +1811,6 @@ export type Database = {
           logo_url: string
           name: string
           slug: string
-          tagline: string
           type: string
         }[]
       }
@@ -1828,7 +1820,6 @@ export type Database = {
           logo_url: string
           name: string
           slug: string
-          tagline: string
           type: string
         }[]
       }
