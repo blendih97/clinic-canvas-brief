@@ -1,7 +1,8 @@
 {
   "version": "5",
   "remote": {
-    "https://esm.sh/@supabase/supabase-js@2.45.0": "36ae57c3f2dc3f94fd122a846b40a87114d29bb2f47e910cb46bee5575febf2e"
+    "https://esm.sh/@supabase/supabase-js@2.45.0": "36ae57c3f2dc3f94fd122a846b40a87114d29bb2f47e910cb46bee5575febf2e",
+    "https://esm.sh/stripe@22.0.2": "798f6bfcc183b06f58c383d365ee7bd315ce187b50a6ab81672fcc5d546ff239"
   },
   "workspace": {
     "packageJson": {
