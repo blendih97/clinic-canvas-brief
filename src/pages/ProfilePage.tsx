@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { ArrowLeft, Camera } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLocale } from "@/hooks/useLocale";
+import InsuranceCard from "@/components/InsuranceCard";
 
 const bloodTypes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
@@ -236,7 +237,15 @@ const ProfilePage = () => {
                   ))}
                 </div>
               ) : (
-                 <p className="text-sm text-muted-foreground mt-1">{t("profile.noKnownAllergies")}</p>
+                <label className="mt-2 flex items-center gap-2 text-sm text-foreground cursor-pointer">
+                  <input type="checkbox" checked={!!profile?.no_known_allergies}
+                    onChange={async (e) => {
+                      if (!user) return;
+                      await supabase.from("profiles").update({ no_known_allergies: e.target.checked }).eq("id", user.id);
+                      await refreshProfile();
+                    }} className="w-4 h-4" />
+                  I have no known allergies
+                </label>
               )}
             </div>
 
@@ -254,6 +263,8 @@ const ProfilePage = () => {
             </div>
           </div>
         </section>
+
+        <InsuranceCard />
 
         <section className="bg-card border border-border rounded-xl p-6 mb-6">
            <h2 className="font-heading text-lg text-foreground mb-4">{t("profile.account")}</h2>

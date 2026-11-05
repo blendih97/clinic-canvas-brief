@@ -55,6 +55,7 @@ const DocumentsSection = ({ onRequestRecords }: { onRequestRecords?: () => void 
           nationality: profile?.nationality || undefined,
           bloodType: profile?.blood_type || undefined,
           conditions: (profile as any)?.current_diagnoses || undefined,
+            noKnownAllergies: !!profile?.no_known_allergies,
         },
         language: "en",
         includeOriginals: true,

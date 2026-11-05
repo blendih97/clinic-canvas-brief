@@ -16,7 +16,7 @@ export type { OriginalFile };
 
 export interface HealthBriefInput {
   data: VaultData;
-  patient: { fullName: string; dob?: string; biologicalSex?: string; nationality?: string; bloodType?: string; conditions?: string };
+  patient: { fullName: string; dob?: string; biologicalSex?: string; nationality?: string; bloodType?: string; conditions?: string; noKnownAllergies?: boolean };
   language: string;
   includeOriginals: boolean;
   /** Returns the stored original for a document, or null. Defaults to the patient's own storage. */
@@ -138,6 +138,7 @@ export async function buildHealthBrief(input: HealthBriefInput): Promise<HealthB
       nationality: patient.nationality,
       bloodType: patient.bloodType,
       conditions: patient.conditions,
+      noKnownAllergies: !!patient.noKnownAllergies && data.allergies.length === 0,
     },
     allergies: data.allergies.map((a) => ({ substance: a.substance, reaction: a.reaction, severity: a.severity })),
     medications: [...data.medications]

@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { supabase } from "@/integrations/supabase/client";
+import { planAllergyMerge, planMedicationMerge } from "@/lib/clinicalMerge";
 import { rangeForStorage, statusForStorage } from "@/lib/referenceRanges";
 
 export interface BloodResult {
@@ -284,18 +285,14 @@ export const useVaultStore = create<VaultState>()((set, get) => ({
   },
 
   addMedications: async (meds, userId) => {
-    const existing = get().medications;
-    const seenKeys = new Set(existing.map((m) => medicationKey(m)));
-    const deduped: typeof meds = [];
-    for (const m of meds) {
-      const key = medicationKey(m);
-      if (key && !seenKeys.has(key)) {
-        seenKeys.add(key);
-        deduped.push(m);
-      }
+    // One entry per medicine: same drug and dose (or no dose on one side) merges into the existing entry.
+    const plan = planMedicationMerge(get().medications.map((m) => ({ ...m })), meds.map((m) => ({ ...m })));
+    for (const u of plan.updates) {
+      const { error } = await supabase.from("medications").update(u.patch as any).eq("id", u.id);
+      if (!error) set((s) => ({ medications: s.medications.map((m) => (m.id === u.id ? { ...m, ...u.patch } : m)) }));
     }
-    if (deduped.length === 0) return;
-    const rows = deduped.map((m) => ({
+    if (plan.inserts.length === 0) return;
+    const rows = plan.inserts.map((m) => ({
       user_id: userId, name: m.name, dose: m.dose, frequency: m.frequency,
       prescriber: m.prescriber, facility: m.facility, date: m.date, active: m.active,
       source: m.source || "ai",
@@ -310,7 +307,6 @@ export const useVaultStore = create<VaultState>()((set, get) => ({
       set((s) => ({ medications: dedupeMedications([...s.medications, ...mapped]).unique }));
     }
   },
-
 
   addDocuments: async (docs, userId) => {
     const rows = docs.map((d) => ({
@@ -355,18 +351,21 @@ export const useVaultStore = create<VaultState>()((set, get) => ({
   },
 
   addAllergies: async (newAllergies, userId) => {
-    const known = new Set(get().allergies.map((a) => a.substance.trim().toLowerCase()));
-    const fresh = newAllergies.filter((a) => {
-      const k = (a.substance || "").trim().toLowerCase();
-      if (!k || known.has(k)) return false;
-      known.add(k); return true;
-    });
+    // One entry per substance (spelling and plural variants match); a missing reaction or severity is filled in.
+    const plan = planAllergyMerge(get().allergies.map((a) => ({ ...a })), newAllergies.map((a) => ({ ...a })));
+    for (const u of plan.updates) {
+      const { error } = await supabase.from("allergies").update(u.patch as any).eq("id", u.id);
+      if (!error) set((s) => ({ allergies: s.allergies.map((a) => (a.id === u.id ? { ...a, ...u.patch } : a)) }));
+    }
+    const fresh = plan.inserts;
     if (!fresh.length) return;
     const rows = fresh.map((a) => ({
       user_id: userId, substance: a.substance, reaction: a.reaction, severity: a.severity,
       source: a.source || "ai",
     }));
     const { data } = await supabase.from("allergies").insert(rows).select();
+    // A recorded allergy replaces any earlier "no known allergies" confirmation.
+    if (data?.length) void supabase.from("profiles").update({ no_known_allergies: false }).eq("id", userId).eq("no_known_allergies", true);
     if (data) {
       const mapped = data.map((r: any) => ({
         id: r.id, substance: r.substance, reaction: r.reaction || "", severity: r.severity || "",

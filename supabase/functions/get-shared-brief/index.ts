@@ -41,7 +41,7 @@ Deno.serve(async (req) => {
 
     const { data, error } = await supabase
       .from("shared_briefs")
-      .select("token, scope, expires_at, revoked_at, blood_results, medications, allergies, imaging_results, documents, created_at, user_id")
+      .select("token, scope, expires_at, revoked_at, blood_results, medications, allergies, no_known_allergies, imaging_results, documents, created_at, user_id")
       .eq("token", token)
       .maybeSingle();
 

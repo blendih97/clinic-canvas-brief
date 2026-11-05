@@ -954,7 +954,7 @@ interface BriefV2Payload {
   version: 2;
   language: string;
   generatedAtLabel: string;
-  patient: { fullName: string; dobLabel?: string; sex?: string; nationality?: string; bloodType?: string; conditions?: string };
+  patient: { fullName: string; dobLabel?: string; sex?: string; nationality?: string; bloodType?: string; conditions?: string; noKnownAllergies?: boolean };
   allergies: { substance: string; reaction?: string; severity?: string }[];
   medications: { name: string; dose?: string; frequency?: string; prescriber?: string; facility?: string; dateLabel?: string; active: boolean }[];
   labGroups: { dateLabel: string; rows: { marker: string; value: string; range?: string; typical?: boolean; status: string }[] }[];
@@ -975,6 +975,7 @@ const BRIEF_EN = {
   conditions: "Conditions",
   allergies: "Known allergies",
   noAllergies: "No known allergies recorded",
+  noAllergiesConfirmed: "No known allergies (confirmed by the patient)",
   medications: "Medications",
   current: "Current",
   past: "Past",
@@ -1127,7 +1128,7 @@ function renderBriefV2(p: BriefV2Payload) {
     h(Text, { style: s.h2, minPresenceAhead: 30 }, t.allergies),
     p.allergies.length
       ? h(View, { style: s.chips }, p.allergies.map((a, i) => h(Text, { key: i, style: s.chip }, [a.substance, a.reaction, a.severity].filter(Boolean).join(" · "))))
-      : h(Text, { style: s.mutedText }, t.noAllergies),
+      : h(Text, { style: s.mutedText }, p.patient.noKnownAllergies ? t.noAllergiesConfirmed : t.noAllergies),
 
     p.patient.conditions ? h(View, null,
       h(Text, { style: s.h2, minPresenceAhead: 30 }, t.conditions),

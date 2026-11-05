@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { rangeForStorage, statusForStorage } from "../_shared/referenceRanges.ts";
+import { saveAllergies, saveMedications } from "../_shared/saveMedsAllergies.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -209,7 +210,7 @@ Deno.serve(async (req) => {
             active: m.active !== false,
             source: "ai",
           }));
-        if (rows.length) await supabase.from("medications").insert(rows);
+        await saveMedications(supabase, userId, rows);
       }
 
       if (Array.isArray(extracted.allergies) && extracted.allergies.length) {
@@ -222,7 +223,7 @@ Deno.serve(async (req) => {
             severity: a.severity || null,
             source: "ai",
           }));
-        if (rows.length) await supabase.from("allergies").insert(rows);
+        await saveAllergies(supabase, userId, rows);
       }
 
       if (Array.isArray(extracted.alerts) && extracted.alerts.length) {

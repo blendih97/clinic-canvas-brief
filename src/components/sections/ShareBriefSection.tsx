@@ -184,6 +184,7 @@ const ShareBriefSection = () => {
       blood_results: translated.bloodResults as any,
       medications: translated.medications as any,
       allergies: translated.allergies as any,
+      no_known_allergies: sections.allergies && !!profile?.no_known_allergies && (translated.allergies || []).length === 0,
       imaging_results: translated.imagingResults as any,
       // Documents: ids + RinVita's reading only. Storage paths are never stored in the
       // brief; the doctor's file access is resolved server-side from the patient's own

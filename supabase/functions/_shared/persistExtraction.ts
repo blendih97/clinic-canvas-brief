@@ -1,4 +1,5 @@
 import { rangeForStorage, statusForStorage } from "./referenceRanges.ts";
+import { saveAllergies, saveMedications } from "./saveMedsAllergies.ts";
 // Writes an analyse-document result into the patient's structured tables.
 // Used by retry-document (server-side retry of a failed upload).
 // deno-lint-ignore-file no-explicit-any
@@ -35,19 +36,13 @@ export async function persistExtraction(
       prescriber: m.prescriber || null, facility: m.facility || docFacility, date: m.date || docDate,
       active: m.active !== false, source: "ai",
     }));
-    if (rows.length) await supabase.from("medications").insert(rows);
+    await saveMedications(supabase, userId, rows);
   }
   if (Array.isArray(extracted.allergies) && extracted.allergies.length) {
-    const { data: existing } = await supabase.from("allergies").select("substance").eq("user_id", userId);
-    const known = new Set((existing || []).map((a: any) => String(a.substance || "").trim().toLowerCase()));
-    const rows = extracted.allergies.filter((a: any) => {
-      const k = String(a?.substance || "").trim().toLowerCase();
-      if (!k || known.has(k)) return false;
-      known.add(k); return true;
-    }).map((a: any) => ({
+    const rows = extracted.allergies.filter((a: any) => a && a.substance).map((a: any) => ({
       user_id: userId, substance: a.substance, reaction: a.reaction || null, severity: a.severity || null, source: "ai",
     }));
-    if (rows.length) await supabase.from("allergies").insert(rows);
+    await saveAllergies(supabase, userId, rows);
   }
   if (Array.isArray(extracted.alerts) && extracted.alerts.length) {
     const rows = extracted.alerts.filter((a: any) => a && a.message).map((a: any) => ({

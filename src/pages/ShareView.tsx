@@ -205,6 +205,16 @@ const ShareView = () => {
           Scope: {brief.scope || "Full Health History"} · Created {new Date(brief.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
         </div>
 
+        {allergies.length === 0 && (brief as any).no_known_allergies && (
+          <section>
+            <div className="flex items-center gap-2 mb-2">
+              <AlertTriangle className="w-4 h-4 text-muted-foreground" />
+              <h2 className="font-heading text-lg text-foreground">Known Allergies</h2>
+            </div>
+            <p className="text-sm text-foreground">No known allergies <span className="text-muted-foreground">(confirmed by the patient)</span></p>
+          </section>
+        )}
+
         {allergies.length > 0 && (
           <section>
             <div className="flex items-center gap-2 mb-3">

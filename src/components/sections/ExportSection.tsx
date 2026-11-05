@@ -115,6 +115,7 @@ const ExportSection = () => {
             nationality: profile?.nationality || undefined,
             bloodType: profile?.blood_type || undefined,
             conditions: (profile as any)?.current_diagnoses || undefined,
+            noKnownAllergies: !!profile?.no_known_allergies,
           },
           language,
           includeOriginals: includeAppendix,

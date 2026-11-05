@@ -25,6 +25,7 @@ import { useSponsorship } from "@/hooks/useSponsorship";
 import { trackEvent } from "@/lib/analytics";
 import PendingPlanBanner from "@/components/PendingPlanBanner";
 import { emptyDashboard } from "@/lib/onboarding";
+import SetupModal from "@/components/SetupModal";
 import { Button } from "@/components/ui/button";
 
 type Section = "overview" | "blood" | "imaging" | "media" | "medications" | "documents" | "share" | "billing" | "export" | "family";
@@ -45,6 +46,7 @@ const Index = () => {
   const { isActive, planTier } = useSubscription();
   const sponsorship = useSponsorship();
   const sponsored = !!sponsorship?.active;
+  const [setupClosed, setSetupClosed] = useState(false);
   const canUpload = canUploadDocument(profile, countQuotaDocuments(documents as any), isActive);
   const freeDocsUsed = Math.min(documents.length, FREE_DOC_LIMIT);
   const firstRecord = emptyDashboard(documents.length, !!viewingMember);
@@ -105,28 +107,24 @@ const Index = () => {
   useEffect(() => {
     if (!user) return;
     const checkReceived = async () => {
-      const dismissedKey = `rinvita-received-dismissed-${user.id}`;
-      const dismissed = JSON.parse(localStorage.getItem(dismissedKey) || "[]");
+      // Shown until the patient opens or dismisses it once (stored on the request, so it stays gone on every device).
       const { data } = await supabase
         .from("record_requests")
         .select("id, provider_name")
         .eq("user_id", user.id)
-        .eq("status", "received");
-      if (data) {
-        const newNotifications = data.filter((r: { id: string }) => !dismissed.includes(r.id));
-        setReceivedNotifications(newNotifications);
-      }
+        .eq("status", "received")
+        .is("seen_at", null);
+      if (data) setReceivedNotifications(data as { id: string; provider_name: string }[]);
     };
     checkReceived();
   }, [user, section]);
 
   const dismissNotification = (id: string) => {
     if (!user) return;
-    const dismissedKey = `rinvita-received-dismissed-${user.id}`;
-    const dismissed = JSON.parse(localStorage.getItem(dismissedKey) || "[]");
-    localStorage.setItem(dismissedKey, JSON.stringify([...dismissed, id]));
     setReceivedNotifications((prev) => prev.filter((n) => n.id !== id));
+    void supabase.from("record_requests").update({ seen_at: new Date().toISOString() }).eq("id", id).eq("user_id", user.id);
   };
+
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -258,6 +256,8 @@ const Index = () => {
               </button>
             </div>
           )}
+
+          <SetupModal open={!!profile && !profile.setup_completed_at && !viewingMember && !setupClosed} onDone={() => setSetupClosed(true)} />
 
           {receivedNotifications.map((n) => (
             <div key={n.id} className="mb-4 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-lg flex items-center justify-between">

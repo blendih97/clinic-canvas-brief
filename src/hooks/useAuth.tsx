@@ -23,6 +23,10 @@ export interface Profile {
   trial_ends_at?: string | null;
   comped_plan?: string | null;
   comped_until?: string | null;
+  biological_sex?: string | null;
+  current_diagnoses?: string | null;
+  setup_completed_at?: string | null;
+  no_known_allergies?: boolean | null;
   created_at: string;
   updated_at: string;
 }
