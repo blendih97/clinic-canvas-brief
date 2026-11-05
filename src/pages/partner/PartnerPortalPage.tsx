@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import QRCode from "qrcode";
 import { toast } from "sonner";
-import { Copy, Download, LogOut } from "lucide-react";
+import { ArrowRight, Copy, Download, FolderLock, LogOut } from "lucide-react";
 import SEO from "@/components/SEO";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -122,7 +122,7 @@ const PartnerPortalPage = ({ orgs, myMemberships }: { orgs: Org[]; myMemberships
               </select>
             )}
             <span className="hidden sm:inline text-muted-foreground">{user?.email}</span>
-            {partnerAccess?.hasOwnRecords && <Link to="/app?records=1" className="rounded-md border border-border px-3 py-1.5">My records</Link>}
+            {partnerAccess?.hasOwnRecords && <Link to="/app?records=1" className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 font-medium text-primary-foreground hover:bg-primary/90"><FolderLock className="h-4 w-4" /> My RinVita account</Link>}
             <button onClick={() => void signOut()} className="rounded-md border border-border px-3 py-1.5" aria-label="Sign out"><LogOut className="h-4 w-4" /></button>
           </div>
         </div>
@@ -137,6 +137,19 @@ const PartnerPortalPage = ({ orgs, myMemberships }: { orgs: Org[]; myMemberships
             {org.sponsor_until ? ` · access included until ${formatSponsorshipDate(org.sponsor_until)}` : ""}.
           </p>
         </div>
+
+        {partnerAccess?.hasOwnRecords && (
+          <Link to="/app?records=1" className="flex items-center justify-between gap-4 rounded-xl border border-primary/30 bg-primary/5 p-4 hover:bg-primary/10 transition-colors">
+            <span className="flex items-start gap-3">
+              <FolderLock className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+              <span>
+                <span className="block font-medium text-foreground">Your own RinVita account</span>
+                <span className="block text-sm text-muted-foreground">Upload your own reports, share them with a doctor and try every feature yourself. Full access is included.</span>
+              </span>
+            </span>
+            <span className="inline-flex items-center gap-1 text-sm font-medium text-primary whitespace-nowrap">Open <ArrowRight className="h-4 w-4" /></span>
+          </Link>
+        )}
 
         {org.status !== "active" && <p className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm">This partnership is suspended. New invitations are paused.</p>}
 
