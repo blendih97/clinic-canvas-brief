@@ -1014,6 +1014,7 @@ export type Database = {
           sponsor_until: string | null
           sponsored_plan: string
           staff_full_access: boolean
+          staff_limit: number
           status: string
           tagline: string | null
           type: string
@@ -1029,6 +1030,7 @@ export type Database = {
           sponsor_until?: string | null
           sponsored_plan?: string
           staff_full_access?: boolean
+          staff_limit?: number
           status?: string
           tagline?: string | null
           type?: string
@@ -1044,6 +1046,7 @@ export type Database = {
           sponsor_until?: string | null
           sponsored_plan?: string
           staff_full_access?: boolean
+          staff_limit?: number
           status?: string
           tagline?: string | null
           type?: string
