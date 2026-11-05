@@ -31,8 +31,15 @@ const PartnerClaimer = () => {
         localStorage.setItem(doneKey, "1");
       }
     }
-    const pending = readPendingPartner();
-    if (!pending) return;
+    // With no pending invite in this browser (e.g. the confirmation email was opened on another
+    // device), still check once per session: a confirmed email that matches a staff invitation
+    // joins that partner portal. The server only matches the account's own verified email.
+    const sessionKey = `rinvita_partner_checked_${user.id}`;
+    let pending = readPendingPartner();
+    if (!pending) {
+      try { if (sessionStorage.getItem(sessionKey)) return; sessionStorage.setItem(sessionKey, "1"); } catch { return; }
+      pending = {};
+    }
     running.current = true;
     void (async () => {
       const res = await claimPartner(pending);

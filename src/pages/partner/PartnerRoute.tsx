@@ -20,8 +20,10 @@ const PartnerRoute = () => {
       if (alive) setState({ status: orgs && orgs.length ? "ok" : "none", orgs: orgs || [], members: members || [] });
     };
     // Existing account opening a staff invite: claim first (idempotent), then load.
+    // Always claim first (idempotent): it activates a staff invitation for this account's verified
+    // email even when the invite link was opened in a different browser.
     const pending = readPendingPartner();
-    const pre = pending?.staff ? claimPartner(pending).catch(() => null) : Promise.resolve(null);
+    const pre = claimPartner(pending?.staff ? pending : {}).catch(() => null);
     // A just-accepted staff invite may still be processing: retry once.
     void pre.then(load).then(() => setTimeout(() => { if (alive) void load(); }, 2500));
     return () => { alive = false; };

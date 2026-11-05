@@ -359,5 +359,7 @@
 "settingsData.links": "Gestionar enlaces para compartir activos",
 "settingsData.linksSub": "Revise y revoque cualquier resumen compartido activo.",
 "settingsData.delete": "Eliminar mi cuenta y todos los datos",
-"settingsData.deleteSub": "Permanente e irreversible."
+"settingsData.deleteSub": "Permanente e irreversible.",
+"partnerSignup.title": "Cree su cuenta de socio",
+"partnerSignup.body": "Regístrese con la dirección de correo electrónico a la que se envió su invitación y luego confírmela. Irá directamente a su página de socio."
 }

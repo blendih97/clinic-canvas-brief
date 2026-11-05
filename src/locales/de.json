@@ -360,5 +360,7 @@
 "settingsData.links": "Aktive Freigabelinks verwalten",
 "settingsData.linksSub": "Aktive Freigabe-Übersichten prüfen und widerrufen.",
 "settingsData.delete": "Mein Konto und alle Daten löschen",
-"settingsData.deleteSub": "Dauerhaft und unwiderruflich."
+"settingsData.deleteSub": "Dauerhaft und unwiderruflich.",
+"partnerSignup.title": "Erstellen Sie Ihr Partnerkonto",
+"partnerSignup.body": "Registrieren Sie sich mit der E-Mail-Adresse, an die Ihre Einladung gesendet wurde, und bestätigen Sie diese anschließend. Danach gelangen Sie direkt zu Ihrer Partnerseite."
 }

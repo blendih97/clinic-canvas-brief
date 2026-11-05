@@ -359,5 +359,7 @@
 "settingsData.links": "Gestisci i link di condivisione attivi",
 "settingsData.linksSub": "Esamina e revoca qualsiasi riepilogo condiviso attivo.",
 "settingsData.delete": "Elimina il mio account e tutti i dati",
-"settingsData.deleteSub": "Permanente e irreversibile."
+"settingsData.deleteSub": "Permanente e irreversibile.",
+"partnerSignup.title": "Crea il tuo account partner",
+"partnerSignup.body": "Registrati con l'indirizzo email a cui è stato inviato il tuo invito, quindi confermalo. Accederai direttamente alla tua pagina partner."
 }

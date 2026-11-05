@@ -360,5 +360,7 @@
 "settingsData.links": "Pārvaldīt aktīvās kopīgošanas saites",
 "settingsData.linksSub": "Pārskatiet un atsauciet jebkuru aktīvo kopīgoto kopsavilkumu.",
 "settingsData.delete": "Dzēst manu kontu un visus datus",
-"settingsData.deleteSub": "Neatgriezeniski un neatsaucami."
+"settingsData.deleteSub": "Neatgriezeniski un neatsaucami.",
+"partnerSignup.title": "Izveidojiet savu partnera kontu",
+"partnerSignup.body": "Reģistrējieties ar e-pasta adresi, uz kuru tika nosūtīts uzaicinājums, un pēc tam to apstipriniet. Jūs uzreiz nonāksiet savā partnera lapā."
 }

@@ -360,5 +360,7 @@
 "settingsData.links": "Administrer aktive delingslenker",
 "settingsData.linksSub": "Se gjennom og tilbakekall aktive delte sammendrag.",
 "settingsData.delete": "Slett kontoen min og alle data",
-"settingsData.deleteSub": "Permanent og kan ikke angres."
+"settingsData.deleteSub": "Permanent og kan ikke angres.",
+"partnerSignup.title": "Opprett partnerkontoen din",
+"partnerSignup.body": "Registrer deg med e-postadressen invitasjonen ble sendt til, og bekreft den. Du kommer rett til partnersiden din."
 }

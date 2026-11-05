@@ -359,5 +359,7 @@
 "settingsData.links": "ניהול קישורי שיתוף פעילים",
 "settingsData.linksSub": "סקירה וביטול של כל תקצירי השיתוף הפעילים.",
 "settingsData.delete": "מחיקת החשבון שלי וכל הנתונים",
-"settingsData.deleteSub": "קבוע ובלתי הפיך."
+"settingsData.deleteSub": "קבוע ובלתי הפיך.",
+"partnerSignup.title": "צרו את חשבון השותף שלכם",
+"partnerSignup.body": "הירשמו עם כתובת האימייל שאליה נשלחה ההזמנה, ואז אשרו אותה. תועברו ישירות לדף השותף שלכם."
 }

@@ -360,5 +360,7 @@
 "settingsData.links": "Upravljaj aktivnim linkovima za deljenje",
 "settingsData.linksSub": "Pregledajte i opozovite sve aktivne podeljene preglede.",
 "settingsData.delete": "Obriši moj nalog i sve podatke",
-"settingsData.deleteSub": "Trajno i nepovratno."
+"settingsData.deleteSub": "Trajno i nepovratno.",
+"partnerSignup.title": "Napravite svoj partnerski nalog",
+"partnerSignup.body": "Registrujte se sa adresom e-pošte na koju je poslat vaš poziv, a zatim je potvrdite. Odmah ćete biti preusmereni na svoju partnersku stranicu."
 }

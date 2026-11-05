@@ -360,5 +360,7 @@
 "settingsData.links": "管理有效的分享链接",
 "settingsData.linksSub": "查看并撤销任何有效的分享简报。",
 "settingsData.delete": "删除我的账户及所有数据",
-"settingsData.deleteSub": "永久删除,且不可恢复。"
+"settingsData.deleteSub": "永久删除,且不可恢复。",
+"partnerSignup.title": "创建您的合作伙伴账户",
+"partnerSignup.body": "请使用接收邀请的电子邮箱地址注册,然后进行验证。验证后,您将直接进入您的合作伙伴页面。"
 }

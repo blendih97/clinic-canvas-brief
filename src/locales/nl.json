@@ -360,5 +360,7 @@
 "settingsData.links": "Actieve deellinks beheren",
 "settingsData.linksSub": "Bekijk en trek actieve gedeelde samenvattingen in.",
 "settingsData.delete": "Mijn account en alle gegevens verwijderen",
-"settingsData.deleteSub": "Permanent en onomkeerbaar."
+"settingsData.deleteSub": "Permanent en onomkeerbaar.",
+"partnerSignup.title": "Maak uw partneraccount aan",
+"partnerSignup.body": "Meld u aan met het e-mailadres waarnaar uw uitnodiging is verzonden en bevestig dit vervolgens. U gaat direct door naar uw partnerpagina."
 }

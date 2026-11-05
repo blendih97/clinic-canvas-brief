@@ -359,5 +359,7 @@
 "settingsData.links": "有効な共有リンクを管理",
 "settingsData.linksSub": "有効な共有ブリーフを確認し、取り消すことができます。",
 "settingsData.delete": "アカウントとすべてのデータを削除",
-"settingsData.deleteSub": "完全に削除され、元に戻せません。"
+"settingsData.deleteSub": "完全に削除され、元に戻せません。",
+"partnerSignup.title": "パートナーアカウントを作成",
+"partnerSignup.body": "招待状が送信されたメールアドレスで登録し、確認を行ってください。確認後、パートナーページに直接移動します。"
 }

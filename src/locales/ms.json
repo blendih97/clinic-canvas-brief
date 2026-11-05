@@ -359,5 +359,7 @@
 "settingsData.links": "Urus pautan perkongsian aktif",
 "settingsData.linksSub": "Semak dan batalkan sebarang ringkasan perkongsian yang aktif.",
 "settingsData.delete": "Padam akaun saya dan semua data",
-"settingsData.deleteSub": "Kekal dan tidak boleh dipulihkan."
+"settingsData.deleteSub": "Kekal dan tidak boleh dipulihkan.",
+"partnerSignup.title": "Cipta akaun rakan kongsi anda",
+"partnerSignup.body": "Daftar menggunakan alamat e-mel yang menerima jemputan anda, kemudian sahkannya. Anda akan terus dibawa ke halaman rakan kongsi anda."
 }

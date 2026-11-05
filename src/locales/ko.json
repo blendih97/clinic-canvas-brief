@@ -359,5 +359,7 @@
 "settingsData.links": "활성 공유 링크 관리",
 "settingsData.linksSub": "활성 상태인 공유 요약본을 검토하고 접근을 취소합니다.",
 "settingsData.delete": "내 계정 및 모든 데이터 삭제",
-"settingsData.deleteSub": "영구적이며 되돌릴 수 없습니다."
+"settingsData.deleteSub": "영구적이며 되돌릴 수 없습니다.",
+"partnerSignup.title": "파트너 계정 만들기",
+"partnerSignup.body": "초대장을 받은 이메일 주소로 가입한 후 인증을 완료해 주세요. 인증이 끝나면 바로 파트너 페이지로 이동합니다."
 }

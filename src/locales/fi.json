@@ -360,5 +360,7 @@
 "settingsData.links": "Hallitse aktiivisia jakolinkkejä",
 "settingsData.linksSub": "Tarkastele ja peruuta aktiivisia jaettuja yhteenvetoja.",
 "settingsData.delete": "Poista tilini ja kaikki tietoni",
-"settingsData.deleteSub": "Pysyvä ja peruuttamaton."
+"settingsData.deleteSub": "Pysyvä ja peruuttamaton.",
+"partnerSignup.title": "Luo kumppanitilisi",
+"partnerSignup.body": "Rekisteröidy käyttämällä sähköpostiosoitetta, johon kutsu lähetettiin, ja vahvista se. Siirryt sen jälkeen suoraan kumppanisivullesi."
 }

@@ -360,5 +360,7 @@
 "settingsData.links": "Tvarkyti aktyvias dalijimosi nuorodas",
 "settingsData.linksSub": "Peržiūrėkite ir atšaukite bet kurias aktyvias dalijimosi santraukas.",
 "settingsData.delete": "Ištrinti mano paskyrą ir visus duomenis",
-"settingsData.deleteSub": "Negrįžtama ir neatkuriama."
+"settingsData.deleteSub": "Negrįžtama ir neatkuriama.",
+"partnerSignup.title": "Susikurkite partnerio paskyrą",
+"partnerSignup.body": "Registruokitės naudodami el. pašto adresą, kuriuo buvo išsiųstas jūsų kvietimas, ir jį patvirtinkite. Iškart pateksite į savo partnerio puslapį."
 }

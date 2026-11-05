@@ -360,5 +360,7 @@
 "settingsData.links": "Administrer aktive delingslinks",
 "settingsData.linksSub": "Gennemgå og tilbagekald aktive delte resuméer.",
 "settingsData.delete": "Slet min konto og alle data",
-"settingsData.deleteSub": "Permanent og uigenkaldelig."
+"settingsData.deleteSub": "Permanent og uigenkaldelig.",
+"partnerSignup.title": "Opret din partnerkonto",
+"partnerSignup.body": "Tilmeld dig med den e-mailadresse, som din invitation blev sendt til, og bekræft den derefter. Du kommer direkte videre til din partnerside."
 }

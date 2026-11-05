@@ -359,5 +359,7 @@
 "settingsData.links": "Kelola tautan berbagi aktif",
 "settingsData.linksSub": "Tinjau dan cabut ringkasan berbagi yang aktif.",
 "settingsData.delete": "Hapus akun dan semua data saya",
-"settingsData.deleteSub": "Permanen dan tidak dapat dibatalkan."
+"settingsData.deleteSub": "Permanen dan tidak dapat dibatalkan.",
+"partnerSignup.title": "Buat akun mitra Anda",
+"partnerSignup.body": "Daftar menggunakan alamat email tempat undangan Anda dikirim, lalu konfirmasikan. Anda akan langsung diarahkan ke halaman mitra Anda."
 }

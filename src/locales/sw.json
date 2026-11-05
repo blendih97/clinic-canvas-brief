@@ -360,5 +360,7 @@
 "settingsData.links": "Dhibiti viungo vya kushiriki vinavyotumika",
 "settingsData.linksSub": "Kagua na ubatilishe muhtasari wowote wa kushiriki unaotumika.",
 "settingsData.delete": "Futa akaunti yangu na data yote",
-"settingsData.deleteSub": "Ni ya kudumu na haiwezi kutenduliwa."
+"settingsData.deleteSub": "Ni ya kudumu na haiwezi kutenduliwa.",
+"partnerSignup.title": "Fungua akaunti yako ya mshirika",
+"partnerSignup.body": "Jisajili kwa anwani ya barua pepe ambayo mwaliko wako ulitumwa, kisha ithibitishe. Utapelekwa moja kwa moja kwenye ukurasa wako wa mshirika."
 }

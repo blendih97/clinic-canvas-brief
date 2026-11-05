@@ -37,7 +37,7 @@ interface AuthContextType {
   profile: Profile | null;
   loading: boolean;
   refreshSession: () => Promise<void>;
-  signUp: (email: string, password: string, metadata?: Record<string, string>) => Promise<{ error: Error | null; session: Session | null }>;
+  signUp: (email: string, password: string, metadata?: Record<string, string>, redirectPath?: string) => Promise<{ error: Error | null; session: Session | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
@@ -123,12 +123,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, [fetchProfile, touchLastActive]);
 
-  const signUp = async (email: string, password: string, metadata?: Record<string, string>) => {
+  const signUp = async (email: string, password: string, metadata?: Record<string, string>, redirectPath?: string) => {
     const normalizedEmail = email.trim().toLowerCase();
     const { error, data } = await supabase.auth.signUp({
       email: normalizedEmail,
       password,
-      options: { data: metadata, emailRedirectTo: window.location.origin },
+      // The confirmation link returns to where they were heading (e.g. /partner), same site only.
+      options: { data: metadata, emailRedirectTo: window.location.origin + (redirectPath && /^\/(?!\/)/.test(redirectPath) ? redirectPath : "") },
     });
     return { error, session: data.session };
   };

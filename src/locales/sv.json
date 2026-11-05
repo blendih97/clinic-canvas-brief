@@ -360,5 +360,7 @@
 "settingsData.links": "Hantera aktiva delningslänkar",
 "settingsData.linksSub": "Granska och återkalla aktiva delade sammanfattningar.",
 "settingsData.delete": "Radera mitt konto och alla data",
-"settingsData.deleteSub": "Permanent och oåterkalleligt."
+"settingsData.deleteSub": "Permanent och oåterkalleligt.",
+"partnerSignup.title": "Skapa ditt partnerkonto",
+"partnerSignup.body": "Registrera dig med den e-postadress som din inbjudan skickades till och bekräfta den sedan. Du kommer direkt till din partnersida."
 }

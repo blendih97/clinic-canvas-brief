@@ -360,5 +360,7 @@
 "settingsData.links": "Pamahalaan ang mga aktibong share link",
 "settingsData.linksSub": "Suriin at bawiin ang anumang aktibong share brief.",
 "settingsData.delete": "Burahin ang aking account at lahat ng data",
-"settingsData.deleteSub": "Permanente at hindi na mababawi."
+"settingsData.deleteSub": "Permanente at hindi na mababawi.",
+"partnerSignup.title": "Gumawa ng iyong partner account",
+"partnerSignup.body": "Mag-sign up gamit ang email address kung saan ipinadala ang iyong imbitasyon, pagkatapos ay kumpirmahin ito. Direkta kang mapupunta sa iyong partner page."
 }

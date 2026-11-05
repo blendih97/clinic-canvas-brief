@@ -360,5 +360,7 @@
 "settingsData.links": "Menaxho lidhjet aktive të ndarjes",
 "settingsData.linksSub": "Rishikoni dhe revokoni çdo përmbledhje aktive të ndarë.",
 "settingsData.delete": "Fshi llogarinë time dhe të gjitha të dhënat",
-"settingsData.deleteSub": "E përhershme dhe e pakthyeshme."
+"settingsData.deleteSub": "E përhershme dhe e pakthyeshme.",
+"partnerSignup.title": "Krijoni llogarinë tuaj të partnerit",
+"partnerSignup.body": "Regjistrohuni me adresën e email-it në të cilën u dërgua ftesa juaj, pastaj konfirmojeni. Do të shkoni drejtpërdrejt te faqja juaj e partnerit."
 }

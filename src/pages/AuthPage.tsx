@@ -68,6 +68,8 @@ const AuthPage = () => {
   const rawNext = searchParams.get("next");
   const nextPath = rawNext && /^\/(?!\/)/.test(rawNext) ? rawNext : null;
   const afterAuth = nextPath ?? "/app";
+  // Opened from a partner team invitation (e.g. a clinic's admin): show a partner welcome, not the free plan.
+  const staffInvite = searchParams.get("staff") === "1";
 
   // Pricing page deep-link: ?plan=standard|family preselects a paid plan so the
   // user lands in checkout right after signup (or immediately if signed in).
@@ -155,7 +157,7 @@ const AuthPage = () => {
       ...(checkoutPlan ? { plan_intent: checkoutPlan } : {}),
       ...(pendingPartner?.slug ? { partner_slug: pendingPartner.slug } : {}),
       ...(pendingPartner?.token ? { partner_invite: pendingPartner.token } : {}),
-    }).catch((error: Error) => ({ error, session: null }));
+    }, nextPath ?? undefined).catch((error: Error) => ({ error, session: null }));
     setLoading(false);
 
     if (error) {
@@ -289,16 +291,19 @@ const AuthPage = () => {
               {mode === "signup" && (
                 <div className="mb-5 rounded-lg border border-primary/20 bg-primary/5 px-3 py-2.5 text-center">
                   <p className="text-xs text-foreground/80 leading-relaxed">
-                    {signupPartner ? <>
+                    {staffInvite ? <>
+                      <span className="block font-medium text-foreground">{t("partnerSignup.title")}</span>
+                      <span className="block mt-1">{t("partnerSignup.body")}</span>
+                    </> : signupPartner ? <>
                       {signupPartner.logo_url && <img src={signupPartner.logo_url} alt={signupPartner.name} className="mx-auto mb-2 h-10 max-w-[160px] object-contain" />}
                       <span className="font-medium text-foreground">{t("signupPage.invitedBy", { name: signupPartner.name })}</span>
                     </> : partnerLoading ? t("signupPage.loadingInvitation") : checkoutPlan ? signupPlanCopy(checkoutPlan) : <><span className="font-medium text-foreground">{t("signupPage.freePlan")}</span> · {t("signupPage.freePlanDetail")}</>}
                   </p>
-                  <div className="mt-2 flex items-center justify-center gap-3 text-[10px] text-muted-foreground">
+                  {!staffInvite && <div className="mt-2 flex items-center justify-center gap-3 text-[10px] text-muted-foreground">
                     <span className="inline-flex items-center gap-1"><ShieldCheck className="w-3 h-3 text-primary" /> {t("signupPage.encrypted")}</span>
                     <span className="inline-flex items-center gap-1"><XCircle className="w-3 h-3 text-primary" /> {t("signupPage.cancelAnytime")}</span>
                     {!checkoutPlan && <span className="inline-flex items-center gap-1"><CreditCard className="w-3 h-3 text-primary" /> {t("signupPage.noCard")}</span>}
-                  </div>
+                  </div>}
                 </div>
               )}
 
@@ -370,7 +375,7 @@ const AuthPage = () => {
                     className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
                     {loading ? t("auth.creatingAccount") : t("auth.createAccount")}
                   </button>
-                  {!checkoutPlan && <p className="text-[11px] text-muted-foreground text-center">
+                  {!checkoutPlan && !staffInvite && <p className="text-[11px] text-muted-foreground text-center">
                     {t("signupPage.noCreditCard")}
                   </p>}
                   <p className="text-[11px] text-muted-foreground/80 text-center leading-relaxed">
@@ -385,7 +390,7 @@ const AuthPage = () => {
           )}
         </div>
 
-        {mode === "signup" && !checkoutPlan && !signupPartner && !partnerLoading && (
+        {mode === "signup" && !checkoutPlan && !signupPartner && !partnerLoading && !staffInvite && (
           <div className="mt-5 rounded-lg border border-border/60 bg-card/60 px-4 py-3">
             <p className="text-[10px] tracking-[0.12em] uppercase text-muted-foreground/80 text-center mb-2">
               {t("signupPage.includesTitle")}

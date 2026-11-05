@@ -359,5 +359,7 @@
 "settingsData.links": "Gerir links de partilha ativos",
 "settingsData.linksSub": "Reveja e revogue quaisquer resumos partilhados ativos.",
 "settingsData.delete": "Eliminar a minha conta e todos os dados",
-"settingsData.deleteSub": "Permanente e irreversível."
+"settingsData.deleteSub": "Permanente e irreversível.",
+"partnerSignup.title": "Crie a sua conta de parceiro",
+"partnerSignup.body": "Registe-se com o endereço de e-mail para o qual o convite foi enviado e, em seguida, confirme-o. Será redirecionado diretamente para a sua página de parceiro."
 }

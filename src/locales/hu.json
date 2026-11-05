@@ -360,5 +360,7 @@
 "settingsData.links": "Aktív megosztási hivatkozások kezelése",
 "settingsData.linksSub": "Az aktív megosztott összefoglalók áttekintése és visszavonása.",
 "settingsData.delete": "Fiókom és összes adatom törlése",
-"settingsData.deleteSub": "Végleges és visszafordíthatatlan."
+"settingsData.deleteSub": "Végleges és visszafordíthatatlan.",
+"partnerSignup.title": "Hozza létre partnerfiókját",
+"partnerSignup.body": "Regisztráljon azzal az e-mail-címmel, amelyre a meghívót küldték, majd erősítse meg azt. Ezután közvetlenül a partneroldalára kerül."
 }

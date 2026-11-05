@@ -360,5 +360,7 @@
 "settingsData.links": "Upravljaj aktivnim poveznicama za dijeljenje",
 "settingsData.linksSub": "Pregledajte i opozovite sve aktivne sažetke za dijeljenje.",
 "settingsData.delete": "Izbriši moj račun i sve podatke",
-"settingsData.deleteSub": "Trajno i nepovratno."
+"settingsData.deleteSub": "Trajno i nepovratno.",
+"partnerSignup.title": "Izradite svoj partnerski račun",
+"partnerSignup.body": "Registrirajte se s adresom e-pošte na koju je poslana vaša pozivnica, a zatim je potvrdite. Odmah ćete biti preusmjereni na svoju partnersku stranicu."
 }

@@ -360,5 +360,7 @@
 "settingsData.links": "Etkin paylaşım bağlantılarını yönet",
 "settingsData.linksSub": "Etkin paylaşım özetlerini inceleyin ve iptal edin.",
 "settingsData.delete": "Hesabımı ve tüm verilerimi sil",
-"settingsData.deleteSub": "Kalıcı ve geri alınamaz."
+"settingsData.deleteSub": "Kalıcı ve geri alınamaz.",
+"partnerSignup.title": "Partner hesabınızı oluşturun",
+"partnerSignup.body": "Davetiyenizin gönderildiği e-posta adresiyle kaydolun, ardından adresi doğrulayın. Doğrudan partner sayfanıza yönlendirileceksiniz."
 }

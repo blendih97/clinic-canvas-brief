@@ -360,5 +360,7 @@
 "settingsData.links": "Gestionează linkurile de partajare active",
 "settingsData.linksSub": "Examinați și revocați orice rezumate partajate active.",
 "settingsData.delete": "Șterge contul meu și toate datele",
-"settingsData.deleteSub": "Permanent și ireversibil."
+"settingsData.deleteSub": "Permanent și ireversibil.",
+"partnerSignup.title": "Creați-vă contul de partener",
+"partnerSignup.body": "Înregistrați-vă cu adresa de e-mail la care a fost trimisă invitația, apoi confirmați-o. Veți ajunge direct la pagina dvs. de partener."
 }

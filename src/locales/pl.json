@@ -360,5 +360,7 @@
 "settingsData.links": "Zarządzaj aktywnymi linkami do udostępniania",
 "settingsData.linksSub": "Przeglądaj i unieważniaj aktywne udostępnione zestawienia.",
 "settingsData.delete": "Usuń moje konto i wszystkie dane",
-"settingsData.deleteSub": "Trwałe i nieodwracalne."
+"settingsData.deleteSub": "Trwałe i nieodwracalne.",
+"partnerSignup.title": "Utwórz konto partnera",
+"partnerSignup.body": "Zarejestruj się, używając adresu e-mail, na który wysłano zaproszenie, a następnie go potwierdź. Zostaniesz od razu przekierowany na swoją stronę partnera."
 }

@@ -359,5 +359,7 @@
 "settingsData.links": "Upravljaj aktivne povezave za deljenje",
 "settingsData.linksSub": "Preglejte in prekličite vse aktivne povzetke za deljenje.",
 "settingsData.delete": "Izbriši moj račun in vse podatke",
-"settingsData.deleteSub": "Trajno in nepovratno."
+"settingsData.deleteSub": "Trajno in nepovratno.",
+"partnerSignup.title": "Ustvarite svoj partnerski račun",
+"partnerSignup.body": "Registrirajte se z e-poštnim naslovom, na katerega je bilo poslano vaše povabilo, in ga nato potrdite. Nato boste takoj preusmerjeni na svojo partnersko stran."
 }

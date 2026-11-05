@@ -360,5 +360,7 @@
 "settingsData.links": "Spravovať aktívne odkazy na zdieľanie",
 "settingsData.linksSub": "Skontrolujte a zrušte všetky aktívne zdieľané prehľady.",
 "settingsData.delete": "Odstrániť môj účet a všetky údaje",
-"settingsData.deleteSub": "Trvalé a nezvratné."
+"settingsData.deleteSub": "Trvalé a nezvratné.",
+"partnerSignup.title": "Vytvorte si partnerský účet",
+"partnerSignup.body": "Zaregistrujte sa pomocou e-mailovej adresy, na ktorú vám bola odoslaná pozvánka, a potom ju potvrďte. Hneď sa dostanete na svoju partnerskú stránku."
 }

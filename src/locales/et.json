@@ -360,5 +360,7 @@
 "settingsData.links": "Halda aktiivseid jagamislinke",
 "settingsData.linksSub": "Vaata üle ja tühista aktiivsed jagatud kokkuvõtted.",
 "settingsData.delete": "Kustuta minu konto ja kõik andmed",
-"settingsData.deleteSub": "Püsiv ja pöördumatu."
+"settingsData.deleteSub": "Püsiv ja pöördumatu.",
+"partnerSignup.title": "Loo oma partnerikonto",
+"partnerSignup.body": "Registreeru e-posti aadressiga, millele kutse saadeti, ja kinnita see. Seejärel suunatakse sind otse oma partneri lehele."
 }

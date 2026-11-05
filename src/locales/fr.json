@@ -359,5 +359,7 @@
 "settingsData.links": "Gérer les liens de partage actifs",
 "settingsData.linksSub": "Examinez et révoquez les résumés partagés actifs.",
 "settingsData.delete": "Supprimer mon compte et toutes mes données",
-"settingsData.deleteSub": "Définitif et irréversible."
+"settingsData.deleteSub": "Définitif et irréversible.",
+"partnerSignup.title": "Créez votre compte partenaire",
+"partnerSignup.body": "Inscrivez-vous avec l'adresse e-mail à laquelle votre invitation a été envoyée, puis confirmez-la. Vous accéderez directement à votre page partenaire."
 }

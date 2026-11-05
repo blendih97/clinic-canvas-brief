@@ -397,6 +397,10 @@ export const baseDictionary: Record<"en" | "ar", TranslationMap> = {
       delete: "Delete my account and all data",
       deleteSub: "Permanent and irreversible.",
     },
+    partnerSignup: {
+      title: "Create your partner account",
+      body: "Sign up with the email address your invitation was sent to, then confirm it. You'll go straight to your partner page.",
+    },
   },
   ar: {
     common: {
@@ -786,6 +790,10 @@ export const baseDictionary: Record<"en" | "ar", TranslationMap> = {
       linksSub: "راجع وألغِ أي ملخصات مشاركة نشطة.",
       delete: "حذف حسابي وجميع البيانات",
       deleteSub: "دائم ولا يمكن التراجع عنه.",
+    },
+    partnerSignup: {
+      title: "أنشئ حساب الشريك الخاص بك",
+      body: "سجّل باستخدام عنوان البريد الإلكتروني الذي أُرسلت إليه دعوتك، ثم أكّده. ستنتقل مباشرةً إلى صفحة الشريك الخاصة بك.",
     },
   },
 };

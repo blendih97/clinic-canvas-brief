@@ -360,5 +360,7 @@
 "settingsData.links": "Quản lý các liên kết chia sẻ đang hoạt động",
 "settingsData.linksSub": "Xem lại và thu hồi bất kỳ bản tóm tắt chia sẻ nào đang hoạt động.",
 "settingsData.delete": "Xóa tài khoản và toàn bộ dữ liệu của tôi",
-"settingsData.deleteSub": "Vĩnh viễn và không thể hoàn tác."
+"settingsData.deleteSub": "Vĩnh viễn và không thể hoàn tác.",
+"partnerSignup.title": "Tạo tài khoản đối tác của bạn",
+"partnerSignup.body": "Hãy đăng ký bằng địa chỉ email đã nhận được lời mời, sau đó xác nhận email. Bạn sẽ được chuyển thẳng đến trang đối tác của mình."
 }
