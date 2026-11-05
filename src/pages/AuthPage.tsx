@@ -131,7 +131,7 @@ const AuthPage = () => {
       return;
     }
     if (password.length < 8) {
-      setInlineError("Please choose a password with at least 8 characters.");
+      setInlineError(t("signupPage.passwordTooShort"));
       recordFunnel("signup_error", checkoutPlan, "too_short");
       return;
     }
@@ -291,13 +291,13 @@ const AuthPage = () => {
                   <p className="text-xs text-foreground/80 leading-relaxed">
                     {signupPartner ? <>
                       {signupPartner.logo_url && <img src={signupPartner.logo_url} alt={signupPartner.name} className="mx-auto mb-2 h-10 max-w-[160px] object-contain" />}
-                      <span className="font-medium text-foreground">Sponsored by {signupPartner.name} — full access, free for you</span>
-                    </> : partnerLoading ? "Loading your sponsorship…" : checkoutPlan ? signupPlanCopy(checkoutPlan) : <><span className="font-medium text-foreground">Free plan</span> · 3 documents, fully translated · No card required</>}
+                      <span className="font-medium text-foreground">{t("signupPage.invitedBy", { name: signupPartner.name })}</span>
+                    </> : partnerLoading ? t("signupPage.loadingInvitation") : checkoutPlan ? signupPlanCopy(checkoutPlan) : <><span className="font-medium text-foreground">{t("signupPage.freePlan")}</span> · {t("signupPage.freePlanDetail")}</>}
                   </p>
                   <div className="mt-2 flex items-center justify-center gap-3 text-[10px] text-muted-foreground">
-                    <span className="inline-flex items-center gap-1"><ShieldCheck className="w-3 h-3 text-primary" /> Encrypted at rest and in transit</span>
-                    <span className="inline-flex items-center gap-1"><XCircle className="w-3 h-3 text-primary" /> Cancel anytime</span>
-                    {!checkoutPlan && <span className="inline-flex items-center gap-1"><CreditCard className="w-3 h-3 text-primary" /> No card</span>}
+                    <span className="inline-flex items-center gap-1"><ShieldCheck className="w-3 h-3 text-primary" /> {t("signupPage.encrypted")}</span>
+                    <span className="inline-flex items-center gap-1"><XCircle className="w-3 h-3 text-primary" /> {t("signupPage.cancelAnytime")}</span>
+                    {!checkoutPlan && <span className="inline-flex items-center gap-1"><CreditCard className="w-3 h-3 text-primary" /> {t("signupPage.noCard")}</span>}
                   </div>
                 </div>
               )}
@@ -335,9 +335,9 @@ const AuthPage = () => {
                 </form>
               ) : (
                 <form onSubmit={handleSignUp} className="space-y-4">
-                  <p className="text-[11px] text-muted-foreground">Takes about 30 seconds.</p>
+                  <p className="text-[11px] text-muted-foreground">{t("signupPage.takes30")}</p>
                   <div>
-                    <label className="text-xs font-medium text-foreground">Name <span className="text-muted-foreground font-normal">(optional)</span></label>
+                    <label className="text-xs font-medium text-foreground">{t("signupPage.name")} <span className="text-muted-foreground font-normal">{t("signupPage.optional")}</span></label>
                     <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)}
                       autoComplete="name" autoCapitalize="words"
                       className="w-full mt-1 px-3 py-2.5 bg-background border border-border rounded-lg text-base text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
@@ -356,13 +356,13 @@ const AuthPage = () => {
                         autoComplete="new-password" autoCapitalize="none" autoCorrect="off" spellCheck={false}
                         className="w-full px-3 py-2.5 pr-10 bg-background border border-border rounded-lg text-base text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
                       <button type="button" onClick={() => setShowPassword((v) => !v)}
-                        aria-label={showPassword ? "Hide password" : "Show password"}
+                        aria-label={showPassword ? t("signupPage.hidePassword") : t("signupPage.showPassword")}
                         className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground">
                         {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
                     </div>
                     {inlineError && <p id="signup-error" role="alert" className="text-sm text-destructive font-medium mt-2">{inlineError}</p>}
-                    <p id="signup-password-hint" className="text-xs mt-2 text-muted-foreground">At least 8 characters. Avoid common or previously leaked passwords.</p>
+                    <p id="signup-password-hint" className="text-xs mt-2 text-muted-foreground">{t("signupPage.passwordHint")}</p>
                     {strongPassword(password) && <p className="text-xs mt-1 text-foreground">Strong</p>}
                   </div>
 
@@ -371,13 +371,13 @@ const AuthPage = () => {
                     {loading ? t("auth.creatingAccount") : t("auth.createAccount")}
                   </button>
                   {!checkoutPlan && <p className="text-[11px] text-muted-foreground text-center">
-                    No credit card required · Cancel anytime
+                    {t("signupPage.noCreditCard")}
                   </p>}
                   <p className="text-[11px] text-muted-foreground/80 text-center leading-relaxed">
-                    By creating an account you agree to our{" "}
-                    <Link to="/terms" target="_blank" rel="noopener" className="underline hover:text-foreground">Terms</Link>
-                    {" "}and{" "}
-                    <Link to="/privacy" target="_blank" rel="noopener" className="underline hover:text-foreground">Privacy Policy</Link>.
+                    {t("signupPage.agreePrefix")}{" "}
+                    <Link to="/terms" target="_blank" rel="noopener" className="underline hover:text-foreground">{t("signupPage.terms")}</Link>
+                    {" "}{t("signupPage.and")}{" "}
+                    <Link to="/privacy" target="_blank" rel="noopener" className="underline hover:text-foreground">{t("signupPage.privacy")}</Link>.
                   </p>
                 </form>
               )}
@@ -388,13 +388,13 @@ const AuthPage = () => {
         {mode === "signup" && !checkoutPlan && !signupPartner && !partnerLoading && (
           <div className="mt-5 rounded-lg border border-border/60 bg-card/60 px-4 py-3">
             <p className="text-[10px] tracking-[0.12em] uppercase text-muted-foreground/80 text-center mb-2">
-              What your free plan includes
+              {t("signupPage.includesTitle")}
             </p>
             <ul className="space-y-1.5 text-xs text-muted-foreground leading-relaxed">
-              <li>• Up to 3 documents, in any language, with the original always kept</li>
-              <li>• Multilingual AI extraction, with every result traceable to the source record</li>
-              <li>• Stored encrypted with UK GDPR-compliant providers — see our Privacy Policy for the full list of processors</li>
-              <li>• Time-limited share links you can revoke at any time</li>
+              <li>• {t("signupPage.includes1")}</li>
+              <li>• {t("signupPage.includes2")}</li>
+              <li>• {t("signupPage.includes3")}</li>
+              <li>• {t("signupPage.includes4")}</li>
             </ul>
           </div>
         )}

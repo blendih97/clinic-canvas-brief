@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { defaultLocale, isLocale, translate, type Locale } from "@/lib/i18n";
+import { defaultLocale, isLocale, isLocaleLoaded, isRtlLocale, loadLocale, translate, type Locale } from "@/lib/i18n";
 
 type LocaleContextType = {
   isRTL: boolean;
@@ -23,7 +23,8 @@ const getInitialLocale = (): Locale => {
   const storedLocale = window.localStorage.getItem(STORAGE_KEY);
   if (isLocale(storedLocale)) return storedLocale;
 
-  return window.navigator.language.toLowerCase().startsWith("ar") ? "ar" : defaultLocale;
+  // English unless the person has chosen another language.
+  return defaultLocale;
 };
 
 export const LocaleProvider = ({ children }: { children: ReactNode }) => {
@@ -40,10 +41,19 @@ export const LocaleProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [locale, profile?.preferred_translation_language, profile?.preferred_ui_language, translationLocale]);
 
+  // Languages other than English and Arabic load on demand; re-render once they arrive.
+  const [, setLoadedTick] = useState(0);
+  useEffect(() => {
+    if (isLocaleLoaded(locale)) return;
+    let alive = true;
+    void loadLocale(locale).then(() => { if (alive) setLoadedTick((n) => n + 1); });
+    return () => { alive = false; };
+  }, [locale]);
+
   useEffect(() => {
     if (typeof document === "undefined") return;
 
-    const direction = locale === "ar" ? "rtl" : "ltr";
+    const direction = isRtlLocale(locale) ? "rtl" : "ltr";
     document.documentElement.lang = locale;
     document.documentElement.dir = direction;
     document.body.dir = direction;
@@ -52,13 +62,15 @@ export const LocaleProvider = ({ children }: { children: ReactNode }) => {
 
   const t = useCallback(
     (key: string, params?: Record<string, string | number>) => translate(locale, key, params),
-    [locale],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [locale, isLocaleLoaded(locale)],
   );
 
   const setLocale = useCallback(
     async (nextLocale: Locale) => {
       if (nextLocale === locale) return;
 
+      await loadLocale(nextLocale);
       setLocaleState(nextLocale);
 
       if (!user) return;
@@ -102,7 +114,7 @@ export const LocaleProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const value = useMemo(
-    () => ({ isRTL: locale === "ar", locale, setLocale, setTranslationLocale, t, translationLocale }),
+    () => ({ isRTL: isRtlLocale(locale), locale, setLocale, setTranslationLocale, t, translationLocale }),
     [locale, setLocale, setTranslationLocale, t, translationLocale],
   );
 

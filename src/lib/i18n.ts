@@ -1,10 +1,13 @@
-export type Locale = "en" | "ar";
+import { SUPPORTED_LANGUAGES } from "@/lib/supportedLanguages";
+
+/** Any RinVita language code. English and Arabic are built in; the others load on demand from src/locales. */
+export type Locale = string;
 
 type TranslationMap = {
   [key: string]: string | TranslationMap;
 };
 
-const dictionary: Record<Locale, TranslationMap> = {
+export const baseDictionary: Record<"en" | "ar", TranslationMap> = {
   en: {
     common: {
       back: "Back",
@@ -354,6 +357,45 @@ const dictionary: Record<Locale, TranslationMap> = {
       sending: "Sending…",
       successToast: "Imaging request sent to {{provider}}",
       errorToast: "Failed to send request. Please try again."
+    },
+    signupPage: {
+      invitedBy: "Invited by {{name}} · full access included",
+      loadingInvitation: "Loading your invitation…",
+      freePlan: "Free plan",
+      freePlanDetail: "3 documents, fully translated · No card required",
+      encrypted: "Encrypted at rest and in transit",
+      cancelAnytime: "Cancel anytime",
+      noCard: "No card",
+      takes30: "Takes about 30 seconds.",
+      name: "Name",
+      optional: "(optional)",
+      passwordHint: "At least 8 characters. Avoid common or previously leaked passwords.",
+      passwordTooShort: "Please choose a password with at least 8 characters.",
+      showPassword: "Show password",
+      hidePassword: "Hide password",
+      noCreditCard: "No credit card required · Cancel anytime",
+      agreePrefix: "By creating an account you agree to our",
+      terms: "Terms",
+      and: "and",
+      privacy: "Privacy Policy",
+      includesTitle: "What your free plan includes",
+      includes1: "Up to 3 documents, in any language, with the original always kept",
+      includes2: "Multilingual AI extraction, with every result traceable to the source record",
+      includes3: "Stored encrypted with UK GDPR-compliant providers — see our Privacy Policy for the full list of processors",
+      includes4: "Time-limited share links you can revoke at any time",
+    },
+    settingsData: {
+      title: "Your data, your control",
+      subtitle: "Export, audit, revoke, or delete — at any time. No questions, no waiting.",
+      download: "Download all my data",
+      downloadSub: "GDPR Article 15 — full export as JSON.",
+      audit: "View my audit log",
+      auditSub: "Who accessed what, and when.",
+      auditSoon: "Audit log coming soon — full access history with timestamps.",
+      links: "Manage active share links",
+      linksSub: "Review and revoke any active share briefs.",
+      delete: "Delete my account and all data",
+      deleteSub: "Permanent and irreversible.",
     },
   },
   ar: {
@@ -706,6 +748,45 @@ const dictionary: Record<Locale, TranslationMap> = {
       successToast: "تم إرسال طلب التصوير إلى {{provider}}",
       errorToast: "تعذر إرسال الطلب. يرجى المحاولة مرة أخرى."
     },
+    signupPage: {
+      invitedBy: "بدعوة من {{name}} · وصول كامل مشمول",
+      loadingInvitation: "جارٍ تحميل دعوتك…",
+      freePlan: "الخطة المجانية",
+      freePlanDetail: "3 مستندات مترجمة بالكامل · لا حاجة لبطاقة",
+      encrypted: "مشفّر أثناء التخزين والنقل",
+      cancelAnytime: "ألغِ في أي وقت",
+      noCard: "بدون بطاقة",
+      takes30: "يستغرق حوالي 30 ثانية.",
+      name: "الاسم",
+      optional: "(اختياري)",
+      passwordHint: "8 أحرف على الأقل. تجنّب كلمات المرور الشائعة أو المسرّبة سابقًا.",
+      passwordTooShort: "يرجى اختيار كلمة مرور من 8 أحرف على الأقل.",
+      showPassword: "إظهار كلمة المرور",
+      hidePassword: "إخفاء كلمة المرور",
+      noCreditCard: "لا حاجة لبطاقة ائتمان · ألغِ في أي وقت",
+      agreePrefix: "بإنشاء حساب، فإنك توافق على",
+      terms: "الشروط",
+      and: "و",
+      privacy: "سياسة الخصوصية",
+      includesTitle: "ما تتضمنه خطتك المجانية",
+      includes1: "حتى 3 مستندات بأي لغة، مع الاحتفاظ دائمًا بالنسخة الأصلية",
+      includes2: "استخراج متعدد اللغات بالذكاء الاصطناعي، مع إمكانية تتبع كل نتيجة إلى السجل الأصلي",
+      includes3: "مخزّنة بشكل مشفّر لدى مزوّدين ملتزمين باللائحة العامة لحماية البيانات في المملكة المتحدة — راجع سياسة الخصوصية للاطلاع على القائمة الكاملة",
+      includes4: "روابط مشاركة محدودة المدة يمكنك إلغاؤها في أي وقت",
+    },
+    settingsData: {
+      title: "بياناتك تحت سيطرتك",
+      subtitle: "صدّر أو راجع أو ألغِ أو احذف — في أي وقت. بلا أسئلة وبلا انتظار.",
+      download: "تنزيل جميع بياناتي",
+      downloadSub: "المادة 15 من اللائحة العامة لحماية البيانات — تصدير كامل بصيغة JSON.",
+      audit: "عرض سجل التدقيق",
+      auditSub: "من اطّلع على ماذا، ومتى.",
+      auditSoon: "سجل التدقيق قريبًا — سجل وصول كامل مع التواريخ والأوقات.",
+      links: "إدارة روابط المشاركة النشطة",
+      linksSub: "راجع وألغِ أي ملخصات مشاركة نشطة.",
+      delete: "حذف حسابي وجميع البيانات",
+      deleteSub: "دائم ولا يمكن التراجع عنه.",
+    },
   },
 };
 
@@ -718,14 +799,34 @@ const getNestedValue = (source: TranslationMap, path: string): string | undefine
   return typeof value === "string" ? value : undefined;
 };
 
-export const locales: Locale[] = ["en", "ar"];
+export const locales: Locale[] = SUPPORTED_LANGUAGES.map((l) => l.code);
 export const defaultLocale: Locale = "en";
+const RTL = new Set(["ar", "he", "ur", "fa"]);
+export const isRtlLocale = (locale: Locale) => RTL.has(locale);
 
 export const isLocale = (value: string | null | undefined): value is Locale =>
-  value === "en" || value === "ar";
+  !!value && locales.includes(value);
+
+// Other languages: flat "section.key" maps, loaded when first chosen.
+const lazyFiles = import.meta.glob<{ default: Record<string, string> }>("../locales/*.json");
+const loaded: Record<string, Record<string, string>> = {};
+
+export const isLocaleLoaded = (locale: Locale) => locale === "en" || locale === "ar" || !!loaded[locale];
+
+export async function loadLocale(locale: Locale): Promise<void> {
+  if (isLocaleLoaded(locale)) return;
+  const file = lazyFiles[`../locales/${locale}.json`];
+  if (!file) return;
+  try { loaded[locale] = (await file()).default; } catch { /* stays in English */ }
+}
+
+const lookup = (locale: Locale, key: string): string | undefined => {
+  if (locale === "en" || locale === "ar") return getNestedValue(baseDictionary[locale], key);
+  return loaded[locale]?.[key];
+};
 
 export const translate = (locale: Locale, key: string, params?: Record<string, string | number>) => {
-  const template = getNestedValue(dictionary[locale], key) ?? getNestedValue(dictionary.en, key) ?? key;
+  const template = lookup(locale, key) ?? getNestedValue(baseDictionary.en, key) ?? key;
 
   if (!params) return template;
 
