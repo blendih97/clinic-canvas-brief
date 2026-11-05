@@ -956,42 +956,6 @@ export type Database = {
         }
         Relationships: []
       }
-      patient_insurance: {
-        Row: {
-          insurer: string | null
-          insurer_phone: string | null
-          member_id: string | null
-          notes: string | null
-          plan_name: string | null
-          policy_number: string | null
-          updated_at: string
-          user_id: string
-          valid_until: string | null
-        }
-        Insert: {
-          insurer?: string | null
-          insurer_phone?: string | null
-          member_id?: string | null
-          notes?: string | null
-          plan_name?: string | null
-          policy_number?: string | null
-          updated_at?: string
-          user_id: string
-          valid_until?: string | null
-        }
-        Update: {
-          insurer?: string | null
-          insurer_phone?: string | null
-          member_id?: string | null
-          notes?: string | null
-          plan_name?: string | null
-          policy_number?: string | null
-          updated_at?: string
-          user_id?: string
-          valid_until?: string | null
-        }
-        Relationships: []
-      }
       partner_members: {
         Row: {
           id: string
@@ -1201,13 +1165,11 @@ export type Database = {
           marketing_consent: boolean
           nationality: string | null
           nationality_code: string | null
-          no_known_allergies: boolean
           phone: string | null
           plan: string
           preferred_translation_language: string
           preferred_ui_language: string
           residence_country_code: string | null
-          setup_completed_at: string | null
           stripe_customer_id: string | null
           stripe_subscription_id: string | null
           suspended_at: string | null
@@ -1238,13 +1200,11 @@ export type Database = {
           marketing_consent?: boolean
           nationality?: string | null
           nationality_code?: string | null
-          no_known_allergies?: boolean
           phone?: string | null
           plan?: string
           preferred_translation_language?: string
           preferred_ui_language?: string
           residence_country_code?: string | null
-          setup_completed_at?: string | null
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
           suspended_at?: string | null
@@ -1275,13 +1235,11 @@ export type Database = {
           marketing_consent?: boolean
           nationality?: string | null
           nationality_code?: string | null
-          no_known_allergies?: boolean
           phone?: string | null
           plan?: string
           preferred_translation_language?: string
           preferred_ui_language?: string
           residence_country_code?: string | null
-          setup_completed_at?: string | null
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
           suspended_at?: string | null
@@ -1307,7 +1265,6 @@ export type Database = {
           provider_email: string
           provider_name: string
           request_description: string
-          seen_at: string | null
           status: string
           token: string
           user_id: string
@@ -1325,7 +1282,6 @@ export type Database = {
           provider_email: string
           provider_name: string
           request_description: string
-          seen_at?: string | null
           status?: string
           token: string
           user_id: string
@@ -1343,7 +1299,6 @@ export type Database = {
           provider_email?: string
           provider_name?: string
           request_description?: string
-          seen_at?: string | null
           status?: string
           token?: string
           user_id?: string
@@ -1387,7 +1342,6 @@ export type Database = {
           id: string
           imaging_results: Json | null
           medications: Json | null
-          no_known_allergies: boolean
           revoked_at: string | null
           scope: string | null
           token: string
@@ -1402,7 +1356,6 @@ export type Database = {
           id?: string
           imaging_results?: Json | null
           medications?: Json | null
-          no_known_allergies?: boolean
           revoked_at?: string | null
           scope?: string | null
           token: string
@@ -1417,7 +1370,6 @@ export type Database = {
           id?: string
           imaging_results?: Json | null
           medications?: Json | null
-          no_known_allergies?: boolean
           revoked_at?: string | null
           scope?: string | null
           token?: string
