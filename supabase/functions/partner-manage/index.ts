@@ -72,6 +72,12 @@ Deno.serve(async (req) => {
 
     const { count } = await db.from('partner_members').select('id', { count: 'exact', head: true }).eq('org_id', org.id)
     const role = (count ?? 0) === 0 ? 'partner_admin' : (input.role ?? 'partner_staff')
+    // Team members besides the admin are limited per partner (staff_limit, default 5). Platform admins are exempt.
+    if (role === 'partner_staff' && !isPlatformAdmin) {
+      const { count: staffCount } = await db.from('partner_members').select('id', { count: 'exact', head: true })
+        .eq('org_id', org.id).eq('role', 'partner_staff').not('invited_email', 'ilike', input.email)
+      if ((staffCount ?? 0) >= (org.staff_limit ?? 5)) return json({ error: 'staff_limit', limit: org.staff_limit ?? 5 }, 409)
+    }
     const { data: existing } = await db.from('partner_members').select('id,status').eq('org_id', org.id).ilike('invited_email', input.email).maybeSingle()
     if (existing && existing.status === 'active') return json({ error: 'already_member' }, 409)
     if (!existing) {

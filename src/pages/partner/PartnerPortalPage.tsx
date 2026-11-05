@@ -10,7 +10,7 @@ import { usePartnerAccess } from "@/hooks/usePartnerAccess";
 import { MAX_INVITES_PER_SUBMIT, parseEmailList, partnerLink } from "@/lib/partners";
 import { formatSponsorshipDate } from "@/lib/sponsorship";
 
-interface Org { id: string; name: string; slug: string; logo_url: string | null; tagline?: string | null; seat_limit: number; sponsor_until: string | null; status: string }
+interface Org { id: string; name: string; slug: string; logo_url: string | null; tagline?: string | null; seat_limit: number; staff_limit?: number; sponsor_until: string | null; status: string }
 interface Member { id: string; org_id: string; user_id: string | null; invited_email: string; role: string; status: string; joined_at: string | null }
 interface Patient {
   link_id: string; full_name: string | null; email: string | null; status: string; source: string;
@@ -91,7 +91,7 @@ const PartnerPortalPage = ({ orgs, myMemberships }: { orgs: Org[]; myMemberships
   const inviteStaff = async (e: React.FormEvent) => {
     e.preventDefault();
     const res = await call({ action: "invite_staff", email: staffEmail.trim() });
-    if (res.error) toast.error(res.error === "already_member" ? "Already a team member." : "Invite failed.");
+    if (res.error) toast.error(res.error === "already_member" ? "Already a team member." : res.error === "staff_limit" ? `Your team is full (${staffLimit} team members). Remove someone or contact RinVita for more.` : "Invite failed.");
     else { toast.success("Team invitation sent."); setStaffEmail(""); }
     void load();
   };
@@ -104,6 +104,8 @@ const PartnerPortalPage = ({ orgs, myMemberships }: { orgs: Org[]; myMemberships
   };
 
   const card = "rounded-xl border border-border bg-card p-5";
+  const staffLimit = org.staff_limit ?? 5;
+  const staffUsed = team.filter((m) => m.role === "partner_staff").length;
 
   return (
     <div className="min-h-screen bg-background">
@@ -226,10 +228,11 @@ const PartnerPortalPage = ({ orgs, myMemberships }: { orgs: Org[]; myMemberships
                 </li>
               ))}
             </ul>
+            <p className="text-xs text-muted-foreground">Team members can invite patients and see sign-ups. Only admins can manage the team. {staffUsed} of {staffLimit} team places used.</p>
             <form onSubmit={inviteStaff} className="flex gap-2">
               <input type="email" required value={staffEmail} onChange={(e) => setStaffEmail(e.target.value)} placeholder="colleague@clinic.com"
                 className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm" />
-              <button className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground whitespace-nowrap">Invite staff</button>
+              <button disabled={staffUsed >= staffLimit} className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground whitespace-nowrap disabled:opacity-50">Invite staff</button>
             </form>
           </div>
         )}
