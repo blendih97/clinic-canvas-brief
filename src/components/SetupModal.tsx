@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, Lock, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -32,6 +32,15 @@ const SetupModal = ({ open, onDone }: Props) => {
   const [allergies, setAllergies] = useState<AllergyRow[]>([{ substance: "", reaction: "" }]);
   const [meds, setMeds] = useState<MedRow[]>([{ name: "", dose: "", frequency: "" }]);
   const [ins, setIns] = useState({ insurer: "", policy_number: "", member_id: "", insurer_phone: "", valid_until: "" });
+
+  // The profile can arrive after the modal mounts: fill in anything already known, without overwriting edits.
+  useEffect(() => {
+    if (!profile) return;
+    setFullName((v) => v || profile.full_name || "");
+    setDob((v) => v || profile.date_of_birth || "");
+    setSex((v) => v || profile.biological_sex || "");
+    setConditions((v) => v || profile.current_diagnoses || "");
+  }, [profile]);
 
   if (!open || !user) return null;
 
