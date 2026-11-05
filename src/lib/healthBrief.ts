@@ -35,6 +35,18 @@ function fmtDate(iso: string | undefined | null, language: string): string {
 
 const byDateDesc = (a?: string | null, b?: string | null) => (b || "").localeCompare(a || "");
 
+/** The summary and text in the brief's language: the translation if it is in that language, else the original if that is. */
+export function docInLanguage(d: VaultDocument, language: string): { summary: string[]; text?: string } {
+  const lang = (language || "en").toLowerCase().slice(0, 2);
+  const tr = (d.translatedLanguageCode || "en").toLowerCase().slice(0, 2);
+  const orig = (d.originalLanguageCode || "").toLowerCase().slice(0, 2);
+  const sum = d.summary;
+  if (tr !== lang && orig === lang && sum && typeof sum === "object" && !Array.isArray(sum) && sum.originalText?.length) {
+    return { summary: sum.originalText, text: d.contentOriginal || undefined };
+  }
+  return { summary: summaryLines(sum), text: d.contentTranslated || d.contentOriginal || undefined };
+}
+
 export function summaryLines(sum: VaultDocument["summary"]): string[] {
   if (!sum) return [];
   if (typeof sum === "string") return [sum];
@@ -137,7 +149,7 @@ export async function buildHealthBrief(input: HealthBriefInput): Promise<HealthB
     })),
     documents: docs.map((d, i) => ({
       name: d.name, type: d.type, dateLabel: fmtDate(d.date, language), facility: d.facility, country: d.country,
-      summary: summaryLines(d.summary), hasOriginal: !!files[i], text: files[i] ? undefined : (d.contentTranslated || undefined),
+      summary: docInLanguage(d, language).summary, hasOriginal: !!files[i], text: files[i] ? undefined : docInLanguage(d, language).text,
     })),
     ...(strings ? { strings } : {}),
   };
