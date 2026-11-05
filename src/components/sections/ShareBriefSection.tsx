@@ -123,13 +123,25 @@ const ShareBriefSection = () => {
     const token = crypto.randomUUID();
     const expiresAt = new Date(Date.now() + selectedExpiry.seconds * 1000).toISOString();
 
+    // Make sure the vault (documents especially) has finished loading before building the brief,
+    // so a link is never created with an empty document list.
+    let docsNow = documents;
+    {
+      const { data: authNow } = await supabase.auth.getUser();
+      const st = useVaultStore.getState();
+      if (authNow?.user && (st.loading || (sections.documents && st.documents.length === 0))) {
+        await st.loadUserData(authNow.user.id);
+      }
+      docsNow = useVaultStore.getState().documents;
+    }
+
     // Build the payload honouring section filters and date range
     const payload = {
       bloodResults: sections.blood ? bloodResults.filter((r) => withinDateRange(r.date)) : [],
       imagingResults: sections.imaging ? imagingResults.filter((r) => withinDateRange(r.date)) : [],
       medications: sections.medications ? uniqueMedications.filter((r) => withinDateRange(r.date)) : [],
       allergies: sections.allergies ? allergies : [],
-      documents: sections.documents ? documents.filter((r) => withinDateRange(r.date) && !excludedDocIds.has(r.id)) : [],
+      documents: sections.documents ? docsNow.filter((r) => withinDateRange(r.date) && !excludedDocIds.has(r.id)) : [],
       alerts,
     };
 
