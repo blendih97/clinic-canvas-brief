@@ -10,7 +10,7 @@ import { usePartnerAccess } from "@/hooks/usePartnerAccess";
 import { MAX_INVITES_PER_SUBMIT, parseEmailList, partnerLink } from "@/lib/partners";
 import { formatSponsorshipDate } from "@/lib/sponsorship";
 
-interface Org { id: string; name: string; slug: string; logo_url: string | null; seat_limit: number; sponsor_until: string | null; status: string }
+interface Org { id: string; name: string; slug: string; logo_url: string | null; tagline?: string | null; seat_limit: number; sponsor_until: string | null; status: string }
 interface Member { id: string; org_id: string; user_id: string | null; invited_email: string; role: string; status: string; joined_at: string | null }
 interface Patient {
   link_id: string; full_name: string | null; email: string | null; status: string; source: string;
@@ -129,12 +129,21 @@ const PartnerPortalPage = ({ orgs, myMemberships }: { orgs: Org[]; myMemberships
       </header>
 
       <main className="mx-auto max-w-6xl px-5 py-8 space-y-6">
+        <div>
+          <p className="text-xs uppercase tracking-[0.2em] text-primary">Partner portal</p>
+          <h1 className="mt-1 font-heading text-3xl font-light text-foreground">Welcome, {org.name}</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Invite your patients to RinVita. {Math.max(0, org.seat_limit - stats.seats)} of {org.seat_limit} places left
+            {org.sponsor_until ? ` · access included until ${formatSponsorshipDate(org.sponsor_until)}` : ""}.
+          </p>
+        </div>
+
         {org.status !== "active" && <p className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm">This partnership is suspended. New invitations are paused.</p>}
 
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           {[
             ["Invited", stats.invited], ["Joined", stats.joined], ["Active (30 days)", stats.active],
-            ["Seats used", `${stats.seats} / ${org.seat_limit}`], ["Sponsored until", formatSponsorshipDate(org.sponsor_until)],
+            ["Places used", `${stats.seats} / ${org.seat_limit}`], ["Access until", formatSponsorshipDate(org.sponsor_until)],
           ].map(([k, v]) => (
             <div key={k as string} className={card}><p className="text-xs text-muted-foreground">{k}</p><p className="mt-1 text-xl font-heading">{v}</p></div>
           ))}

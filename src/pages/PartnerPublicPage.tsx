@@ -9,12 +9,12 @@ import { useQueryClient } from "@tanstack/react-query";
 import { refreshClaimAccess } from "@/lib/sponsorship";
 import { claimPartner, clearPendingPartner, isValidSlug, isValidToken, savePendingPartner } from "@/lib/partners";
 
-interface PublicPartner { name: string; slug: string; logo_url: string | null; type: string }
+interface PublicPartner { name: string; slug: string; logo_url: string | null; type: string; tagline?: string | null }
 
 const benefits = [
   { icon: FolderLock, title: "Store", text: "Keep every report, scan and letter in one secure place." },
   { icon: Eye, title: "Review", text: "See your history clearly, translated automatically where needed." },
-  { icon: Share2, title: "Share", text: "Send any doctor a time-limited link you can revoke, or a PDF, when you choose." },
+  { icon: Share2, title: "Share", text: "Send any doctor a secure, time-limited link or a PDF, whenever you choose." },
 ];
 
 const PartnerPublicPage = () => {
@@ -49,10 +49,10 @@ const PartnerPublicPage = () => {
     await refreshClaimAccess(res.status, refreshProfile, () => queryClient.invalidateQueries());
     clearPendingPartner();
     if (res.status === "joined" || res.status === "already_joined") {
-      toast.success(`${partner?.name} is sponsoring your RinVita plan.`);
+      toast.success(`Welcome to RinVita. Your account is set up through ${partner?.name}.`);
       navigate("/app");
     } else if (res.status === "seats_full") {
-      toast.message(`${partner?.name}'s sponsored places are full right now. You can keep using RinVita on the free plan.`);
+      toast.message(`${partner?.name}'s places are full right now. Please contact ${partner?.name}.`);
     } else {
       toast.message("This invitation is no longer active.");
     }
@@ -77,22 +77,26 @@ const PartnerPublicPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <SEO title={`${partner.name} × RinVita`} description={`${partner.name} gives you RinVita free as part of your care.`} path={`/p/${partner.slug}`} noindex />
+      <SEO title={`${partner.name} × RinVita`} description={`${partner.name} has invited you to join RinVita.`} path={`/p/${partner.slug}`} noindex />
       <main className="mx-auto max-w-2xl px-5 py-12 md:py-20">
-        <div className="flex items-center justify-center gap-4 mb-10">
+        <div className="flex items-center justify-center gap-5 mb-10">
           {partner.logo_url ? (
-            <img src={partner.logo_url} alt={partner.name} className="h-12 max-w-[160px] object-contain" />
+            <img src={partner.logo_url} alt={partner.name} className="h-14 md:h-16 max-w-[180px] object-contain" />
           ) : (
-            <span className="font-heading text-2xl text-foreground">{partner.name}</span>
+            <div className="text-center">
+              <span className="font-heading text-2xl text-foreground">{partner.name}</span>
+              {partner.tagline && <p className="text-[10px] uppercase tracking-[0.2em] text-primary mt-0.5">{partner.tagline}</p>}
+            </div>
           )}
-          <span className="text-muted-foreground text-xl">×</span>
-          <span className="font-heading text-2xl font-light tracking-[0.15em] gold-gradient-text">RinVita</span>
+          <span className="h-10 w-px bg-border" aria-hidden />
+          <span className="font-heading text-2xl md:text-3xl font-light tracking-[0.15em] gold-gradient-text">RinVita</span>
         </div>
 
-        <h1 className="font-heading text-3xl md:text-5xl font-light text-center text-foreground leading-tight">
-          {partner.name} gives you RinVita free as part of your care
+        <p className="text-center text-xs uppercase tracking-[0.2em] text-primary">Invitation</p>
+        <h1 className="mt-3 font-heading text-3xl md:text-5xl font-light text-center text-foreground leading-tight">
+          {partner.name} has invited you to join RinVita
         </h1>
-        <p className="mt-4 text-center text-muted-foreground">One secure place to store, review and share your medical records with any doctor.</p>
+        <p className="mt-4 text-center text-muted-foreground">Your medical records in one secure place, organised, translated where needed and ready to share with any doctor, anywhere.</p>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-3">
           {benefits.map((b) => (
@@ -108,12 +112,12 @@ const PartnerPublicPage = () => {
           {user ? (
             <button onClick={() => void accept()} disabled={accepting}
               className="rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-60">
-              {accepting ? "Accepting…" : `Accept ${partner.name} sponsorship`}
+              {accepting ? "Joining…" : "Accept invitation"}
             </button>
           ) : (
             <button onClick={() => navigate(signupHref)}
               className="rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:opacity-90">
-              Create your free account
+              Accept invitation
             </button>
           )}
           {!user && (

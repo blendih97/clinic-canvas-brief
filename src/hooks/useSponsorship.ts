@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 
-export interface Sponsorship { org_name: string; logo_url: string | null; comped_plan: string | null; comped_until: string | null; active: boolean }
+export interface Sponsorship { org_name: string; logo_url: string | null; comped_plan: string | null; comped_until: string | null; active: boolean; kind?: "patient" | "partner_staff" }
 
 /** The signed-in patient's partner sponsorship (joined link to an active org), if any.
  *  undefined = still loading, null = none (self-pay). */

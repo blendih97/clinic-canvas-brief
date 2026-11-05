@@ -18,13 +18,13 @@ const PartnerPatientInviteEmail = ({ partnerName, partnerLogoUrl, inviteLink, si
             {partnerLogoUrl ? <Img src={partnerLogoUrl} alt={name} height="40" style={{ marginBottom: '10px', maxWidth: '180px' }} /> : null}
             <Heading style={brand}>RinVita</Heading>
           </Section>
-          <Heading style={h1}>{name} has invited you to RinVita</Heading>
+          <Heading style={h1}>{name} has invited you to join RinVita</Heading>
           <Text style={text}>
-            {name} gives you RinVita free as part of your care: one secure place to store, review and share your medical records with any doctor.
+            RinVita keeps your medical records in one secure place, organised, translated where needed and ready to share with any doctor, anywhere.
           </Text>
           <Text style={text}>{name} cannot see your medical records. Your records stay private to you.</Text>
           <Section style={{ textAlign: 'center', margin: '28px 0' }}>
-            <Button href={inviteLink || 'https://rinvita.co.uk/auth'} style={button}>Create your free account</Button>
+            <Button href={inviteLink || 'https://rinvita.co.uk/auth'} style={button}>Accept invitation</Button>
             <Text style={orText}>or</Text>
             <Button href={signinLink || 'https://rinvita.co.uk/auth?mode=signin'} style={buttonSecondary}>I already have an account — sign in</Button>
           </Section>
@@ -37,7 +37,7 @@ const PartnerPatientInviteEmail = ({ partnerName, partnerLogoUrl, inviteLink, si
 
 export const template = {
   component: PartnerPatientInviteEmail,
-  subject: (d: Record<string, any>) => `${d.partnerName || 'Your care provider'} has invited you to RinVita`,
+  subject: (d: Record<string, any>) => `${d.partnerName || 'Your care provider'} has invited you to join RinVita`,
   displayName: 'Partner patient invite',
   previewData: { partnerName: 'Example Clinic', inviteLink: 'https://rinvita.co.uk/p/example-clinic?invite=abc' },
 } satisfies TemplateEntry
