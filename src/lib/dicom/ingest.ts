@@ -144,7 +144,7 @@ export async function ingestDicom(inputs: InputFile[], onProgress?: (done: numbe
         const entries = await unzipAsync(bytes);
         for (const [entry, data] of Object.entries(entries)) {
           if (entry.endsWith("/") || data.length === 0) continue;
-          queue.push({ name: `${f.name}/${entry}`, blob: new Blob([data]) });
+          queue.push({ name: `${f.name}/${entry}`, blob: new Blob([new Uint8Array(data).buffer]) });
         }
       } catch {
         skipped.push({ name: f.name, reason: "the ZIP could not be opened" });
