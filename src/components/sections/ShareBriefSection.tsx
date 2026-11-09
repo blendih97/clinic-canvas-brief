@@ -325,7 +325,7 @@ const ShareBriefSection = () => {
                       <input type="checkbox" checked={!excludedStudyIds.has(x.id)} onChange={() => toggleStudy(x.id)} className="w-4 h-4 rounded border-border text-primary" />
                       <span className="min-w-0">
                         <span className="block text-sm text-foreground truncate">{x.title || "Scan"}</span>
-                        <span className="block text-[11px] text-muted-foreground">{[x.study_date, x.institution, `${x.instance_count} images`].filter(Boolean).join(" · ")}</span>
+                        <span className="block text-[11px] text-muted-foreground">{[x.study_date && new Date(`${x.study_date}T12:00:00`).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }), x.institution, `${x.instance_count} ${x.instance_count === 1 ? "image" : "images"}`].filter(Boolean).join(" · ")}</span>
                       </span>
                     </label>
                   ))}

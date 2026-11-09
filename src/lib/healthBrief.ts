@@ -96,7 +96,7 @@ async function collectScans(language: string, docs: VaultDocument[], filter?: (d
       title: s.title || mods || "Scan",
       dateLabel: fmtDate(s.study_date, language) || undefined,
       facility: s.institution || undefined,
-      detail: `${mods} · ${s.series_count} series · ${s.instance_count} images`,
+      detail: `${mods} · ${s.series_count} series · ${s.instance_count} ${s.instance_count === 1 ? "image" : "images"}`,
       report: s.document_id ? docs.find((d) => d.id === s.document_id)?.name : undefined,
       keyImage,
     };

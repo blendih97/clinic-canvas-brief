@@ -88,7 +88,7 @@ export default function SharedScans({ token, studies, patientName }: { token: st
             <div className="p-3 flex-1 min-w-0">
               <p className="text-sm font-medium text-foreground truncate">{s.title || "Scan"}</p>
               <p className="text-xs text-muted-foreground">{[fmt(s.date), s.institution].filter(Boolean).join(" · ")}</p>
-              <p className="text-xs text-muted-foreground">{s.modalities.map((m) => MOD[m] || m).join(", ")} · {s.seriesCount} series · {s.instanceCount} images</p>
+              <p className="text-xs text-muted-foreground">{s.modalities.map((m) => MOD[m] || m).join(", ")} · {s.seriesCount} series · {s.instanceCount} {s.instanceCount === 1 ? "image" : "images"}</p>
               {s.reportName && <p className="text-xs text-foreground/80 mt-1 inline-flex items-center gap-1"><FileText className="w-3 h-3" /> Report: {s.reportName}</p>}
               <div className="mt-2 flex gap-2">
                 <button type="button" onClick={() => void open(s)} disabled={!!busy} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md bg-primary text-primary-foreground text-xs disabled:opacity-50">

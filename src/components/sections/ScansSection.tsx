@@ -10,7 +10,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import { hasAccess } from "@/lib/planAccess";
 import { useVaultStore } from "@/store/vaultStore";
-import { ingestDicom } from "@/lib/dicom/ingest";
+import { ingestDicom, studyTitle } from "@/lib/dicom/ingest";
 import {
   deleteStudy, exportStudiesZip, formatBytes, listStudies, openStudy, saveKeyImage, saveStudy, setStudyReport, type ImagingStudy,
 } from "@/lib/dicom/storage";
@@ -195,7 +195,7 @@ const ScansSection = () => {
                   <div className="p-4 flex-1 flex flex-col">
                     <p className="font-medium text-foreground">{s.title || "Scan"}</p>
                     <p className="text-xs text-muted-foreground mt-0.5">{[fmtDate(s.study_date), s.institution].filter(Boolean).join(" · ")}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">{s.series_count} {s.series_count === 1 ? "series" : "series"} · {s.instance_count.toLocaleString("en-GB")} images · {formatBytes(Number(s.size_bytes))}{s.source === "request" ? " · Sent by the hospital" : ""}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{s.series_count} {s.series_count === 1 ? "series" : "series"} · {s.instance_count.toLocaleString("en-GB")} {s.instance_count === 1 ? "image" : "images"} · {formatBytes(Number(s.size_bytes))}{s.source === "request" ? " · Sent by the hospital" : ""}</p>
                     <button type="button" onClick={() => setLinking(s)} className="mt-2 self-start inline-flex items-center gap-1 text-xs text-primary hover:underline">
                       {report ? <><FileText className="w-3.5 h-3.5" /> Report: {report.name}</> : <><Link2 className="w-3.5 h-3.5" /> Link the radiology report</>}
                     </button>
@@ -381,9 +381,9 @@ function AddScansModal({ userId, profileName, onClose, onSaved }: { userId: stri
                   <div key={s.manifest.studyUid} className="rounded-lg border border-border p-3 flex items-start gap-3">
                     <ScanLine className="w-5 h-5 text-primary mt-0.5 shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">{s.manifest.description || s.manifest.modalities.join(", ")}</p>
+                      <p className="text-sm font-medium text-foreground truncate">{studyTitle(s.manifest)}</p>
                       <p className="text-xs text-muted-foreground">{[fmtDate(s.manifest.studyDate), s.manifest.institution].filter(Boolean).join(" · ")}</p>
-                      <p className="text-xs text-muted-foreground">{s.manifest.series.length} series · {s.instanceCount} images · {formatBytes(s.sizeBytes)}{s.manifest.patientName ? ` · Name on scan: ${s.manifest.patientName}` : ""}</p>
+                      <p className="text-xs text-muted-foreground">{s.manifest.series.length} series · {s.instanceCount} {s.instanceCount === 1 ? "image" : "images"} · {formatBytes(s.sizeBytes)}{s.manifest.patientName ? ` · Name on scan: ${s.manifest.patientName}` : ""}</p>
                       {saving && saving.study === i && (
                         <div className="mt-2">
                           <div className="h-1.5 rounded-full bg-muted overflow-hidden"><div className="h-full bg-primary transition-all" style={{ width: `${saving.total ? (saving.done / saving.total) * 100 : 3}%` }} /></div>
