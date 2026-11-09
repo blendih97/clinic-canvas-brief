@@ -299,7 +299,7 @@ const ShareBriefSection = () => {
               {([
                 ["blood", "Lab Results", bloodResults.length],
                 ["imaging", "Imaging Findings", imagingResults.length],
-                ...(studies.length ? [["scans", "Scans (full images, viewable and downloadable)", studies.length] as const] : []),
+                ...(studies.length ? [["scans", "Scans (full images, view only)", studies.length] as const] : []),
                 ["medications", "Medications", uniqueMedications.length],
                 ["allergies", "Allergies", allergies.length],
                 ["documents", "Documents", documents.length],
@@ -546,7 +546,7 @@ const ShareBriefSection = () => {
                 <Mail className="w-4 h-4 text-primary" />
                 <h3 className="font-heading text-lg text-foreground">Email it to a hospital or doctor</h3>
               </div>
-              <p className="text-xs text-muted-foreground">They receive one email with a secure link to everything above, including a one-click download of all documents as a single PDF. No attachments are sent, so the link still expires and you can revoke it.</p>
+              <p className="text-xs text-muted-foreground">They receive one email with a secure link to view everything above. They can view but not download your records. No attachments are sent, so the link still expires and you can revoke it.</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <input value={emailHospital} onChange={(e) => setEmailHospital(e.target.value)} maxLength={120} placeholder="Hospital or doctor (optional)" className="px-3 py-2 bg-background border border-border rounded-lg text-sm" aria-label="Hospital or doctor name" />
                 <input type="email" value={emailTo} onChange={(e) => setEmailTo(e.target.value)} maxLength={254} placeholder="Email address" className="px-3 py-2 bg-background border border-border rounded-lg text-sm" aria-label="Recipient email address" />

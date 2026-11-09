@@ -1,9 +1,8 @@
-// Scans on the doctor's share link: open each in the viewer (2D, MPR, 3D) or download the
-// original DICOM for the clinic's PACS. Image URLs are short-lived and issued per scan.
+// Scans on the doctor's share link: open each in the viewer (2D, MPR, 3D). View only: downloading
+// the original DICOM stays with the patient. Image URLs are short-lived and issued per scan.
 import { Suspense, lazy, useState } from "react";
-import { Box, Download, Eye, Loader2, ScanLine, FileText } from "lucide-react";
+import { Box, Eye, Loader2, ScanLine, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { exportStudiesZip } from "@/lib/dicom/storage";
 import type { DicomManifest } from "@/lib/dicom/types";
 
 const DicomViewer = lazy(() => import("@/components/dicom/DicomViewer"));
@@ -30,17 +29,10 @@ async function fetchManifest(token: string, studyId: string): Promise<DicomManif
   return data.manifest as DicomManifest;
 }
 
-function save(blob: Blob, name: string) {
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 10000);
-}
 
 export default function SharedScans({ token, studies, patientName }: { token: string; studies: SharedStudy[]; patientName?: string }) {
   const [viewing, setViewing] = useState<{ study: SharedStudy; manifest: DicomManifest } | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
-  const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   if (!studies.length) return null;
@@ -52,16 +44,6 @@ export default function SharedScans({ token, studies, patientName }: { token: st
     finally { setBusy(null); }
   };
 
-  const download = async (list: SharedStudy[], signed?: DicomManifest) => {
-    setBusy(`dl:${list.length === 1 ? list[0].id : "all"}`); setError(null); setProgress({ done: 0, total: list.reduce((n, s) => n + s.instanceCount, 0) });
-    try {
-      const manifests = signed ? [signed] : await Promise.all(list.map((s) => fetchManifest(token, s.id)));
-      const blob = await exportStudiesZip(manifests, (done, total) => setProgress({ done, total }));
-      const name = list.length === 1 ? `${(list[0].title || "scan").replace(/[^\w\- ]+/g, "").trim().replace(/\s+/g, "-")}${list[0].date ? `-${list[0].date}` : ""}-DICOM.zip` : "RinVita-scans-DICOM.zip";
-      save(blob, name);
-    } catch (e) { setError((e as Error).message || "The download didn't finish. Please try again."); }
-    finally { setBusy(null); setProgress(null); }
-  };
 
   return (
     <section data-testid="shared-scans">
@@ -70,14 +52,8 @@ export default function SharedScans({ token, studies, patientName }: { token: st
           <ScanLine className="w-4 h-4 text-primary" />
           <h2 className="font-heading text-lg text-foreground">Scans</h2>
         </div>
-        {studies.length > 1 && (
-          <button type="button" onClick={() => void download(studies)} disabled={!!busy}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-xs text-foreground hover:bg-muted disabled:opacity-50">
-            {busy === "dl:all" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />} Download all (DICOM)
-          </button>
-        )}
       </div>
-      <p className="text-xs text-muted-foreground mb-3">Full studies as the hospital provided them. Open them in the viewer, or download the original DICOM files with a DICOMDIR to import into your PACS.</p>
+      <p className="text-xs text-muted-foreground mb-3">Full studies as the hospital provided them, to view in 2D, multi-plane and 3D. If you need the original DICOM files for your PACS, ask the patient: they can send them to you.</p>
       <div className="grid gap-3 sm:grid-cols-2">
         {studies.map((s) => (
           <div key={s.id} className="bg-card border border-border rounded-lg overflow-hidden flex">
@@ -94,22 +70,18 @@ export default function SharedScans({ token, studies, patientName }: { token: st
                 <button type="button" onClick={() => void open(s)} disabled={!!busy} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md bg-primary text-primary-foreground text-xs disabled:opacity-50">
                   {busy === `open:${s.id}` ? <Loader2 className="w-3 h-3 animate-spin" /> : <Eye className="w-3 h-3" />} View
                 </button>
-                <button type="button" onClick={() => void download([s])} disabled={!!busy} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md border border-border text-xs disabled:opacity-50">
-                  {busy === `dl:${s.id}` ? <Loader2 className="w-3 h-3 animate-spin" /> : <Download className="w-3 h-3" />} DICOM
-                </button>
               </div>
             </div>
           </div>
         ))}
       </div>
-      {progress && <p className="mt-2 text-xs text-muted-foreground">Preparing download: {progress.done} of {progress.total} images</p>}
       {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
       <p className="mt-2 text-[11px] text-muted-foreground">The viewer is for viewing and sharing. It is not for primary diagnosis.</p>
 
       {viewing && (
         <Suspense fallback={<div className="fixed inset-0 z-[80] bg-[#0b0c0f] flex items-center justify-center"><Loader2 className="w-6 h-6 animate-spin text-[#e6c46a]" /></div>}>
           <DicomViewer manifest={viewing.manifest} title={viewing.study.title || undefined} subtitle={patientName ? `Shared by ${patientName}` : "Shared through RinVita"} onClose={() => setViewing(null)}
-            downloading={busy === `dl:${viewing.study.id}`} onDownload={() => void download([viewing.study], viewing.manifest)} />
+/>
         </Suspense>
       )}
     </section>

@@ -42,3 +42,7 @@
 - Share links carry `imaging_studies` (ids + summary). `get-shared-brief` issues signed image URLs per study only if the patient included it.
 - Clinic downloads are ZIPs with a DICOMDIR (`src/lib/dicom/dicomdir.ts`, UIDs under the 2.25 root). The images are never altered.
 - Test with synthetic phantoms only (`vite build --mode lab` + `/dicom-lab`), never real patient scans.
+
+## Doctor share link is view only
+- Doctors can open and view documents and scans but never download them: no download buttons, no "open in new tab", no DICOM export on `/share/:token`. Downloading stays with the patient (Imaging, Documents, Export).
+- PDFs on the share page render as page images through `ViewOnlyPdf` (pdf.js 4.x; 6.x needs newer browsers than we support), never through the browser's PDF viewer, which has its own download button.

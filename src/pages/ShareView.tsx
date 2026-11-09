@@ -321,7 +321,7 @@ const ShareView = () => {
 
         {token && <SharedScans token={token} studies={brief.imaging_studies || []} />}
 
-        {token && <SharedDocuments token={token} documents={sharedDocuments} cover={{ allergies, medications, bloodResults, createdAt: brief.created_at }} />}
+        {token && <SharedDocuments token={token} documents={sharedDocuments} />}
 
         <div className="text-center text-xs text-muted-foreground pt-6 border-t border-border space-y-2">
           <p>Generated securely by RinVita · This link will expire automatically</p>

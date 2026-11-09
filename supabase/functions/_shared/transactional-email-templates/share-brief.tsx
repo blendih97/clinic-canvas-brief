@@ -43,8 +43,8 @@ const ShareBriefEmail = ({ hospitalName, patientName, documentCount, shareUrl, e
         ) : null}
 
         <Text style={text}>
-          Open the secure link to see a structured summary, view each original document, or download
-          every document as one PDF for your records. No login or software is needed.
+          Open the secure link to see a structured summary and view each original document and scan.
+          The records are view only and stay under the patient's control. No login or software is needed.
         </Text>
 
         {shareUrl ? (
