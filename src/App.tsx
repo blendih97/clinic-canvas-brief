@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes, Navigate, useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { initMetaPixel, trackPageView } from "@/lib/metaPixel";
 import { usePageTracking } from "@/hooks/usePageTracking";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -58,6 +58,8 @@ import AdminGrowthPage from "./pages/admin/AdminGrowthPage";
 import { hasAuthIntent } from "@/lib/authIntent";
 
 
+// Viewer test page: only exists in "lab" builds.
+const DicomLabPage = import.meta.env.MODE === "lab" ? lazy(() => import("./pages/DicomLabPage")) : null;
 const queryClient = new QueryClient();
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -190,6 +192,7 @@ export const AppRoutes = () => (
               <Route path="/check-email" element={<CheckEmailPage />} />
               <Route path="/" element={<HomeRoute />} />
               <Route path="/demo" element={<ProductDemoPage />} />
+              {DicomLabPage && <Route path="/dicom-lab" element={<Suspense fallback={null}><DicomLabPage /></Suspense>} />}
               <Route path="/pricing" element={<PricingPage />} />
               <Route path="/partner-demo" element={<PartnerDemoPage />} />
                <Route path="/preview/:slug" element={<GrowthPreviewPage />} />

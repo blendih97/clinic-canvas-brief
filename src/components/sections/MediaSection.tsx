@@ -384,7 +384,7 @@ const MediaViewerModal = ({
                 <p>Facility: {item.facility}</p>
               </div>
               <p className="text-xs text-primary bg-primary/5 border border-primary/10 rounded-lg p-3">
-                DICOM rendering is not supported in this pilot. Download the original file for a compatible clinical viewer. PDF radiology reports and supported images can be viewed here.
+                This is a single DICOM file kept as a document. To view scans in 2D and 3D and share them with doctors, add the whole study in Imaging.
               </p>
             </div>
           ) : (

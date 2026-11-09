@@ -19,6 +19,7 @@ const featureLabels: Record<Feature, string> = {
   request_imaging: "Requesting imaging",
   family_invite: "Inviting family members",
   unlimited_uploads: "Unlimited document uploads",
+  dicom_imaging: "Viewing and sharing your scans",
 };
 
 // Features that REQUIRE the Family plan; everything else is unlocked by Standard.

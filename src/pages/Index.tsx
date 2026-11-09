@@ -13,6 +13,7 @@ import FamilySection from "@/components/sections/FamilySection";
 import DocumentUpload from "@/components/DocumentUpload";
 import RequestRecordsModal from "@/components/RequestRecordsModal";
 import UpgradeModal from "@/components/UpgradeModal";
+import ScansSection from "@/components/sections/ScansSection";
 import { AppFooterDisclaimer } from "@/components/MedicalDisclaimer";
 import { Upload, ArrowLeft, Inbox, Lock, UserCog, X } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -173,8 +174,7 @@ const Index = () => {
       case "blood":
         return <BloodResultsSection />;
       case "imaging":
-        // Imaging section is hidden until the scan viewer is released; reports live in Documents.
-        return <DocumentsSection onRequestRecords={requestRecordsAccess} />;
+        return <ScansSection />;
       case "media":
         return <MediaSection onRequestRecords={requestRecordsAccess} onUpload={requestUpload} />;
       case "medications":

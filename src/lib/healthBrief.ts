@@ -21,6 +21,9 @@ export interface HealthBriefInput {
   includeOriginals: boolean;
   /** Returns the stored original for a document, or null. Defaults to the patient's own storage. */
   getFile?: (doc: VaultDocument) => Promise<OriginalFile | null>;
+  /** Include the patient's own scans (DICOM studies) with one image each. Optional date filter. */
+  includeScans?: boolean;
+  scanDateFilter?: (isoDate?: string) => boolean;
   onProgress?: (phase: BriefPhase, detail?: string) => void;
 }
 
@@ -65,11 +68,46 @@ export async function ownOriginal(d: VaultDocument): Promise<OriginalFile | null
   return { bytes: await blob.arrayBuffer(), kind: isPdf ? "pdf" : isImg ? "image" : "other", mime: blob.type };
 }
 
+const MOD_NAME: Record<string, string> = { CT: "CT", MR: "MRI", CR: "X-ray", DX: "X-ray", US: "Ultrasound", MG: "Mammogram", PT: "PET", NM: "Nuclear medicine", XA: "Angiogram", RF: "Fluoroscopy" };
+
+async function blobToDataUrl(b: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result));
+    r.onerror = reject;
+    r.readAsDataURL(b);
+  });
+}
+
+/** The signed-in patient's scans for the brief: summary plus one image each. */
+async function collectScans(language: string, docs: VaultDocument[], filter?: (d?: string) => boolean) {
+  const { data: auth } = await supabase.auth.getUser();
+  if (!auth?.user) return [];
+  const { listStudies } = await import("@/lib/dicom/storage");
+  const studies = (await listStudies(auth.user.id).catch(() => [])).filter((s) => s.status === "ready" && (!filter || filter(s.study_date || undefined))).slice(0, 12);
+  return Promise.all(studies.map(async (s) => {
+    let keyImage: string | undefined;
+    if (s.key_image_path) {
+      const { data } = await supabase.storage.from("medical-documents").download(s.key_image_path);
+      if (data) keyImage = await blobToDataUrl(new Blob([data], { type: "image/png" })).catch(() => undefined);
+    }
+    const mods = s.modalities.map((m) => MOD_NAME[m] || m).filter((v, i, a) => a.indexOf(v) === i).join(", ");
+    return {
+      title: s.title || mods || "Scan",
+      dateLabel: fmtDate(s.study_date, language) || undefined,
+      facility: s.institution || undefined,
+      detail: `${mods} · ${s.series_count} series · ${s.instance_count} images`,
+      report: s.document_id ? docs.find((d) => d.id === s.document_id)?.name : undefined,
+      keyImage,
+    };
+  }));
+}
+
 // Headings for other languages, reusing the export's translated labels where they exist.
 const LOCAL: Record<string, Record<string, string>> = {
-  ar: { allergies: "الحساسية المعروفة", medications: "الأدوية", labs: "نتائج الفحوصات", imaging: "دراسات التصوير", documents: "المستندات", colTest: "المؤشر", colResult: "القيمة", colRange: "النطاق المرجعي", colStatus: "الحالة", normal: "طبيعي", flagged: "مُعلَّم", critical: "حرج" },
-  es: { title: "Resumen de salud", allergies: "Alergias conocidas", medications: "Medicamentos", labs: "Resultados de laboratorio", imaging: "Imagenología", documents: "Documentos", colTest: "Prueba", colResult: "Resultado", colRange: "Rango", colStatus: "Estado", normal: "Normal", flagged: "Fuera de rango", critical: "Crítico", current: "Actual", past: "Anterior", sampleDate: "Fecha de la muestra", dob: "Fecha de nacimiento", conditions: "Diagnósticos" },
-  fr: { title: "Résumé de santé", allergies: "Allergies connues", medications: "Médicaments", labs: "Résultats biologiques", imaging: "Imagerie", documents: "Documents", colTest: "Examen", colResult: "Résultat", colRange: "Valeurs de référence", colStatus: "Statut", normal: "Normal", flagged: "Hors norme", critical: "Critique", current: "En cours", past: "Antérieur", sampleDate: "Date du prélèvement", dob: "Date de naissance", conditions: "Pathologies" },
+  ar: { scans: "الصور الطبية", scansNote: "تظهر صورة واحدة من كل فحص. الفحوصات الكاملة محفوظة في حساب المريض على RinVita ويمكن مشاركتها معك عبر رابط لعرضها ثنائياً وثلاثي الأبعاد أو تنزيلها بصيغة DICOM.", scanReport: "التقرير", allergies: "الحساسية المعروفة", medications: "الأدوية", labs: "نتائج الفحوصات", imaging: "دراسات التصوير", documents: "المستندات", colTest: "المؤشر", colResult: "القيمة", colRange: "النطاق المرجعي", colStatus: "الحالة", normal: "طبيعي", flagged: "مُعلَّم", critical: "حرج" },
+  es: { scans: "Estudios de imagen", scansNote: "Se muestra una imagen de cada estudio. Los estudios completos están en la cuenta RinVita del paciente y pueden compartirse con usted mediante un enlace para verlos en 2D y 3D o descargarlos en formato DICOM para su PACS.", scanReport: "Informe", title: "Resumen de salud", allergies: "Alergias conocidas", medications: "Medicamentos", labs: "Resultados de laboratorio", imaging: "Imagenología", documents: "Documentos", colTest: "Prueba", colResult: "Resultado", colRange: "Rango", colStatus: "Estado", normal: "Normal", flagged: "Fuera de rango", critical: "Crítico", current: "Actual", past: "Anterior", sampleDate: "Fecha de la muestra", dob: "Fecha de nacimiento", conditions: "Diagnósticos" },
+  fr: { scans: "Examens d'imagerie", scansNote: "Une image de chaque examen est présentée. Les examens complets sont conservés dans le compte RinVita du patient et peuvent vous être partagés par un lien pour les consulter en 2D et 3D ou les télécharger au format DICOM pour votre PACS.", scanReport: "Compte rendu", title: "Résumé de santé", allergies: "Allergies connues", medications: "Médicaments", labs: "Résultats biologiques", imaging: "Imagerie", documents: "Documents", colTest: "Examen", colResult: "Résultat", colRange: "Valeurs de référence", colStatus: "Statut", normal: "Normal", flagged: "Hors norme", critical: "Critique", current: "En cours", past: "Antérieur", sampleDate: "Date du prélèvement", dob: "Date de naissance", conditions: "Pathologies" },
 };
 
 /** Fetches originals, renders the brief and merges everything into one PDF. */
@@ -125,6 +163,7 @@ export async function buildHealthBrief(input: HealthBriefInput): Promise<HealthB
     }
   }
 
+  const scans = input.includeScans === false ? [] : await collectScans(language, input.data.documents as VaultDocument[], input.scanDateFilter).catch(() => []);
   const strings = LOCAL[language];
   const payload = {
     version: 2,
@@ -148,6 +187,7 @@ export async function buildHealthBrief(input: HealthBriefInput): Promise<HealthB
     imaging: imaging.sort((a, b) => byDateDesc(a.date, b.date)).map((i) => ({
       title: [i.type, i.region].filter(Boolean).join(" · "), dateLabel: fmtDate(i.date, language), facility: i.facility, finding: i.finding, status: i.status,
     })),
+    scans,
     documents: docs.map((d, i) => ({
       name: d.name, type: d.type, dateLabel: fmtDate(d.date, language), facility: d.facility, country: d.country,
       summary: docInLanguage(d, language).summary, hasOriginal: !!files[i], text: files[i] ? undefined : docInLanguage(d, language).text,

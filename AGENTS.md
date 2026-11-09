@@ -33,3 +33,12 @@
 - New accounts see the optional SetupModal once (profiles.setup_completed_at); "no known allergies" is a patient confirmation (profiles.no_known_allergies, copied into shared_briefs) cleared automatically when an allergy is recorded. "New records received" notices are dismissed server-side (record_requests.seen_at).
 - Interface languages = every code in src/lib/supportedLanguages.ts. English and Arabic live in src/lib/i18n.ts; the others are flat "section.key" JSON files in src/locales, loaded on demand (import.meta.glob) and falling back to English per key. New UI text must go through t() with English and Arabic added in i18n.ts, then translated into src/locales (src/test/i18nLocales.test.ts checks keys and placeholders).
 - Partner staff invites must work on any device: PartnerClaimer calls partner-claim once per browser session even with no pending invite, and /partner always claims first, so a verified email matching a partner_members invitation activates it wherever the account signs in. Sign-up confirmation emails return to the requested ?next= path. ?staff=1 sign-up shows a partner welcome instead of the free-plan banner.
+
+## DICOM imaging (Imaging section)
+- Full scans live in `medical-documents/<user_id>/dicom/<study_id>/` (`<sop>.dcm` files + `manifest.json` + `key.png`); the index is `public.imaging_studies`. Never move them elsewhere.
+- The viewer (`src/components/dicom/DicomViewer.tsx`, Cornerstone3D) is lazy-loaded; keep it out of the main bundle. Keep `events` installed (vtk.js needs it in the browser) and the `worker`/`optimizeDeps` entries in `vite.config.ts`.
+- It is labelled "For viewing and sharing. Not for primary diagnosis." Do not remove that label or add AI reading of images without regulatory sign-off.
+- Patients add studies only on paid/sponsored plans (RLS uses `user_has_paid_access`). Hospitals send studies through `request-imaging` (token-gated, signed upload URLs inside the study folder only).
+- Share links carry `imaging_studies` (ids + summary). `get-shared-brief` issues signed image URLs per study only if the patient included it.
+- Clinic downloads are ZIPs with a DICOMDIR (`src/lib/dicom/dicomdir.ts`, UIDs under the 2.25 root). The images are never altered.
+- Test with synthetic phantoms only (`vite build --mode lab` + `/dicom-lab`), never real patient scans.

@@ -6,6 +6,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { hasAccess } from "@/lib/planAccess";
 import { supabase } from "@/integrations/supabase/client";
 import { SUPPORTED_LANGUAGES, getLanguageName } from "@/lib/supportedLanguages";
+import { listStudies, type ImagingStudy } from "@/lib/dicom/storage";
 
 const expiries = [
   { id: "2h", label: "2 Hours", seconds: 7200, desc: "For in-person consultations" },
@@ -37,8 +38,17 @@ const ShareBriefSection = () => {
   // Mirrored from ExportSection
   const [language, setLanguage] = useState<string>(profile?.preferred_ui_language || "en");
   const [sections, setSections] = useState({
-    blood: true, imaging: true, medications: true, allergies: true, documents: true,
+    blood: true, imaging: true, scans: true, medications: true, allergies: true, documents: true,
   });
+  // Full scans (DICOM studies): all included by default; the patient can leave some out.
+  const [studies, setStudies] = useState<ImagingStudy[]>([]);
+  const [excludedStudyIds, setExcludedStudyIds] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data?.user) listStudies(data.user.id).then((l) => setStudies(l.filter((x) => x.status === "ready"))).catch(() => setStudies([]));
+    });
+  }, []);
+  const toggleStudy = (id: string) => setExcludedStudyIds((prev) => { const n = new Set(prev); if (n.has(id)) n.delete(id); else n.add(id); return n; });
   const [dateRange, setDateRange] = useState<DateRangeKey>("all");
   const [customFrom, setCustomFrom] = useState("");
   const [customTo, setCustomTo] = useState("");
@@ -186,6 +196,12 @@ const ShareBriefSection = () => {
       allergies: translated.allergies as any,
       no_known_allergies: sections.allergies && !!profile?.no_known_allergies && (translated.allergies || []).length === 0,
       imaging_results: translated.imagingResults as any,
+      // Scans: ids and a short summary only; the doctor's access to the images is resolved server-side.
+      imaging_studies: (sections.scans ? studies.filter((x) => !excludedStudyIds.has(x.id) && withinDateRange(x.study_date || undefined)) : []).map((x) => ({
+        id: x.id, title: x.title, date: x.study_date, institution: x.institution, modalities: x.modalities,
+        seriesCount: x.series_count, instanceCount: x.instance_count, volumetric: x.volumetric,
+        reportName: x.document_id ? (docsNow.find((d) => d.id === x.document_id)?.name ?? null) : null,
+      })) as any,
       // Documents: ids + RinVita's reading only. Storage paths are never stored in the
       // brief; the doctor's file access is resolved server-side from the patient's own
       // documents. Original files are shared only when "include originals" is on.
@@ -283,6 +299,7 @@ const ShareBriefSection = () => {
               {([
                 ["blood", "Lab Results", bloodResults.length],
                 ["imaging", "Imaging Findings", imagingResults.length],
+                ...(studies.length ? [["scans", "Scans (full images, viewable and downloadable)", studies.length] as const] : []),
                 ["medications", "Medications", uniqueMedications.length],
                 ["allergies", "Allergies", allergies.length],
                 ["documents", "Documents", documents.length],
@@ -297,9 +314,23 @@ const ShareBriefSection = () => {
                     />
                     <span className="text-sm text-foreground">{label}</span>
                   </div>
-                  <span className="text-xs text-muted-foreground">{key === "documents" && excludedDocIds.size > 0 ? `${selectedDocCount} of ${count}` : count} items</span>
+                  <span className="text-xs text-muted-foreground">{key === "documents" && excludedDocIds.size > 0 ? `${selectedDocCount} of ${count}` : key === "scans" && excludedStudyIds.size > 0 ? `${studies.length - excludedStudyIds.size} of ${count}` : count} items</span>
                 </label>
               ))}
+              {sections.scans && studies.length > 1 && (
+                <div className="bg-card border border-border rounded-lg p-3 space-y-1">
+                  <p className="text-xs font-medium text-foreground mb-1">Scans to include</p>
+                  {studies.map((x) => (
+                    <label key={x.id} className="flex items-center gap-3 p-2 rounded hover:bg-muted/50 cursor-pointer">
+                      <input type="checkbox" checked={!excludedStudyIds.has(x.id)} onChange={() => toggleStudy(x.id)} className="w-4 h-4 rounded border-border text-primary" />
+                      <span className="min-w-0">
+                        <span className="block text-sm text-foreground truncate">{x.title || "Scan"}</span>
+                        <span className="block text-[11px] text-muted-foreground">{[x.study_date, x.institution, `${x.instance_count} images`].filter(Boolean).join(" · ")}</span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              )}
               {sections.documents && documents.length > 0 && (
                 <div className="bg-card border border-border rounded-lg">
                   <button type="button" onClick={() => setShowDocPicker((v) => !v)} className="w-full flex items-center justify-between p-3 text-xs font-medium text-primary">

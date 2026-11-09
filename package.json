@@ -14,6 +14,9 @@
     "build:client": "vite build"
   },
   "dependencies": {
+    "@cornerstonejs/core": "5.13.1",
+    "@cornerstonejs/dicom-image-loader": "5.13.1",
+    "@cornerstonejs/tools": "5.13.1",
     "@hookform/resolvers": "^3.10.0",
     "@lovable.dev/cloud-auth-js": "^1.1.2",
     "@lovable.dev/mcp-js": "^0.26.1",
@@ -54,7 +57,10 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^3.6.0",
+    "dicom-parser": "1.8.21",
     "embla-carousel-react": "^8.6.0",
+    "events": "3.3.0",
+    "fflate": "0.8.2",
     "input-otp": "^1.4.2",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.7",

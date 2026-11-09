@@ -4,7 +4,7 @@
 
 import React from "npm:react@18.3.1";
 // @ts-ignore - Deno resolves npm specifiers
-import { renderToBuffer, Document, Page, Text, View, StyleSheet, Font, Svg, Circle, Polygon } from "npm:@react-pdf/renderer@4.0.0";
+import { renderToBuffer, Document, Page, Text, View, StyleSheet, Font, Svg, Circle, Polygon, Image } from "npm:@react-pdf/renderer@4.0.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -959,6 +959,8 @@ interface BriefV2Payload {
   medications: { name: string; dose?: string; frequency?: string; prescriber?: string; facility?: string; dateLabel?: string; active: boolean }[];
   labGroups: { dateLabel: string; rows: { marker: string; value: string; range?: string; typical?: boolean; status: string }[] }[];
   imaging: { title: string; dateLabel?: string; facility?: string; finding?: string; status?: string }[];
+  /** Full scans (DICOM studies) held in RinVita: one representative image each (PNG data URI). */
+  scans?: { title: string; dateLabel?: string; facility?: string; detail?: string; report?: string; keyImage?: string }[];
   documents: { name: string; type?: string; dateLabel?: string; facility?: string; country?: string; summary: string[]; hasOriginal: boolean; text?: string }[];
   /** false: no divider pages (originals not requested). */
   includeOriginals?: boolean;
@@ -993,6 +995,9 @@ const BRIEF_EN = {
   critical: "Critical",
   typicalNote: "Typical UK adult range, not printed on the report",
   imaging: "Imaging",
+  scans: "Scans",
+  scansNote: "One image from each scan is shown. The full studies are kept in the patient's RinVita account and can be shared with you as a link to view them in 2D and 3D or download them in DICOM format for your PACS.",
+  scanReport: "Report",
   documents: "Documents",
   originalIncluded: "Original included",
   noOriginal: "Original not stored",
@@ -1178,6 +1183,21 @@ function renderBriefV2(p: BriefV2Payload) {
         ),
         h(Text, { style: s.medSub }, [im.dateLabel, im.facility].filter(Boolean).join("  ·  ")),
         im.finding ? h(Text, { style: [s.bulletText, { marginTop: 3 }] }, clip(im.finding, 900)) : null,
+      ))) : null,
+
+    (p.scans || []).length ? h(Text, { style: s.h2, minPresenceAhead: 120 }, t.scans) : null,
+    (p.scans || []).length ? h(Text, { style: [s.mutedText, { marginBottom: 6 }] }, t.scansNote) : null,
+    (p.scans || []).length ? h(View, { style: s.card },
+      ...(p.scans || []).slice(0, 12).map((sc, i) => h(View, { key: i, style: [s.docRow, { flexDirection: "row" }], wrap: false },
+        sc.keyImage && /^data:image\/(png|jpeg);base64,/.test(sc.keyImage)
+          ? h(Image, { src: sc.keyImage, style: { width: 84, height: 84, marginRight: 10, backgroundColor: "#000000" } })
+          : h(View, { style: { width: 84, height: 84, marginRight: 10, backgroundColor: "#111111" } }),
+        h(View, { style: { flex: 1 } },
+          h(Text, { style: s.docName }, clip(sc.title, 120)),
+          h(Text, { style: s.medSub }, [sc.dateLabel, sc.facility].filter(Boolean).join("  ·  ")),
+          sc.detail ? h(Text, { style: s.medSub }, sc.detail) : null,
+          sc.report ? h(Text, { style: [s.medSub, { marginTop: 2 }] }, `${t.scanReport}: ${clip(sc.report, 120)}`) : null,
+        ),
       ))) : null,
 
     p.documents.length ? h(Text, { style: s.h2, minPresenceAhead: 50 }, `${t.documents} (${p.documents.length})`) : null,

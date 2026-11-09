@@ -1,11 +1,14 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { Upload, CheckCircle, AlertTriangle, FileText, X, Loader2, Shield, FileImage, ShieldCheck, Download } from "lucide-react";
+import { Upload, CheckCircle, AlertTriangle, FileText, X, Loader2, Shield, FileImage, ShieldCheck, Download, FolderOpen } from "lucide-react";
 import { buildConsentPdf, formatDob, formatSignedAt } from "@/lib/recordConsent";
 import { supabase } from "@/integrations/supabase/client";
+import { ingestDicom } from "@/lib/dicom/ingest";
+import { completeRequest, isDicomCandidate, uploadStudiesForRequest } from "@/lib/dicom/requestUpload";
 
-const ACCEPTED_TYPES = ".pdf,.jpg,.jpeg,.png,.tif,.tiff,.dcm,.dicom,.mp4,.mov,.avi,.doc,.docx";
-const ACCEPTED_LABEL = "PDF · JPEG · PNG · TIFF · DICOM (.dcm) · MP4 · MOV · AVI · DOC · DOCX";
+const ACCEPTED_TYPES = ".pdf,.jpg,.jpeg,.png,.tif,.tiff,.dcm,.dicom,.zip,.mp4,.mov,.avi,.doc,.docx";
+const ACCEPTED_LABEL = "PDF · JPEG · PNG · TIFF · DICOM studies (folder, CD or ZIP) · MP4 · MOV · AVI · DOC · DOCX";
+const relName = (f: File) => (f as File & { webkitRelativePath?: string }).webkitRelativePath || f.name;
 
 const UploadRequestPage = () => {
   const { token } = useParams<{ token: string }>();
@@ -21,6 +24,7 @@ const UploadRequestPage = () => {
   const [progress, setProgress] = useState(0);
   const [currentFile, setCurrentFile] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const folderInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const loadRequest = async () => {
@@ -62,15 +66,31 @@ const UploadRequestPage = () => {
       const ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
       const endpoint = `${SUPABASE_URL}/functions/v1/upload-record-request`;
 
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
+      // Scan images (DICOM files, CD folders, ZIPs) go up as whole studies; everything else as documents.
+      const scanFiles = files.filter((f) => isDicomCandidate({ name: relName(f), type: f.type }));
+      const others = files.filter((f) => !scanFiles.includes(f));
+      const share = others.length ? 0.6 : 1;
+      let studiesSent = 0;
+      if (scanFiles.length) {
+        setCurrentFile("scan images (reading)");
+        const read = await ingestDicom(scanFiles.map((f) => ({ name: relName(f), blob: f })), (d, t) => setProgress(Math.round((t ? d / t : 0) * 10 * share)));
+        if (read.studies.length) {
+          setCurrentFile(`${read.studies.length} ${read.studies.length === 1 ? "scan" : "scans"}`);
+          studiesSent = await uploadStudiesForRequest(token!, read.studies, (d, t) => setProgress(Math.round((10 + (t ? d / t : 1) * 90) * share)));
+        } else if (!others.length) {
+          throw new Error("No DICOM images were found in the selected files.");
+        }
+      }
+
+      for (let i = 0; i < others.length; i++) {
+        const file = others[i];
         setCurrentFile(file.name);
 
         const fd = new FormData();
         fd.append("token", token!);
         fd.append("file", file);
-        fd.append("totalFiles", String(files.length));
-        fd.append("isLast", String(i === files.length - 1));
+        fd.append("totalFiles", String(others.length + studiesSent));
+        fd.append("isLast", String(i === others.length - 1));
 
         const res = await fetch(endpoint, {
           method: "POST",
@@ -81,9 +101,12 @@ const UploadRequestPage = () => {
           const err = await res.json().catch(() => ({}));
           throw new Error(err.error || `Upload failed (${res.status})`);
         }
-        setProgress(Math.round(((i + 1) / files.length) * 100));
+        const base = scanFiles.length ? 60 : 0;
+        setProgress(Math.round(base + ((i + 1) / others.length) * (100 - base)));
       }
+      if (!others.length && studiesSent) await completeRequest(token!, studiesSent);
 
+      setProgress(100);
       setUploaded(true);
     } catch (e: any) {
       console.error("Upload error:", e);
@@ -224,7 +247,7 @@ const UploadRequestPage = () => {
               <div>
                 <p className="text-xs font-medium text-foreground">For radiology & medical records teams</p>
                 <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                  You can upload scan images directly in <strong>DICOM (.dcm)</strong> format, as well as reports, photos, and video studies. Multiple files supported.
+                  Upload whole <strong>DICOM studies</strong> (choose the study folder, the CD's contents or a ZIP) as well as reports, photos and video. Studies arrive in the patient's account complete, ready to view and share.
                 </p>
               </div>
             </div>
@@ -247,12 +270,33 @@ const UploadRequestPage = () => {
               accept={ACCEPTED_TYPES}
               onChange={(e) => e.target.files && addFiles(e.target.files)}
             />
+            <input
+              ref={folderInputRef}
+              type="file"
+              multiple
+              className="hidden"
+              onChange={(e) => e.target.files && addFiles(e.target.files)}
+              {...{ webkitdirectory: "", directory: "" }}
+            />
             <Upload className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
             <p className="text-sm text-foreground font-medium">Drop files here or click to browse</p>
             <p className="text-xs text-muted-foreground mt-1.5">{ACCEPTED_LABEL}</p>
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); if (!uploading) folderInputRef.current?.click(); }}
+              className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-xs text-foreground hover:bg-muted"
+            >
+              <FolderOpen className="w-3.5 h-3.5" /> Choose a DICOM folder or CD
+            </button>
           </div>
 
-          {files.length > 0 && (
+          {files.length > 8 && (
+            <div className="flex items-center justify-between bg-muted rounded-lg px-3 py-2">
+              <span className="text-sm text-foreground">{files.length} files · {(files.reduce((n, f) => n + f.size, 0) / 1024 / 1024).toFixed(1)} MB</span>
+              {!uploading && <button onClick={() => setFiles([])} className="text-xs text-muted-foreground hover:text-destructive">Clear</button>}
+            </div>
+          )}
+          {files.length > 0 && files.length <= 8 && (
             <div className="space-y-2">
               {files.map((f, i) => (
                 <div key={i} className="flex items-center justify-between bg-muted rounded-lg px-3 py-2">

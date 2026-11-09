@@ -72,7 +72,20 @@ Deno.serve(async (req) => {
       if (item.file_path) documentPaths.add(item.file_path);
     });
 
+    // Scans (DICOM studies): every file in each study folder.
+    const { data: studies } = await adminClient.from("imaging_studies").select("id").eq("user_id", user.id);
+    for (const st of studies || []) {
+      const folder = `${user.id}/dicom/${st.id}`;
+      for (;;) {
+        const { data: files } = await adminClient.storage.from("medical-documents").list(folder, { limit: 1000 });
+        if (!files?.length) break;
+        await adminClient.storage.from("medical-documents").remove(files.map((f: { name: string }) => `${folder}/${f.name}`));
+        if (files.length < 1000) break;
+      }
+    }
+
     const deletions = [
+      adminClient.from("imaging_studies").delete().eq("user_id", user.id),
       adminClient.from("alerts").delete().eq("user_id", user.id),
       adminClient.from("allergies").delete().eq("user_id", user.id),
       adminClient.from("blood_results").delete().eq("user_id", user.id),

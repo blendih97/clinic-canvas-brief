@@ -47,7 +47,8 @@ export type Feature =
   | "request_records"
   | "request_imaging"
   | "family_invite"
-  | "unlimited_uploads";
+  | "unlimited_uploads"
+  | "dicom_imaging";
 
 const FEATURE_REQUIREMENTS: Record<Feature, Plan[]> = {
   share_brief: ["standard", "family"],
@@ -56,6 +57,7 @@ const FEATURE_REQUIREMENTS: Record<Feature, Plan[]> = {
   request_imaging: ["standard", "family"],
   family_invite: ["family"],
   unlimited_uploads: ["standard", "family"],
+  dicom_imaging: ["standard", "family"],
 };
 
 /** Live access state, resolved from the real subscription (see useSubscription). */

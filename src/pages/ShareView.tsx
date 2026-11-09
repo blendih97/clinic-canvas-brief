@@ -3,6 +3,7 @@ import { displayRange } from "@/lib/referenceRanges";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import SharedDocuments, { type SharedDoc } from "@/components/share/SharedDocuments";
+import SharedScans, { type SharedStudy } from "@/components/share/SharedScans";
 import { Shield, Clock, AlertTriangle, Pill, Droplets, ScanLine, Globe } from "lucide-react";
 import { SHARE_GATE_LANGUAGES, findShareGateLanguage, initialShareGateLanguage, saveShareGateLanguage } from "@/components/share/shareGateText";
 
@@ -14,6 +15,7 @@ interface SharedBrief {
   medications: any[];
   allergies: any[];
   imaging_results: any[];
+  imaging_studies?: SharedStudy[];
   documents?: SharedDoc[];
   created_at: string;
 }
@@ -316,6 +318,8 @@ const ShareView = () => {
             </div>
           </section>
         )}
+
+        {token && <SharedScans token={token} studies={brief.imaging_studies || []} />}
 
         {token && <SharedDocuments token={token} documents={sharedDocuments} cover={{ allergies, medications, bloodResults, createdAt: brief.created_at }} />}
 

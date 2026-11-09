@@ -2,8 +2,7 @@ import { useSponsorship } from "@/hooks/useSponsorship";
 import { usePartnerAccess, setPartnerChoseRecords } from "@/hooks/usePartnerAccess";
 import { useSubscription } from "@/hooks/useSubscription";
 import {
-  LayoutDashboard, Droplets, Pill, FileText, Share2, CreditCard, Settings, LogOut, ChevronDown, User, FileDown, Users, Play, MoreHorizontal, ShieldAlert, Inbox, X, Building2
-} from "lucide-react";
+  LayoutDashboard, Droplets, Pill, FileText, Share2, CreditCard, Settings, LogOut, ChevronDown, User, FileDown, Users, Play, MoreHorizontal, ShieldAlert, Inbox, X, Building2, ScanLine } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/hooks/useAuth";
 import { useState, useRef, useEffect } from "react";
@@ -12,11 +11,12 @@ import { useLocale } from "@/hooks/useLocale";
 
 type Section = "overview" | "blood" | "imaging" | "media" | "medications" | "documents" | "share" | "billing" | "export" | "family";
 
-// Imaging is hidden until the scan viewer is released; imaging reports live in Documents.
+// Imaging holds full DICOM scans (viewer, MPR/3D, sharing); imaging reports live in Documents.
 // Family and Billing are self-pay only: hidden for patients sponsored by a partner.
 const baseNavItems: { id: Section; labelKey: string; icon: React.ElementType; familyOnly?: boolean; selfPayOnly?: boolean }[] = [
   { id: "overview", labelKey: "sidebar.overview", icon: LayoutDashboard },
   { id: "blood", labelKey: "sidebar.blood", icon: Droplets },
+  { id: "imaging", labelKey: "sidebar.imaging", icon: ScanLine },
   { id: "media", labelKey: "sidebar.media", icon: Play },
   { id: "medications", labelKey: "sidebar.medications", icon: Pill },
   { id: "documents", labelKey: "sidebar.documents", icon: FileText },
@@ -37,6 +37,7 @@ type SheetAction =
 
 const mobileMoreItems: SheetAction[] = [
   { kind: "section", id: "medications", labelKey: "sidebar.allergies", icon: ShieldAlert },
+  { kind: "section", id: "imaging", labelKey: "sidebar.imaging", icon: ScanLine },
   { kind: "section", id: "media", labelKey: "sidebar.media", icon: Play },
   { kind: "section", id: "family", labelKey: "sidebar.family", icon: Users, familyOnly: true, selfPayOnly: true },
   { kind: "section", id: "share", labelKey: "sidebar.share", icon: Share2 },

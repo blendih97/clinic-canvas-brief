@@ -100,6 +100,7 @@ const ExportSection = () => {
         await generateSelectionPDF(store, patientName, dob, selectedDocs, options);
       } else if (mode === "full") {
         const { blob, missing } = await buildHealthBrief({
+          scanDateFilter: (d) => inRange(d),
           data: {
             bloodResults: store.bloodResults.filter((r) => inRange(r.date)),
             imagingResults: store.imagingResults.filter((r) => inRange(r.date)),
