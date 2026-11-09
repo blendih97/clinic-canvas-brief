@@ -827,6 +827,99 @@ export type Database = {
         }
         Relationships: []
       }
+      imaging_studies: {
+        Row: {
+          accession: string | null
+          body_part: string | null
+          created_at: string
+          description: string | null
+          document_id: string | null
+          id: string
+          instance_count: number
+          institution: string | null
+          key_image_path: string | null
+          manifest_path: string | null
+          modalities: string[]
+          patient_name: string | null
+          record_request_id: string | null
+          series_count: number
+          size_bytes: number
+          source: string
+          status: string
+          study_date: string | null
+          study_uid: string
+          title: string | null
+          updated_at: string
+          user_id: string
+          volumetric: boolean
+        }
+        Insert: {
+          accession?: string | null
+          body_part?: string | null
+          created_at?: string
+          description?: string | null
+          document_id?: string | null
+          id?: string
+          instance_count?: number
+          institution?: string | null
+          key_image_path?: string | null
+          manifest_path?: string | null
+          modalities?: string[]
+          patient_name?: string | null
+          record_request_id?: string | null
+          series_count?: number
+          size_bytes?: number
+          source?: string
+          status?: string
+          study_date?: string | null
+          study_uid: string
+          title?: string | null
+          updated_at?: string
+          user_id: string
+          volumetric?: boolean
+        }
+        Update: {
+          accession?: string | null
+          body_part?: string | null
+          created_at?: string
+          description?: string | null
+          document_id?: string | null
+          id?: string
+          instance_count?: number
+          institution?: string | null
+          key_image_path?: string | null
+          manifest_path?: string | null
+          modalities?: string[]
+          patient_name?: string | null
+          record_request_id?: string | null
+          series_count?: number
+          size_bytes?: number
+          source?: string
+          status?: string
+          study_date?: string | null
+          study_uid?: string
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+          volumetric?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "imaging_studies_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "imaging_studies_record_request_id_fkey"
+            columns: ["record_request_id"]
+            isOneToOne: false
+            referencedRelation: "record_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       media_shares: {
         Row: {
           created_at: string
@@ -1389,6 +1482,7 @@ export type Database = {
           expires_at: string | null
           id: string
           imaging_results: Json | null
+          imaging_studies: Json
           medications: Json | null
           no_known_allergies: boolean
           revoked_at: string | null
@@ -1404,6 +1498,7 @@ export type Database = {
           expires_at?: string | null
           id?: string
           imaging_results?: Json | null
+          imaging_studies?: Json
           medications?: Json | null
           no_known_allergies?: boolean
           revoked_at?: string | null
@@ -1419,6 +1514,7 @@ export type Database = {
           expires_at?: string | null
           id?: string
           imaging_results?: Json | null
+          imaging_studies?: Json
           medications?: Json | null
           no_known_allergies?: boolean
           revoked_at?: string | null
