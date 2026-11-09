@@ -5,7 +5,7 @@
 
 CREATE TABLE IF NOT EXISTS public.imaging_studies (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  user_id uuid NOT NULL,  -- the patient (auth user id); removed by delete-account
   study_uid text NOT NULL CHECK (length(study_uid) <= 128),
   title text CHECK (title IS NULL OR length(title) <= 200),
   description text CHECK (description IS NULL OR length(description) <= 200),
@@ -75,6 +75,11 @@ END $$;
 DROP TRIGGER IF EXISTS imaging_study_paths_guard ON public.imaging_studies;
 CREATE TRIGGER imaging_study_paths_guard BEFORE INSERT OR UPDATE ON public.imaging_studies
   FOR EACH ROW EXECUTE FUNCTION public.imaging_study_paths_guard();
+
+-- Access: signed-in users through RLS above; the server (service role) for hospital uploads and sharing.
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.imaging_studies TO authenticated;
+GRANT ALL ON public.imaging_studies TO service_role;
+REVOKE ALL ON public.imaging_studies FROM anon;
 
 -- Share links: which studies the patient chose to include (ids and a short summary only).
 ALTER TABLE public.shared_briefs
