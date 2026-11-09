@@ -86,7 +86,7 @@ export default function SharedScans({ token, studies, patientName }: { token: st
               {s.volumetric && <span className="absolute top-1.5 left-1.5 px-1 py-0.5 rounded bg-[#c8a03c]/90 text-[9px] text-black inline-flex items-center gap-0.5"><Box className="w-2.5 h-2.5" />3D</span>}
             </button>
             <div className="p-3 flex-1 min-w-0">
-              <p className="text-sm font-medium text-foreground truncate">{s.title || "Scan"}</p>
+              <p className="text-sm font-medium text-foreground line-clamp-2">{s.title || "Scan"}</p>
               <p className="text-xs text-muted-foreground">{[fmt(s.date), s.institution].filter(Boolean).join(" · ")}</p>
               <p className="text-xs text-muted-foreground">{s.modalities.map((m) => MOD[m] || m).join(", ")} · {s.seriesCount} series · {s.instanceCount} {s.instanceCount === 1 ? "image" : "images"}</p>
               {s.reportName && <p className="text-xs text-foreground/80 mt-1 inline-flex items-center gap-1"><FileText className="w-3 h-3" /> Report: {s.reportName}</p>}
@@ -108,7 +108,7 @@ export default function SharedScans({ token, studies, patientName }: { token: st
 
       {viewing && (
         <Suspense fallback={<div className="fixed inset-0 z-[80] bg-[#0b0c0f] flex items-center justify-center"><Loader2 className="w-6 h-6 animate-spin text-[#e6c46a]" /></div>}>
-          <DicomViewer manifest={viewing.manifest} subtitle={patientName ? `Shared by ${patientName}` : "Shared through RinVita"} onClose={() => setViewing(null)}
+          <DicomViewer manifest={viewing.manifest} title={viewing.study.title || undefined} subtitle={patientName ? `Shared by ${patientName}` : "Shared through RinVita"} onClose={() => setViewing(null)}
             downloading={busy === `dl:${viewing.study.id}`} onDownload={() => void download([viewing.study], viewing.manifest)} />
         </Suspense>
       )}

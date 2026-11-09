@@ -41,11 +41,13 @@ export interface DicomViewerProps {
   downloading?: boolean;
   /** Shown under the title, e.g. "Shared by Jane Doe". */
   subtitle?: string;
+  /** The scan's name as RinVita shows it (defaults to the study description). */
+  title?: string;
 }
 
 let viewerSeq = 0;
 
-export default function DicomViewer({ manifest, onClose, onDownload, downloading, subtitle }: DicomViewerProps) {
+export default function DicomViewer({ manifest, onClose, onDownload, downloading, subtitle, title: titleProp }: DicomViewerProps) {
   const uid = useMemo(() => `rv${++viewerSeq}`, []);
   const engineId = `${uid}-engine`;
   const rootRef = useRef<HTMLDivElement>(null);
@@ -388,7 +390,7 @@ export default function DicomViewer({ manifest, onClose, onDownload, downloading
   });
 
   const info = useInfo(current, imageIds[index] || imageIds[0], showInfo);
-  const title = studyTitle(manifest);
+  const title = titleProp || studyTitle(manifest);
 
   const ToolBtn = ({ t, icon: Icon, label }: { t: ToolName; icon: typeof Contrast; label: string }) => (
     <button type="button" onClick={() => chooseTool(t)} title={label} aria-label={label} aria-pressed={tool === t}

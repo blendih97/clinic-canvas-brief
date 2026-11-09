@@ -257,7 +257,7 @@ const ScansSection = () => {
 
       {viewing && (
         <Suspense fallback={<div className="fixed inset-0 z-[80] bg-[#0b0c0f] flex items-center justify-center"><Loader2 className="w-6 h-6 animate-spin text-[#e6c46a]" /></div>}>
-          <DicomViewer manifest={viewing.manifest} onClose={() => setViewing(null)}
+          <DicomViewer manifest={viewing.manifest} title={viewing.study.title || undefined} onClose={() => setViewing(null)}
             downloading={exporting?.id === viewing.study.id}
             onDownload={() => void download(viewing.study, viewing.manifest)} />
         </Suspense>
