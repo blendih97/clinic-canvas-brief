@@ -7,6 +7,9 @@
   "workspace": {
     "packageJson": {
       "dependencies": [
+        "npm:@cornerstonejs/core@5.13.1",
+        "npm:@cornerstonejs/dicom-image-loader@5.13.1",
+        "npm:@cornerstonejs/tools@5.13.1",
         "npm:@eslint/js@^9.32.0",
         "npm:@hookform/resolvers@^3.10.0",
         "npm:@lovable.dev/cloud-auth-js@^1.1.2",
@@ -57,12 +60,15 @@
         "npm:clsx@^2.1.1",
         "npm:cmdk@^1.1.1",
         "npm:date-fns@^3.6.0",
+        "npm:dicom-parser@1.8.21",
         "npm:drizzle-kit@0",
         "npm:drizzle-orm@0",
         "npm:embla-carousel-react@^8.6.0",
         "npm:eslint-plugin-react-hooks@^5.2.0",
         "npm:eslint-plugin-react-refresh@~0.4.20",
         "npm:eslint@^9.32.0",
+        "npm:events@3.3.0",
+        "npm:fflate@0.8.2",
         "npm:globals@^15.15.0",
         "npm:input-otp@^1.4.2",
         "npm:jsdom@^20.0.3",
