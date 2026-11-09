@@ -3,6 +3,7 @@
 import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ScanLine, Upload, FolderOpen, FileArchive, Loader2, Eye, Download, Trash2, Box, FileText, Send, Lock, AlertTriangle, X, Check, Link2,
+  Disc3, Usb, ChevronDown, HelpCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -226,6 +227,11 @@ const ScansSection = () => {
         </>
       )}
 
+      {studies !== null && (
+        <AddScansGuide key={studies.length === 0 ? "open" : "closed"} defaultOpen={studies.length === 0}
+          onAdd={() => (canUse ? setAdding(true) : upgrade())} onRequest={() => (canUse ? setRequestOpen(true) : upgrade())} />
+      )}
+
       <p className="text-[11px] text-muted-foreground leading-relaxed">
         The viewer is for viewing and sharing your scans. It is not for primary diagnosis. Always have scans read by a qualified radiologist or doctor. Downloads contain the original images, exactly as the hospital sent them.
       </p>
@@ -265,6 +271,95 @@ const ScansSection = () => {
     </div>
   );
 };
+
+// How scans get into RinVita: from a CD or DVD, a USB stick or download, or sent by the hospital (or a facilitator) through a link.
+function AddScansGuide({ defaultOpen, onAdd, onRequest }: { defaultOpen: boolean; onAdd: () => void; onRequest: () => void }) {
+  const [open, setOpen] = useState(defaultOpen);
+  const [tab, setTab] = useState<"cd" | "usb" | "link">("cd");
+  const tabs = [
+    { id: "cd" as const, icon: Disc3, label: "From a CD or DVD" },
+    { id: "usb" as const, icon: Usb, label: "From a USB stick or download" },
+    { id: "link" as const, icon: Send, label: "Ask the hospital to send them" },
+  ];
+  const Step = ({ n, children }: { n: number; children: React.ReactNode }) => (
+    <li className="flex gap-3">
+      <span className="shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-medium flex items-center justify-center">{n}</span>
+      <span className="text-sm text-foreground leading-relaxed pt-0.5">{children}</span>
+    </li>
+  );
+  return (
+    <div className="rounded-xl border border-border bg-card" data-testid="scans-guide">
+      <button type="button" onClick={() => setOpen(!open)} aria-expanded={open} className="w-full flex items-center justify-between gap-3 p-4 text-left">
+        <span className="flex items-center gap-2">
+          <HelpCircle className="w-4 h-4 text-primary" />
+          <span className="font-medium text-foreground">How to add your scans</span>
+          <span className="hidden sm:inline text-xs text-muted-foreground">CD, USB stick, download or straight from the hospital</span>
+        </span>
+        <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && (
+        <div className="px-4 pb-5">
+          <div className="flex flex-wrap gap-2 border-b border-border pb-3">
+            {tabs.map((t) => (
+              <button key={t.id} type="button" onClick={() => setTab(t.id)} aria-pressed={tab === t.id}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border ${tab === t.id ? "border-primary bg-primary/5 text-primary font-medium" : "border-border text-muted-foreground hover:text-foreground"}`}>
+                <t.icon className="w-3.5 h-3.5" /> {t.label}
+              </button>
+            ))}
+          </div>
+
+          {tab === "cd" && (
+            <div className="pt-4 space-y-4">
+              <ol className="space-y-3">
+                <Step n={1}>Put the CD or DVD from the hospital into your computer. No CD drive? An external USB CD drive costs about £15 to £25, or ask your clinic or facilitator to do it for you (see "Ask the hospital to send them").</Step>
+                <Step n={2}>In RinVita, open <strong>Imaging</strong>, then <strong>Add scans</strong>, then <strong>Choose a folder</strong>.</Step>
+                <Step n={3}>Select the CD drive itself, for example <strong>D:</strong> on Windows or the CD icon on a Mac. You don't need to open the hospital's viewer program on the disc.</Step>
+                <Step n={4}>RinVita reads the disc and shows the scans it found, with their dates and number of images. It skips anything that isn't a scan image.</Step>
+                <Step n={5}>Check the scans are yours, then click <strong>Add scans</strong>. Keep the page open until the upload finishes.</Step>
+              </ol>
+              <p className="text-xs text-muted-foreground">Works on a Windows PC or Mac. Phones and tablets can't read CDs. If RinVita says no scan images were found, the disc may be encrypted or use the hospital's own format: ask the hospital to send the scans through a link instead.</p>
+            </div>
+          )}
+
+          {tab === "usb" && (
+            <div className="pt-4 space-y-4">
+              <ol className="space-y-3">
+                <Step n={1}><strong>USB stick:</strong> plug it into your computer. <strong>Download link or email:</strong> download the file the hospital sent you, usually a ZIP. You don't need to unzip it.</Step>
+                <Step n={2}>In RinVita, open <strong>Imaging</strong>, then <strong>Add scans</strong>.</Step>
+                <Step n={3}>For a USB stick, click <strong>Choose a folder</strong> and select the USB drive. For a ZIP or loose files, click <strong>Choose files or a ZIP</strong>. You can also drag the folder or ZIP onto the window.</Step>
+                <Step n={4}>Check the scans RinVita found are yours, then click <strong>Add scans</strong>.</Step>
+              </ol>
+              <p className="text-xs text-muted-foreground">If the hospital gave you a link to an online viewer rather than a download, look for a "Download" or "Export DICOM" button there first. Images saved as JPEG or PDF can go in Documents instead, but they can't be viewed in 3D or imported by another hospital.</p>
+            </div>
+          )}
+
+          {tab === "link" && (
+            <div className="pt-4 space-y-4">
+              <ol className="space-y-3">
+                <Step n={1}>Click <strong>Request from a hospital</strong> and enter the hospital's radiology or medical records email, and which scan you need.</Step>
+                <Step n={2}>You sign a consent to release, and the hospital receives an email with a secure upload link. They don't need an account.</Step>
+                <Step n={3}>They export the scan from their imaging system (PACS) and upload the folder, CD contents or ZIP through the link.</Step>
+                <Step n={4}>The scan appears here in Imaging and you get a notification. The link expires after 30 days.</Step>
+              </ol>
+              <div className="rounded-lg bg-primary/5 border border-primary/20 p-3 text-xs text-foreground">
+                <strong>Have a CD but no computer to read it?</strong> Send the request to your clinic, concierge or medical travel coordinator's email instead. They put the CD in their computer and upload it through the link, and it goes straight into your account. They can't see anything else in your records.
+              </div>
+              <p className="text-xs text-muted-foreground">Some hospitals only send scans directly between imaging systems (PACS to PACS). If yours says so, ask them for a copy on CD or USB, which you are entitled to, and add it yourself.</p>
+            </div>
+          )}
+
+          <div className="mt-5 flex flex-wrap gap-2">
+            {tab === "link" ? (
+              <button type="button" onClick={onRequest} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium"><Send className="w-4 h-4" /> Request from a hospital</button>
+            ) : (
+              <button type="button" onClick={onAdd} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium"><Upload className="w-4 h-4" /> Add scans</button>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function AddScansModal({ userId, profileName, onClose, onSaved }: { userId: string; profileName: string; onClose: () => void; onSaved: () => void }) {
   const [reading, setReading] = useState<{ done: number; total: number } | null>(null);
