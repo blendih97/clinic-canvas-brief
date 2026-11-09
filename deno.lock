@@ -78,6 +78,7 @@
         "npm:lucide-react@0.462",
         "npm:next-themes@0.3",
         "npm:pdf-lib@^1.17.1",
+        "npm:pdfjs-dist@4.10.38",
         "npm:postcss@^8.5.6",
         "npm:postgres@^3.4.9",
         "npm:qrcode@^1.5.4",
