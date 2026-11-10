@@ -23,14 +23,14 @@ export interface SharedStudy {
 const MOD: Record<string, string> = { CT: "CT", MR: "MRI", CR: "X-ray", DX: "X-ray", US: "Ultrasound", MG: "Mammogram", PT: "PET", NM: "Nuclear", XA: "Angiogram", RF: "Fluoroscopy" };
 const fmt = (d: string | null) => (d ? new Date(`${d}T12:00:00`).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "Date not recorded");
 
-async function fetchManifest(token: string, studyId: string): Promise<DicomManifest> {
-  const { data, error } = await supabase.functions.invoke("get-shared-brief", { body: { token, studyId } });
+async function fetchManifest(fn: string, token: string, studyId: string): Promise<DicomManifest> {
+  const { data, error } = await supabase.functions.invoke(fn, { body: { token, studyId } });
   if (error || !data?.manifest) throw new Error("This scan is no longer available.");
   return data.manifest as DicomManifest;
 }
 
 
-export default function SharedScans({ token, studies, patientName }: { token: string; studies: SharedStudy[]; patientName?: string }) {
+export default function SharedScans({ token, studies, patientName, fn = "get-shared-brief" }: { token: string; studies: SharedStudy[]; patientName?: string; fn?: string }) {
   const [viewing, setViewing] = useState<{ study: SharedStudy; manifest: DicomManifest } | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -39,7 +39,7 @@ export default function SharedScans({ token, studies, patientName }: { token: st
 
   const open = async (s: SharedStudy) => {
     setBusy(`open:${s.id}`); setError(null);
-    try { setViewing({ study: s, manifest: await fetchManifest(token, s.id) }); }
+    try { setViewing({ study: s, manifest: await fetchManifest(fn, token, s.id) }); }
     catch (e) { setError((e as Error).message); }
     finally { setBusy(null); }
   };

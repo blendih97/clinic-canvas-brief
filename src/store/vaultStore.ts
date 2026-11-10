@@ -135,6 +135,9 @@ interface VaultState {
   visits: Visit[];
   imagingLinkOverrides: ImagingLinkOverride[];
   loading: boolean;
+  /** Read-only demo: edits change only what's on screen and are never saved. */
+  demoMode: boolean;
+  startDemo: (data: Partial<Pick<VaultState, "bloodResults" | "imagingResults" | "medications" | "documents" | "alerts" | "allergies">>) => void;
 
   loadUserData: (userId: string) => Promise<void>;
   clearData: () => void;
@@ -164,8 +167,16 @@ export const useVaultStore = create<VaultState>()((set, get) => ({
   visits: [],
   imagingLinkOverrides: [],
   loading: false,
+  demoMode: false,
+
+  startDemo: (data) => set({
+    demoMode: true, loading: false, visits: [], imagingLinkOverrides: [],
+    bloodResults: [], imagingResults: [], medications: [], documents: [], alerts: [], allergies: [],
+    ...data,
+  }),
 
   loadUserData: async (userId: string) => {
+    if (get().demoMode) return;
     set({ loading: true });
     const [blood, imaging, meds, docs, alerts, allergies, visits, overrides] = await Promise.all([
       supabase.from("blood_results").select("*").eq("user_id", userId),
@@ -285,6 +296,14 @@ export const useVaultStore = create<VaultState>()((set, get) => ({
   },
 
   addMedications: async (meds, userId) => {
+    if (get().demoMode) {
+      const plan = planMedicationMerge(get().medications.map((m) => ({ ...m })), meds.map((m) => ({ ...m })));
+      set((s) => ({ medications: [
+        ...s.medications.map((m) => ({ ...m, ...(plan.updates.find((u) => u.id === m.id)?.patch || {}) })),
+        ...plan.inserts.map((m) => ({ ...m, id: crypto.randomUUID() })),
+      ] }));
+      return;
+    }
     // One entry per medicine: same drug and dose (or no dose on one side) merges into the existing entry.
     const plan = planMedicationMerge(get().medications.map((m) => ({ ...m })), meds.map((m) => ({ ...m })));
     for (const u of plan.updates) {
@@ -351,6 +370,14 @@ export const useVaultStore = create<VaultState>()((set, get) => ({
   },
 
   addAllergies: async (newAllergies, userId) => {
+    if (get().demoMode) {
+      const plan = planAllergyMerge(get().allergies.map((a) => ({ ...a })), newAllergies.map((a) => ({ ...a })));
+      set((s) => ({ allergies: [
+        ...s.allergies.map((a) => ({ ...a, ...(plan.updates.find((u) => u.id === a.id)?.patch || {}) })),
+        ...plan.inserts.map((a) => ({ ...a, id: crypto.randomUUID() })),
+      ] }));
+      return;
+    }
     // One entry per substance (spelling and plural variants match); a missing reaction or severity is filled in.
     const plan = planAllergyMerge(get().allergies.map((a) => ({ ...a })), newAllergies.map((a) => ({ ...a })));
     for (const u of plan.updates) {
@@ -376,11 +403,13 @@ export const useVaultStore = create<VaultState>()((set, get) => ({
   },
 
   removeMedication: async (id: string) => {
+    if (get().demoMode) { set((s) => ({ medications: s.medications.filter((m) => m.id !== id) })); return; }
     await supabase.from("medications").delete().eq("id", id);
     set((s) => ({ medications: s.medications.filter((m) => m.id !== id) }));
   },
 
   removeAllergy: async (id: string) => {
+    if (get().demoMode) { set((s) => ({ allergies: s.allergies.filter((a) => a.id !== id) })); return; }
     // Remove every row for the same substance, since the list shows one entry per substance.
     const target = get().allergies.find((a) => a.id === id);
     const { data: auth } = await supabase.auth.getUser();
@@ -406,6 +435,7 @@ export const useVaultStore = create<VaultState>()((set, get) => ({
   },
 
   updateMedication: async (id: string, updates: Partial<Medication>) => {
+    if (get().demoMode) { set((s) => ({ medications: s.medications.map((m) => m.id === id ? { ...m, ...updates } : m) })); return; }
     await supabase.from("medications").update(updates).eq("id", id);
     set((s) => ({
       medications: s.medications.map((m) => m.id === id ? { ...m, ...updates } : m),

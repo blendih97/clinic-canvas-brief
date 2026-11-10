@@ -58,6 +58,8 @@ import AdminGrowthPage from "./pages/admin/AdminGrowthPage";
 import { hasAuthIntent } from "@/lib/authIntent";
 
 
+// Read-only demo patient (opened from a demo link); lazy so it stays out of the main bundle.
+const DemoPatientPage = lazy(() => import("./pages/DemoPatientPage"));
 // Viewer test page: only exists in "lab" builds.
 const DicomLabPage = import.meta.env.MODE === "lab" ? lazy(() => import("./pages/DicomLabPage")) : null;
 const queryClient = new QueryClient();
@@ -192,6 +194,7 @@ export const AppRoutes = () => (
               <Route path="/check-email" element={<CheckEmailPage />} />
               <Route path="/" element={<HomeRoute />} />
               <Route path="/demo" element={<ProductDemoPage />} />
+              <Route path="/demo/:token" element={<Suspense fallback={null}><DemoPatientPage /></Suspense>} />
               {DicomLabPage && <Route path="/dicom-lab" element={<Suspense fallback={null}><DicomLabPage /></Suspense>} />}
               <Route path="/pricing" element={<PricingPage />} />
               <Route path="/partner-demo" element={<PartnerDemoPage />} />

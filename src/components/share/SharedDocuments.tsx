@@ -38,7 +38,7 @@ export interface BriefCover { allergies?: any[]; medications?: any[]; bloodResul
 
 /** Documents section of the doctor's share page: list, "view all" and a side-by-side, view-only viewer.
  * Doctors can view but not download: downloading stays with the patient. */
-const SharedDocuments = ({ token, documents }: { token: string; documents: SharedDoc[]; cover?: BriefCover }) => {
+const SharedDocuments = ({ token, documents, fn = "get-shared-brief" }: { token: string; documents: SharedDoc[]; fn?: string; cover?: BriefCover }) => {
   const [showAll, setShowAll] = useState(false);
   const [open, setOpen] = useState<SharedDoc | null>(null);
   if (documents.length === 0) return null;
@@ -83,12 +83,12 @@ const SharedDocuments = ({ token, documents }: { token: string; documents: Share
           );
         })}
       </div>
-      {open && <SharedDocumentViewer token={token} doc={open} onClose={() => setOpen(null)} />}
+      {open && <SharedDocumentViewer fn={fn} token={token} doc={open} onClose={() => setOpen(null)} />}
     </section>
   );
 };
 
-const SharedDocumentViewer = ({ token, doc, onClose }: { token: string; doc: SharedDoc; onClose: () => void }) => {
+const SharedDocumentViewer = ({ token, doc, onClose, fn }: { token: string; doc: SharedDoc; onClose: () => void; fn: string }) => {
   const [file, setFile] = useState<{ url: string; kind: string } | null>(null);
   const [loadingFile, setLoadingFile] = useState(false);
   const [fileError, setFileError] = useState<string | null>(null);
@@ -100,7 +100,7 @@ const SharedDocumentViewer = ({ token, doc, onClose }: { token: string; doc: Sha
   const loadFile = async () => {
     if (!doc.id || loadingFile) return;
     setLoadingFile(true); setFileError(null);
-    const { data, error } = await supabase.functions.invoke("get-shared-brief", { body: { token, documentId: doc.id } });
+    const { data, error } = await supabase.functions.invoke(fn, { body: { token, documentId: doc.id } });
     const url = (data as any)?.url;
     let code: string | undefined = (data as any)?.revoked ? "revoked" : (data as any)?.expired ? "expired" : undefined;
     if (error) { try { code = (await (error as any)?.context?.json?.())?.error; } catch { /* generic */ } }

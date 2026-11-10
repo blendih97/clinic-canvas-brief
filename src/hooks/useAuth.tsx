@@ -43,7 +43,9 @@ interface AuthContextType {
   refreshProfile: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export type { AuthContextType };
+// Exported so the read-only demo can supply a fictional patient instead of the visitor's own account.
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const withAuthTimeout = async <T,>(promise: Promise<T>, label: string, timeoutMs = 8000): Promise<T> => {
   let timeoutId: ReturnType<typeof setTimeout> | undefined;

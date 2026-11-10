@@ -46,3 +46,7 @@
 ## Doctor share link is view only
 - Doctors can open and view documents and scans but never download them: no download buttons, no "open in new tab", no DICOM export on `/share/:token`. Downloading stays with the patient (Imaging, Documents, Export).
 - PDFs on the share page render as page images through `ViewOnlyPdf` (pdf.js 4.x; 6.x needs newer browsers than we support), never through the browser's PDF viewer, which has its own download button.
+
+## Demo links (/demo/:token)
+- A read-only tour of a fictional patient for prospective partners. Only users in `demo_accounts` can be exposed; links live in `demo_links` (label per partner, expiry, revoke, view count). Both tables are server-only.
+- `get-demo-profile` serves the data; the page puts the store in `demoMode`, so edits change only the screen and are never saved. Never add a real patient to `demo_accounts`.

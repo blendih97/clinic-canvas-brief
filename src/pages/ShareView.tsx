@@ -7,7 +7,7 @@ import SharedScans, { type SharedStudy } from "@/components/share/SharedScans";
 import { Shield, Clock, AlertTriangle, Pill, Droplets, ScanLine, Globe } from "lucide-react";
 import { SHARE_GATE_LANGUAGES, findShareGateLanguage, initialShareGateLanguage, saveShareGateLanguage } from "@/components/share/shareGateText";
 
-interface SharedBrief {
+export interface SharedBrief {
   token: string;
   scope: string;
   expires_at: string;
@@ -20,13 +20,18 @@ interface SharedBrief {
   created_at: string;
 }
 
-const ShareView = () => {
-  const { token } = useParams<{ token: string }>();
-  const [brief, setBrief] = useState<SharedBrief | null>(null);
+export interface ShareViewDemo { token: string; brief: SharedBrief }
+
+/** The doctor's page. With `demo`, it shows a demo patient's live record straight away (no gate, no logging). */
+const ShareView = ({ demo }: { demo?: ShareViewDemo } = {}) => {
+  const params = useParams<{ token: string }>();
+  const token = demo?.token ?? params.token;
+  const fn = demo ? "get-demo-profile" : "get-shared-brief";
+  const [brief, setBrief] = useState<SharedBrief | null>(demo?.brief ?? null);
   const [loading, setLoading] = useState(false);
   const [expired, setExpired] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState("");
-  const [accepted, setAccepted] = useState(false);
+  const [accepted, setAccepted] = useState(!!demo);
   const [declined, setDeclined] = useState(false);
   const [submittingAccept, setSubmittingAccept] = useState(false);
   const [gateLang, setGateLang] = useState(() => initialShareGateLanguage());
@@ -319,9 +324,9 @@ const ShareView = () => {
           </section>
         )}
 
-        {token && <SharedScans token={token} studies={brief.imaging_studies || []} />}
+        {token && <SharedScans fn={fn} token={token} studies={brief.imaging_studies || []} />}
 
-        {token && <SharedDocuments token={token} documents={sharedDocuments} />}
+        {token && <SharedDocuments fn={fn} token={token} documents={sharedDocuments} />}
 
         <div className="text-center text-xs text-muted-foreground pt-6 border-t border-border space-y-2">
           <p>Generated securely by RinVita · This link will expire automatically</p>
