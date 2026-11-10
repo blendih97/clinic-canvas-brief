@@ -40,8 +40,14 @@ const TABS: { id: Tab; label: string; icon: typeof LayoutDashboard }[] = [
 
 const notInDemo = () => toast("This is a demo account, so it's view only. Create your own account to try it with real records.");
 
+// Short, public addresses for links used in emails and on the website (the demo patient is fictional).
+const ALIASES: Record<string, string> = {
+  eleanor: "eleanor-eb3282b9eaf26d5d40", // Email outreach
+};
+
 export default function DemoPatientPage() {
-  const { token } = useParams<{ token: string }>();
+  const { token: raw } = useParams<{ token: string }>();
+  const token = (raw && ALIASES[raw.toLowerCase()]) || raw;
   const [data, setData] = useState<DemoData | null>(null);
   const [state, setState] = useState<"loading" | "ready" | "gone">("loading");
   const [tab, setTab] = useState<Tab>("overview");
