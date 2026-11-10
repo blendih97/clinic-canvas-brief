@@ -334,6 +334,68 @@ export type Database = {
         }
         Relationships: []
       }
+      demo_accounts: {
+        Row: {
+          created_at: string
+          label: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          label: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          label?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      demo_links: {
+        Row: {
+          created_at: string
+          demo_user_id: string
+          expires_at: string | null
+          id: string
+          label: string
+          last_viewed_at: string | null
+          revoked_at: string | null
+          token: string
+          view_count: number
+        }
+        Insert: {
+          created_at?: string
+          demo_user_id: string
+          expires_at?: string | null
+          id?: string
+          label: string
+          last_viewed_at?: string | null
+          revoked_at?: string | null
+          token: string
+          view_count?: number
+        }
+        Update: {
+          created_at?: string
+          demo_user_id?: string
+          expires_at?: string | null
+          id?: string
+          label?: string
+          last_viewed_at?: string | null
+          revoked_at?: string | null
+          token?: string
+          view_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "demo_links_demo_user_id_fkey"
+            columns: ["demo_user_id"]
+            isOneToOne: false
+            referencedRelation: "demo_accounts"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       documents: {
         Row: {
           ai_note: string | null
@@ -1837,6 +1899,7 @@ export type Database = {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
       }
+      demo_link_opened: { Args: { _token: string }; Returns: undefined }
       email_queue_dispatch: { Args: never; Returns: undefined }
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
