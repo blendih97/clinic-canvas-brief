@@ -43,6 +43,10 @@ const notInDemo = () => toast("This is a demo account, so it's view only. Create
 // Short, public addresses for links used in emails and on the website (the demo patient is fictional).
 const ALIASES: Record<string, string> = {
   eleanor: "eleanor-eb3282b9eaf26d5d40", // Email outreach
+  medvoyage: "eleanor-medvoyage-766b3552a97ac13f",
+  health4travel: "eleanor-health4travel-6742efa55314da51",
+  kixa: "eleanor-kixa-c84d6e4f51eff885",
+  tmcg: "eleanor-tmcg-e276050b63d67c84",
 };
 
 export default function DemoPatientPage() {
