@@ -354,6 +354,9 @@ export type Database = {
       }
       demo_links: {
         Row: {
+          brand_logo_url: string | null
+          brand_name: string | null
+          brand_tagline: string | null
           created_at: string
           demo_user_id: string
           expires_at: string | null
@@ -365,6 +368,9 @@ export type Database = {
           view_count: number
         }
         Insert: {
+          brand_logo_url?: string | null
+          brand_name?: string | null
+          brand_tagline?: string | null
           created_at?: string
           demo_user_id: string
           expires_at?: string | null
@@ -376,6 +382,9 @@ export type Database = {
           view_count?: number
         }
         Update: {
+          brand_logo_url?: string | null
+          brand_name?: string | null
+          brand_tagline?: string | null
           created_at?: string
           demo_user_id?: string
           expires_at?: string | null
