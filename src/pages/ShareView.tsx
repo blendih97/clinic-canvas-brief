@@ -196,7 +196,7 @@ const ShareView = ({ demo }: { demo?: ShareViewDemo } = {}) => {
           </div>
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <Clock className="w-3.5 h-3.5" />
-            <span>{timeRemaining}</span>
+            <span>{demo ? "Example link" : timeRemaining}</span>
           </div>
         </div>
       </header>
