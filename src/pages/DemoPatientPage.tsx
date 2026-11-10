@@ -21,6 +21,7 @@ type Tab = "overview" | "blood" | "imaging" | "medications" | "documents" | "doc
 
 interface DemoData {
   label: string;
+  brand: { name: string; logoUrl: string | null; tagline: string | null } | null;
   expiresAt: string | null;
   profile: Partial<Profile>;
   vault: Record<string, unknown[]>;
@@ -37,7 +38,7 @@ const TABS: { id: Tab; label: string; icon: typeof LayoutDashboard }[] = [
   { id: "doctor", label: "What a doctor sees", icon: Stethoscope },
 ];
 
-const notInDemo = () => toast("This is a demo patient, so nothing can be uploaded or sent here. Create your own account to try it with real records.");
+const notInDemo = () => toast("This is a demo account, so it's view only. Create your own account to try it with real records.");
 
 export default function DemoPatientPage() {
   const { token } = useParams<{ token: string }>();
@@ -95,6 +96,7 @@ export default function DemoPatientPage() {
   }
 
   const name = data.profile.full_name?.replace(/\s*\(demo\)\s*/i, "") || "the demo patient";
+  const brand = data.brand;
 
   return (
     <AuthContext.Provider value={auth}>
@@ -104,7 +106,7 @@ export default function DemoPatientPage() {
           <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
             <p className="text-sm flex-1 flex items-start gap-2">
               <Info className="w-4 h-4 mt-0.5 text-[#e6c46a] shrink-0" />
-              <span>You're exploring <strong>{name}</strong>, a fictional patient. Look around freely: anything you change here isn't saved.</span>
+              <span>You're viewing <strong>{name}</strong>, a fictional demo patient{brand ? <> set up as a {brand.name} patient</> : null}. This account is view only.</span>
             </p>
             <Link to="/auth?mode=signup" className="self-start sm:self-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#c8a03c] text-black text-xs font-medium">
               Create your own account <ArrowRight className="w-3.5 h-3.5" />
@@ -114,9 +116,21 @@ export default function DemoPatientPage() {
 
         <header className="border-b border-border bg-card">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-4">
-            <div className="flex items-baseline justify-between gap-3">
-              <p className="font-heading text-2xl tracking-[0.2em] text-primary">RinVita</p>
-              <p className="text-xs text-muted-foreground">Demo patient · {name}</p>
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                {brand && (
+                  <>
+                    {brand.logoUrl ? <img src={brand.logoUrl} alt={brand.name} className="h-10 w-auto max-w-[140px] object-contain" />
+                      : <span className="font-medium text-foreground">{brand.name}</span>}
+                    <span className="h-8 w-px bg-border" aria-hidden />
+                  </>
+                )}
+                <p className="font-heading text-2xl tracking-[0.2em] text-primary">RinVita</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xs text-muted-foreground">Demo patient · {name}</p>
+                {brand && <p className="text-[11px] text-primary">Provided by {brand.name}</p>}
+              </div>
             </div>
             <nav className="mt-3 flex gap-1 overflow-x-auto -mb-px" aria-label="Demo sections">
               {TABS.map((t) => (
@@ -164,7 +178,7 @@ export default function DemoPatientPage() {
                 <SharedDocuments fn="get-demo-profile" token={token!} documents={data.brief.documents as SharedDoc[]} />
               </div>
             )}
-            <p className="mt-10 text-[11px] text-muted-foreground">Fictional demo patient. The documents are invented for demonstration; the scans are anonymised public research images, labelled as such.</p>
+            <p className="mt-10 text-[11px] text-muted-foreground">{brand ? `Shown as a ${brand.name} patient. ${brand.name} can't see patients' records; patients share them with doctors themselves. ` : ""}Fictional demo patient. The documents are invented for demonstration; the scans are anonymised public research images, labelled as such.</p>
           </main>
         )}
       </div>

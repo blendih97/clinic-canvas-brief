@@ -6,6 +6,8 @@ import MedicalDisclaimer from "@/components/MedicalDisclaimer";
 
 const MedicationsSection = () => {
   const { medications, allergies, addMedications, addAllergies, removeMedication, removeAllergy, updateMedication } = useVaultStore();
+  // Demo patient: view only, no adding or editing.
+  const readOnly = useVaultStore((s) => s.demoMode);
   const uniqueMedications = dedupeMedications(medications).unique;
   const byDateDesc = (a: { date: string }, b: { date: string }) => (b.date || "").localeCompare(a.date || "");
   const currentMeds = uniqueMedications.filter((m) => m.active !== false).sort(byDateDesc);
@@ -94,14 +96,14 @@ const MedicationsSection = () => {
           <p className={`text-xs ${current ? "text-foreground" : "text-muted-foreground"}`}>{m.prescriber}</p>
           <p className="text-[10px] text-muted-foreground">{m.facility ? `${m.facility} · ` : ""}{m.date}</p>
         </div>
-        <button
+        {!readOnly && <button
           onClick={() => updateMedication(m.id, { active: !current })}
           className="shrink-0 flex items-center gap-1 px-2 py-1 text-[11px] text-muted-foreground border border-border rounded-md hover:text-foreground hover:bg-muted transition-colors"
           title={current ? "Move to past medications" : "Move back to current medications"}
         >
           {current ? <><CircleStop className="w-3 h-3" /> Mark stopped</> : <><RotateCcw className="w-3 h-3" /> Mark current</>}
-        </button>
-        {m.source === "manual" && (
+        </button>}
+        {m.source === "manual" && !readOnly && (
           <div className="flex gap-1">
             <button onClick={() => openEditMed(m)} className="p-1 text-muted-foreground hover:text-foreground"><Edit2 className="w-3 h-3" /></button>
             <button onClick={() => removeMedication(m.id)} className="p-1 text-muted-foreground hover:text-destructive"><Trash2 className="w-3 h-3" /></button>
@@ -125,9 +127,9 @@ const MedicationsSection = () => {
             <AlertTriangle className="w-4 h-4 text-destructive" />
             <h3 className="text-sm font-medium text-destructive">Known Allergies</h3>
           </div>
-          <button onClick={() => setShowAllergyModal(true)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-primary border border-primary/30 rounded-lg hover:bg-primary/5 transition-colors">
+          {!readOnly && <button onClick={() => setShowAllergyModal(true)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-primary border border-primary/30 rounded-lg hover:bg-primary/5 transition-colors">
             <Plus className="w-3 h-3" /> Add Allergy
-          </button>
+          </button>}
         </div>
         {allergies.length > 0 ? (
           <div className="bg-destructive/5 border border-destructive/20 rounded-lg p-4">
@@ -141,7 +143,7 @@ const MedicationsSection = () => {
                       {a.source === "manual" && <span className="ml-1 px-1 py-0.5 bg-muted text-muted-foreground rounded text-[9px]">Manual</span>}
                     </p>
                   </div>
-                  {a.source === "manual" && a.id && (
+                  {a.source === "manual" && a.id && !readOnly && (
                     <button onClick={() => removeAllergy(a.id!)} className="text-destructive/60 hover:text-destructive">
                       <Trash2 className="w-3 h-3" />
                     </button>
@@ -167,9 +169,9 @@ const MedicationsSection = () => {
               {currentMeds.length} current
             </span>
           </div>
-          <button onClick={() => { resetMedForm(); setShowMedModal(true); }} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-primary border border-primary/30 rounded-lg hover:bg-primary/5 transition-colors">
+          {!readOnly && <button onClick={() => { resetMedForm(); setShowMedModal(true); }} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-primary border border-primary/30 rounded-lg hover:bg-primary/5 transition-colors">
             <Plus className="w-3 h-3" /> Add Medication
-          </button>
+          </button>}
         </div>
         {uniqueMedications.length > 0 ? (
           <div className="space-y-6">

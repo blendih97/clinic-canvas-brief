@@ -12,6 +12,8 @@ interface OverviewProps {
 }
 
 const OverviewSection = ({ onNavigate, onUpload, onRequestRecords }: OverviewProps) => {
+  // Demo patient: view only, so no upload or request actions.
+  const readOnly = useVaultStore((s) => s.demoMode);
   const { documents, allergies, medications, bloodResults } = useVaultStore();
   const [search, setSearch] = useState("");
   const [pinnedDocIds, setPinnedDocIds] = useState<Set<string>>(() => {
@@ -115,7 +117,7 @@ const OverviewSection = ({ onNavigate, onUpload, onRequestRecords }: OverviewPro
       {/* Primary actions */}
       {documents.length > 0 && (
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <button
+        {!readOnly && <button
           onClick={onUpload}
           className="flex items-center gap-4 p-6 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-all text-left group"
         >
@@ -126,7 +128,7 @@ const OverviewSection = ({ onNavigate, onUpload, onRequestRecords }: OverviewPro
             <p className="text-sm font-medium">Upload Document</p>
             <p className="text-xs opacity-80">PDF, image, or clinical letter</p>
           </div>
-        </button>
+        </button>}
         <button
           onClick={() => onNavigate?.("share")}
           className="flex items-center gap-4 p-6 bg-card border border-border rounded-xl hover:border-primary/40 transition-all text-left group"
@@ -139,7 +141,7 @@ const OverviewSection = ({ onNavigate, onUpload, onRequestRecords }: OverviewPro
             <p className="text-xs text-muted-foreground">Generate a secure link</p>
           </div>
         </button>
-        <button
+        {!readOnly && <button
           onClick={onRequestRecords}
           className="flex items-center gap-4 p-6 bg-card border border-border rounded-xl hover:border-primary/40 transition-all text-left group"
         >
@@ -150,7 +152,7 @@ const OverviewSection = ({ onNavigate, onUpload, onRequestRecords }: OverviewPro
             <p className="text-sm font-medium text-foreground">Request Records</p>
             <p className="text-xs text-muted-foreground">Ask your provider to send files</p>
           </div>
-        </button>
+        </button>}
       </div>
       )}
 

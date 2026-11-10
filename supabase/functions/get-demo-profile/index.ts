@@ -25,7 +25,7 @@ Deno.serve(async (req) => {
     if (!token || typeof token !== "string" || token.length < 20) return json({ error: "invalid_token" }, 400);
     const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
-    const { data: link } = await sb.from("demo_links").select("token, label, demo_user_id, expires_at, revoked_at").eq("token", token).maybeSingle();
+    const { data: link } = await sb.from("demo_links").select("token, label, demo_user_id, expires_at, revoked_at, brand_name, brand_logo_url, brand_tagline").eq("token", token).maybeSingle();
     if (!link || link.revoked_at || (link.expires_at && new Date(link.expires_at) < new Date())) return json({ demo: null, expired: true });
     const { data: account } = await sb.from("demo_accounts").select("user_id").eq("user_id", link.demo_user_id).maybeSingle();
     if (!account) return json({ demo: null, expired: true });
@@ -135,7 +135,8 @@ Deno.serve(async (req) => {
     };
 
     await sb.rpc("demo_link_opened", { _token: token });
-    return json({ demo: { label: link.label, expiresAt: link.expires_at, profile: p, vault, scans, brief } });
+    const brand = link.brand_name ? { name: link.brand_name, logoUrl: link.brand_logo_url || null, tagline: link.brand_tagline || null } : null;
+    return json({ demo: { label: link.label, expiresAt: link.expires_at, brand, profile: p, vault, scans, brief } });
   } catch (_e) {
     return json({ error: "server_error" }, 500);
   }
