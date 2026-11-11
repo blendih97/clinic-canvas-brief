@@ -2100,6 +2100,7 @@ export type Database = {
         Args: { _slug: string }
         Returns: undefined
       }
+      record_health_data_consent: { Args: never; Returns: undefined }
       record_onboarding_funnel: {
         Args: { _error_code?: string; _event: string; _plan?: string }
         Returns: undefined

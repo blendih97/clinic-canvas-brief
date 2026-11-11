@@ -141,6 +141,13 @@
       "when": 1794403088547,
       "tag": "0019_signup_protection",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1794435806200,
+      "tag": "0020_health_data_consent",
+      "breakpoints": true
     }
   ]
 }
