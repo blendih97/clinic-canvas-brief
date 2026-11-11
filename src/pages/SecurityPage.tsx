@@ -8,7 +8,7 @@ const SecurityPage = () => {
   const sections = [
     {
       title: "Encryption at rest and in transit",
-      body: "All medical documents are encrypted with AES-256 in storage and TLS 1.3 in transit. Access is isolated per user through row-level security. Only RinVita administrators can reach the systems that hold records, using two-step sign-in, and only to support you or meet a legal obligation. We do not currently offer end-to-end (zero-knowledge) encryption — our AI translation and extraction features require documents to be processed on secure server infrastructure.",
+      body: "All medical documents are encrypted with AES-256 in storage and TLS 1.3 in transit. Access is isolated per user through row-level security. Only RinVita administrators can reach the systems that hold records, and only to support you or meet a legal obligation. We do not currently offer end-to-end (zero-knowledge) encryption — our AI translation and extraction features require documents to be processed on secure server infrastructure.",
     },
     {
       title: "Encrypted storage with UK GDPR-compliant providers",
