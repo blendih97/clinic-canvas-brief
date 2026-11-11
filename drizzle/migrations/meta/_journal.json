@@ -134,6 +134,13 @@
       "when": 1794317140793,
       "tag": "0018_demo_link_branding",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1794403088547,
+      "tag": "0019_signup_protection",
+      "breakpoints": true
     }
   ]
 }
