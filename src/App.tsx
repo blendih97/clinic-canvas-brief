@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes, Navigate, useLocation } from "react-router-dom";
 import { Suspense, lazy, useEffect } from "react";
 import { initMetaPixel, trackPageView } from "@/lib/metaPixel";
+import { isAutomatedBrowser } from "@/lib/automation";
 import { usePageTracking } from "@/hooks/usePageTracking";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
@@ -177,8 +178,9 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
 const MetaPixelTracker = () => {
   const location = useLocation();
   usePageTracking();
-  useEffect(() => { initMetaPixel(); }, []);
-  useEffect(() => { trackPageView(); }, [location.pathname]);
+  // Automated browsers are kept out of ad and analytics data.
+  useEffect(() => { if (!isAutomatedBrowser()) initMetaPixel(); }, []);
+  useEffect(() => { if (!isAutomatedBrowser()) trackPageView(); }, [location.pathname]);
   // Persist UTM params across the session so downstream events (form submit,
   // funnel steps) can be attributed to the campaign that brought the visitor in.
   useEffect(() => {

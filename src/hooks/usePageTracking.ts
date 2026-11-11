@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { isAutomatedBrowser } from "@/lib/automation";
 
 const SESSION_KEY = "rv_session_id";
 
@@ -23,6 +24,8 @@ export function usePageTracking() {
   useEffect(() => {
     // Skip noisy/internal paths
     if (location.pathname.startsWith("/admin") || location.pathname.startsWith("/preview/")) return;
+    // Test robots and headless browsers are not visitors.
+    if (isAutomatedBrowser()) return;
 
     const track = async () => {
       try {

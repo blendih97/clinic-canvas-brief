@@ -14,6 +14,7 @@ import SEO from "@/components/SEO";
 import { capturePartnerParams, partnerAuthParams, isValidSlug, isValidToken, readPendingPartner, savePendingPartner } from "@/lib/partners";
 import { signupError, signupPlanCopy, strongPassword } from "@/lib/onboarding";
 import { recordFunnel } from "@/lib/funnel";
+import { isAutomatedBrowser, isBlockedEmail } from "@/lib/automation";
 
 interface SignupPartner { name: string; slug: string; logo_url: string | null; type: string }
 
@@ -33,6 +34,10 @@ const AuthPage = () => {
   const [signupPartner, setSignupPartner] = useState<SignupPartner | null>(null);
   const [partnerLoading, setPartnerLoading] = useState(false);
   const [inlineError, setInlineError] = useState<string | null>(null);
+  // Sign-up guard: a hidden field people never see (robots fill it in) and the time the form appeared.
+  const [website, setWebsite] = useState("");
+  const formShownAt = useRef(Date.now());
+  useEffect(() => { if (mode === "signup") formShownAt.current = Date.now(); }, [mode]);
 
   useEffect(() => {
     capturePartnerParams(searchParams.toString());
@@ -127,6 +132,21 @@ const AuthPage = () => {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     recordFunnel("signup_submitted", checkoutPlan);
+    // Automated sign-ups: test robots, headless browsers, a filled hidden field, or a form
+    // submitted faster than a person can type. They get a generic message and no account.
+    const tooFast = Date.now() - formShownAt.current < 2500;
+    if (website || isAutomatedBrowser() || tooFast) {
+      setInlineError(tooFast && !website && !isAutomatedBrowser()
+        ? "Please check your details and try again."
+        : "We couldn't create your account. Please try again.");
+      recordFunnel("signup_error", checkoutPlan, "blocked_bot");
+      return;
+    }
+    if (isBlockedEmail(email)) {
+      setInlineError("Please use your own personal or work email address.");
+      recordFunnel("signup_error", checkoutPlan, "blocked_email");
+      return;
+    }
     if (!email || !password) {
       setInlineError(t("auth.completeAccountFields"));
       recordFunnel("signup_error", checkoutPlan, "missing_fields");
@@ -340,6 +360,10 @@ const AuthPage = () => {
                 </form>
               ) : (
                 <form onSubmit={handleSignUp} className="space-y-4">
+                  {/* Hidden from people and screen readers; automated sign-ups fill it in. */}
+                  <div aria-hidden="true" style={{ position: "absolute", left: "-10000px", width: 1, height: 1, overflow: "hidden" }}>
+                    <label>Website<input type="text" name="website" tabIndex={-1} autoComplete="off" value={website} onChange={(e) => setWebsite(e.target.value)} /></label>
+                  </div>
                   <p className="text-[11px] text-muted-foreground">{t("signupPage.takes30")}</p>
                   <div>
                     <label className="text-xs font-medium text-foreground">{t("signupPage.name")} <span className="text-muted-foreground font-normal">{t("signupPage.optional")}</span></label>

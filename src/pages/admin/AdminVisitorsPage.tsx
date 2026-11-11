@@ -26,9 +26,10 @@ const AdminVisitorsPage = () => {
         const since7d = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
         const [recent, last24h, last7d] = await Promise.all([
-          supabase.from("page_views").select("*").order("created_at", { ascending: false }).limit(100),
-          supabase.from("page_views").select("session_id", { count: "exact" }).gte("created_at", since24h),
-          supabase.from("page_views").select("id", { count: "exact", head: true }).gte("created_at", since7d),
+          // Automated browsers recorded before they were filtered out are left out here.
+          supabase.from("page_views").select("*").not("user_agent", "ilike", "%headless%").order("created_at", { ascending: false }).limit(100),
+          supabase.from("page_views").select("session_id", { count: "exact" }).not("user_agent", "ilike", "%headless%").gte("created_at", since24h),
+          supabase.from("page_views").select("id", { count: "exact", head: true }).not("user_agent", "ilike", "%headless%").gte("created_at", since7d),
         ]);
 
         if (recent.data) setViews(recent.data as PageView[]);

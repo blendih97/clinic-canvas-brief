@@ -18,6 +18,10 @@ export function signupError(error: { code?: string; status?: number; message?: s
   if (/already.*registered|user_already_exists|email_exists/i.test(code + " " + error.message)) {
     return { code: "email_exists", message: "Check your email to continue, or sign in if you already have an account." };
   }
+  // The database refuses throwaway and test inboxes; Supabase reports that as a generic database error.
+  if (/database error saving new user|disposable_email/i.test(code + " " + error.message)) {
+    return { code: "blocked_email", message: "Please use your own personal or work email address." };
+  }
   return { code: "other", message: error.message || "We couldn't create your account. Please try again." };
 }
 export function signupPlanCopy(plan: PaidPlan) {
