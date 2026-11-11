@@ -1,3 +1,4 @@
+import { isPrivatePath } from "@/lib/metaPixel";
 // Named funnel-event tracker layered on top of Meta Pixel.
 // All events pull the persisted UTM parameters from sessionStorage so ad
 // attribution and B2B outreach batches can be reconstructed.
@@ -90,7 +91,7 @@ export function trackEvent(event: FunnelEvent, extra: Record<string, unknown> = 
     // eslint-disable-next-line no-console
     if (import.meta.env.DEV) console.debug("[analytics]", event, payload);
     const fbq = (window as any).fbq;
-    if (typeof fbq === "function") {
+    if (typeof fbq === "function" && !isPrivatePath(window.location.pathname)) {
       fbq("trackCustom", event, payload);
     }
   } catch {

@@ -18,3 +18,13 @@ describe("sign-up protection", () => {
     expect(funnelFields("signup_error", null, "blocked_bot")._error_code).toBe("blocked_bot");
   });
 });
+
+import { isPrivatePath } from "@/lib/metaPixel";
+describe("Meta Pixel stays off private pages", () => {
+  it("blocks patient, doctor, partner and admin pages", () => {
+    for (const p of ["/app", "/app/settings", "/share/abc", "/upload-request/x", "/media-share/x", "/partner", "/admin/visitors", "/demo/kixa"]) expect(isPrivatePath(p)).toBe(true);
+  });
+  it("allows public marketing pages", () => {
+    for (const p of ["/", "/pricing", "/auth", "/demo", "/for-clinics", "/translate/spanish", "/p/kixa", "/partners", "/privacy"]) expect(isPrivatePath(p)).toBe(false);
+  });
+});
