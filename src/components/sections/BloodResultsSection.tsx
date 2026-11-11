@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { getBloodInsight } from "@/lib/insights";
 import MedicalDisclaimer from "@/components/MedicalDisclaimer";
 import { displayRange, TYPICAL_NOTE, statusForStorage, outsideRange, typicalRange } from "@/lib/referenceRanges";
+import { resultStatusLabel, imagingStatusLabel } from "@/lib/resultLabels";
 
 const outsideTypical = (r: any) => { const t = displayRange(r)?.typical ? typicalRange(r.marker, r.unit) : null; return t ? outsideRange(Number(r.value), t) : null; };
 
@@ -201,7 +202,7 @@ const BloodResultsSection = ({ pinnedIds, onTogglePin }: BloodResultsSectionProp
                         {panel.results.length} marker{panel.results.length !== 1 ? "s" : ""}
                         {flaggedCount > 0 && (
                           <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
-                            {flaggedCount} flagged
+                            {flaggedCount} outside range
                           </span>
                         )}
                       </p>
@@ -226,7 +227,7 @@ const BloodResultsSection = ({ pinnedIds, onTogglePin }: BloodResultsSectionProp
                             <p className="text-sm text-foreground">{r.value} <span className="text-xs text-muted-foreground">{r.unit}</span></p>
                             <RangeText r={r} sex={sex} />
                           </div>
-                          <span className={`text-[10px] px-2 py-0.5 rounded-full border ${statusColors[r.status].badge}`}>{r.status}</span>
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full border ${statusColors[r.status].badge}`}>{resultStatusLabel(r.status)}</span>
                           {onTogglePin && (
                             <button onClick={() => onTogglePin(r.id)} className={`p-1 rounded hover:bg-muted ${pinnedIds?.has(r.id) ? "text-primary" : "text-muted-foreground/50"}`}>
                               <Pin className="w-3 h-3" />
@@ -296,7 +297,7 @@ const BloodResultsSection = ({ pinnedIds, onTogglePin }: BloodResultsSectionProp
                       </button>
                     )}
                     <span className={`text-[10px] px-2 py-0.5 rounded-full border ${statusColors[r.status].badge}`}>
-                      {r.status}
+                      {resultStatusLabel(r.status)}
                     </span>
                   </div>
                 </div>
@@ -372,7 +373,7 @@ const BloodResultsSection = ({ pinnedIds, onTogglePin }: BloodResultsSectionProp
                       <td className="p-4 text-sm text-foreground font-medium">{r.marker}</td>
                       <td className="p-4 text-sm text-foreground">{r.value} <span className="text-muted-foreground text-xs">{r.unit}</span></td>
                       <td className="p-4"><RangeText r={r} sex={sex} className="text-xs text-muted-foreground" /></td>
-                      <td className="p-4"><span className={`text-[10px] px-2 py-0.5 rounded-full border ${statusColors[r.status].badge}`}>{r.status}</span></td>
+                      <td className="p-4"><span className={`text-[10px] px-2 py-0.5 rounded-full border ${statusColors[r.status].badge}`}>{resultStatusLabel(r.status)}</span></td>
                       <td className="p-4"><Sparkline data={r.trend} status={r.status} /></td>
                       <td className="p-4 text-[11px] text-muted-foreground italic max-w-[200px]">{getBloodInsight(r.status, r.trend, !!displayRange(r)?.typical, outsideTypical(r))}</td>
                       <td className="p-4 text-xs text-muted-foreground">{r.date}</td>

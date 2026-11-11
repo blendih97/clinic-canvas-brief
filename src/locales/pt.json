@@ -361,5 +361,13 @@
 "settingsData.delete": "Eliminar a minha conta e todos os dados",
 "settingsData.deleteSub": "Permanente e irreversível.",
 "partnerSignup.title": "Crie a sua conta de parceiro",
-"partnerSignup.body": "Registe-se com o endereço de e-mail para o qual o convite foi enviado e, em seguida, confirme-o. Será redirecionado diretamente para a sua página de parceiro."
+"partnerSignup.body": "Registe-se com o endereço de e-mail para o qual o convite foi enviado e, em seguida, confirme-o. Será redirecionado diretamente para a sua página de parceiro.",
+"healthConsent.tick": "Autorizo a RinVita a armazenar e tratar as minhas informações de saúde, incluindo a leitura e tradução dos meus documentos com IA, para prestar este serviço. Posso retirar o meu consentimento a qualquer momento eliminando a minha conta.",
+"healthConsent.required": "Marque a caixa para concordar com a forma como a RinVita usa as suas informações de saúde.",
+"healthConsent.promptTitle": "O seu consentimento para guardar os seus registos de saúde",
+"healthConsent.promptBody": "A lei exige o seu consentimento explícito para informações de saúde. Confirme abaixo para que a RinVita possa continuar a guardar, traduzir e partilhar os seus registos como pedir. Nada mais muda.",
+"healthConsent.continue": "Continuar",
+"healthConsent.signOut": "Terminar sessão",
+"healthConsent.settingsNote": "Prefere não o fazer? Pode transferir ou eliminar os seus registos nas Definições.",
+"healthConsent.saveError": "Não foi possível guardar o seu consentimento. Tente novamente."
 }

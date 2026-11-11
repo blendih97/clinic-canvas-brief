@@ -358,6 +358,16 @@ export const baseDictionary: Record<"en" | "ar", TranslationMap> = {
       successToast: "Imaging request sent to {{provider}}",
       errorToast: "Failed to send request. Please try again."
     },
+    healthConsent: {
+      tick: "I consent to RinVita storing and processing my health information, including reading and translating my documents with AI, to provide this service. I can withdraw my consent at any time by deleting my account.",
+      required: "Please tick the box to agree to how RinVita uses your health information.",
+      promptTitle: "Your consent to keep your health records",
+      promptBody: "Health information needs your explicit consent by law. Please confirm below so RinVita can keep storing, translating and sharing your records as you ask. Nothing else changes.",
+      continue: "Continue",
+      signOut: "Sign out",
+      settingsNote: "Prefer not to? You can download or delete your records in Settings.",
+      saveError: "We couldn't save your consent. Please try again.",
+    },
     signupPage: {
       invitedBy: "Invited by {{name}} · full access included",
       loadingInvitation: "Loading your invitation…",
@@ -751,6 +761,16 @@ export const baseDictionary: Record<"en" | "ar", TranslationMap> = {
       sending: "جارٍ الإرسال…",
       successToast: "تم إرسال طلب التصوير إلى {{provider}}",
       errorToast: "تعذر إرسال الطلب. يرجى المحاولة مرة أخرى."
+    },
+    healthConsent: {
+      tick: "أوافق على أن تقوم RinVita بتخزين ومعالجة معلوماتي الصحية، بما في ذلك قراءة مستنداتي وترجمتها باستخدام الذكاء الاصطناعي، لتقديم هذه الخدمة. يمكنني سحب موافقتي في أي وقت بحذف حسابي.",
+      required: "يرجى وضع علامة في المربع للموافقة على كيفية استخدام RinVita لمعلوماتك الصحية.",
+      promptTitle: "موافقتك على الاحتفاظ بسجلاتك الصحية",
+      promptBody: "يتطلب القانون موافقتك الصريحة على المعلومات الصحية. يرجى التأكيد أدناه حتى تتمكن RinVita من مواصلة تخزين سجلاتك وترجمتها ومشاركتها كما تطلب. لن يتغير أي شيء آخر.",
+      continue: "متابعة",
+      signOut: "تسجيل الخروج",
+      settingsNote: "لا ترغب في ذلك؟ يمكنك تنزيل سجلاتك أو حذفها من الإعدادات.",
+      saveError: "تعذّر حفظ موافقتك. يرجى المحاولة مرة أخرى.",
     },
     signupPage: {
       invitedBy: "بدعوة من {{name}} · وصول كامل مشمول",

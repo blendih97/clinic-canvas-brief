@@ -8,7 +8,7 @@ const SecurityPage = () => {
   const sections = [
     {
       title: "Encryption at rest and in transit",
-      body: "All medical documents are encrypted with AES-256 in storage and TLS 1.3 in transit. Access is isolated per user through row-level security, and no RinVita employee can read your documents without an explicit, logged access grant from you. We do not currently offer end-to-end (zero-knowledge) encryption — our AI translation and extraction features require documents to be processed on secure server infrastructure.",
+      body: "All medical documents are encrypted with AES-256 in storage and TLS 1.3 in transit. Access is isolated per user through row-level security. Only RinVita administrators can reach the systems that hold records, using two-step sign-in, and only to support you or meet a legal obligation. We do not currently offer end-to-end (zero-knowledge) encryption — our AI translation and extraction features require documents to be processed on secure server infrastructure.",
     },
     {
       title: "Encrypted storage with UK GDPR-compliant providers",
@@ -23,18 +23,18 @@ const SecurityPage = () => {
       body: "We never replace your records. Every AI translation and structured summary keeps the original document one click away. AI-generated content is visibly marked throughout the app.",
     },
     {
-      title: "Audit logging",
-      body: "Every record access, share-link generation, and data export is logged with a timestamp and actor. You can download your full audit trail at any time from Settings.",
+      title: "Sharing you control",
+      body: "Doctors see your records through secure links you create. Links are view only, so documents and scans cannot be downloaded from them, and they expire automatically. Doctors accept access terms before viewing, and that acceptance is recorded. You can revoke any link at any time.",
     },
     {
       title: "Your rights",
-      body: "Export every byte of your data (Article 15). Delete your account and all associated records, irreversibly, in one click. Revoke any active share link at any time. We respond to data subject requests within 30 days.",
+      body: "Download your health data, original documents and scans at any time (Article 15). Delete your account and all associated records, irreversibly, in one click. Revoke any active share link at any time. We respond to data subject requests within 30 days.",
     },
   ];
 
   return (
     <div className="marketing-page" style={{ background: marketingColors.cream, color: marketingColors.ink }}>
-      <SEO title="Security & Trust — RinVita" description="AES-256 encryption at rest, TLS 1.3 in transit, UK GDPR-compliant providers, ICO registered, full audit logging. How RinVita protects your medical data." path="/security" />
+      <SEO title="Security & Trust — RinVita" description="AES-256 encryption at rest, TLS 1.3 in transit, UK GDPR-compliant providers, ICO registered, view-only sharing you control. How RinVita protects your medical data." path="/security" />
       <MarketingStyles />
       <MarketingNav />
       <section style={{ padding: `${isMobile ? 100 : 140}px ${paddingX}px ${isMobile ? 56 : 80}px`, background: marketingColors.cream }}>

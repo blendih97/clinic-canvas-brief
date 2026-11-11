@@ -36,6 +36,8 @@ const AuthPage = () => {
   const [inlineError, setInlineError] = useState<string | null>(null);
   // Sign-up guard: a hidden field people never see (robots fill it in) and the time the form appeared.
   const [website, setWebsite] = useState("");
+  // Explicit consent to processing health information (UK/EU GDPR Art. 9, Mexico, US state laws).
+  const [healthConsent, setHealthConsent] = useState(false);
   const formShownAt = useRef(Date.now());
   useEffect(() => { if (mode === "signup") formShownAt.current = Date.now(); }, [mode]);
 
@@ -157,6 +159,11 @@ const AuthPage = () => {
       recordFunnel("signup_error", checkoutPlan, "too_short");
       return;
     }
+    if (!healthConsent) {
+      setInlineError(t("healthConsent.required"));
+      recordFunnel("signup_error", checkoutPlan, "missing_fields");
+      return;
+    }
 
     // Funnel: trial signup started (fires once per submit attempt)
     try {
@@ -172,6 +179,8 @@ const AuthPage = () => {
     const { error, session } = await signUp(normalizedEmail, password, {
       full_name: derivedName,
       terms_consent_at: consentTime,
+      health_data_consent: "true",
+      health_data_consent_timestamp: consentTime,
       preferred_ui_language: locale,
       preferred_translation_language: locale,
       ...(checkoutPlan ? { plan_intent: checkoutPlan } : {}),
@@ -394,6 +403,13 @@ const AuthPage = () => {
                     <p id="signup-password-hint" className="text-xs mt-2 text-muted-foreground">{t("signupPage.passwordHint")}</p>
                     {strongPassword(password) && <p className="text-xs mt-1 text-foreground">Strong</p>}
                   </div>
+
+                  <label className="flex items-start gap-2.5 text-xs leading-relaxed text-foreground cursor-pointer">
+                    <input type="checkbox" required checked={healthConsent} data-testid="health-consent"
+                      onChange={(e) => { setHealthConsent(e.target.checked); setInlineError(null); }}
+                      className="mt-0.5 h-4 w-4 shrink-0 accent-[hsl(var(--primary))]" />
+                    <span>{t("healthConsent.tick")}</span>
+                  </label>
 
                   <button type="submit" disabled={loading}
                     className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50">

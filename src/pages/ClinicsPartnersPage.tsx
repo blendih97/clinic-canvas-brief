@@ -100,7 +100,7 @@ const ClinicsPartnersPage = () => {
 
   const whatYouGet = [
     "Faster consultations — patients arrive with their history already organised and translated.",
-    "Reduced clinical risk — flagged out-of-range values and medication conflicts surfaced up front.",
+    "Less time chasing records: out-of-range values, current medications and allergies shown up front, exactly as the reports state them.",
     "Patients arrive prepared — labs, scans and prescriptions ready to discuss, not chase.",
     "Premium patient experience — a tangible, branded record of their care they can take anywhere.",
   ];

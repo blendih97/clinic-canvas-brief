@@ -8,6 +8,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useRef } from "react";
 import { retryDocument, FRIENDLY_FAILURE_MESSAGE } from "@/lib/documentRetry";
 import { useAuth } from "@/hooks/useAuth";
+import { resultStatusLabel, imagingStatusLabel } from "@/lib/resultLabels";
 
 
 interface Props {
@@ -529,7 +530,7 @@ const DocumentViewerModal = ({ document: docProp, onClose, onShare }: Props) => 
                                   b.status === "critical" ? "bg-destructive/10 text-destructive border-destructive/20" :
                                   b.status === "flagged" ? "bg-primary/10 text-primary border-primary/20" :
                                   "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-                                }`}>{b.status}</span>
+                                }`}>{resultStatusLabel(b.status)}</span>
                               </td>
                             </tr>
                           ))}

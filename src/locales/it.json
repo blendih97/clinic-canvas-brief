@@ -361,5 +361,13 @@
 "settingsData.delete": "Elimina il mio account e tutti i dati",
 "settingsData.deleteSub": "Permanente e irreversibile.",
 "partnerSignup.title": "Crea il tuo account partner",
-"partnerSignup.body": "Registrati con l'indirizzo email a cui è stato inviato il tuo invito, quindi confermalo. Accederai direttamente alla tua pagina partner."
+"partnerSignup.body": "Registrati con l'indirizzo email a cui è stato inviato il tuo invito, quindi confermalo. Accederai direttamente alla tua pagina partner.",
+"healthConsent.tick": "Acconsento a che RinVita conservi e tratti le mie informazioni sanitarie, compresa la lettura e la traduzione dei miei documenti con l'IA, per fornire questo servizio. Posso revocare il consenso in qualsiasi momento eliminando il mio account.",
+"healthConsent.required": "Seleziona la casella per accettare come RinVita utilizza le tue informazioni sanitarie.",
+"healthConsent.promptTitle": "Il tuo consenso a conservare la tua documentazione sanitaria",
+"healthConsent.promptBody": "Per le informazioni sanitarie la legge richiede il tuo consenso esplicito. Conferma qui sotto perché RinVita possa continuare a conservare, tradurre e condividere la tua documentazione come richiedi. Nient'altro cambia.",
+"healthConsent.continue": "Continua",
+"healthConsent.signOut": "Esci",
+"healthConsent.settingsNote": "Preferisci di no? Puoi scaricare o eliminare la tua documentazione nelle Impostazioni.",
+"healthConsent.saveError": "Non è stato possibile salvare il tuo consenso. Riprova."
 }

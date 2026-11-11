@@ -26,7 +26,7 @@ describe("reference ranges", () => {
     expect(rangeForStorage("Mystery", "U/L", null)).toBeNull();
   });
   it("explains a lab flag that a typical range would not explain", () => {
-    expect(getBloodInsight("flagged", [], true)).toMatch(/laboratory marked this result as abnormal/);
+    expect(getBloodInsight("flagged", [], true)).toMatch(/marks this result as outside the laboratory.s own reference range/);
     expect(getBloodInsight("normal", [], true)).toBe("Your laboratory did not flag this result.");
   });
   it("edge-function copy is identical", () => {

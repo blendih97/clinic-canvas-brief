@@ -28,3 +28,23 @@ describe("Meta Pixel stays off private pages", () => {
     for (const p of ["/", "/pricing", "/auth", "/demo", "/for-clinics", "/translate/spanish", "/p/kixa", "/partners", "/privacy"]) expect(isPrivatePath(p)).toBe(false);
   });
 });
+
+import { needsHealthConsent } from "@/components/HealthConsentGate";
+import { resultStatusLabel, imagingStatusLabel } from "@/lib/resultLabels";
+describe("health data consent", () => {
+  it("asks patients without recorded consent, except in Settings", () => {
+    expect(needsHealthConsent({ health_data_consent: false }, "/app")).toBe(true);
+    expect(needsHealthConsent({ health_data_consent: null }, "/app/profile")).toBe(true);
+    expect(needsHealthConsent({ health_data_consent: false }, "/app/settings")).toBe(false);
+    expect(needsHealthConsent({ health_data_consent: true }, "/app")).toBe(false);
+    expect(needsHealthConsent(null, "/app")).toBe(false);
+  });
+});
+describe("result wording describes the report", () => {
+  it("uses range wording, not clinical judgement", () => {
+    expect(resultStatusLabel("critical")).toBe("Well outside range");
+    expect(resultStatusLabel("flagged")).toBe("Outside range");
+    expect(resultStatusLabel("normal")).toBe("In range");
+    expect(imagingStatusLabel("flagged")).toBe("Abnormal on report");
+  });
+});

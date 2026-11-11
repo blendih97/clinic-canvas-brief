@@ -144,7 +144,7 @@ function PassportContents() {
   const { isMobile, isTablet } = useMarketingBreakpoint();
   const cards = [
     { title: "Original documents", body: "Every source file stored and ready to review, side by side with its translation where needed.", preview: <div className="text-xs leading-relaxed"><div className="grid grid-cols-2 gap-3 border-b border-border pb-3"><div><div className="mb-2 text-muted-foreground">Original · French</div><div>{sampleParis?.originalTitle}</div><div className="mt-2">{sampleParis?.originalSnippet[3]}</div></div><div><div className="mb-2 text-muted-foreground">English translation</div><div>{sampleParis?.translatedTitle}</div><div className="mt-2">Uncomplicated acute appendicitis.</div></div></div><SampleSource doc={sampleParis} /></div> },
-    { title: "Lab results, tracked over time", body: "Values, units and reference ranges. Abnormal results flagged, with trends across countries.", preview: <LabPreview /> },
+    { title: "Lab results, tracked over time", body: "Values, units and reference ranges, with results outside their range highlighted and trends across countries.", preview: <LabPreview /> },
     { title: "Medications", body: "Current and past medications, dose, frequency, prescriber and country — where recorded.", preview: <MedicationPreview /> },
     { title: "Allergies and alerts", body: "Shown first, every time. Missing information stays visibly missing.", preview: <div className="text-xs leading-relaxed"><div className="border-l-2 border-destructive pl-3 text-destructive"><strong>Allergies: not documented</strong><div>Confirm with the patient; absence of a record is not confirmation of no allergies.</div></div><div className="mt-4 font-medium">Recorded alert · Dubai</div><div>{sampleDubai?.flags?.[0]?.label}</div><SampleSource doc={sampleDubai} /></div> },
     { title: "Imaging reports", body: "MRI, CT, X-ray and ultrasound reports, with originals attached and translated automatically where needed. This sample includes an echocardiogram.", preview: <ImagingPreview /> },
@@ -184,7 +184,7 @@ function DoctorBrief() {
         <div className="divide-y divide-border text-xs leading-relaxed">
           <div className="pb-4 text-destructive"><h3 className="mb-1 font-semibold">Allergies & alerts</h3><p>Allergies not documented — confirm with patient.</p><p className="mt-2">{sampleDubai?.flags?.[0]?.label}</p><SampleSource doc={sampleDubai} /></div>
           <div className="py-4"><h3 className="mb-2 font-semibold">Active medications</h3><p>Current medication list not documented in this sample.</p><p className="mt-2">Past: {sampleParis?.medications?.[0]?.name} · {sampleParis?.medications?.[0]?.dose} · {sampleParis?.medications?.[0]?.freq}</p><SampleSource doc={sampleParis} /></div>
-          <div className="py-4"><h3 className="mb-2 font-semibold">Flagged labs & follow-up</h3><p><span className="text-destructive">Ferritin 9 ng/mL ↓</span> (reference 15 – 150) → 38 ng/mL on follow-up.</p><SampleSource doc={sampleDubai} /><SampleSource doc={sampleSingapore} /></div>
+          <div className="py-4"><h3 className="mb-2 font-semibold">Out-of-range labs & follow-up</h3><p><span className="text-destructive">Ferritin 9 ng/mL ↓</span> (reference 15 – 150) → 38 ng/mL on follow-up.</p><SampleSource doc={sampleDubai} /><SampleSource doc={sampleSingapore} /></div>
           <div className="py-4"><h3 className="mb-2 font-semibold">Recent imaging</h3><ImagingPreview /></div>
           <div className="pt-4"><h3 className="mb-2 font-semibold">Visit history</h3><p>Laparoscopic appendectomy · 21 March 2025</p><SampleSource doc={sampleParis} /></div>
         </div>
@@ -526,7 +526,7 @@ function ClinicalSafety() {
     {
       icon: "🔒",
       title: "Your records, not ours",
-      body: "Your medical history is encrypted with AES-256 at rest and TLS 1.3 in transit, isolated per user with row-level security. No RinVita employee can read your documents without an explicit, logged access grant from you. You can delete everything anytime.",
+      body: "Your medical history is encrypted with AES-256 at rest and TLS 1.3 in transit, isolated per user with row-level security. Only you decide who sees your records, through view-only links you can revoke, and you can delete everything at any time.",
     },
     {
       icon: "📄",

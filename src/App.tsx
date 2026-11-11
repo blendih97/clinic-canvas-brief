@@ -3,6 +3,8 @@ import { BrowserRouter, Route, Routes, Navigate, useLocation } from "react-route
 import { Suspense, lazy, useEffect } from "react";
 import { initMetaPixel, trackPageView } from "@/lib/metaPixel";
 import { isAutomatedBrowser } from "@/lib/automation";
+import HealthConsentGate from "@/components/HealthConsentGate";
+import AdminMfaGate from "@/components/admin/AdminMfaGate";
 import { usePageTracking } from "@/hooks/usePageTracking";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
@@ -104,7 +106,7 @@ const PatientAppGuard = ({ children }: { children: React.ReactNode }) => {
   if (access.isPartner && (!access.hasOwnRecords || (!wantsRecords && !partnerChoseRecords()))) {
     return <Navigate to="/partner" replace />;
   }
-  return <>{children}</>;
+  return <HealthConsentGate>{children}</HealthConsentGate>;
 };
 
 const AuthRoute = ({ children }: { children: React.ReactNode }) => {
@@ -172,7 +174,7 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  return <>{children}</>;
+  return <AdminMfaGate>{children}</AdminMfaGate>;
 };
 
 const MetaPixelTracker = () => {

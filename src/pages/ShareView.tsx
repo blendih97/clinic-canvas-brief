@@ -6,6 +6,7 @@ import SharedDocuments, { type SharedDoc } from "@/components/share/SharedDocume
 import SharedScans, { type SharedStudy } from "@/components/share/SharedScans";
 import { Shield, Clock, AlertTriangle, Pill, Droplets, ScanLine, Globe } from "lucide-react";
 import { SHARE_GATE_LANGUAGES, findShareGateLanguage, initialShareGateLanguage, saveShareGateLanguage } from "@/components/share/shareGateText";
+import { resultStatusLabel, imagingStatusLabel } from "@/lib/resultLabels";
 
 export interface SharedBrief {
   token: string;
@@ -294,7 +295,7 @@ const ShareView = ({ demo }: { demo?: ShareViewDemo } = {}) => {
                           b.status === "critical" ? "bg-destructive/10 text-destructive border-destructive/20" :
                           b.status === "flagged" ? "bg-primary/10 text-primary border-primary/20" :
                           "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-                        }`}>{b.status}</span>
+                        }`}>{resultStatusLabel(b.status)}</span>
                       </td>
                     </tr>
                       ))}

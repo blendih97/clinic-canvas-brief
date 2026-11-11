@@ -9,6 +9,7 @@ import { dedupeImaging } from "@/lib/visitDedupe";
 import MedicalDisclaimer from "@/components/MedicalDisclaimer";
 import RequestImagingModal from "@/components/RequestImagingModal";
 import { toast } from "sonner";
+import { resultStatusLabel, imagingStatusLabel } from "@/lib/resultLabels";
 
 const statusBadge = {
   normal: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
@@ -131,7 +132,7 @@ const ImagingSection = () => {
                 <span className="text-xs font-medium text-foreground">{r.type} — {r.region}</span>
                 <span className={`text-[10px] px-2 py-0.5 rounded-full border ${statusBadge[r.status]}`}>
                   {r.status === "flagged" ? <AlertTriangle className="w-3 h-3 inline mr-1" /> : <CheckCircle className="w-3 h-3 inline mr-1" />}
-                  {r.status}
+                  {imagingStatusLabel(r.status)}
                 </span>
               </div>
               <p className="text-[10px] text-muted-foreground">{r.facility} · {r.date}</p>

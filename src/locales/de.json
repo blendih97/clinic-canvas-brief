@@ -362,5 +362,13 @@
 "settingsData.delete": "Mein Konto und alle Daten löschen",
 "settingsData.deleteSub": "Dauerhaft und unwiderruflich.",
 "partnerSignup.title": "Erstellen Sie Ihr Partnerkonto",
-"partnerSignup.body": "Registrieren Sie sich mit der E-Mail-Adresse, an die Ihre Einladung gesendet wurde, und bestätigen Sie diese anschließend. Danach gelangen Sie direkt zu Ihrer Partnerseite."
+"partnerSignup.body": "Registrieren Sie sich mit der E-Mail-Adresse, an die Ihre Einladung gesendet wurde, und bestätigen Sie diese anschließend. Danach gelangen Sie direkt zu Ihrer Partnerseite.",
+"healthConsent.tick": "Ich willige ein, dass RinVita meine Gesundheitsdaten speichert und verarbeitet, einschließlich des Lesens und Übersetzens meiner Dokumente mit KI, um diesen Dienst zu erbringen. Ich kann meine Einwilligung jederzeit widerrufen, indem ich mein Konto lösche.",
+"healthConsent.required": "Bitte setzen Sie das Häkchen, um der Verwendung Ihrer Gesundheitsdaten durch RinVita zuzustimmen.",
+"healthConsent.promptTitle": "Ihre Einwilligung zur Aufbewahrung Ihrer Gesundheitsunterlagen",
+"healthConsent.promptBody": "Für Gesundheitsdaten ist gesetzlich Ihre ausdrückliche Einwilligung erforderlich. Bitte bestätigen Sie unten, damit RinVita Ihre Unterlagen weiterhin wie gewünscht speichern, übersetzen und teilen kann. Sonst ändert sich nichts.",
+"healthConsent.continue": "Weiter",
+"healthConsent.signOut": "Abmelden",
+"healthConsent.settingsNote": "Lieber nicht? Sie können Ihre Unterlagen in den Einstellungen herunterladen oder löschen.",
+"healthConsent.saveError": "Ihre Einwilligung konnte nicht gespeichert werden. Bitte versuchen Sie es erneut."
 }
