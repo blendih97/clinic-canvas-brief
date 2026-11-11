@@ -363,12 +363,12 @@
 "settingsData.deleteSub": "Kalıcı ve geri alınamaz.",
 "partnerSignup.title": "Partner hesabınızı oluşturun",
 "partnerSignup.body": "Davetiyenizin gönderildiği e-posta adresiyle kaydolun, ardından adresi doğrulayın. Doğrudan partner sayfanıza yönlendirileceksiniz.",
-"healthConsent.tick": "RinVita'nın bu hizmeti sunmak için sağlık bilgilerimi saklamasına ve işlemesine, belgelerimin yapay zekâ ile okunması ve çevrilmesi dahil, onay veriyorum. Hesabımı silerek onayımı istediğim zaman geri çekebilirim.",
-"healthConsent.required": "RinVita'nın sağlık bilgilerinizi nasıl kullandığını kabul etmek için kutuyu işaretleyin.",
-"healthConsent.promptTitle": "Sağlık kayıtlarınızın saklanması için onayınız",
-"healthConsent.promptBody": "Sağlık bilgileri için yasa gereği açık onayınız gerekir. RinVita'nın kayıtlarınızı istediğiniz şekilde saklamaya, çevirmeye ve paylaşmaya devam edebilmesi için lütfen aşağıda onaylayın. Başka hiçbir şey değişmez.",
-"healthConsent.continue": "Devam",
+"healthConsent.tick": "RinVita'nın sağlık kayıtlarımı güvenle saklamasını ve benim için çevirmesini kabul ediyorum.",
+"healthConsent.required": "Kayıtlarınızı saklayabilmemiz için lütfen kutuyu işaretleyin.",
+"healthConsent.promptTitle": "Kısa bir şey",
+"healthConsent.promptBody": "Kayıtlarınızı saklamaya devam etmemizi onaylamak için işaretleyin.",
+"healthConsent.continue": "Onayla",
 "healthConsent.signOut": "Çıkış yap",
-"healthConsent.settingsNote": "İstemiyor musunuz? Kayıtlarınızı Ayarlar'dan indirebilir veya silebilirsiniz.",
-"healthConsent.saveError": "Onayınız kaydedilemedi. Lütfen tekrar deneyin."
+"healthConsent.settingsNote": "Gizlilik Politikası",
+"healthConsent.saveError": "Kaydedilemedi. Lütfen tekrar deneyin."
 }

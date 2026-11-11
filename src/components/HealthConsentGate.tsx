@@ -1,10 +1,9 @@
-// Patients must give explicit consent before RinVita stores and processes their health
-// information. People who signed up before the sign-up tick box existed (or through Google)
-// are asked once here; the consent time is recorded by the database, not the browser.
-// Settings stays reachable so someone who doesn't agree can download or delete their records.
+// Patients confirm they're happy for RinVita to store their health records (explicit consent
+// for health data). New patients tick a box at sign-up. People who signed up before that box
+// existed, or through Google, see a small card in the corner of the app until they confirm.
+// It doesn't block the app. The consent time is recorded by the database, not the browser.
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useLocale } from "@/hooks/useLocale";
@@ -14,16 +13,16 @@ export function needsHealthConsent(profile: { health_data_consent?: boolean | nu
 }
 
 export default function HealthConsentGate({ children }: { children: React.ReactNode }) {
-  const { profile, refreshProfile, signOut } = useAuth();
+  const { profile, refreshProfile } = useAuth();
   const { t } = useLocale();
   const { pathname } = useLocation();
   const [ticked, setTicked] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  if (!needsHealthConsent(profile as never, pathname)) return <>{children}</>;
+  const show = needsHealthConsent(profile as never, pathname);
 
-  const agree = async () => {
+  const confirm = async () => {
     if (!ticked) { setError(t("healthConsent.required")); return; }
     setSaving(true); setError(null);
     const { error: e } = await supabase.rpc("record_health_data_consent" as never);
@@ -33,26 +32,27 @@ export default function HealthConsentGate({ children }: { children: React.ReactN
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-6" data-testid="health-consent-gate">
-      <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-sm">
-        <ShieldCheck className="w-8 h-8 text-primary" aria-hidden />
-        <h1 className="mt-3 font-heading text-2xl text-foreground">{t("healthConsent.promptTitle")}</h1>
-        <p className="mt-2 text-sm text-muted-foreground">{t("healthConsent.promptBody")}</p>
-        <label className="mt-5 flex items-start gap-2.5 text-sm leading-relaxed text-foreground cursor-pointer">
-          <input type="checkbox" checked={ticked} onChange={(e) => { setTicked(e.target.checked); setError(null); }}
-            className="mt-1 h-4 w-4 shrink-0 accent-[hsl(var(--primary))]" />
-          <span>{t("healthConsent.tick")}</span>
-        </label>
-        {error && <p role="alert" className="mt-3 text-sm text-destructive">{error}</p>}
-        <button type="button" onClick={agree} disabled={saving}
-          className="mt-5 w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
-          {t("healthConsent.continue")}
-        </button>
-        <div className="mt-4 flex items-center justify-between gap-3 text-xs text-muted-foreground">
-          <Link to="/app/settings" className="underline hover:text-foreground">{t("healthConsent.settingsNote")}</Link>
-          <button type="button" onClick={() => signOut()} className="shrink-0 underline hover:text-foreground">{t("healthConsent.signOut")}</button>
+    <>
+      {children}
+      {show && (
+        <div role="region" aria-label={t("healthConsent.promptTitle")} data-testid="health-consent-gate"
+          className="fixed z-40 bottom-4 right-4 left-4 sm:left-auto sm:w-[360px] rounded-xl border border-border bg-card p-4 shadow-lg">
+          <p className="text-sm font-medium text-foreground">{t("healthConsent.promptTitle")}</p>
+          <label className="mt-2 flex items-start gap-2.5 text-sm leading-snug text-foreground cursor-pointer">
+            <input type="checkbox" checked={ticked} onChange={(e) => { setTicked(e.target.checked); setError(null); }}
+              className="mt-0.5 h-4 w-4 shrink-0 accent-[hsl(var(--primary))]" />
+            <span>{t("healthConsent.tick")}</span>
+          </label>
+          {error && <p role="alert" className="mt-2 text-xs text-destructive">{error}</p>}
+          <div className="mt-3 flex items-center justify-between gap-3">
+            <Link to="/privacy" target="_blank" rel="noopener" className="text-xs text-muted-foreground underline hover:text-foreground">{t("healthConsent.settingsNote")}</Link>
+            <button type="button" onClick={confirm} disabled={saving}
+              className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
+              {t("healthConsent.continue")}
+            </button>
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 }

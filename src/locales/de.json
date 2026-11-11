@@ -363,12 +363,12 @@
 "settingsData.deleteSub": "Dauerhaft und unwiderruflich.",
 "partnerSignup.title": "Erstellen Sie Ihr Partnerkonto",
 "partnerSignup.body": "Registrieren Sie sich mit der E-Mail-Adresse, an die Ihre Einladung gesendet wurde, und bestätigen Sie diese anschließend. Danach gelangen Sie direkt zu Ihrer Partnerseite.",
-"healthConsent.tick": "Ich willige ein, dass RinVita meine Gesundheitsdaten speichert und verarbeitet, einschließlich des Lesens und Übersetzens meiner Dokumente mit KI, um diesen Dienst zu erbringen. Ich kann meine Einwilligung jederzeit widerrufen, indem ich mein Konto lösche.",
-"healthConsent.required": "Bitte setzen Sie das Häkchen, um der Verwendung Ihrer Gesundheitsdaten durch RinVita zuzustimmen.",
-"healthConsent.promptTitle": "Ihre Einwilligung zur Aufbewahrung Ihrer Gesundheitsunterlagen",
-"healthConsent.promptBody": "Für Gesundheitsdaten ist gesetzlich Ihre ausdrückliche Einwilligung erforderlich. Bitte bestätigen Sie unten, damit RinVita Ihre Unterlagen weiterhin wie gewünscht speichern, übersetzen und teilen kann. Sonst ändert sich nichts.",
-"healthConsent.continue": "Weiter",
+"healthConsent.tick": "Ich bin einverstanden, dass RinVita meine Gesundheitsunterlagen sicher speichert und für mich übersetzt.",
+"healthConsent.required": "Bitte setzen Sie das Häkchen, damit wir Ihre Unterlagen speichern können.",
+"healthConsent.promptTitle": "Nur eine Kleinigkeit",
+"healthConsent.promptBody": "Bestätigen Sie mit einem Häkchen, dass wir Ihre Unterlagen weiter für Sie speichern dürfen.",
+"healthConsent.continue": "Bestätigen",
 "healthConsent.signOut": "Abmelden",
-"healthConsent.settingsNote": "Lieber nicht? Sie können Ihre Unterlagen in den Einstellungen herunterladen oder löschen.",
-"healthConsent.saveError": "Ihre Einwilligung konnte nicht gespeichert werden. Bitte versuchen Sie es erneut."
+"healthConsent.settingsNote": "Datenschutzerklärung",
+"healthConsent.saveError": "Das wurde nicht gespeichert. Bitte versuchen Sie es erneut."
 }

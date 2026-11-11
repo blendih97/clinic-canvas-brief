@@ -363,12 +363,12 @@
 "settingsData.deleteSub": "E përhershme dhe e pakthyeshme.",
 "partnerSignup.title": "Krijoni llogarinë tuaj të partnerit",
 "partnerSignup.body": "Regjistrohuni me adresën e email-it në të cilën u dërgua ftesa juaj, pastaj konfirmojeni. Do të shkoni drejtpërdrejt te faqja juaj e partnerit.",
-"healthConsent.tick": "Jap pëlqimin që RinVita të ruajë dhe përpunojë informacionin tim shëndetësor, përfshirë leximin dhe përkthimin e dokumenteve të mia me AI, për të ofruar këtë shërbim. Mund ta tërheq pëlqimin në çdo kohë duke fshirë llogarinë time.",
-"healthConsent.required": "Shëno kutinë për të pranuar mënyrën si RinVita përdor informacionin tënd shëndetësor.",
-"healthConsent.promptTitle": "Pëlqimi yt për ruajtjen e të dhënave shëndetësore",
-"healthConsent.promptBody": "Ligji kërkon pëlqimin tënd të shprehur për informacionin shëndetësor. Konfirmo më poshtë që RinVita të vazhdojë të ruajë, përkthejë dhe ndajë të dhënat e tua siç kërkon. Asgjë tjetër nuk ndryshon.",
-"healthConsent.continue": "Vazhdo",
+"healthConsent.tick": "Pranoj që RinVita të ruajë në mënyrë të sigurt të dhënat e mia shëndetësore dhe t'i përkthejë për mua.",
+"healthConsent.required": "Shëno kutinë që të mund t'i ruajmë të dhënat e tua.",
+"healthConsent.promptTitle": "Një gjë e shpejtë",
+"healthConsent.promptBody": "Shëno për të konfirmuar që mund të vazhdojmë t'i ruajmë të dhënat e tua.",
+"healthConsent.continue": "Konfirmo",
 "healthConsent.signOut": "Dil",
-"healthConsent.settingsNote": "Nuk dëshiron? Mund t'i shkarkosh ose fshish të dhënat e tua te Cilësimet.",
-"healthConsent.saveError": "Nuk mundëm ta ruanim pëlqimin tënd. Provo përsëri."
+"healthConsent.settingsNote": "Politika e privatësisë",
+"healthConsent.saveError": "Nuk u ruajt. Provo përsëri."
 }

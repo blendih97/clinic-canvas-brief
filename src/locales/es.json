@@ -362,12 +362,12 @@
 "settingsData.deleteSub": "Permanente e irreversible.",
 "partnerSignup.title": "Cree su cuenta de socio",
 "partnerSignup.body": "Regístrese con la dirección de correo electrónico a la que se envió su invitación y luego confírmela. Irá directamente a su página de socio.",
-"healthConsent.tick": "Doy mi consentimiento para que RinVita almacene y trate mi información de salud, incluida la lectura y traducción de mis documentos con IA, para prestar este servicio. Puedo retirar mi consentimiento en cualquier momento eliminando mi cuenta.",
-"healthConsent.required": "Marca la casilla para aceptar cómo RinVita usa tu información de salud.",
-"healthConsent.promptTitle": "Tu consentimiento para conservar tus registros de salud",
-"healthConsent.promptBody": "La ley exige tu consentimiento expreso para tratar información de salud. Confírmalo a continuación para que RinVita pueda seguir almacenando, traduciendo y compartiendo tus registros como tú lo pidas. Nada más cambia.",
-"healthConsent.continue": "Continuar",
+"healthConsent.tick": "Acepto que RinVita guarde mis registros de salud de forma segura y los traduzca para mí.",
+"healthConsent.required": "Marca la casilla para que podamos guardar tus registros.",
+"healthConsent.promptTitle": "Una cosa rápida",
+"healthConsent.promptBody": "Marca para confirmar que podemos seguir guardando tus registros.",
+"healthConsent.continue": "Confirmar",
 "healthConsent.signOut": "Cerrar sesión",
-"healthConsent.settingsNote": "¿Prefieres no hacerlo? Puedes descargar o eliminar tus registros en Ajustes.",
-"healthConsent.saveError": "No pudimos guardar tu consentimiento. Inténtalo de nuevo."
+"healthConsent.settingsNote": "Política de privacidad",
+"healthConsent.saveError": "No se guardó. Inténtalo de nuevo."
 }

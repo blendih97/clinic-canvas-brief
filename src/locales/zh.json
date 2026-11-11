@@ -363,12 +363,12 @@
 "settingsData.deleteSub": "永久删除,且不可恢复。",
 "partnerSignup.title": "创建您的合作伙伴账户",
 "partnerSignup.body": "请使用接收邀请的电子邮箱地址注册,然后进行验证。验证后,您将直接进入您的合作伙伴页面。",
-"healthConsent.tick": "我同意 RinVita 为提供本服务而存储和处理我的健康信息，包括使用人工智能读取和翻译我的文件。我可以随时通过删除账户撤回同意。",
-"healthConsent.required": "请勾选此框，同意 RinVita 使用您健康信息的方式。",
-"healthConsent.promptTitle": "您对保存健康记录的同意",
-"healthConsent.promptBody": "根据法律，健康信息需要您的明确同意。请在下方确认，以便 RinVita 继续按您的要求存储、翻译和分享您的记录。其他一切不变。",
-"healthConsent.continue": "继续",
+"healthConsent.tick": "我同意 RinVita 安全保存我的健康记录并为我翻译。",
+"healthConsent.required": "请勾选此框，以便我们为您保存记录。",
+"healthConsent.promptTitle": "一件小事",
+"healthConsent.promptBody": "勾选以确认我们可以继续为您保存记录。",
+"healthConsent.continue": "确认",
 "healthConsent.signOut": "退出登录",
-"healthConsent.settingsNote": "不想同意？您可以在设置中下载或删除您的记录。",
-"healthConsent.saveError": "无法保存您的同意，请重试。"
+"healthConsent.settingsNote": "隐私政策",
+"healthConsent.saveError": "未能保存，请重试。"
 }

@@ -362,12 +362,12 @@
 "settingsData.deleteSub": "Définitif et irréversible.",
 "partnerSignup.title": "Créez votre compte partenaire",
 "partnerSignup.body": "Inscrivez-vous avec l'adresse e-mail à laquelle votre invitation a été envoyée, puis confirmez-la. Vous accéderez directement à votre page partenaire.",
-"healthConsent.tick": "J'accepte que RinVita conserve et traite mes informations de santé, y compris la lecture et la traduction de mes documents par l'IA, afin de fournir ce service. Je peux retirer mon consentement à tout moment en supprimant mon compte.",
-"healthConsent.required": "Cochez la case pour accepter la façon dont RinVita utilise vos informations de santé.",
-"healthConsent.promptTitle": "Votre consentement pour conserver vos dossiers médicaux",
-"healthConsent.promptBody": "La loi exige votre consentement explicite pour les informations de santé. Confirmez ci-dessous pour que RinVita puisse continuer à conserver, traduire et partager vos dossiers comme vous le demandez. Rien d'autre ne change.",
-"healthConsent.continue": "Continuer",
+"healthConsent.tick": "J'accepte que RinVita conserve mes dossiers médicaux en toute sécurité et les traduise pour moi.",
+"healthConsent.required": "Cochez la case pour que nous puissions conserver vos dossiers.",
+"healthConsent.promptTitle": "Une petite chose",
+"healthConsent.promptBody": "Cochez pour confirmer que nous pouvons continuer à conserver vos dossiers.",
+"healthConsent.continue": "Confirmer",
 "healthConsent.signOut": "Se déconnecter",
-"healthConsent.settingsNote": "Vous préférez ne pas le faire ? Vous pouvez télécharger ou supprimer vos dossiers dans les Paramètres.",
-"healthConsent.saveError": "Nous n'avons pas pu enregistrer votre consentement. Veuillez réessayer."
+"healthConsent.settingsNote": "Politique de confidentialité",
+"healthConsent.saveError": "L'enregistrement a échoué. Veuillez réessayer."
 }

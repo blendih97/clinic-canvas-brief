@@ -359,14 +359,14 @@ export const baseDictionary: Record<"en" | "ar", TranslationMap> = {
       errorToast: "Failed to send request. Please try again."
     },
     healthConsent: {
-      tick: "I consent to RinVita storing and processing my health information, including reading and translating my documents with AI, to provide this service. I can withdraw my consent at any time by deleting my account.",
-      required: "Please tick the box to agree to how RinVita uses your health information.",
-      promptTitle: "Your consent to keep your health records",
-      promptBody: "Health information needs your explicit consent by law. Please confirm below so RinVita can keep storing, translating and sharing your records as you ask. Nothing else changes.",
-      continue: "Continue",
+      tick: "I'm happy for RinVita to securely store my health records and translate them for me.",
+      required: "Please tick the box so we can store your records for you.",
+      promptTitle: "One quick thing",
+      promptBody: "Tick to confirm you're happy for us to keep storing your records for you.",
+      continue: "Confirm",
       signOut: "Sign out",
-      settingsNote: "Prefer not to? You can download or delete your records in Settings.",
-      saveError: "We couldn't save your consent. Please try again.",
+      settingsNote: "Privacy Policy",
+      saveError: "That didn't save. Please try again.",
     },
     signupPage: {
       invitedBy: "Invited by {{name}} · full access included",
@@ -763,14 +763,14 @@ export const baseDictionary: Record<"en" | "ar", TranslationMap> = {
       errorToast: "تعذر إرسال الطلب. يرجى المحاولة مرة أخرى."
     },
     healthConsent: {
-      tick: "أوافق على أن تقوم RinVita بتخزين ومعالجة معلوماتي الصحية، بما في ذلك قراءة مستنداتي وترجمتها باستخدام الذكاء الاصطناعي، لتقديم هذه الخدمة. يمكنني سحب موافقتي في أي وقت بحذف حسابي.",
-      required: "يرجى وضع علامة في المربع للموافقة على كيفية استخدام RinVita لمعلوماتك الصحية.",
-      promptTitle: "موافقتك على الاحتفاظ بسجلاتك الصحية",
-      promptBody: "يتطلب القانون موافقتك الصريحة على المعلومات الصحية. يرجى التأكيد أدناه حتى تتمكن RinVita من مواصلة تخزين سجلاتك وترجمتها ومشاركتها كما تطلب. لن يتغير أي شيء آخر.",
-      continue: "متابعة",
+      tick: "أوافق على أن تحفظ RinVita سجلاتي الصحية بأمان وتترجمها لي.",
+      required: "يرجى وضع علامة في المربع حتى نتمكن من حفظ سجلاتك.",
+      promptTitle: "أمر سريع",
+      promptBody: "ضع علامة لتأكيد موافقتك على مواصلة حفظ سجلاتك لدينا.",
+      continue: "تأكيد",
       signOut: "تسجيل الخروج",
-      settingsNote: "لا ترغب في ذلك؟ يمكنك تنزيل سجلاتك أو حذفها من الإعدادات.",
-      saveError: "تعذّر حفظ موافقتك. يرجى المحاولة مرة أخرى.",
+      settingsNote: "سياسة الخصوصية",
+      saveError: "لم يتم الحفظ. يرجى المحاولة مرة أخرى.",
     },
     signupPage: {
       invitedBy: "بدعوة من {{name}} · وصول كامل مشمول",
