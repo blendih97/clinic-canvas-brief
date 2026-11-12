@@ -58,8 +58,8 @@ Deno.serve(async (req) => {
     } catch {
       throw new ValidationError("Invalid JSON body");
     }
-    const { priceId, quantity, customerEmail, returnUrl, environment } = body as {
-      priceId: string; quantity?: number; customerEmail?: string;
+    const { priceId, quantity, customerEmail, returnUrl, environment, promoCode } = body as {
+      priceId: string; quantity?: number; customerEmail?: string; promoCode?: string;
       returnUrl: string; environment: StripeEnv;
     };
 
@@ -96,7 +96,16 @@ Deno.serve(async (req) => {
       : undefined;
     const guestEmail = !userId && typeof customerEmail === "string" && customerEmail ? customerEmail : undefined;
 
+    // Referral codes: a remembered code is applied automatically if it is active;
+    // otherwise the patient can type a code at checkout.
+    let promotionCodeId: string | undefined;
+    if (typeof promoCode === "string" && /^[A-Z0-9]{3,20}$/.test(promoCode)) {
+      const found = await stripe.promotionCodes.list({ code: promoCode, active: true, limit: 1 });
+      promotionCodeId = found.data[0]?.id;
+    }
+
     const session = await stripe.checkout.sessions.create({
+      ...(promotionCodeId ? { discounts: [{ promotion_code: promotionCodeId }] } : { allow_promotion_codes: true }),
       line_items: [{ price: stripePrice.id, quantity: quantity || 1 }],
       mode: isRecurring ? "subscription" : "payment",
       ui_mode: "embedded_page",

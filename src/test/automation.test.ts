@@ -48,3 +48,14 @@ describe("result wording describes the report", () => {
     expect(imagingStatusLabel("flagged")).toBe("Abnormal on report");
   });
 });
+
+import { capturePromoCode, readPromoCode } from "@/lib/promo";
+describe("referral codes", () => {
+  it("remembers a valid code from a link and ignores junk", () => {
+    localStorage.clear();
+    capturePromoCode("?code=snyder30");
+    expect(readPromoCode()).toBe("SNYDER30");
+    capturePromoCode("?code=<script>");
+    expect(readPromoCode()).toBe("SNYDER30");
+  });
+});

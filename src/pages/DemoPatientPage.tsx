@@ -47,6 +47,7 @@ const ALIASES: Record<string, string> = {
   health4travel: "eleanor-health4travel-6742efa55314da51",
   kixa: "eleanor-kixa-c84d6e4f51eff885",
   tmcg: "eleanor-tmcg-e276050b63d67c84",
+  snyder: "eleanor-snyder-3879bc9a72c83a94", // Snyder Patient Advocacy, shared with her patients
 };
 
 export default function DemoPatientPage() {
