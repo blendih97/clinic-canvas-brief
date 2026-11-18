@@ -3,6 +3,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { lazy, Suspense } from "react";
 import { BrowserRouter } from "react-router-dom";
 import PartnerDemoPage from "./pages/PartnerDemoPage";
+import PartnerAdminDemoPage from "./pages/PartnerAdminDemoPage";
 import "./index.css";
 
 // Do not load the live application graph (including payment scripts) for the
@@ -30,6 +31,8 @@ if (root) createRoot(root).render(
   <HelmetProvider>
     {window.location.pathname === "/partner-demo"
       ? <BrowserRouter><PartnerDemoPage /></BrowserRouter>
-      : <Suspense fallback={null}><App /></Suspense>}
+      : window.location.pathname.replace(/\/$/, "") === "/demo/partner-admin"
+        ? <BrowserRouter><PartnerAdminDemoPage /></BrowserRouter>
+        : <Suspense fallback={null}><App /></Suspense>}
   </HelmetProvider>
 );

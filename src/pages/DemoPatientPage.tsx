@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
-  LayoutDashboard, Droplets, ScanLine, Pill, FileText, Stethoscope, Loader2, ShieldAlert, ArrowRight, Info,
+  LayoutDashboard, Droplets, ScanLine, Pill, FileText, Stethoscope, Loader2, ShieldAlert, ArrowRight, Info, History,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,8 +16,9 @@ import SharedScans, { type SharedStudy } from "@/components/share/SharedScans";
 import SharedDocuments, { type SharedDoc } from "@/components/share/SharedDocuments";
 import ShareView, { type SharedBrief } from "@/pages/ShareView";
 import SEO from "@/components/SEO";
+import { DEMO_PATIENT_ACTIVITY, daysAgoLabel } from "@/lib/partnerAdminDemo";
 
-type Tab = "overview" | "blood" | "imaging" | "medications" | "documents" | "doctor";
+type Tab = "overview" | "blood" | "imaging" | "medications" | "documents" | "doctor" | "activity";
 
 interface DemoData {
   label: string;
@@ -36,6 +37,7 @@ const TABS: { id: Tab; label: string; icon: typeof LayoutDashboard }[] = [
   { id: "medications", label: "Medications & allergies", icon: Pill },
   { id: "documents", label: "Documents", icon: FileText },
   { id: "doctor", label: "What a doctor sees", icon: Stethoscope },
+  { id: "activity", label: "Account activity", icon: History },
 ];
 
 const notInDemo = () => toast("This is a demo account, so it's view only. Create your own account to try it with real records.");
@@ -178,6 +180,23 @@ export default function DemoPatientPage() {
                 </div>
                 {data.scans.length ? <SharedScans fn="get-demo-profile" token={token!} studies={data.scans} />
                   : <p className="text-sm text-muted-foreground">No scans in this demo.</p>}
+              </div>
+            )}
+            {tab === "activity" && (
+              <div className="space-y-4">
+                <div>
+                  <h1 className="font-heading text-3xl text-foreground">Account activity</h1>
+                  <p className="mt-1 text-sm text-muted-foreground">Everything that happens on {name}'s account: what she shared, who opened it, and what was added. Only she can see this list.</p>
+                </div>
+                <ol className="rounded-xl border border-border bg-card divide-y divide-border">
+                  {DEMO_PATIENT_ACTIVITY.map((a, i) => (
+                    <li key={i} className="flex gap-4 p-4">
+                      <span className="w-24 shrink-0 text-xs text-muted-foreground tabular-nums">{daysAgoLabel(a.daysAgo)}<br />{a.time}</span>
+                      <span className="min-w-0"><span className="block text-sm font-medium text-foreground">{a.text}</span><span className="block text-xs text-muted-foreground">{a.detail}</span></span>
+                    </li>
+                  ))}
+                </ol>
+                <p className="text-xs text-muted-foreground">Example entries for the demo.</p>
               </div>
             )}
             {tab === "documents" && (

@@ -21,6 +21,7 @@ import MarketingLandingPage from "./pages/MarketingLandingPage.tsx";
 import PricingPage from "./pages/PricingPage";
 import ProductDemoPage from "./pages/ProductDemoPage.tsx";
 import PartnerDemoPage from "./pages/PartnerDemoPage.tsx";
+import PartnerAdminDemoPage from "./pages/PartnerAdminDemoPage.tsx";
 import TranslateToolPage from "./pages/TranslateToolPage.tsx";
 import TranslateLanguagePage from "./pages/TranslateLanguagePage.tsx";
 import ForCliniciansPage from "./pages/ForCliniciansPage.tsx";
@@ -199,6 +200,7 @@ export const AppRoutes = () => (
               <Route path="/check-email" element={<CheckEmailPage />} />
               <Route path="/" element={<HomeRoute />} />
               <Route path="/demo" element={<ProductDemoPage />} />
+              <Route path="/demo/partner-admin" element={<PartnerAdminDemoPage />} />
               <Route path="/demo/:token" element={<Suspense fallback={null}><DemoPatientPage /></Suspense>} />
               {DicomLabPage && <Route path="/dicom-lab" element={<Suspense fallback={null}><DicomLabPage /></Suspense>} />}
               <Route path="/pricing" element={<PricingPage />} />
