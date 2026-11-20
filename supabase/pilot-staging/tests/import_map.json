@@ -1,0 +1,8 @@
+{
+  "imports": {
+    "close-account": "file:///home/claude/staging/supabase/functions/close-account/index.ts",
+    "rinvita/dataExport": "../../../src/lib/dataExport.ts",
+    "fflate": "npm:fflate@0.8.2",
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.49.8"
+  }
+}

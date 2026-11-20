@@ -97,8 +97,9 @@ const ScansSection = () => {
 
   const upgrade = () => window.dispatchEvent(new CustomEvent("show-upgrade", { detail: { feature: "dicom_imaging" } }));
 
+  // Scans a patient already has stay viewable and downloadable on every plan (including after a pilot ends).
+  // Adding new scans and requesting them from a hospital are paid features.
   const open = async (s: ImagingStudy) => {
-    if (!canUse) return upgrade();
     setOpening(s.id);
     try { setViewing({ study: s, manifest: await openStudy(s) }); }
     catch (e) { toast.error((e as Error).message || "This scan could not be opened."); }
@@ -106,7 +107,6 @@ const ScansSection = () => {
   };
 
   const download = async (s: ImagingStudy, signed?: DicomManifest) => {
-    if (!canUse) return upgrade();
     setExporting({ id: s.id, done: 0, total: s.instance_count });
     try {
       const m = signed ?? await openStudy(s);
@@ -150,8 +150,8 @@ const ScansSection = () => {
         <div className="rounded-xl border border-primary/30 bg-primary/5 p-5 flex flex-col sm:flex-row gap-4 sm:items-center">
           <Lock className="w-5 h-5 text-primary shrink-0" />
           <div className="flex-1">
-            <p className="text-sm font-medium text-foreground">Full scans are part of the Standard and Family plans</p>
-            <p className="text-xs text-muted-foreground mt-0.5">Keep CT, MRI and X-ray studies from any hospital, view them in 3D, and share them with your doctor in one link.</p>
+            <p className="text-sm font-medium text-foreground">Adding scans is part of the Standard and Family plans</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Keep CT, MRI and X-ray studies from any hospital, view them in 3D, and share them with your doctor in one link.{studies?.length ? " Scans you already have stay viewable and downloadable." : ""}</p>
           </div>
           <button type="button" onClick={upgrade} className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium">Upgrade</button>
         </div>

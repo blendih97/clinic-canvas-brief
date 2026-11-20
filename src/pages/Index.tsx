@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
+import EndOfPilotPanel from "@/components/EndOfPilotPanel";
 import SplashScreen from "@/components/SplashScreen";
 import Sidebar from "@/components/Sidebar";
 import OverviewSection from "@/components/sections/OverviewSection";
@@ -244,10 +245,12 @@ const Index = () => {
             </div>
           )}
 
+          {!viewingMember && <EndOfPilotPanel />}
+
           {showFreeBanner && (
             <div className="mb-4 p-3 bg-primary/10 border border-primary/30 rounded-lg flex items-center justify-between">
               <p className="text-sm text-foreground">
-                <span className="font-medium">Free plan</span> — {freeDocsUsed} of {FREE_DOC_LIMIT} documents used.
+                <span className="font-medium">Free plan</span> — {documents.length > FREE_DOC_LIMIT ? `${documents.length} documents kept (the free plan includes ${FREE_DOC_LIMIT}).` : `${freeDocsUsed} of ${FREE_DOC_LIMIT} documents used.`}
                 {canUpload ? " Upgrade anytime for unlimited uploads, PDF download and sharing." : " Upgrade to unlock unlimited uploads, PDF download and sharing."}
               </p>
               <button onClick={() => setSection("billing")}
